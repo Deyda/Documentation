@@ -1,7 +1,7 @@
 # Documentation by Carl Webster
 
 ## Docu-XD7_V2.ps1
-Creates an inventory of a Citrix XenDesktop 7.8 - 2003 Site (from 2006 version 3 must be used) using Microsoft PowerShell, Word, 
+Creates an inventory of a Citrix XenDesktop 7.8 - 2003 Site (from CVAD 2006 Docu-CVAD7_V3.ps1 must be used) using Microsoft PowerShell, Word, 
 	plain text, or HTML.
 	
 	This Script requires at least PowerShell version 3 but runs best in version 5.
@@ -73,7 +73,7 @@ Creates an inventory of a Citrix XenDesktop 7.8 - 2003 Site (from 2006 version 3
 		Portuguese
 		Spanish
 		Swedish
-## Docu-XD7_V3.ps1
+## Docu-CVAD7_V3.ps1
 Creates an inventory of a Citrix Virtual Apps and Desktops (CVAD) 2006 or later Site 
 	using Microsoft PowerShell, Word, plain text, or HTML.
 	
