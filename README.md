@@ -143,3 +143,22 @@ Creates an inventory of a Citrix Virtual Apps and Desktops (CVAD) 2006 or later 
 		Portuguese
 		Spanish
 		Swedish
+## Docu-ADC.ps1
+Creates a complete inventory of a Citrix ADC configuration using Microsoft Word and PowerShell.
+	Creates a Word document named after the Citrix ADC Configuration.
+	Document includes a Cover Page, Table of Contents and Footer.
+	Includes support for the following language versions of Microsoft Word:
+		Catalan
+		Chinese
+		Danish
+		Dutch
+		English
+		Finnish
+		French
+		German
+		Norwegian
+		Portuguese
+		Spanish
+		Swedish
+
+	Script requires at least PowerShell version 3 but runs best in version 5.
