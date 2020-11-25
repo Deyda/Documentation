@@ -206,6 +206,58 @@
 
 	Script requires at least PowerShell version 3 but runs best in version 5.
 
+## Docu-PVS_V4.ps1
+	Creates a complete inventory of a Citrix PVS 5.x, 6.x or 7.x farm using Microsoft Word 
+	and PowerShell.
+	Creates a Word document named after the PVS 5.x, 6.x or 7.x farm.
+	Document includes a Cover Page, Table of Contents and Footer.
+	Version 4 and later include support for the following language versions of Microsoft 
+	Word:
+		Catalan
+		Chinese
+		Danish
+		Dutch
+		English
+		Finnish
+		French
+		German
+		Norwegian
+		Portuguese
+		Spanish
+		Swedish
+		
+## Docu-PVS_V5.ps1
+	Creates an inventory of a Citrix PVS 7.x Farm using Microsoft PowerShell, Word,
+	plain text, or HTML.
+
+	Word is NOT needed to run the script. This script will output in Text and HTML.
+	
+	You do NOT have to run this script on a PVS Server. This script was developed and run 
+	from a Windows 8.1 VM.
+	
+	You can run this script remotely using the -AdminAddress (AA) parameter.
+	
+	The PVS Console must be installed on the computer running the script.
+	
+	Creates an output file named after the PVS farm.
+	
+	Word and PDF Document includes a Cover Page, Table of Contents and Footer.
+	
+	Includes support for the following language versions of Microsoft Word:
+		Catalan
+		Chinese
+		Danish
+		Dutch
+		English
+		Finnish
+		French
+		German
+		Norwegian
+		Portuguese
+		Spanish
+		Swedish
+
+
 ## Docu-GPO.ps1
 	Creates a Backup and HTML and XML Reports for all Group Policies in the current Active Directory domain.
 
