@@ -1,7 +1,7 @@
 # Documentation by Carl Webster
 
 ## Docu-XD7_V2.ps1
-Creates an inventory of a Citrix XenDesktop 7.8 - 2003 Site (from CVAD 2006 Docu-CVAD7_V3.ps1 must be used) using Microsoft PowerShell, Word, 
+	Creates an inventory of a Citrix XenDesktop 7.8 - 2003 Site (from CVAD 2006 Docu-CVAD7_V3.ps1 must be used) using Microsoft PowerShell, Word, 
 	plain text, or HTML.
 	
 	This Script requires at least PowerShell version 3 but runs best in version 5.
@@ -75,7 +75,7 @@ Creates an inventory of a Citrix XenDesktop 7.8 - 2003 Site (from CVAD 2006 Docu
 		Swedish
 
 ## Docu-CVAD7_V3.ps1
-Creates an inventory of a Citrix Virtual Apps and Desktops (CVAD) 2006 or later Site 
+	Creates an inventory of a Citrix Virtual Apps and Desktops (CVAD) 2006 or later Site 
 	using Microsoft PowerShell, Word, plain text, or HTML.
 	
 	This Script requires at least PowerShell version 5.
@@ -145,8 +145,36 @@ Creates an inventory of a Citrix Virtual Apps and Desktops (CVAD) 2006 or later 
 		Spanish
 		Swedish
 
+## Docu-FAS.ps1
+	Creates an inventory of Citrix Federated Authentication Service using Microsoft 
+	PowerShell, Word, plain text, or HTML.
+	
+	This Script requires at least PowerShell version 3.
+	
+	This script requires an elevated PowerShell session.
+
+	Word is NOT needed to run the script. This script will output in Text and HTML.
+	The default output format is HTML.
+	
+	Creates an output file named CitrixFASInventory.<fileextension>.
+	
+	Word and PDF Document includes a Cover Page, Table of Contents and Footer.
+	Includes support for the following language versions of Microsoft Word:
+		Catalan
+		Chinese
+		Danish-add	
+		Dutch
+		English
+		Finnish
+		French
+		German
+		Norwegian
+		Portuguese
+		Spanish
+		Swedish
+
 ## Docu-ADC.ps1
-Creates a complete inventory of a Citrix ADC configuration using Microsoft Word and PowerShell.
+	Creates a complete inventory of a Citrix ADC configuration using Microsoft Word and PowerShell.
 	Creates a Word document named after the Citrix ADC Configuration.
 	Document includes a Cover Page, Table of Contents and Footer.
 	Includes support for the following language versions of Microsoft Word:
@@ -166,7 +194,7 @@ Creates a complete inventory of a Citrix ADC configuration using Microsoft Word 
 	Script requires at least PowerShell version 3 but runs best in version 5.
 
 ## Docu-DHCP.ps1
-Creates a complete inventory of a Microsoft 2012+ DHCP server using Microsoft 
+	Creates a complete inventory of a Microsoft 2012+ DHCP server using Microsoft 
 	PowerShell, Word, plain text, or HTML.
 	
 	Creates a Word or PDF document, text or HTML file named either:
