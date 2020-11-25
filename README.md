@@ -1,7 +1,7 @@
 # Documentation by Carl Webster
 
 ## Docu-XD7_V2.ps1
-Creates an inventory of a Citrix XenDesktop 7.8+ Site using Microsoft PowerShell, Word, 
+Creates an inventory of a Citrix XenDesktop 7.8 - 2003 Site (from 2006 version 3 must be used) using Microsoft PowerShell, Word, 
 	plain text, or HTML.
 	
 	This Script requires at least PowerShell version 3 but runs best in version 5.
