@@ -173,6 +173,19 @@
 		Spanish
 		Swedish
 
+## Docu-StoreFront.ps1
+	This PowerShell script uses the StoreFront PowerShell SDK to create StoreFront documentation.
+	The script uses the PScribo documentation framework written by Iain Brighton
+	(https://github.com/iainbrighton/PScribo) to render the output in any of the following formats:
+		- MS Word
+		- HTML
+		- Text
+	The script may used in command-line or GUI (default) mode. Command-line mode is useful for unattended
+	documentation generation, while GUI mode expects input from the user before continuing. 
+	The script must be run in an elevated PowerShell session (Admin mode).
+	To run this script without regard to the current execution policy, execute the script as follows:
+	> powershell.exe -executionPolicy bypass -file <directory>\Docu-StoreFront.ps1 <parameters>
+
 ## Docu-ADC.ps1
 	Creates a complete inventory of a Citrix ADC configuration using Microsoft Word and PowerShell.
 	Creates a Word document named after the Citrix ADC Configuration.
