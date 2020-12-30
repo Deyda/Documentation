@@ -135,19 +135,19 @@
 .PARAMETER Log
 	Generates a log file for troubleshooting.
 .EXAMPLE
-	PS C:\PSScript > .\Get-GPOBackupAndReports.ps1
+	PS C:\PSScript > .\Docu-GPO.ps1
 	
 	ComputerName = $Env:USERDNSDOMAIN
 	ADDomain = $Env:USERDNSDOMAIN
 	Folder = $pwd
 .EXAMPLE
-	PS C:\PSScript > .\Get-GPOBackupAndReports.ps1 -ComputerName PDCeDC
+	PS C:\PSScript > .\Docu-GPO.ps1 -ComputerName PDCeDC
 	
 	ComputerName = PDCeDC
 	ADDomain = $Env:USERDNSDOMAIN
 	Folder = $pwd
 .EXAMPLE
-	PS C:\PSScript > .\Get-GPOBackupAndReports.ps1 -ComputerName ChildPDCeDC 
+	PS C:\PSScript > .\Docu-GPO.ps1 -ComputerName ChildPDCeDC 
 	-ADDomain ChildDomain.com
 	
 	Assuming the script is run from the parent domain.
@@ -155,7 +155,7 @@
 	ADDomain = ChildDomain.com
 	Folder = $pwd
 .EXAMPLE
-	PS C:\PSScript > .\Get-GPOBackupAndReports.ps1 -ComputerName ChildPDCeDC 
+	PS C:\PSScript > .\Docu-GPO.ps1 -ComputerName ChildPDCeDC 
 	-ADDomain ChildDomain.com -Folder c:\GPOReports
 	
 	Assuming the script is run from the parent domain.
@@ -163,7 +163,7 @@
 	ADDomain = ChildDomain.com
 	Folder = C:\GPOReports (C:\GPOReports must already exist)
 .EXAMPLE
-	PS C:\PSScript > .\Get-GPOBackupAndReports.ps1 -SmtpServer mail.domain.tld
+	PS C:\PSScript > .\Docu-GPO.ps1 -SmtpServer mail.domain.tld
 	-From XDAdmin@domain.tld -To ITGroup@domain.tld	
 	
 	The script will use the email server mail.domain.tld, sending from 
@@ -174,7 +174,7 @@
 	If the current user's credentials are not valid to send email, 
 	the user will be prompted to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\Get-GPOBackupAndReports.ps1 -SmtpServer smtp.office365.com 
+	PS C:\PSScript > .\Docu-GPO.ps1 -SmtpServer smtp.office365.com 
 	-SmtpPort 587 -UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 	
 	The script will use the email server smtp.office365.com on port 587 using SSL, 
@@ -183,28 +183,28 @@
 	If the current user's credentials are not valid to send email, 
 	the user will be prompted to enter valid credentials.
 .EXAMPLE
-	PS c:\PSScript > .\Get-GPOBackupAndReports.ps1 -folder c:\gpobackups 
+	PS c:\PSScript > .\Docu-GPO.ps1 -folder c:\gpobackups 
 	-ou "ou=lab,dc=labaddomain,dc=com" -gpofilter "xenapp"
 	
 	Processes all GPOs in the OU "lab" in the domain LabAdomain.com 
 	that contain "xenapp" anywhere in the GPO name.
 .EXAMPLE
-	PS c:\PSScript > .\Get-GPOBackupAndReports.ps1 -folder c:\gpobackups 
+	PS c:\PSScript > .\Docu-GPO.ps1 -folder c:\gpobackups 
 	-ou "ou=lab,dc=labaddomain,dc=com"
 	
 	Processes all GPOs in the OU "lab" in the domain LabAdomain.com.
 .EXAMPLE
-	PS c:\PSScript > .\Get-GPOBackupAndReports.ps1 -folder c:\gpobackups 
+	PS c:\PSScript > .\Docu-GPO.ps1 -folder c:\gpobackups 
 	-ou "ou=lab,dc=labaddomain,dc=com" -GPOFilter ""
 	
 	Processes all GPOs in the OU "lab" in the domain LabADDomain.com.
 .EXAMPLE
-	PS c:\PSScript > .\Get-GPOBackupAndReports.ps1 -folder c:\gpobackups 
+	PS c:\PSScript > .\Docu-GPO.ps1 -folder c:\gpobackups 
 	-ou ""
 	
 	Processes all GPOs in all OUs in the default domain of $Env:USERDNSDOMAIN.
 .EXAMPLE
-	PS C:\PSScript > .\Get-GPOBackupAndReports.ps1 -Rename
+	PS C:\PSScript > .\Docu-GPO.ps1 -Rename
 	
 	ComputerName = $Env:USERDNSDOMAIN
 	ADDomain = $Env:USERDNSDOMAIN
@@ -217,7 +217,7 @@
 .OUTPUTS
 	No objects are output from this script.
 .NOTES
-	NAME: Get-GPOBackupAndReports.ps1
+	NAME: Docu-GPO.ps1
 	VERSION: 1.23
 	AUTHOR: Carl Webster
 	LASTEDIT: September 12, 2019

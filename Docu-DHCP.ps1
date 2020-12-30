@@ -277,7 +277,7 @@
 	This parameter has an alias of UN.
 	This parameter is only valid with the MSWORD and PDF output parameters.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -ComputerName DHCPServer01 -MSWord
+	PS C:\PSScript > .\Docu-DHCP.ps1 -ComputerName DHCPServer01 -MSWord
 	
 	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -293,7 +293,7 @@
 
 	Creates a Microsoft Word document.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -ComputerName localhost
+	PS C:\PSScript > .\Docu-DHCP.ps1 -ComputerName localhost
 	
 	Script will resolve localhost to $env:computername, for example, DHCPServer01.
 	The script runs remotely against the DHCP server DHCPServer01 and not localhost.
@@ -301,7 +301,7 @@
 	
 	Creates an HTML file.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -ComputerName 192.168.1.222
+	PS C:\PSScript > .\Docu-DHCP.ps1 -ComputerName 192.168.1.222
 	
 	Script will resolve 192.168.1.222 to the DNS hostname, for example, DHCPServer01.
 	The script runs remotely against the DHCP server DHCPServer01 and not 192.18.1.222.
@@ -309,7 +309,7 @@
 
 	Creates an HTML file.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -PDF -ComputerName DHCPServer02
+	PS C:\PSScript > .\Docu-DHCP.ps1 -PDF -ComputerName DHCPServer02
 	
 	Uses all Default values and save the document as a PDF file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -323,11 +323,11 @@
 	
 	The script runs remotely against the DHCP server DHCPServer02.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -Text -ComputerName DHCPServer02
+	PS C:\PSScript > .\Docu-DHCP.ps1 -Text -ComputerName DHCPServer02
 	
 	The script runs remotely against the DHCP server DHCPServer02.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -MSWord -ComputerName DHCPServer02
+	PS C:\PSScript > .\Docu-DHCP.ps1 -MSWord -ComputerName DHCPServer02
 	
 	Uses all Default values and save the document as a Word DOCX file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -341,12 +341,12 @@
 	
 	The script runs remotely against the DHCP server DHCPServer02.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -Hardware -ComputerName DHCPServer02
+	PS C:\PSScript > .\Docu-DHCP.ps1 -Hardware -ComputerName DHCPServer02
 	
 	The script runs remotely against the DHCP server DHCPServer02.
 	Creates an HTML file.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -ComputerName DHCPServer03 -IncludeLeases 
+	PS C:\PSScript > .\Docu-DHCP.ps1 -ComputerName DHCPServer03 -IncludeLeases 
 	-MSWord
 	
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -361,13 +361,13 @@
 	The script runs remotely against the DHCP server DHCPServer03.
 	The output contains DHCP lease information.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -AllDHCPServers -HTML -IncludeOptions
+	PS C:\PSScript > .\Docu-DHCP.ps1 -AllDHCPServers -HTML -IncludeOptions
 		
 	The script finds all Authorized DHCP servers and processes all servers that are 
 	online.
 	The output contains DHCP Options information.
 .EXAMPLE
-	PS C:\PSScript .\DHCP_Inventory_V2.ps1 -CompanyName "Carl Webster Consulting" 
+	PS C:\PSScript .\Docu-DHCP.ps1 -CompanyName "Carl Webster Consulting" 
 	-CoverPage "Mod" -UserName "Carl Webster" -ComputerName DHCPServer01 -MSWord
 
 	Uses:
@@ -377,7 +377,7 @@
 	
 	The script runs remotely against the DHCP server DHCPServer01.
 .EXAMPLE
-	PS C:\PSScript .\DHCP_Inventory_V2.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
+	PS C:\PSScript .\Docu-DHCP.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
 	-UN "Carl Webster" -ComputerName DHCPServer02 -IncludeLeases -MSWord
 
 	Uses:
@@ -388,7 +388,7 @@
 	The script runs remotely against the DHCP server DHCPServer02.
 	The output contains DHCP lease information.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -AddDateTime
+	PS C:\PSScript > .\Docu-DHCP.ps1 -AddDateTime
 	
 	Adds a date Timestamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
@@ -396,7 +396,7 @@
 	The output filename will be DHCP Inventory Report for Server <server> for the Domain 
 	<domain>_2020-07-25_1800.html
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -PDF -AddDateTime
+	PS C:\PSScript > .\Docu-DHCP.ps1 -PDF -AddDateTime
 	
 	Will use all default values and save the document as a PDF file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -414,7 +414,7 @@
 	The output filename will be DHCP Inventory Report for Server <server> for the Domain 
 	<domain>_2020-07-25_1800.pdf
 .EXAMPLE
-	PS C:\PSScript .\DHCP_Inventory_V2.ps1 -MSWord -CompanyName "Sherlock Holmes 
+	PS C:\PSScript .\Docu-DHCP.ps1 -MSWord -CompanyName "Sherlock Holmes 
 	Consulting" -CoverPage Exposure -UserName "Dr. Watson" -CompanyAddress "221B Baker 
 	Street, London, England" -CompanyFax "+44 1753 276600" -CompanyPhone "+44 1753 276200"
 	
@@ -426,7 +426,7 @@
 		+44 1753 276600 for the Company Fax.
 		+44 1753 276200 for the Company Phone.
 .EXAMPLE
-	PS C:\PSScript .\DHCP_Inventory_V2.ps1 -MSWord -CompanyName "Sherlock Holmes 
+	PS C:\PSScript .\Docu-DHCP.ps1 -MSWord -CompanyName "Sherlock Holmes 
 	Consulting" -CoverPage Facet -UserName "Dr. Watson" -CompanyEmail 
 	SuperSleuth@SherlockHolmes.com
 	
@@ -436,11 +436,11 @@
 		Dr. Watson for the User Name.
 		SuperSleuth@SherlockHolmes.com for the Company Email.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -Folder \\FileServer\ShareName
+	PS C:\PSScript > .\Docu-DHCP.ps1 -Folder \\FileServer\ShareName
 	
 	Output HTML file will be saved in the path \\FileServer\ShareName
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -HTML -MSWord -PDF -Text -Dev -ScriptInfo -Log 
+	PS C:\PSScript > .\Docu-DHCP.ps1 -HTML -MSWord -PDF -Text -Dev -ScriptInfo -Log 
 	-ComputerName DHCPServer
 	
 	Creates four reports: HTML, Microsoft Word, PDF, and plain text.
@@ -466,7 +466,7 @@
 	
 	The script runs remotely against the DHCP server DHCPServer.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -SmtpServer mail.domain.tld -From 
+	PS C:\PSScript > .\Docu-DHCP.ps1 -SmtpServer mail.domain.tld -From 
 	XDAdmin@domain.tld -To ITGroup@domain.tld	
 
 	The script uses the email server mail.domain.tld, sending from XDAdmin@domain.tld, 
@@ -477,7 +477,7 @@
 	If the current user's credentials are not valid to send an email, 
 	the script prompts the user to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -SmtpServer mailrelay.domain.tld -From 
+	PS C:\PSScript > .\Docu-DHCP.ps1 -SmtpServer mailrelay.domain.tld -From 
 	Anonymous@domain.tld -To ITGroup@domain.tld	
 
 	***SENDING UNAUTHENTICATED EMAIL***
@@ -501,7 +501,7 @@
 	The script generates an anonymous, secure password for the anonymous@domain.tld 
 	account.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -SmtpServer 
+	PS C:\PSScript > .\Docu-DHCP.ps1 -SmtpServer 
 	labaddomain-com.mail.protection.outlook.com -UseSSL -From 
 	SomeEmailAddress@labaddomain.com -To ITGroupDL@labaddomain.com	
 
@@ -518,7 +518,7 @@
 
 	The script uses the default SMTP port 25 and uses SSL.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -SmtpServer smtp.office365.com -SmtpPort 587 
+	PS C:\PSScript > .\Docu-DHCP.ps1 -SmtpServer smtp.office365.com -SmtpPort 587 
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
 	The script uses the email server smtp.office365.com on port 587 using SSL, 
@@ -527,7 +527,7 @@
 	If the current user's credentials are not valid to send an email, 
 	the script prompts the user to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -SmtpServer smtp.gmail.com -SmtpPort 587 
+	PS C:\PSScript > .\Docu-DHCP.ps1 -SmtpServer smtp.gmail.com -SmtpPort 587 
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
 	*** NOTE ***
@@ -541,7 +541,7 @@
 	If the current user's credentials are not valid to send an email, 
 	the script prompts the user to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -Dev -ScriptInfo -Log
+	PS C:\PSScript > .\Docu-DHCP.ps1 -Dev -ScriptInfo -Log
 	
 	Creates a text file named DHCPInventoryScriptErrors_yyyy-MM-dd_HHmm for the Domain 
 	<domain>.txt that contains up to the last 250 errors reported by the script.
@@ -552,18 +552,18 @@
 	Creates a text file for transcript logging named 
 	DHCPDocScriptTranscript_yyyy-MM-dd_HHmm for the Domain <domain>.txt.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -ComputerName DHCPServer01 -Hardware
+	PS C:\PSScript > .\Docu-DHCP.ps1 -ComputerName DHCPServer01 -Hardware
 	
 	Adds additional information for the server about its hardware.
 	
 	The script runs remotely against the DHCP server DHCPServer01.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -AllDHCPServers
+	PS C:\PSScript > .\Docu-DHCP.ps1 -AllDHCPServers
 	
 	The script finds all Authorized DHCP servers and processes all servers that are 
 	online.
 .EXAMPLE
-	PS C:\PSScript > .\DHCP_Inventory_V2.ps1 -ComputerName DHCPServer01 -AllDHCPServers
+	PS C:\PSScript > .\Docu-DHCP.ps1 -ComputerName DHCPServer01 -AllDHCPServers
 	
 	Even though DHCPServer01 is specified, the script finds all Authorized DHCP servers 
 	and processes all online servers.
@@ -573,7 +573,7 @@
 	No objects are output from this script.  This script creates a Word, PDF, HTML or 
 	formatted text document.
 .NOTES
-	NAME: DHCP_Inventory_V2.ps1
+	NAME: Docu-DHCP.ps1
 	VERSION: 2.02
 	AUTHOR: Carl Webster and Michael B. Smith
 	LASTEDIT: November 5, 2020

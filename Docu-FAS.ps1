@@ -238,11 +238,11 @@
 	Specifies whether to use SSL for the SmtpServer.
 	The default is False.
 .EXAMPLE
-	PS C:\PSScript > .\FAS_Inventory_V1.ps1
+	PS C:\PSScript > .\Docu-FAS.ps1
 	
 	Creates an HTML report.
 .EXAMPLE
-	PS C:\PSScript > .\FAS_Inventory_V1.ps1 -PDF
+	PS C:\PSScript > .\Docu-FAS.ps1 -PDF
 	
 	Will use all default values and save the document as a PDF file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -255,19 +255,19 @@
 	Administrator for the User Name.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript > .\FAS_Inventory_V1.ps1 -TEXT
+	PS C:\PSScript > .\Docu-FAS.ps1 -TEXT
 	
 	Creates a text report.
 .EXAMPLE
-	PS C:\PSScript > .\FAS_Inventory_V1.ps1 -HTML
+	PS C:\PSScript > .\Docu-FAS.ps1 -HTML
 
 	Creates an HTML report.
 .EXAMPLE
-	PS C:\PSScript > .\FAS_Inventory_V1.ps1 -HTML -MSWord -PDF -Text
+	PS C:\PSScript > .\Docu-FAS.ps1 -HTML -MSWord -PDF -Text
 	
 	Creates four reports. One each in HTML, Microsoft Word, PDF, and plain text.
 .EXAMPLE
-	PS C:\PSScript .\FAS_Inventory_V1.ps1 -MSWord -CompanyName "Carl Webster 
+	PS C:\PSScript .\Docu-FAS.ps1 -MSWord -CompanyName "Carl Webster 
 	Consulting" -CoverPage "Mod" -UserName "Carl Webster"
 	
 	Will use:
@@ -275,7 +275,7 @@
 		Mod for the Cover Page format.
 		Carl Webster for the User Name.
 .EXAMPLE
-	PS C:\PSScript .\FAS_Inventory_V1.ps1 -MSWord -CN "Carl Webster Consulting" -CP 
+	PS C:\PSScript .\Docu-FAS.ps1 -MSWord -CN "Carl Webster Consulting" -CP 
 	"Mod" -UN "Carl Webster"
 	
 	Will use:
@@ -284,7 +284,7 @@
 		Carl Webster for the User Name (alias UN).
 		The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript .\FAS_Inventory_V1.ps1 -MSWord 
+	PS C:\PSScript .\Docu-FAS.ps1 -MSWord 
 	-CompanyName "Sherlock Holmes Consulting" 
 	-CoverPage Exposure 
 	-UserName "Dr. Watson"
@@ -300,7 +300,7 @@
 		+44 1753 276600 for the Company Fax.
 		+44 1753 276200 for the Company Phone.
 .EXAMPLE
-	PS C:\PSScript .\FAS_Inventory_V1.ps1 -MSWord 
+	PS C:\PSScript .\Docu-FAS.ps1 -MSWord 
 	-CompanyName "Sherlock Holmes Consulting" 
 	-CoverPage Facet 
 	-UserName "Dr. Watson"
@@ -312,7 +312,7 @@
 		Dr. Watson for the User Name.
 		SuperSleuth@SherlockHolmes.com for the Company Email.
 .EXAMPLE
-	PS C:\PSScript > .\FAS_Inventory_V1.ps1 -AddDateTime
+	PS C:\PSScript > .\Docu-FAS.ps1 -AddDateTime
 	
 	Creates an HTML file.
 	Adds a date time stamp to the end of the file name.
@@ -320,7 +320,7 @@
 	June 1, 2020 at 6PM is 2020-06-01_1800.
 	Output filename will be CitrixFASInventory_2020-06-01_1800.html.
 .EXAMPLE
-	PS C:\PSScript > .\FAS_Inventory_V1.ps1 -PDF -AddDateTime
+	PS C:\PSScript > .\Docu-FAS.ps1 -PDF -AddDateTime
 	
 	Will use all Default values and save the document as a PDF file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -337,11 +337,11 @@
 	June 1, 2020 at 6PM is 2020-06-01_1800.
 	Output filename will be CitrixFASInventory_2020-06-01_1800.pdf.
 .EXAMPLE
-	PS C:\PSScript > .\FAS_Inventory_V1.ps1 -Folder \\FileServer\ShareName
+	PS C:\PSScript > .\Docu-FAS.ps1 -Folder \\FileServer\ShareName
 	
 	HTML output file will be saved in the path \\FileServer\ShareName
 .EXAMPLE
-	PS C:\PSScript > .\FAS_Inventory_V1.ps1 -Dev -ScriptInfo -Log
+	PS C:\PSScript > .\Docu-FAS.ps1 -Dev -ScriptInfo -Log
 	
 	Creates an HTML file.
 	
@@ -354,17 +354,17 @@
 	Creates a text file for transcript logging named 
 	FASV1DocScriptTranscript_yyyy-MM-dd_HHmm.txt.
 .EXAMPLE
-	PS C:\PSScript > .\FAS_Inventory_V1.ps1 -CitrixTemplatesOnly
+	PS C:\PSScript > .\Docu-FAS.ps1 -CitrixTemplatesOnly
 	
 	Creates an HTML report.
 	Includes only certificate templates with "Citrix" in the name.
 .EXAMPLE
-	PS C:\PSScript > .\FAS_Inventory_V1.ps1 -LimitUserCertificates 25
+	PS C:\PSScript > .\Docu-FAS.ps1 -LimitUserCertificates 25
 	
 	Creates an HTML report.
 	Includes up to the first 25 user certificates.
 .EXAMPLE
-	PS C:\PSScript > .\FAS_Inventory_V1.ps1 
+	PS C:\PSScript > .\Docu-FAS.ps1 
 	-SmtpServer mail.domain.tld
 	-From XDAdmin@domain.tld 
 	-To ITGroup@domain.tld	
@@ -377,7 +377,7 @@
 	If the current user's credentials are not valid to send email, 
 	the user will be prompted to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\FAS_Inventory_V1.ps1 
+	PS C:\PSScript > .\Docu-FAS.ps1 
 	-SmtpServer mailrelay.domain.tld
 	-From Anonymous@domain.tld 
 	-To ITGroup@domain.tld	
@@ -403,7 +403,7 @@
 	The script will generate an anonymous secure password for the anonymous@domain.tld 
 	account.
 .EXAMPLE
-	PS C:\PSScript > .\FAS_Inventory_V1.ps1 
+	PS C:\PSScript > .\Docu-FAS.ps1 
 	-SmtpServer labaddomain-com.mail.protection.outlook.com
 	-UseSSL
 	-From SomeEmailAddress@labaddomain.com 
@@ -422,7 +422,7 @@
 
 	The script will use the default SMTP port 25 and will use SSL.
 .EXAMPLE
-	PS C:\PSScript > .\FAS_Inventory_V1.ps1 
+	PS C:\PSScript > .\Docu-FAS.ps1 
 	-SmtpServer smtp.office365.com 
 	-SmtpPort 587
 	-UseSSL 
@@ -435,7 +435,7 @@
 	If the current user's credentials are not valid to send email, 
 	the user will be prompted to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\FAS_Inventory_V1.ps1 
+	PS C:\PSScript > .\Docu-FAS.ps1 
 	-SmtpServer smtp.gmail.com 
 	-SmtpPort 587
 	-UseSSL 
@@ -458,7 +458,7 @@
 	No objects are output from this script. 
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
-	NAME: FAS_Inventory_V1.ps1
+	NAME: Docu-FAS.ps1
 	VERSION: 1.11
 	AUTHOR: Carl Webster and Michael B. Smith
 	LASTEDIT: May 9, 2020

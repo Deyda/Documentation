@@ -230,7 +230,7 @@
 	Specifies the username for the To email address.
 	If SmtpServer is used, this is a required parameter.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V5.ps1
+	PS C:\PSScript > .\Docu-PVS_V5.ps1
 	
 	Will use all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -242,7 +242,7 @@
 	Administrator for the User Name.
 	LocalHost for AdminAddress.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V5.ps1 -PDF 
+	PS C:\PSScript > .\Docu-PVS_V5.ps1 -PDF 
 	
 	Will use all Default values and save the document as a PDF file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -254,19 +254,19 @@
 	Administrator for the User Name.
 	LocalHost for AdminAddress.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V5.ps1 -TEXT
+	PS C:\PSScript > .\Docu-PVS_V5.ps1 -TEXT
 
 	Will use all default values and save the document as a formatted text file.
 
 	LocalHost for AdminAddress.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V5.ps1 -HTML
+	PS C:\PSScript > .\Docu-PVS_V5.ps1 -HTML
 
 	Will use all default values and save the document as an HTML file.
 
 	LocalHost for AdminAddress.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V5.ps1 -Hardware 
+	PS C:\PSScript > .\Docu-PVS_V5.ps1 -Hardware 
 	
 	Will use all Default values and add additional information for each server about its 
 	hardware.
@@ -279,7 +279,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript .\PVS_Inventory_V5.ps1 -CompanyName "Carl Webster Consulting" 
+	PS C:\PSScript .\Docu-PVS_V5.ps1 -CompanyName "Carl Webster Consulting" 
 	-CoverPage "Mod" -UserName "Carl Webster"
 
 	Will use:
@@ -287,7 +287,7 @@
 		Mod for the Cover Page format.
 		Carl Webster for the User Name.
 .EXAMPLE
-	PS C:\PSScript .\PVS_Inventory_V5.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
+	PS C:\PSScript .\Docu-PVS_V5.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
 	-UN "Carl Webster" -AdminAddress PVS1
 
 	Will use:
@@ -296,7 +296,7 @@
 		Carl Webster for the User Name (alias UN).
 		PVS1 for AdminAddress.
 .EXAMPLE
-	PS C:\PSScript .\PVS_Inventory_V5.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
+	PS C:\PSScript .\Docu-PVS_V5.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
 	-UN "Carl Webster" -AdminAddress PVS1 -User cwebster -Domain WebstersLab 
 	-Password Abc123!@#
 
@@ -309,7 +309,7 @@
 		WebstersLab for Domain.
 		Abc123!@# for Password.
 .EXAMPLE
-	PS C:\PSScript .\PVS_Inventory_V5.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
+	PS C:\PSScript .\Docu-PVS_V5.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
 	-UN "Carl Webster" -AdminAddress PVS1 -User cwebster
 
 	Will use:
@@ -320,7 +320,7 @@
 		cwebster for User.
 		Script will prompt for the Domain and Password
 .EXAMPLE
-	PS C:\PSScript .\PVS_Inventory_V5.ps1 -CompanyName "Sherlock Holmes Consulting" 
+	PS C:\PSScript .\Docu-PVS_V5.ps1 -CompanyName "Sherlock Holmes Consulting" 
 	-CoverPage Exposure 
 	-UserName "Dr. Watson" 
 	-CompanyAddress "221B Baker Street, London, England" 
@@ -335,7 +335,7 @@
 		+44 1753 276600 for the Company Fax.
 		+44 1753 276200 for the Compnay Phone.
 .EXAMPLE
-	PS C:\PSScript .\PVS_Inventory_V5.ps1 -CompanyName "Sherlock Holmes Consulting" 
+	PS C:\PSScript .\Docu-PVS_V5.ps1 -CompanyName "Sherlock Holmes Consulting" 
 	-CoverPage Facet 
 	-UserName "Dr. Watson" 
 	-CompanyEmail SuperSleuth@SherlockHolmes.com
@@ -346,7 +346,7 @@
 		Dr. Watson for the User Name.
 		SuperSleuth@SherlockHolmes.com for the Compnay Email.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V5.ps1 -StartDate "01/01/2020" -EndDate "01/31/2020" 
+	PS C:\PSScript > .\Docu-PVS_V5.ps1 -StartDate "01/01/2020" -EndDate "01/31/2020" 
 	
 	Will use all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -359,7 +359,7 @@
 	LocalHost for AdminAddress.
 	Will return all Audit Trail entries from "01/01/2020" through "01/31/2020".
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V5.ps1 -StartDate "01/01/2020 10:00:00" -EndDate 
+	PS C:\PSScript > .\Docu-PVS_V5.ps1 -StartDate "01/01/2020 10:00:00" -EndDate 
 	"01/31/2020 14:00:00" 
 	
 	Will use all Default values.
@@ -373,7 +373,7 @@
 	LocalHost for AdminAddress.
 	Will return all Audit Trail entries from 01/01/2020 10:100AM through 01/31/2020 2:00PM.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V5.ps1 -Folder \\FileServer\ShareName
+	PS C:\PSScript > .\Docu-PVS_V5.ps1 -Folder \\FileServer\ShareName
 	
 	Will use all default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -387,7 +387,7 @@
 	
 	Output file will be saved in the path \\FileServer\ShareName
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V5.ps1 
+	PS C:\PSScript > .\Docu-PVS_V5.ps1 
 	-SmtpServer mail.domain.tld
 	-From XDAdmin@domain.tld 
 	-To ITGroup@domain.tld	
@@ -400,7 +400,7 @@
 	If the current user's credentials are not valid to send email, 
 	the user will be prompted to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V5.ps1 
+	PS C:\PSScript > .\Docu-PVS_V5.ps1 
 	-SmtpServer mailrelay.domain.tld
 	-From Anonymous@domain.tld 
 	-To ITGroup@domain.tld	
@@ -426,7 +426,7 @@
 	The script will generate an anonymous secure password for the anonymous@domain.tld 
 	account.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V5.ps1 
+	PS C:\PSScript > .\Docu-PVS_V5.ps1 
 	-SmtpServer labaddomain-com.mail.protection.outlook.com
 	-UseSSL
 	-From SomeEmailAddress@labaddomain.com 
@@ -445,7 +445,7 @@
 
 	The script will use the default SMTP port 25 and will use SSL.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V5.ps1 
+	PS C:\PSScript > .\Docu-PVS_V5.ps1 
 	-SmtpServer smtp.office365.com 
 	-SmtpPort 587
 	-UseSSL 
@@ -458,7 +458,7 @@
 	If the current user's credentials are not valid to send email, 
 	the user will be prompted to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V5.ps1 
+	PS C:\PSScript > .\Docu-PVS_V5.ps1 
 	-SmtpServer smtp.gmail.com 
 	-SmtpPort 587
 	-UseSSL 
@@ -480,7 +480,7 @@
 .OUTPUTS
 	No objects are output from this script. This script creates a Word or PDF document.
 .NOTES
-	NAME: PVS_Inventory_V5.ps1
+	NAME: Docu-PVS_V5.ps1
 	VERSION: 5.21
 	AUTHOR: Carl Webster
 	LASTEDIT: May 8, 2020

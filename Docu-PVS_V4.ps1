@@ -141,7 +141,7 @@
 	Specifies the username for the To email address.
 	If SmtpServer is used, this is a required parameter.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V42.ps1
+	PS C:\PSScript > .\Docu-PVS_V4.ps1
 	
 	Will use all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -153,7 +153,7 @@
 	Administrator for the User Name.
 	LocalHost for AdminAddress.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V42.ps1 -PDF 
+	PS C:\PSScript > .\Docu-PVS_V4.ps1 -PDF 
 	
 	Will use all Default values and save the document as a PDF file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -165,7 +165,7 @@
 	Administrator for the User Name.
 	LocalHost for AdminAddress.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V42.ps1 -Hardware 
+	PS C:\PSScript > .\Docu-PVS_V4.ps1 -Hardware 
 	
 	Will use all Default values and add additional information for each server about its 
 	hardware.
@@ -178,7 +178,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript .\PVS_Inventory_V42.ps1 -CompanyName "Carl Webster Consulting" 
+	PS C:\PSScript .\Docu-PVS_V4.ps1 -CompanyName "Carl Webster Consulting" 
 	-CoverPage "Mod" -UserName "Carl Webster"
 
 	Will use:
@@ -186,7 +186,7 @@
 		Mod for the Cover Page format.
 		Carl Webster for the User Name.
 .EXAMPLE
-	PS C:\PSScript .\PVS_Inventory_V42.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
+	PS C:\PSScript .\Docu-PVS_V4.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
 	-UN "Carl Webster" -AdminAddress PVS1
 
 	Will use:
@@ -195,7 +195,7 @@
 		Carl Webster for the User Name (alias UN).
 		PVS1 for AdminAddress.
 .EXAMPLE
-	PS C:\PSScript .\PVS_Inventory_V42.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
+	PS C:\PSScript .\Docu-PVS_V4.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
 	-UN "Carl Webster" -AdminAddress PVS1 -User cwebster -Domain WebstersLab -Password 
 	Abc123!@#
 
@@ -208,7 +208,7 @@
 		WebstersLab for Domain.
 		Abc123!@# for Password.
 .EXAMPLE
-	PS C:\PSScript .\PVS_Inventory_V42.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
+	PS C:\PSScript .\Docu-PVS_V4.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
 	-UN "Carl Webster" -AdminAddress PVS1 -User cwebster
 
 	Will use:
@@ -219,7 +219,7 @@
 		cwebster for User.
 		Script will prompt for the Domain and Password
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V42.ps1 -StartDate "01/01/2020" -EndDate "01/31/2020" 
+	PS C:\PSScript > .\Docu-PVS_V4.ps1 -StartDate "01/01/2020" -EndDate "01/31/2020" 
 	
 	Will use all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -232,7 +232,7 @@
 	LocalHost for AdminAddress.
 	Will return all Audit Trail entries from "01/01/2020" through "01/31/2020".
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V42.ps1 -AdminAddress PVS1 -Folder 
+	PS C:\PSScript > .\Docu-PVS_V4.ps1 -AdminAddress PVS1 -Folder 
 	\\FileServer\ShareName
 	
 	Will use all default values.
@@ -248,7 +248,7 @@
 	
 	Output file will be saved in the path \\FileServer\ShareName
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V42.ps1 
+	PS C:\PSScript > .\Docu-PVS_V4.ps1 
 	-SmtpServer mail.domain.tld
 	-From XDAdmin@domain.tld 
 	-To ITGroup@domain.tld	
@@ -261,7 +261,7 @@
 	If the current user's credentials are not valid to send email, 
 	the user will be prompted to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V42.ps1 
+	PS C:\PSScript > .\Docu-PVS_V4.ps1 
 	-SmtpServer mailrelay.domain.tld
 	-From Anonymous@domain.tld 
 	-To ITGroup@domain.tld	
@@ -287,7 +287,7 @@
 	The script will generate an anonymous secure password for the anonymous@domain.tld 
 	account.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V42.ps1 
+	PS C:\PSScript > .\Docu-PVS_V4.ps1 
 	-SmtpServer labaddomain-com.mail.protection.outlook.com
 	-UseSSL
 	-From SomeEmailAddress@labaddomain.com 
@@ -306,7 +306,7 @@
 
 	The script will use the default SMTP port 25 and will use SSL.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V42.ps1 
+	PS C:\PSScript > .\Docu-PVS_V4.ps1 
 	-SmtpServer smtp.office365.com 
 	-SmtpPort 587
 	-UseSSL 
@@ -319,7 +319,7 @@
 	If the current user's credentials are not valid to send email, 
 	the user will be prompted to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\PVS_Inventory_V42.ps1 
+	PS C:\PSScript > .\Docu-PVS_V4.ps1 
 	-SmtpServer smtp.gmail.com 
 	-SmtpPort 587
 	-UseSSL 
@@ -341,7 +341,7 @@
 .OUTPUTS
 	No objects are output from this script.  This script creates a Word or PDF document.
 .NOTES
-	NAME: PVS_Inventory_V42.ps1
+	NAME: Docu-PVS_V4.ps1
 	VERSION: 4.292
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith, Jeff Wouters and Iain Brighton)
 	LASTEDIT: May 10, 2020

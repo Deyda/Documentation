@@ -13,7 +13,7 @@
 	documentation generation, while GUI mode expects input from the user before continuing. 
 	The script must be run in an elevated PowerShell session (Admin mode).
 	To run this script without regard to the current execution policy, execute the script as follows:
-	> powershell.exe -executionPolicy bypass -file <directory>\SFDoc4.0.ps1 <parameters>
+	> powershell.exe -executionPolicy bypass -file <directory>\Docu-StoreFront.ps1 <parameters>
 
 .PARAMETER paramGUI
 	Alias: GUI
@@ -76,18 +76,18 @@
 	Default: False (use -Software to turn on)
 	
 .EXAMPLE
-	> powershell.exe -executionPolicy bypass -file c:\Scripts\SFDoc4.0.ps1
+	> powershell.exe -executionPolicy bypass -file c:\Scripts\Docu-StoreFront.ps1
 	
 	Will use all default values.
 	
 .EXAMPLE
-	> powershell.exe -executionPolicy bypass -file c:\Scripts\SFDoc4.0.ps1 -GUI:$False -FN "IPM-SF" -Dir "C:\Output" -Hardware
+	> powershell.exe -executionPolicy bypass -file c:\Scripts\Docu-StoreFront.ps1 -GUI:$False -FN "IPM-SF" -Dir "C:\Output" -Hardware
 	
 	Will gather hardware information for the host server, and
 	will create the file(s) IPM-SF.<extension> in directory C:\Output without using the GUI.
 	
 .EXAMPLE
-    > .\SFDoc4.0.ps1 -Dir c:\temp -File StoreFront -Title "My SF Doc" -Author "Sam Jacobs"  -Text -Word:$False
+    > .\Docu-StoreFront.ps1 -Dir c:\temp -File StoreFront -Title "My SF Doc" -Author "Sam Jacobs"  -Text -Word:$False
 
     Will use the GUI and populate it with the base file name of "StoreFront", the title of "My SF Doc"
     the author "Sam Jacobs", and will add Text output to the default list, and remove MS Word output
@@ -100,7 +100,7 @@
 	This script creates one or more files in the following formats: MS Word, HTML, and text.
 
 .NOTES
-	NAME:	  SFDoc4.0.ps1
+	NAME:	  Docu-StoreFront.ps1
 	VERSION:  4.0
 	AUTHOR:  Sam Jacobs
 	LASTEDIT: October 23, 2019
