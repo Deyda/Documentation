@@ -13,7 +13,6 @@
 	Version 4 and later include support for the following language versions of Microsoft 
 	Word:
 		Catalan
-		Chinese
 		Danish
 		Dutch
 		English
@@ -453,9 +452,6 @@ Param(
 #	Code clean up from Visual Studio Code
 #Version 4.28 13-Feb-2017
 #	Fixed French wording for Table of Contents 2 (Thanks to David Rouquier)
-#
-#Version 4.27 7-Nov-2016
-#	Added Chinese language support
 #
 #Version 4.26 12-Sep-2016
 #	Added an alias AA for AdminAddress to match the other scripts that use AdminAddress
@@ -1680,7 +1676,6 @@ Function SetWordHashTable
 	#nl - Dutch
 	#pt - Portuguese
 	#sv - Swedish
-	#zh - Chinese
 	
 	[string]$toc = $(
 		Switch ($CultureCode)
@@ -1697,7 +1692,6 @@ Function SetWordHashTable
 			'pt-'	{ 'Sumário Automático 2'; Break }
 			# fix in 4.291 thanks to Johan Kallio 'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
 			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
-			'zh-'	{ '自动目录 2'; Break }
 		}
 	)
 
@@ -1718,7 +1712,6 @@ Function GetCulture
 	#codes obtained from http://support.microsoft.com/kb/221435
 	#http://msdn.microsoft.com/en-us/library/bb213877(v=office.12).aspx
 	$CatalanArray = 1027
-	$ChineseArray = 2052,3076,5124,4100
 	$DanishArray = 1030
 	$DutchArray = 2067, 1043
 	$EnglishArray = 3081, 10249, 4105, 9225, 6153, 8201, 5129, 13321, 7177, 11273, 2057, 1033, 12297
@@ -1741,12 +1734,10 @@ Function GetCulture
 	#nl - Dutch
 	#pt - Portuguese
 	#sv - Swedish
-	#zh - Chinese
 
 	Switch ($WordValue)
 	{
 		{$CatalanArray -contains $_} {$CultureCode = "ca-"}
-		{$ChineseArray -contains $_} {$CultureCode = "zh-"}
 		{$DanishArray -contains $_} {$CultureCode = "da-"}
 		{$DutchArray -contains $_} {$CultureCode = "nl-"}
 		{$EnglishArray -contains $_} {$CultureCode = "en-"}
@@ -1992,16 +1983,6 @@ Function ValidateCoverPage
 					"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "Rutnät",
 					"RörElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Årligt",
 					"Övergående")
-				}
-			}
-
-		'zh-'	{
-				If($xWordVersion -eq $wdWord2010 -or $xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ('奥斯汀', '边线型', '花丝', '怀旧', '积分',
-					'离子(浅色)', '离子(深色)', '母版型', '平面', '切片(浅色)',
-					'切片(深色)', '丝状', '网格', '镶边', '信号灯',
-					'运动型')
 				}
 			}
 
@@ -3101,14 +3082,6 @@ Function SetupWord
 					If($CoverPage -eq "Sideline")
 					{
 						$CoverPage = "Sidlinje"
-						$CPChanged = $True
-					}
-				}
-
-			'zh-'	{
-					If($CoverPage -eq "Sideline")
-					{
-						$CoverPage = "边线型"
 						$CPChanged = $True
 					}
 				}
