@@ -420,9 +420,9 @@
 .Release Notes version 4.51
 #	Fix Swedish Table of Contents (Thanks to Johan Kallio)
 #		From 
-#			'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
+#			'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckning2'; Break }
 #		To
-#			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
+#			'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckn2'; Break }
 #	Updated help text
 
 .Release Notes version 4.5
@@ -1151,18 +1151,18 @@ Function SetWordHashTable
 	[string]$toc = $(
 		Switch ($CultureCode)
 		{
-			'ca-'	{ 'Taula automática 2'; Break }
+			'ca-'	{ 'Taula automÃ¡tica 2'; Break }
 			'da-'	{ 'Automatisk tabel 2'; Break }
 			'de-'	{ 'Automatische Tabelle 2'; Break }
 			'en-'	{ 'Automatic Table 2'; Break }
-			'es-'	{ 'Tabla automática 2'; Break }
+			'es-'	{ 'Tabla automÃ¡tica 2'; Break }
 			'fi-'	{ 'Automaattinen taulukko 2'; Break }
-			'fr-'	{ 'Table automatique 2'; Break } #changed 13-feb-2017 david roquier and samuel legrand
+			'fr-'	{ 'Table automatiqueÂ 2'; Break } #changed 13-feb-2017 david roquier and samuel legrand
 			'nb-'	{ 'Automatisk tabell 2'; Break }
 			'nl-'	{ 'Automatische inhoudsopgave 2'; Break }
-			'pt-'	{ 'Sumário Automático 2'; Break }
-			# fix in 2.23 thanks to Johan Kallio 'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
-			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
+			'pt-'	{ 'SumÃ¡rio AutomÃ¡tico 2'; Break }
+			# fix in 2.23 thanks to Johan Kallio 'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckning2'; Break }
+			'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckn2'; Break }
 		}
 	)
 
@@ -1696,7 +1696,7 @@ Function SetupWord
 			'ca-'	{
 					If($CoverPage -eq "Sideline")
 					{
-						$CoverPage = "Línia lateral"
+						$CoverPage = "LÃ­nia lateral"
 						$CPChanged = $True
 					}
 				}
@@ -1720,7 +1720,7 @@ Function SetupWord
 			'es-'	{
 					If($CoverPage -eq "Sideline")
 					{
-						$CoverPage = "Línea lateral"
+						$CoverPage = "LÃ­nea lateral"
 						$CPChanged = $True
 					}
 				}
@@ -1738,12 +1738,12 @@ Function SetupWord
 					{
 						If($Script:WordVersion -eq $wdWord2013 -or $Script:WordVersion -eq $wdWord2016)
 						{
-							$CoverPage = "Lignes latérales"
+							$CoverPage = "Lignes latÃ©rales"
 							$CPChanged = $True
 						}
 						Else
 						{
-							$CoverPage = "Ligne latérale"
+							$CoverPage = "Ligne latÃ©rale"
 							$CPChanged = $True
 						}
 					}
