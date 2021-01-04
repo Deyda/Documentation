@@ -17,7 +17,7 @@
 	You do NOT have to run this script on a Controller. This script was developed and run 
 	from a Windows 10 VM.
 	
-	You can run this script remotely using the –AdminAddress (AA) parameter.
+	You can run this script remotely using the -AdminAddress (AA) parameter.
 	
 	This script supports versions of XenApp/XenDesktop starting with 7.8 through CVAD 2006.
 	
@@ -1521,9 +1521,9 @@ Param(
 #Version 2.29 17-Dec-2019
 #	Fix Swedish Table of Contents (Thanks to Johan Kallio)
 #		From 
-#			'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
+#			'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckning2'; Break }
 #		To
-#			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
+#			'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckn2'; Break }
 #	Updated help text
 #
 #Version 2.28 25-Sep-2019
@@ -2120,10 +2120,10 @@ Param(
 #	Fix numerous typos
 #	Fixed formatting issues with HTML headings output
 #	Fixed French wording for Table of Contents 2 (Thanks to David Rouquier)
-#	Fixed the “No. of machines” for Machine Catalogs so it is now accurate
+#	Fixed the â€œNo. of machinesâ€ for Machine Catalogs so it is now accurate
 #	Fixed the Machine Catalog details to match what is shown in Studio
 #	For Machine Catalog details, for PVS provisioned catalogs, add the PVS Server address
-#	For Persistent machines with changes stored on the local disk, added the “VM copy mode”
+#	For Persistent machines with changes stored on the local disk, added the â€œVM copy modeâ€
 #	For Personal vDisk catalogs, added PvD size and drive letter
 #	For Random catalog types (SingleSession and MultiSession), added "Temporary memory cache size (MB)" and "Temporary disk cache size (GB)"
 #	Removed unnecessary blank lines in policy value output
@@ -3912,19 +3912,19 @@ Function SetWordHashTable
 	[string]$toc = $(
 		Switch ($CultureCode)
 		{
-			'ca-'	{ 'Taula automática 2'; Break }
+			'ca-'	{ 'Taula automÃ¡tica 2'; Break }
 			'da-'	{ 'Automatisk tabel 2'; Break }
 			'de-'	{ 'Automatische Tabelle 2'; Break }
 			'en-'	{ 'Automatic Table 2'; Break }
-			'es-'	{ 'Tabla automática 2'; Break }
+			'es-'	{ 'Tabla automÃ¡tica 2'; Break }
 			'fi-'	{ 'Automaattinen taulukko 2'; Break }
 #			'fr-'	{ 'Sommaire Automatique 2'; Break }
-			'fr-'	{ 'Table automatique 2'; Break } #changed 10-feb-2017 david roquier and samuel legrand
+			'fr-'	{ 'Table automatiqueÂ 2'; Break } #changed 10-feb-2017 david roquier and samuel legrand
 			'nb-'	{ 'Automatisk tabell 2'; Break }
 			'nl-'	{ 'Automatische inhoudsopgave 2'; Break }
-			'pt-'	{ 'Sumário Automático 2'; Break }
-			# fix in 2.29 thanks to Johan Kallio 'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
-			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
+			'pt-'	{ 'SumÃ¡rio AutomÃ¡tico 2'; Break }
+			# fix in 2.29 thanks to Johan Kallio 'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckning2'; Break }
+			'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckn2'; Break }
 		}
 	)
 
@@ -3999,23 +3999,23 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
-					"Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
-					"Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
-					"Sector (fosc)", "Semàfor", "Visualització principal", "Whisp")
+					"Integral", "IÃ³ (clar)", "IÃ³ (fosc)", "LÃ­nia lateral",
+					"Moviment", "QuadrÃ­cula", "Retrospectiu", "Sector (clar)",
+					"Sector (fosc)", "SemÃ for", "VisualitzaciÃ³ principal", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
-					"Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
-					"Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
-					"Sector (fosc)", "Semàfor", "Visualització", "Whisp")
+					"Integral", "IÃ³ (clar)", "IÃ³ (fosc)", "LÃ­nia lateral",
+					"Moviment", "QuadrÃ­cula", "Retrospectiu", "Sector (clar)",
+					"Sector (fosc)", "SemÃ for", "VisualitzaciÃ³", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
 					$xArray = ("Alfabet", "Anual", "Austin", "Conservador",
-					"Contrast", "Cubicles", "Diplomàtic", "Exposició",
-					"Línia lateral", "Mod", "Mosiac", "Moviment", "Paper de diari",
-					"Perspectiva", "Piles", "Quadrícula", "Sobri",
+					"Contrast", "Cubicles", "DiplomÃ tic", "ExposiciÃ³",
+					"LÃ­nia lateral", "Mod", "Mosiac", "Moviment", "Paper de diari",
+					"Perspectiva", "Piles", "QuadrÃ­cula", "Sobri",
 					"Transcendir", "Trencaclosques")
 				}
 			}
@@ -4023,24 +4023,24 @@ Function ValidateCoverPage
 		'da-'	{
 				If($xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("Austin", "BevægElse", "Brusen", "Facet", "Filigran", 
-					"Gitter", "Integral", "Ion (lys)", "Ion (mørk)", 
+					$xArray = ("Austin", "BevÃ¦gElse", "Brusen", "Facet", "Filigran", 
+					"Gitter", "Integral", "Ion (lys)", "Ion (mÃ¸rk)", 
 					"Retro", "Semafor", "Sidelinje", "Stribet", 
-					"Udsnit (lys)", "Udsnit (mørk)", "Visningsmaster")
+					"Udsnit (lys)", "Udsnit (mÃ¸rk)", "Visningsmaster")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
-					$xArray = ("BevægElse", "Brusen", "Ion (lys)", "Filigran",
+					$xArray = ("BevÃ¦gElse", "Brusen", "Ion (lys)", "Filigran",
 					"Retro", "Semafor", "Visningsmaster", "Integral",
 					"Facet", "Gitter", "Stribet", "Sidelinje", "Udsnit (lys)",
-					"Udsnit (mørk)", "Ion (mørk)", "Austin")
+					"Udsnit (mÃ¸rk)", "Ion (mÃ¸rk)", "Austin")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("BevægElse", "Moderat", "Perspektiv", "Firkanter",
-					"Overskrid", "Alfabet", "Kontrast", "Stakke", "Fliser", "Gåde",
+					$xArray = ("BevÃ¦gElse", "Moderat", "Perspektiv", "Firkanter",
+					"Overskrid", "Alfabet", "Kontrast", "Stakke", "Fliser", "GÃ¥de",
 					"Gitter", "Austin", "Eksponering", "Sidelinje", "Enkel",
-					"Nålestribet", "Årlig", "Avispapir", "Tradionel")
+					"NÃ¥lestribet", "Ã…rlig", "Avispapir", "Tradionel")
 				}
 			}
 
@@ -4048,22 +4048,22 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "Bewegung", "Facette", "Filigran", 
-					"Gebändert", "Integral", "Ion (dunkel)", "Ion (hell)", 
-					"Pfiff", "Randlinie", "Raster", "Rückblick", 
+					"GebÃ¤ndert", "Integral", "Ion (dunkel)", "Ion (hell)", 
+					"Pfiff", "Randlinie", "Raster", "RÃ¼ckblick", 
 					"Segment (dunkel)", "Segment (hell)", "Semaphor", 
 					"ViewMaster")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Semaphor", "Segment (hell)", "Ion (hell)",
-					"Raster", "Ion (dunkel)", "Filigran", "Rückblick", "Pfiff",
+					"Raster", "Ion (dunkel)", "Filigran", "RÃ¼ckblick", "Pfiff",
 					"ViewMaster", "Segment (dunkel)", "Verbunden", "Bewegung",
 					"Randlinie", "Austin", "Integral", "Facette")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
 					$xArray = ("Alphabet", "Austin", "Bewegung", "Durchscheinend",
-					"Herausgestellt", "Jährlich", "Kacheln", "Kontrast", "Kubistisch",
+					"Herausgestellt", "JÃ¤hrlich", "Kacheln", "Kontrast", "Kubistisch",
 					"Modern", "Nadelstreifen", "Perspektive", "Puzzle", "Randlinie",
 					"Raster", "Schlicht", "Stapel", "Traditionell", "Zeitungspapier")
 				}
@@ -4088,23 +4088,23 @@ Function ValidateCoverPage
 		'es-'	{
 				If($xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("Austin", "Con bandas", "Cortar (oscuro)", "Cuadrícula", 
+					$xArray = ("Austin", "Con bandas", "Cortar (oscuro)", "CuadrÃ­cula", 
 					"Whisp", "Faceta", "Filigrana", "Integral", "Ion (claro)", 
-					"Ion (oscuro)", "Línea lateral", "Movimiento", "Retrospectiva", 
-					"Semáforo", "Slice (luz)", "Vista principal", "Whisp")
+					"Ion (oscuro)", "LÃ­nea lateral", "Movimiento", "Retrospectiva", 
+					"SemÃ¡foro", "Slice (luz)", "Vista principal", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Whisp", "Vista principal", "Filigrana", "Austin",
-					"Slice (luz)", "Faceta", "Semáforo", "Retrospectiva", "Cuadrícula",
-					"Movimiento", "Cortar (oscuro)", "Línea lateral", "Ion (oscuro)",
+					"Slice (luz)", "Faceta", "SemÃ¡foro", "Retrospectiva", "CuadrÃ­cula",
+					"Movimiento", "Cortar (oscuro)", "LÃ­nea lateral", "Ion (oscuro)",
 					"Ion (claro)", "Integral", "Con bandas")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
 					$xArray = ("Alfabeto", "Anual", "Austero", "Austin", "Conservador",
-					"Contraste", "Cuadrícula", "Cubículos", "Exposición", "Línea lateral",
-					"Moderno", "Mosaicos", "Movimiento", "Papel periódico",
+					"Contraste", "CuadrÃ­cula", "CubÃ­culos", "ExposiciÃ³n", "LÃ­nea lateral",
+					"Moderno", "Mosaicos", "Movimiento", "Papel periÃ³dico",
 					"Perspectiva", "Pilas", "Puzzle", "Rayas", "Sobrepasar")
 				}
 			}
@@ -4114,14 +4114,14 @@ Function ValidateCoverPage
 				{
 					$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
 					"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
-					"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
+					"Sektori (vaalea)", "VaihtuvavÃ¤rinen", "ViewMaster", "Austin",
 					"Kuiskaus", "Liike", "Ruudukko", "Sivussa")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
 					"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
-					"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
+					"Sektori (vaalea)", "VaihtuvavÃ¤rinen", "ViewMaster", "Austin",
 					"Kiehkura", "Liike", "Ruudukko", "Sivussa")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
@@ -4136,17 +4136,17 @@ Function ValidateCoverPage
 		'fr-'	{
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("À bandes", "Austin", "Facette", "Filigrane", 
-					"Guide", "Intégrale", "Ion (clair)", "Ion (foncé)", 
-					"Lignes latérales", "Quadrillage", "Rétrospective", "Secteur (clair)", 
-					"Secteur (foncé)", "Sémaphore", "ViewMaster", "Whisp")
+					$xArray = ("Ã€ bandes", "Austin", "Facette", "Filigrane", 
+					"Guide", "IntÃ©grale", "Ion (clair)", "Ion (foncÃ©)", 
+					"Lignes latÃ©rales", "Quadrillage", "RÃ©trospective", "Secteur (clair)", 
+					"Secteur (foncÃ©)", "SÃ©maphore", "ViewMaster", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("Alphabet", "Annuel", "Austère", "Austin", 
-					"Blocs empilés", "Classique", "Contraste", "Emplacements de bureau", 
-					"Exposition", "Guide", "Ligne latérale", "Moderne", 
-					"Mosaïques", "Mots croisés", "Papier journal", "Perspective",
+					$xArray = ("Alphabet", "Annuel", "AustÃ¨re", "Austin", 
+					"Blocs empilÃ©s", "Classique", "Contraste", "Emplacements de bureau", 
+					"Exposition", "Guide", "Ligne latÃ©rale", "Moderne", 
+					"MosaÃ¯ques", "Mots croisÃ©s", "Papier journal", "Perspective",
 					"Quadrillage", "Rayures fines", "Transcendant")
 				}
 			}
@@ -4155,13 +4155,13 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "BevegElse", "Dempet", "Fasett", "Filigran",
-					"Integral", "Ion (lys)", "Ion (mørk)", "Retrospekt", "Rutenett",
-					"Sektor (lys)", "Sektor (mørk)", "Semafor", "Sidelinje", "Stripet",
+					"Integral", "Ion (lys)", "Ion (mÃ¸rk)", "Retrospekt", "Rutenett",
+					"Sektor (lys)", "Sektor (mÃ¸rk)", "Semafor", "Sidelinje", "Stripet",
 					"ViewMaster")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("Alfabet", "Årlig", "Avistrykk", "Austin", "Avlukker",
+					$xArray = ("Alfabet", "Ã…rlig", "Avistrykk", "Austin", "Avlukker",
 					"BevegElse", "Engasjement", "Enkel", "Fliser", "Konservativ",
 					"Kontrast", "Mod", "Perspektiv", "Puslespill", "Rutenett", "Sidelinje",
 					"Smale striper", "Stabler", "Transcenderende")
@@ -4189,17 +4189,17 @@ Function ValidateCoverPage
 		'pt-'	{
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("Animação", "Austin", "Em Tiras", "Exibição Mestra",
+					$xArray = ("AnimaÃ§Ã£o", "Austin", "Em Tiras", "ExibiÃ§Ã£o Mestra",
 					"Faceta", "Fatia (Clara)", "Fatia (Escura)", "Filete", "Filigrana", 
-					"Grade", "Integral", "Íon (Claro)", "Íon (Escuro)", "Linha Lateral",
-					"Retrospectiva", "Semáforo")
+					"Grade", "Integral", "Ãon (Claro)", "Ãon (Escuro)", "Linha Lateral",
+					"Retrospectiva", "SemÃ¡foro")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("Alfabeto", "Animação", "Anual", "Austero", "Austin", "Baias",
-					"Conservador", "Contraste", "Exposição", "Grade", "Ladrilhos",
+					$xArray = ("Alfabeto", "AnimaÃ§Ã£o", "Anual", "Austero", "Austin", "Baias",
+					"Conservador", "Contraste", "ExposiÃ§Ã£o", "Grade", "Ladrilhos",
 					"Linha Lateral", "Listras", "Mod", "Papel Jornal", "Perspectiva", "Pilhas",
-					"Quebra-cabeça", "Transcend")
+					"Quebra-cabeÃ§a", "Transcend")
 				}
 			}
 
@@ -4207,15 +4207,15 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "Band", "Fasett", "Filigran", "Integrerad", "Jon (ljust)",
-					"Jon (mörkt)", "Knippe", "Rutnät", "RörElse", "Sektor (ljus)", "Sektor (mörk)",
-					"Semafor", "Sidlinje", "VisaHuvudsida", "Återblick")
+					"Jon (mÃ¶rkt)", "Knippe", "RutnÃ¤t", "RÃ¶rElse", "Sektor (ljus)", "Sektor (mÃ¶rk)",
+					"Semafor", "Sidlinje", "VisaHuvudsida", "Ã…terblick")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("Alfabetmönster", "Austin", "Enkelt", "Exponering", "Konservativt",
-					"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "Rutnät",
-					"RörElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Årligt",
-					"Övergående")
+					$xArray = ("AlfabetmÃ¶nster", "Austin", "Enkelt", "Exponering", "Konservativt",
+					"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "RutnÃ¤t",
+					"RÃ¶rElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Ã…rligt",
+					"Ã–vergÃ¥ende")
 				}
 			}
 
@@ -4270,7 +4270,7 @@ Function CheckWordPrereq
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
 	#Find out if winword is running in our session
-	[bool]$wordrunning = $null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$wordrunning = $null -ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
 		$ErrorActionPreference = $SaveEAPreference
@@ -4499,7 +4499,7 @@ Function SetupWord
 			'ca-'	{
 					If($CoverPage -eq "Sideline")
 					{
-						$CoverPage = "Línia lateral"
+						$CoverPage = "LÃ­nia lateral"
 						$CPChanged = $True
 					}
 				}
@@ -4523,7 +4523,7 @@ Function SetupWord
 			'es-'	{
 					If($CoverPage -eq "Sideline")
 					{
-						$CoverPage = "Línea lateral"
+						$CoverPage = "LÃ­nea lateral"
 						$CPChanged = $True
 					}
 				}
@@ -4541,12 +4541,12 @@ Function SetupWord
 					{
 						If($Script:WordVersion -eq $wdWord2013 -or $Script:WordVersion -eq $wdWord2016)
 						{
-							$CoverPage = "Lignes latérales"
+							$CoverPage = "Lignes latÃ©rales"
 							$CPChanged = $True
 						}
 						Else
 						{
-							$CoverPage = "Ligne latérale"
+							$CoverPage = "Ligne latÃ©rale"
 							$CPChanged = $True
 						}
 					}
@@ -6144,7 +6144,7 @@ Function CheckExcelPrereq
 	#Find out if excel is running in our session
 	#[bool]$excelrunning = ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}) -ne $Null
 	#fix by MBS in V2.20
-	[bool]$excelrunning = $null –ne ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$excelrunning = $null -ne ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	
 	If($excelrunning)
 	{
@@ -9990,7 +9990,7 @@ Function OutputMachineDetails
 			$ScriptInformation += @{Data = "Delivery Group"; Value = $Machine.DesktopGroupName; }
 			If($NoSessions -eq $False) #V2.27
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
 				$ScriptInformation += @{Data = "User Display Name"; Value = $name; }
 				$cnt = -1
@@ -10002,7 +10002,7 @@ Function OutputMachineDetails
 						$ScriptInformation += @{Data = ""; Value = $tmp; }
 					}
 				}
-                ## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
+                ## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
 				$ScriptInformation += @{Data = "User"; Value = $name; }
 				$cnt = -1
@@ -10014,7 +10014,7 @@ Function OutputMachineDetails
 						$ScriptInformation += @{Data = ""; Value = $tmp; }
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
+                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
 				$ScriptInformation += @{Data = "UPN"; Value = $upn; }
 				$cnt = -1
@@ -10334,7 +10334,7 @@ Function OutputMachineDetails
 			$ScriptInformation += @{Data = "Delivery Group"; Value = $Machine.DesktopGroupName; }
 			If($NoSessions -eq $False) #V2.27
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
 				$ScriptInformation += @{Data = "User Display Name"; Value = $name; }
 				$cnt = -1
@@ -10346,7 +10346,7 @@ Function OutputMachineDetails
 						$ScriptInformation += @{Data = ""; Value = $tmp; }
 					}
 				}
-                ## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
+                ## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
 				$ScriptInformation += @{Data = "User"; Value = $name; }
 				$cnt = -1
@@ -10358,7 +10358,7 @@ Function OutputMachineDetails
 						$ScriptInformation += @{Data = ""; Value = $tmp; }
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
+                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
 				$ScriptInformation += @{Data = "UPN"; Value = $upn; }
 				$cnt = -1
@@ -10694,7 +10694,7 @@ Function OutputMachineDetails
 			Line 2 "Delivery Group`t`t`t: " $Machine.DesktopGroupName
 			If($NoSessions -eq $False) #V2.27
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
 				Line 2 "User Display Name`t`t: " $name
 				$cnt = -1
@@ -10706,7 +10706,7 @@ Function OutputMachineDetails
 						Line 6 "  " $tmp
 					}
 				}
-				## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
+				## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
 				Line 2 "User`t`t`t`t: " $name
 				$cnt = -1
@@ -10718,7 +10718,7 @@ Function OutputMachineDetails
 						Line 6 "  " $tmp
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
+                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
 				Line 2 "UPN`t`t`t`t: " $upn
 				$cnt = -1
@@ -10903,7 +10903,7 @@ Function OutputMachineDetails
 			Line 2 "Delivery Group`t`t`t: " $Machine.DesktopGroupName
 			If($NoSessions -eq $False) #V2.27
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
 				Line 2 "User Display Name`t`t: " $name
 				$cnt = -1
@@ -10915,7 +10915,7 @@ Function OutputMachineDetails
 						Line 6 "  " $tmp
 					}
 				}
-                ## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
+                ## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
 				Line 2 "User`t`t`t`t: " $name
 				$cnt = -1
@@ -10927,7 +10927,7 @@ Function OutputMachineDetails
 						Line 6 "  " $tmp
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
+                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
 				Line 2 "UPN`t`t`t`t: " $upn
 				$cnt = -1
@@ -11129,7 +11129,7 @@ Function OutputMachineDetails
 			$rowdata += @(,('Delivery Group',($global:htmlsb),$Machine.DesktopGroupName,$htmlwhite))
 			If($NoSessions -eq $False) #V2.27
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
 				$rowdata += @(,('User Display Name',($global:htmlsb),$name,$htmlwhite))
 				$cnt = -1
@@ -11141,7 +11141,7 @@ Function OutputMachineDetails
 						$rowdata += @(,('',($global:htmlsb),$tmp,$htmlwhite))
 					}
 				}
-                ## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
+                ## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
 				$rowdata += @(,('User',($global:htmlsb),$name,$htmlwhite))
 				$cnt = -1
@@ -11153,7 +11153,7 @@ Function OutputMachineDetails
 						$rowdata += @(,('',($global:htmlsb),$tmp,$htmlwhite))
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
+                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
 				$rowdata += @(,('UPN',($global:htmlsb),$upn,$htmlwhite))
 				$cnt = -1
@@ -11370,7 +11370,7 @@ Function OutputMachineDetails
 			$rowdata += @(,('Delivery Group',($global:htmlsb),$Machine.DesktopGroupName,$htmlwhite))
 			If($NoSessions -eq $False) #V2.27
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
 				$rowdata += @(,('User Display Name',($global:htmlsb),$name,$htmlwhite))
 				$cnt = -1
@@ -11382,7 +11382,7 @@ Function OutputMachineDetails
 						$rowdata += @(,('',($global:htmlsb),$tmp,$htmlwhite))
 					}
 				}
-                ## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
+                ## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
 				$rowdata += @(,('User',($global:htmlsb),$name,$htmlwhite))
 				$cnt = -1
@@ -11394,7 +11394,7 @@ Function OutputMachineDetails
 						$rowdata += @(,('',($global:htmlsb),$tmp,$htmlwhite))
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
+                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
 				$rowdata += @(,('UPN',($global:htmlsb),$upn,$htmlwhite))
 				$cnt = -1
@@ -35638,13 +35638,13 @@ Function OutputHosting
 		-------------- -----------                                      -----------------                 -----------------------
 				   AWS Amazon EC2                                       AWSMachineManagerFactory                             True
 		 CloudPlatform CloudPlatform                                    CloudStackMachineManagerFactory                      True
-				 SCVMM Microsoft® System Center Virtual Machine Manager MicrosoftPSFactory                                  False
-			   VCenter VMware vSphere®                                  VmwareFactory                                       False
-			 XenServer Citrix Hypervisor®                               XenFactory                                          False
-				Custom Microsoft® Azure™ Classic (Deprecated)           AzureClassicFactory                                 False
-				Custom Microsoft® Azure™                                AzureRmFactory                                      False
+				 SCVMM MicrosoftÂ® System Center Virtual Machine Manager MicrosoftPSFactory                                  False
+			   VCenter VMware vSphereÂ®                                  VmwareFactory                                       False
+			 XenServer Citrix HypervisorÂ®                               XenFactory                                          False
+				Custom MicrosoftÂ® Azureâ„¢ Classic (Deprecated)           AzureClassicFactory                                 False
+				Custom MicrosoftÂ® Azureâ„¢                                AzureRmFactory                                      False
 				Custom Nutanix AHV                                      AcropolisFactory                           		    False
-			 WakeOnLAN Microsoft® Configuration Manager Wake on LAN     ConfigMgrWOLMachineManagerFactory                   False
+			 WakeOnLAN MicrosoftÂ® Configuration Manager Wake on LAN     ConfigMgrWOLMachineManagerFactory                   False
 	#>
 	$xxConnectionType = ""
 	Switch ($xConnectionType)
@@ -38703,7 +38703,7 @@ Function ProcessScriptSetup
 	If($null -ne $SQLLocation)
 	{
 		$asm = [System.Reflection.Assembly]::LoadFrom($SQLLocation)
-		If( $null –eq $asm )
+		If( $null -eq $asm )
 		{
 			Write-Verbose "$(Get-Date -Format G): `tSQL Server Assembly could not be loaded"
 			$Script:SQLServerLoaded = $False
