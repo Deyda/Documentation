@@ -4215,7 +4215,7 @@ Function ValidateCoverPage
 					$xArray = ("AlfabetmÃ¶nster", "Austin", "Enkelt", "Exponering", "Konservativt",
 					"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "RutnÃ¤t",
 					"RÃ¶rElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Ã…rligt",
-					"Ã–vergÃ¥ende")
+					"Ã-vergÃ¥ende")
 				}
 			}
 
