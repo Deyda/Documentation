@@ -572,7 +572,7 @@
 	No objects are output from this script.  This script creates a Word, PDF, HTML or 
 	formatted text document.
 .NOTES
-	NAME: DHCP_Inventory_V2.ps1
+	NAME: Docu-DHCP.ps1
 	VERSION: 2.03
 	AUTHOR: Carl Webster and Michael B. Smith
 	LASTEDIT: January 9, 2021
@@ -2902,7 +2902,7 @@ Function CheckWordPrereq
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
 	#Find out if winword is running in our session
-	[bool]$wordrunning = $null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$wordrunning = $null -ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
 		$ErrorActionPreference = $SaveEAPreference

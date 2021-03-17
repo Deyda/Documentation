@@ -341,7 +341,7 @@
 .OUTPUTS
 	No objects are output from this script.  This script creates a Word or PDF document.
 .NOTES
-	NAME: PVS_Inventory_V43.ps1
+	NAME: Docu-PVS_V4.ps1
 	VERSION: 4.30
 	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith, Jeff Wouters, and Iain Brighton)
 	LASTEDIT: January 19, 2021

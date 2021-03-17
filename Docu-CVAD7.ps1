@@ -17,7 +17,7 @@
 	You do NOT have to run this script on a Controller. This script was developed and run 
 	from a Windows 10 VM.
 	
-	You can run this script remotely using the –AdminAddress (AA) parameter.
+	You can run this script remotely using the -AdminAddress (AA) parameter.
 	
 	This script supports versions of CVAD starting with 2006.
 	
@@ -469,12 +469,12 @@
 	Specifies the username for the To email address.
 	If SmtpServer is used, this is a required parameter.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1
+	PS C:\PSScript >.\Docu-CVAD7.ps1
 	
 	Creates an HTML report by default.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -MSWord
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -MSWord
 	
 	Uses all default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -488,12 +488,12 @@
 	Creates a Microsoft Word report.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -AdminAddress DDC01
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -AdminAddress DDC01
 	
 	Creates an HTML report by default.
 	DDC01 for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -PDF
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -PDF
 	
 	Uses all default values and saves the document as a PDF file.
 
@@ -507,28 +507,28 @@
 	Administrator for the User Name.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Text
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -Text
 
 	Saves the document as a formatted text file.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -HTML
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -HTML
 
 	Saves the document as an HTML file.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -MachineCatalogs
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -MachineCatalogs
 	
 	Creates an HTML report with full details for all machines in all Machine Catalogs.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -DeliveryGroups
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -DeliveryGroups
 	
 	Creates an HTML report with full details for all desktops in all Desktop (Delivery) 
 	Groups.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -DeliveryGroupsUtilization -MSWord
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -DeliveryGroupsUtilization -MSWord
 	
 	Note: Using DeliveryGroupsUtilization requires the use of MSWord or PDF.
 	
@@ -546,7 +546,7 @@
 	Administrator for the User Name.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -DeliveryGroupsUtilization -PDF
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -DeliveryGroupsUtilization -PDF
 	
 	Note: Using DeliveryGroupsUtilization requires the use of MSWord or PDF.
 	
@@ -563,52 +563,52 @@
 	Administrator for the User Name.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -DeliveryGroups -MachineCatalogs
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -DeliveryGroups -MachineCatalogs
 	
 	Creates an HTML report with full details for all machines in all Machine Catalogs and 
 	all desktops in all Delivery Groups.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Applications
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -Applications
 	
 	Creates an HTML report with full details for all applications.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Policies
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -Policies
 	
 	Creates an HTML report with full details for Policies.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -NoPolicies
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -NoPolicies
 	
 	Creates an HTML report with no Policy information.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -NoADPolicies
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -NoADPolicies
 	
 	Creates an HTML report with no Citrix AD based Policy information.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Policies -NoADPolicies
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -Policies -NoADPolicies
 	
 	Creates an HTML report with full details on Site policies created in Studio but 
 	no Citrix AD based Policy information.
 	
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Administrators
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -Administrators
 	
 	Creates an HTML report with full details on Administrator Scopes and Roles.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Logging -StartDate 09/01/2021 -EndDate 
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -Logging -StartDate 09/01/2021 -EndDate 
 	09/30/2021
 	
 	Creates an HTML report with Configuration Logging details for the dates 09/01/2020 
 	through 09/30/2021.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Logging -StartDate "09/01/2020 10:00:00" 
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -Logging -StartDate "09/01/2020 10:00:00" 
 	-EndDate "09/01/2021 14:00:00" -MSWord
 	
 	Creates a Microsoft Word report with Configuration Logging details for the time range 
@@ -627,17 +627,17 @@
 	Administrator for the User Name.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Hosting
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -Hosting
 	
 	Creates an HTML report with full details for Hosts, Host Connections, and Resources.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -StoreFront
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -StoreFront
 	
 	Creates an HTML report with full details for StoreFront.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -MachineCatalogs -DeliveryGroups 
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -MachineCatalogs -DeliveryGroups 
 	-Applications -Policies -Hosting -StoreFront	
 	
 	Creates an HTML report with full details for all:
@@ -650,7 +650,7 @@
 		
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -MC -DG -Apps -Policies -Hosting -PDF
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -MC -DG -Apps -Policies -Hosting -PDF
 	
 	Creates a PDF report with full details for all:
 		Machines in all Machine Catalogs
@@ -670,7 +670,7 @@
 	Administrator for the User Name.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript.\Docu-CVAD7_V3.ps1 -MSWord -CompanyName "Carl Webster 
+	PS C:\PSScript.\Docu-CVAD7.ps1 -MSWord -CompanyName "Carl Webster 
 	Consulting" -CoverPage "Mod" -UserName "Carl Webster" -AdminAddress DDC01
 	
 	Creates a Microsoft Word report.
@@ -680,7 +680,7 @@
 		Carl Webster for the User Name.
 		Controller named DDC01 for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript.\Docu-CVAD7_V3.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
+	PS C:\PSScript.\Docu-CVAD7.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
 	-UN "Carl Webster" -MSWord
 	
 	Creates a Microsoft Word report.
@@ -690,7 +690,7 @@
 		Carl Webster for the User Name (alias UN).
 		The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript.\Docu-CVAD7_V3.ps1 -MSWord -CompanyName "Sherlock Holmes 
+	PS C:\PSScript.\Docu-CVAD7.ps1 -MSWord -CompanyName "Sherlock Holmes 
 	Consulting" -CoverPage Exposure -UserName "Dr. Watson" -CompanyAddress "221B Baker 
 	Street, London, England" -CompanyFax "+44 1753 276600" -CompanyPhone "+44 1753 276200"
 	
@@ -704,7 +704,7 @@
 		+44 1753 276200 for the Company Phone.
 		The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript.\Docu-CVAD7_V3.ps1 -MSWord -CompanyName "Sherlock Holmes 
+	PS C:\PSScript.\Docu-CVAD7.ps1 -MSWord -CompanyName "Sherlock Holmes 
 	Consulting" -CoverPage Facet -UserName "Dr. Watson" -CompanyEmail 
 	SuperSleuth@SherlockHolmes.com
 
@@ -716,7 +716,7 @@
 		SuperSleuth@SherlockHolmes.com for the Company Email.
 		The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -AddDateTime
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -AddDateTime
 	
 	Creates an HTML report.
 	Adds a date time stamp to the end of the file name.
@@ -725,7 +725,7 @@
 	Output filename will be CVADSiteName_2021-06-01_1800.docx
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -PDF -AddDateTime
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -PDF -AddDateTime
 	
 	Creates a PDF report.
 	Uses all Default values and saves the document as a PDF file.
@@ -744,36 +744,36 @@
 	Output filename will be CVADSiteName_2021-06-01_1800.pdf
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Hardware
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -Hardware
 	
 	Creates an HTML report with hardware information for the Controllers.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Folder \\FileServer\ShareName
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -Folder \\FileServer\ShareName
 	
 	Creates an HTML report.
 	Output file is saved in the path \\FileServer\ShareName
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Section Policies
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -Section Policies
 	
 	Creates an HTML report that contains only policy information.
 	Processes only the Policies section of the report.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Section Groups -DG
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -Section Groups -DG
 	
 	Creates an HTML report.
 	Processes only the Delivery Groups section of the report with Delivery Group details.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Section Groups
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -Section Groups
 	
 	Creates an HTML report.
 	Processes only the Delivery Groups section of the report with no Delivery Group details.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -BrokerRegistryKeys
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -BrokerRegistryKeys
 	
 	Creates an HTML report.
 
@@ -782,14 +782,14 @@
 	Adds the information on over 300 Broker registry keys to the Controllers section.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -VDARegistryKeys
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -VDARegistryKeys
 	
 	Creates an HTML report.
 	Adds the information on VDA registry keys to Appendix A.
 	Forces the MachineCatalogs parameter to $True
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -MaxDetails
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -MaxDetails
 	
 	Set the following parameter values:
 		Administrators      = True
@@ -813,7 +813,7 @@
 	Creates an HTML report.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -MaxDetails -HTML -MSWord -PDF -Text
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -MaxDetails -HTML -MSWord -PDF -Text
 	
 	Creates four reports: HTML, Microsoft Word, PDF, and plain text.
 	
@@ -848,7 +848,7 @@
 
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Dev -ScriptInfo -Log
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -Dev -ScriptInfo -Log
 	
 	Creates an HTML report.
 	
@@ -861,7 +861,7 @@
 	Creates a text file for transcript logging named 
 	CVADDocScriptTranscript_yyyy-MM-dd_HHmm.txt.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -CSV
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -CSV
 	
 	Uses all Default values.
 	LocalHost for AdminAddress.
@@ -873,7 +873,7 @@
 		CVADSiteName_Documentation_AppendixD_CitrixInstalledComponents.csv
 		CVADSiteName_Documentation_AppendixE_WindowsInstalledComponents.csv	
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -MaxDetails -HTML -MSWord -PDF -Text -Dev 
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -MaxDetails -HTML -MSWord -PDF -Text -Dev 
 	-ScriptInfo -Log -CSV
 	
 	Creates four reports: HTML, Microsoft Word, PDF, and plain text.
@@ -927,7 +927,7 @@
 
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -SmtpServer mail.domain.tld -From 
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -SmtpServer mail.domain.tld -From 
 	CVADAdmin@domain.tld -To ITGroup@domain.tld	
 
 	The script uses the email server mail.domain.tld, sending from 
@@ -941,7 +941,7 @@
 	Creates an HTML report.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -SmtpServer mailrelay.domain.tld -From 
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -SmtpServer mailrelay.domain.tld -From 
 	Anonymous@domain.tld -To ITGroup@domain.tld	
 
 	***SENDING UNAUTHENTICATED EMAIL***
@@ -968,7 +968,7 @@
 	Creates an HTML report.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -SmtpServer 
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -SmtpServer 
 	labaddomain-com.mail.protection.outlook.com -UseSSL -From 
 	SomeEmailAddress@labaddomain.com -To ITGroupDL@labaddomain.com	
 
@@ -988,7 +988,7 @@
 	Creates an HTML report.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -SmtpServer smtp.office365.com -SmtpPort 587 
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -SmtpServer smtp.office365.com -SmtpPort 587 
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
 	The script uses the email server smtp.office365.com on port 587 using SSL, sending from 
@@ -1000,7 +1000,7 @@
 	Creates an HTML report.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -SmtpServer smtp.gmail.com -SmtpPort 587 
+	PS C:\PSScript >.\Docu-CVAD7.ps1 -SmtpServer smtp.gmail.com -SmtpPort 587 
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
 	*** NOTE ***
@@ -1022,7 +1022,7 @@
 	No objects are output from this script. 
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
-	NAME: CVAD_Inventory_V3.ps1
+	NAME: Docu-CVAD7.ps1
 	VERSION: 3.23
 	AUTHOR: Carl Webster
 	LASTEDIT: January 30, 2021
@@ -3552,7 +3552,7 @@ Function CheckWordPrereq
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
 	#Find out if winword runsning in our session
-	[bool]$wordrunning = $null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$wordrunning = $null -ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
 		$ErrorActionPreference = $SaveEAPreference
@@ -5317,7 +5317,7 @@ Function CheckExcelPrereq
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
 	#Find out if excel runsning in our session
-	[bool]$excelrunning = $null –ne ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$excelrunning = $null -ne ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 
 	If($excelrunning)
 	{
@@ -35070,7 +35070,7 @@ Function ProcessScriptSetup
 	
 	#$asm = [reflection.assembly]::loadwithpartialname('microsoft.sqlserver.smo')
 	$asm = [System.Reflection.Assembly]::LoadFrom("C:\Program Files\Citrix\XenDesktopPoshSdk\Module\Citrix.XenDesktop.Admin.V1\Citrix.XenDesktop.Admin\Microsoft.SqlServer.Smo.dll")
-	If( $null –eq $asm )
+	If( $null -eq $asm )
 	{
 		Write-Verbose "$(Get-Date -Format G): `tSQL Server Assembly could not be loaded"
 		$Script:SQLServerLoaded = $False

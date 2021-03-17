@@ -458,7 +458,7 @@
 	No objects are output from this script. 
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
-	NAME: FAS_Inventory_V1.ps1
+	NAME: Docu-FAS.ps1
 	VERSION: 1.12
 	AUTHOR: Carl Webster and Michael B. Smith
 	LASTEDIT: January 10, 2021
@@ -2537,7 +2537,7 @@ Function CheckWordPrereq
 	
 	#Find out if winword is running in our session
 	#fixed by MBS
-	[bool]$wordrunning = $null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$wordrunning = $null -ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
 		Write-Host "`n`n`tPlease close all instances of Microsoft Word before running this report.`n`n"

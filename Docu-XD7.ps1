@@ -947,7 +947,7 @@
 	No objects are output from this script.  This script creates a Word, PDF
 	plain text or HTML document.
 .NOTES
-	NAME: XD7_Inv5ntory.ps1
+	NAME: Docu-XD7.ps1
 	VERSION: 1.47
 	AUTHOR: Carl Webster
 	LASTEDIT: January 30, 2021
@@ -3590,7 +3590,7 @@ Function CheckWordPrereq
 	#Find out if winword is running in our session
 	#[bool]$wordrunning = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}) -ne $Null
 	#fix by MBS in V2.20
-	[bool]$wordrunning = $null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$wordrunning = $null -ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
 		$ErrorActionPreference = $SaveEAPreference
@@ -5360,7 +5360,7 @@ Function CheckExcelPrereq
 	#Find out if excel is running in our session
 	#[bool]$excelrunning = ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}) -ne $Null
 	#fix by MBS in V2.20
-	[bool]$excelrunning = $null –ne ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$excelrunning = $null -ne ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	
 	If($excelrunning)
 	{
@@ -32077,7 +32077,7 @@ Function ProcessScriptSetup
 	[bool]$Script:SQLServerLoaded = $False
 	
 	$asm = [reflection.assembly]::loadwithpartialname('microsoft.sqlserver.smo')
-	If( $null –eq $asm )
+	If( $null -eq $asm )
 	{
 		Write-Verbose "$(Get-Date -Format G): `tSQL Server Assembly could not be loaded"
 		$Script:SQLServerLoaded = $False
