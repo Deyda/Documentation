@@ -17,9 +17,18 @@
 	You do NOT have to run this script on a Controller. This script was developed and run 
 	from a Windows 10 VM.
 	
-	You can run this script remotely using the -AdminAddress (AA) parameter.
+	You can run this script remotely using the –AdminAddress (AA) parameter.
 	
 	This script supports versions of CVAD starting with 2006.
+	
+	If you are running XA/XD 7.0 through 7.7, please use: 
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+
+	If you are running XA/XD 7.8 through CVAD 2006, please use:
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+
+	If you are running Citrix Cloud, please use:
+	https://carlwebster.com/downloads/download-info/citrix-cloud-citrix-virtual-apps-and-desktops-service/
 	
 	NOTE: The account used to run this script must have at least Read access to the SQL 
 	Server(s) that hold(s) the Citrix Site, Monitoring, and Logging databases.
@@ -58,7 +67,7 @@
 	Using both the MachineCatalogs and DeliveryGroups parameters can cause the report to 
 	take an extremely long time to complete and generate an exceptionally long report.
 	
-	Using BrokerRegistryKeys requires the script is run elevated.
+	Using BrokerRegistryKeys requires the script runs elevated.
 
 	Creates an output file named after the CVAD Site.
 	
@@ -76,18 +85,19 @@
 		Spanish
 		Swedish
 		
-.PARAMETER HTML
-	Creates an HTML file with an.html extension.
-	This parameter is set True if no other output format is selected.
-.PARAMETER Text
-	Creates a formatted text file with a.txt extension.
-	This parameter is disabled by default.
 .PARAMETER AdminAddress
 	Specifies the address of a CVAD controller the PowerShell snapins will connect 
 	to. 
 	This can be provided as a hostname or an IP address. 
 	This parameter defaults to Localhost.
 	This parameter has an alias of AA.
+.PARAMETER HTML
+	Creates an HTML file with an.html extension.
+	This parameter is set True if no other output format is selected.
+.PARAMETER Text
+	Creates a formatted text file with a.txt extension.
+	This parameter is disabled by default.
+
 .PARAMETER Administrators
 	Give detailed information for Administrator Scopes and Roles.
 	This parameter is disabled by default.
@@ -99,7 +109,7 @@
 .PARAMETER BrokerRegistryKeys
 	Adds information on 315 registry keys to the Controller section.
 	
-	*****Requires the script is run elevated*****
+	*****Requires the script runs elevated*****
 	
 	For Word and PDF output, this adds eights pages, per Controller, to the report.
 	For Text and HTML, this adds 315 lines, per Controller, to the report.
@@ -221,7 +231,7 @@
 	This parameter is disabled by default.
 	This parameter has an alias of NS.
 .PARAMETER Policies
-	Give detailed information for both Site and Citrix AD based Policies.
+	Give detailed information for both Site and Citrix AD-based Policies.
 	
 	Using the Policies parameter can cause the report to take a very long time 
 	to complete and can generate an extremely long report.
@@ -260,7 +270,7 @@
 		StoreFront
 		VDARegistryKeys
 
-	*****Requires the script is run elevated*****
+	*****Requires the script runs elevated*****
 
 	Does not change the value of NoADPolicies.
 	Does not change the value of NoSessions.
@@ -295,8 +305,8 @@
 .PARAMETER AddDateTime
 	Adds a date timestamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be ReportName_2020-06-01_1800.docx (or.pdf).
+	June 1, 2021 at 6PM is 2021-06-01_1800.
+	Output filename will be ReportName_2021-06-01_1800.docx (or.pdf).
 	This parameter is disabled by default.
 	This parameter has an alias of ADT.
 .PARAMETER CSV
@@ -318,7 +328,7 @@
 	Outputs all errors to a text file at the end of the script.
 	
 	This is used when the script developer requests more troubleshooting data.
-	The text file is placed in the same folder from where the script is run.
+	The text file is placed in the same folder from where the script runs.
 	
 	This parameter is disabled by default.
 .PARAMETER Folder
@@ -327,7 +337,7 @@
 	Generates a log file for troubleshooting.
 .PARAMETER ScriptInfo
 	Outputs information about the script to a text file.
-	The text file is placed in the same folder from where the script is run.
+	The text file is placed in the same folder from where the script runs.
 	
 	This parameter is disabled by default.
 	This parameter has an alias of SI.
@@ -466,7 +476,7 @@
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -MSWord
 	
-	Will use all default values.
+	Uses all default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -485,7 +495,7 @@
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -PDF
 	
-	Will use all default values and save the document as a PDF file.
+	Uses all default values and saves the document as a PDF file.
 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
@@ -525,7 +535,7 @@
 	Creates a Microsoft Word report with utilization details for all Desktop (Delivery) 
 	Groups.
 
-	Will use all Default values.
+	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -542,7 +552,7 @@
 	
 	Creates a PDF report with utilization details for all Desktop (Delivery) Groups.
 
-	Will use all Default values.
+	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -591,22 +601,22 @@
 	Creates an HTML report with full details on Administrator Scopes and Roles.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Logging -StartDate 09/01/2020 -EndDate 
-	09/30/2020	
+	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Logging -StartDate 09/01/2021 -EndDate 
+	09/30/2021
 	
 	Creates an HTML report with Configuration Logging details for the dates 09/01/2020 
-	through 09/30/2020.
+	through 09/30/2021.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Logging -StartDate "09/01/2020 10:00:00" 
-	-EndDate "09/01/2020 14:00:00" -MSWord
+	-EndDate "09/01/2021 14:00:00" -MSWord
 	
 	Creates a Microsoft Word report with Configuration Logging details for the time range 
-	09/01/2020 10:00:00AM through 09/01/2020 02:00:00PM.
+	09/01/2021 10:00:00AM through 09/01/2021 02:00:00PM.
 	
 	Narrowing the report down to seconds does not work. Seconds must be either 00 or 59.
 	
-	Will use all Default values.
+	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -649,7 +659,7 @@
 		Policies
 		Hosts, Host Connections, and Resources
 		
-	Will use all Default values.
+	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -664,7 +674,7 @@
 	Consulting" -CoverPage "Mod" -UserName "Carl Webster" -AdminAddress DDC01
 	
 	Creates a Microsoft Word report.
-	Will use:
+	Uses:
 		Carl Webster Consulting for the Company Name.
 		Mod for the Cover Page format.
 		Carl Webster for the User Name.
@@ -674,7 +684,7 @@
 	-UN "Carl Webster" -MSWord
 	
 	Creates a Microsoft Word report.
-	Will use:
+	Uses:
 		Carl Webster Consulting for the Company Name (alias CN).
 		Mod for the Cover Page format (alias CP).
 		Carl Webster for the User Name (alias UN).
@@ -685,7 +695,7 @@
 	Street, London, England" -CompanyFax "+44 1753 276600" -CompanyPhone "+44 1753 276200"
 	
 	Creates a Microsoft Word report.
-	Will use:
+	Uses:
 		Sherlock Holmes Consulting for the Company Name.
 		Exposure for the Cover Page format.
 		Dr. Watson for the User Name.
@@ -699,7 +709,7 @@
 	SuperSleuth@SherlockHolmes.com
 
 	Creates a Microsoft Word report.
-	Will use:
+	Uses:
 		Sherlock Holmes Consulting for the Company Name.
 		Facet for the Cover Page format.
 		Dr. Watson for the User Name.
@@ -711,14 +721,14 @@
 	Creates an HTML report.
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be CVADSiteName_2020-06-01_1800.docx
+	June 1, 2021 at 6PM is 2021-06-01_1800.
+	Output filename will be CVADSiteName_2021-06-01_1800.docx
 	The computer running the script for the AdminAddress.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -PDF -AddDateTime
 	
 	Creates a PDF report.
-	Will use all Default values and save the document as a PDF file.
+	Uses all Default values and saves the document as a PDF file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -730,8 +740,8 @@
 
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be CVADSiteName_2020-06-01_1800.pdf
+	June 1, 2021 at 6PM is 2021-06-01_1800.
+	Output filename will be CVADSiteName_2021-06-01_1800.pdf
 	The computer running the script for the AdminAddress.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Hardware
@@ -742,7 +752,7 @@
 	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Folder \\FileServer\ShareName
 	
 	Creates an HTML report.
-	Output file will be saved in the path \\FileServer\ShareName
+	Output file is saved in the path \\FileServer\ShareName
 	The computer running the script for the AdminAddress.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -Section Policies
@@ -767,7 +777,7 @@
 	
 	Creates an HTML report.
 
-	*****Requires the script is run elevated*****
+	*****Requires the script runs elevated*****
 
 	Adds the information on over 300 Broker registry keys to the Controllers section.
 	The computer running the script for the AdminAddress.
@@ -798,7 +808,7 @@
 		NoPolicies          = False
 		Section             = "All"
 
-	*****Requires the script is run elevated*****
+	*****Requires the script runs elevated*****
 
 	Creates an HTML report.
 	The computer running the script for the AdminAddress.
@@ -807,7 +817,7 @@
 	
 	Creates four reports: HTML, Microsoft Word, PDF, and plain text.
 	
-	For Microsoft Word and PDF, will use all Default values.
+	For Microsoft Word and PDF, uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -834,7 +844,7 @@
 		NoPolicies          = False
 		Section             = "All"
 		
-	*****Requires the script is run elevated*****
+	*****Requires the script runs elevated*****
 
 	The computer running the script for the AdminAddress.
 .EXAMPLE
@@ -853,7 +863,7 @@
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -CSV
 	
-	Will use all Default values.
+	Uses all Default values.
 	LocalHost for AdminAddress.
 	Creates a CSV file for each Appendix.
 	For example:
@@ -913,15 +923,15 @@
 		Section             = "All"
 		
 
-	*****Requires the script is run elevated*****
+	*****Requires the script runs elevated*****
 
 	The computer running the script for the AdminAddress.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -SmtpServer mail.domain.tld -From 
 	CVADAdmin@domain.tld -To ITGroup@domain.tld	
 
-	The script will use the email server mail.domain.tld, sending from 
-	CVADAdmin@domain.tld, sending to ITGroup@domain.tld.
+	The script uses the email server mail.domain.tld, sending from 
+	CVADAdmin@domain.tld and sending to ITGroup@domain.tld.
 
 	The script will use the default SMTP port 25 and will not use SSL.
 
@@ -970,10 +980,10 @@
 	
 	***OFFICE 365 Example***
 
-	The script will use the email server labaddomain-com.mail.protection.outlook.com, 
-	sending from SomeEmailAddress@labaddomain.com, sending to ITGroupDL@labaddomain.com.
+	The script uses the email server labaddomain-com.mail.protection.outlook.com, sending 
+	from SomeEmailAddress@labaddomain.com and sending to ITGroupDL@labaddomain.com.
 
-	The script will use the default SMTP port 25 and will use SSL.
+	The script uses the default SMTP port 25 and SSL.
 
 	Creates an HTML report.
 	The computer running the script for the AdminAddress.
@@ -981,11 +991,11 @@
 	PS C:\PSScript >.\Docu-CVAD7_V3.ps1 -SmtpServer smtp.office365.com -SmtpPort 587 
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
-	The script will use the email server smtp.office365.com on port 587 using SSL, 
-	sending from webster@carlwebster.com, sending to ITGroup@carlwebster.com.
+	The script uses the email server smtp.office365.com on port 587 using SSL, sending from 
+	webster@carlwebster.com and sending to ITGroup@carlwebster.com.
 
-	If the current user's credentials are not valid to send email, 
-	the user will be prompted to enter valid credentials.
+	If the current user's credentials are not valid to send an email, the script prompts 
+	the user to enter valid credentials.
 
 	Creates an HTML report.
 	The computer running the script for the AdminAddress.
@@ -994,15 +1004,15 @@
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
 	*** NOTE ***
-	To send email using a Gmail or g-suite account, you may have to turn ON
-	the "Less secure app access" option on your account.
+	To send an email using a Gmail or g-suite account, you may have to turn ON the "Less 
+	secure app access" option on your account.
 	*** NOTE ***
 	
-	The script will use the email server smtp.gmail.com on port 587 using SSL, 
-	sending from webster@gmail.com, sending to ITGroup@carlwebster.com.
+	The script uses the email server smtp.gmail.com on port 587 using SSL, sending from 
+	webster@gmail.com and sending to ITGroup@carlwebster.com.
 
-	If the current user's credentials are not valid to send email, 
-	the user will be prompted to enter valid credentials.
+	If the current user's credentials are not valid to send email, the script prompts the 
+	user to enter valid credentials.
 
 	Creates an HTML report.
 	The computer running the script for the AdminAddress.
@@ -1012,10 +1022,10 @@
 	No objects are output from this script. 
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
-	NAME: Docu-CVAD7_V3.ps1
-	VERSION: 3.20
+	NAME: CVAD_Inventory_V3.ps1
+	VERSION: 3.23
 	AUTHOR: Carl Webster
-	LASTEDIT: December 14, 2020
+	LASTEDIT: January 30, 2021
 #>
 
 #endregion
@@ -1026,15 +1036,15 @@
 
 Param(
 	[parameter(Mandatory=$False)] 
+	[ValidateNotNullOrEmpty()]
+	[Alias("AA")]
+	[string]$AdminAddress="Localhost",
+
+	[parameter(Mandatory=$False)] 
 	[Switch]$HTML=$False,
 
 	[parameter(Mandatory=$False)] 
 	[Switch]$Text=$False,
-
-	[parameter(Mandatory=$False)] 
-	[ValidateNotNullOrEmpty()]
-	[Alias("AA")]
-	[string]$AdminAddress="Localhost",
 
 	[parameter(Mandatory=$False)] 
 	[Alias("Admins")]
@@ -1205,6 +1215,24 @@ Param(
 # This script is based on the 2.36 script
 #
 
+#Version 3.23 30-Jan-2021
+#	Added getting hardware information for the license server when -Hardware is used
+#	Added getting hardware information for the SQL Server(s) when -Hardware is used
+#	Fixed duplicate item in the HTML output for Machine Catalogs
+#	Fixed wrong variable name when getting the Monitoring database mirroring information
+#	Updated the WMI query code for getting the Power Plan to handle the case where the Power Plan data is missing in the WMI repository
+#
+#Version 3.22 25-Jan-2021
+#	Added error checking in Function Check-NeededPSSnapins (Requested by Guy Leech)
+#	Updated Function ProcessScriptSetup to have standard error checking between the four XA/XD/CVAD/CC doc scripts
+#	Updated the help text
+#	Updated the ReadMe file
+#
+#Version 3.21 18-Jan-2021
+#	Added to the Computer Hardware section, the server's Power Plan
+#	Updated help text
+#	Updated ReadMe file
+#
 #Version 3.20 14-Dec-2020
 #	Added Computer policy
 #		ICA\Rendezvous proxy configuration
@@ -2353,7 +2381,25 @@ Function GetComputerWMIInfo
 
 Function OutputComputerItem
 {
-	Param([object]$Item, [string]$OS)
+	Param([object]$Item, [string]$OS, [string]$RemoteComputerName)
+	
+	#get computer's power plan
+	#https://techcommunity.microsoft.com/t5/core-infrastructure-and-security/get-the-active-power-plan-of-multiple-servers-with-powershell/ba-p/370429
+	
+	try 
+	{
+
+		$PowerPlan = (Get-WmiObject -ComputerName $RemoteComputerName -Class Win32_PowerPlan -Namespace "root\cimv2\power" -EA 0 |
+			Where-Object {$_.IsActive -eq $true} |
+			Select-Object @{Name = "PowerPlan"; Expression = {$_.ElementName}}).PowerPlan
+	}
+
+	catch 
+	{
+
+		$PowerPlan = $_.Exception.Message
+
+	}	
 	
 	If($MSWord -or $PDF)
 	{
@@ -2362,6 +2408,7 @@ Function OutputComputerItem
 		$ItemInformation.Add(@{ Data = "Model"; Value = $Item.model; }) > $Null
 		$ItemInformation.Add(@{ Data = "Domain"; Value = $Item.domain; }) > $Null
 		$ItemInformation.Add(@{ Data = "Operating System"; Value = $OS; }) > $Null
+		$ItemInformation.Add(@{ Data = "Power Plan"; Value = $PowerPlan; }) > $Null
 		$ItemInformation.Add(@{ Data = "Total Ram"; Value = "$($Item.totalphysicalram) GB"; }) > $Null
 		$ItemInformation.Add(@{ Data = "Physical Processors (sockets)"; Value = $Item.NumberOfProcessors; }) > $Null
 		$ItemInformation.Add(@{ Data = "Logical Processors (cores w/HT)"; Value = $Item.NumberOfLogicalProcessors; }) > $Null
@@ -2390,6 +2437,7 @@ Function OutputComputerItem
 		Line 2 "Model`t`t`t`t: " $Item.model
 		Line 2 "Domain`t`t`t`t: " $Item.domain
 		Line 2 "Operating System`t`t: " $OS
+		Line 2 "Power Plan`t`t`t: " $PowerPlan
 		Line 2 "Total Ram`t`t`t: $($Item.totalphysicalram) GB"
 		Line 2 "Physical Processors (sockets)`t: " $Item.NumberOfProcessors
 		Line 2 "Logical Processors (cores w/HT)`t: " $Item.NumberOfLogicalProcessors
@@ -2398,17 +2446,19 @@ Function OutputComputerItem
 	If($HTML)
 	{
 		$rowdata = @()
-		$columnHeaders = @("Manufacturer",($global:htmlsb),$Item.manufacturer,$htmlwhite)
-		$rowdata += @(,('Model',($global:htmlsb),$Item.model,$htmlwhite))
-		$rowdata += @(,('Domain',($global:htmlsb),$Item.domain,$htmlwhite))
-		$rowdata += @(,('Operating System',($global:htmlsb),$OS,$htmlwhite))
-		$rowdata += @(,('Total Ram',($global:htmlsb),"$($Item.totalphysicalram) GB",$htmlwhite))
-		$rowdata += @(,('Physical Processors (sockets)',($global:htmlsb),$Item.NumberOfProcessors,$htmlwhite))
-		$rowdata += @(,('Logical Processors (cores w/HT)',($global:htmlsb),$Item.NumberOfLogicalProcessors,$htmlwhite))
+		$columnHeaders = @("Manufacturer",($htmlsilver -bor $htmlBold),$Item.manufacturer,$htmlwhite)
+		$rowdata += @(,('Model',($htmlsilver -bor $htmlBold),$Item.model,$htmlwhite))
+		$rowdata += @(,('Domain',($htmlsilver -bor $htmlBold),$Item.domain,$htmlwhite))
+		$rowdata += @(,('Operating System',($htmlsilver -bor $htmlBold),$OS,$htmlwhite))
+		$rowdata += @(,('Power Plan',($htmlsilver -bor $htmlBold),$PowerPlan,$htmlwhite))
+		$rowdata += @(,('Total Ram',($htmlsilver -bor $htmlBold),"$($Item.totalphysicalram) GB",$htmlwhite))
+		$rowdata += @(,('Physical Processors (sockets)',($htmlsilver -bor $htmlBold),$Item.NumberOfProcessors,$htmlwhite))
+		$rowdata += @(,('Logical Processors (cores w/HT)',($htmlsilver -bor $htmlBold),$Item.NumberOfLogicalProcessors,$htmlwhite))
 
 		$msg = ""
 		$columnWidths = @("150px","200px")
-		FormatHTMLTable $msg -rowarray $rowdata -columnArray $columnheaders -fixedWidth $columnWidths
+		FormatHTMLTable $msg -rowarray $rowdata -columnArray $columnheaders -fixedWidth $columnWidths -tablewidth "350"
+		WriteHTMLLine 0 0 " "
 	}
 }
 
@@ -3147,17 +3197,17 @@ Function SetWordHashTable
 	[string]$toc = $(
 		Switch ($CultureCode)
 		{
-			'ca-'	{ 'Taula automÃ¡tica 2'; Break }
+			'ca-'	{ 'Taula automática 2'; Break }
 			'da-'	{ 'Automatisk tabel 2'; Break }
 			'de-'	{ 'Automatische Tabelle 2'; Break }
 			'en-'	{ 'Automatic Table 2'; Break }
-			'es-'	{ 'Tabla automÃ¡tica 2'; Break }
+			'es-'	{ 'Tabla automática 2'; Break }
 			'fi-'	{ 'Automaattinen taulukko 2'; Break }
-			'fr-'	{ 'Table automatiqueÂ 2'; Break } #changed 10-feb-2017 david roquier and samuel legrand
+			'fr-'	{ 'Table automatique 2'; Break } #changed 10-feb-2017 david roquier and samuel legrand
 			'nb-'	{ 'Automatisk tabell 2'; Break }
 			'nl-'	{ 'Automatische inhoudsopgave 2'; Break }
-			'pt-'	{ 'SumÃ¡rio AutomÃ¡tico 2'; Break }
-			'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckn2'; Break }
+			'pt-'	{ 'Sumário Automático 2'; Break }
+			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
 		}
 	)
 
@@ -3228,228 +3278,228 @@ Function ValidateCoverPage
 	Switch ($CultureCode)
 	{
 		'ca-'	{
-				If($xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
-					"Integral", "IÃ³ (clar)", "IÃ³ (fosc)", "LÃ­nia lateral",
-					"Moviment", "QuadrÃ­cula", "Retrospectiu", "Sector (clar)",
-					"Sector (fosc)", "SemÃ for", "VisualitzaciÃ³ principal", "Whisp")
-				}
-				ElseIf($xWordVersion -eq $wdWord2013)
-				{
-					$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
-					"Integral", "IÃ³ (clar)", "IÃ³ (fosc)", "LÃ­nia lateral",
-					"Moviment", "QuadrÃ­cula", "Retrospectiu", "Sector (clar)",
-					"Sector (fosc)", "SemÃ for", "VisualitzaciÃ³", "Whisp")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Alfabet", "Anual", "Austin", "Conservador",
-					"Contrast", "Cubicles", "DiplomÃ tic", "ExposiciÃ³",
-					"LÃ­nia lateral", "Mod", "Mosiac", "Moviment", "Paper de diari",
-					"Perspectiva", "Piles", "QuadrÃ­cula", "Sobri",
-					"Transcendir", "Trencaclosques")
-				}
+			If($xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
+				"Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
+				"Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
+				"Sector (fosc)", "Semàfor", "Visualització principal", "Whisp")
 			}
+			ElseIf($xWordVersion -eq $wdWord2013)
+			{
+				$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
+				"Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
+				"Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
+				"Sector (fosc)", "Semàfor", "Visualització", "Whisp")
+			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Alfabet", "Anual", "Austin", "Conservador",
+				"Contrast", "Cubicles", "Diplomàtic", "Exposició",
+				"Línia lateral", "Mod", "Mosiac", "Moviment", "Paper de diari",
+				"Perspectiva", "Piles", "Quadrícula", "Sobri",
+				"Transcendir", "Trencaclosques")
+			}
+		}
 
-		'da-'	{
-				If($xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "BevÃ¦gElse", "Brusen", "Facet", "Filigran", 
-					"Gitter", "Integral", "Ion (lys)", "Ion (mÃ¸rk)", 
-					"Retro", "Semafor", "Sidelinje", "Stribet", 
-					"Udsnit (lys)", "Udsnit (mÃ¸rk)", "Visningsmaster")
-				}
-				ElseIf($xWordVersion -eq $wdWord2013)
-				{
-					$xArray = ("BevÃ¦gElse", "Brusen", "Ion (lys)", "Filigran",
-					"Retro", "Semafor", "Visningsmaster", "Integral",
-					"Facet", "Gitter", "Stribet", "Sidelinje", "Udsnit (lys)",
-					"Udsnit (mÃ¸rk)", "Ion (mÃ¸rk)", "Austin")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("BevÃ¦gElse", "Moderat", "Perspektiv", "Firkanter",
-					"Overskrid", "Alfabet", "Kontrast", "Stakke", "Fliser", "GÃ¥de",
-					"Gitter", "Austin", "Eksponering", "Sidelinje", "Enkel",
-					"NÃ¥lestribet", "Ã…rlig", "Avispapir", "Tradionel")
-				}
+	'da-'	{
+			If($xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Austin", "BevægElse", "Brusen", "Facet", "Filigran", 
+				"Gitter", "Integral", "Ion (lys)", "Ion (mørk)", 
+				"Retro", "Semafor", "Sidelinje", "Stribet", 
+				"Udsnit (lys)", "Udsnit (mørk)", "Visningsmaster")
 			}
+			ElseIf($xWordVersion -eq $wdWord2013)
+			{
+				$xArray = ("BevægElse", "Brusen", "Ion (lys)", "Filigran",
+				"Retro", "Semafor", "Visningsmaster", "Integral",
+				"Facet", "Gitter", "Stribet", "Sidelinje", "Udsnit (lys)",
+				"Udsnit (mørk)", "Ion (mørk)", "Austin")
+			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("BevægElse", "Moderat", "Perspektiv", "Firkanter",
+				"Overskrid", "Alfabet", "Kontrast", "Stakke", "Fliser", "Gåde",
+				"Gitter", "Austin", "Eksponering", "Sidelinje", "Enkel",
+				"Nålestribet", "Årlig", "Avispapir", "Tradionel")
+			}
+		}
 
-		'de-'	{
-				If($xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "Bewegung", "Facette", "Filigran", 
-					"GebÃ¤ndert", "Integral", "Ion (dunkel)", "Ion (hell)", 
-					"Pfiff", "Randlinie", "Raster", "RÃ¼ckblick", 
-					"Segment (dunkel)", "Segment (hell)", "Semaphor", 
-					"ViewMaster")
-				}
-				ElseIf($xWordVersion -eq $wdWord2013)
-				{
-					$xArray = ("Semaphor", "Segment (hell)", "Ion (hell)",
-					"Raster", "Ion (dunkel)", "Filigran", "RÃ¼ckblick", "Pfiff",
-					"ViewMaster", "Segment (dunkel)", "Verbunden", "Bewegung",
-					"Randlinie", "Austin", "Integral", "Facette")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Alphabet", "Austin", "Bewegung", "Durchscheinend",
-					"Herausgestellt", "JÃ¤hrlich", "Kacheln", "Kontrast", "Kubistisch",
-					"Modern", "Nadelstreifen", "Perspektive", "Puzzle", "Randlinie",
-					"Raster", "Schlicht", "Stapel", "Traditionell", "Zeitungspapier")
-				}
+	'de-'	{
+			If($xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Austin", "Bewegung", "Facette", "Filigran", 
+				"Gebändert", "Integral", "Ion (dunkel)", "Ion (hell)", 
+				"Pfiff", "Randlinie", "Raster", "Rückblick", 
+				"Segment (dunkel)", "Segment (hell)", "Semaphor", 
+				"ViewMaster")
 			}
+			ElseIf($xWordVersion -eq $wdWord2013)
+			{
+				$xArray = ("Semaphor", "Segment (hell)", "Ion (hell)",
+				"Raster", "Ion (dunkel)", "Filigran", "Rückblick", "Pfiff",
+				"ViewMaster", "Segment (dunkel)", "Verbunden", "Bewegung",
+				"Randlinie", "Austin", "Integral", "Facette")
+			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Alphabet", "Austin", "Bewegung", "Durchscheinend",
+				"Herausgestellt", "Jährlich", "Kacheln", "Kontrast", "Kubistisch",
+				"Modern", "Nadelstreifen", "Perspektive", "Puzzle", "Randlinie",
+				"Raster", "Schlicht", "Stapel", "Traditionell", "Zeitungspapier")
+			}
+		}
 
-		'en-'	{
-				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "Banded", "Facet", "Filigree", "Grid",
-					"Integral", "Ion (Dark)", "Ion (Light)", "Motion", "Retrospect",
-					"Semaphore", "Sideline", "Slice (Dark)", "Slice (Light)", "ViewMaster",
-					"Whisp")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Alphabet", "Annual", "Austere", "Austin", "Conservative",
-					"Contrast", "Cubicles", "Exposure", "Grid", "Mod", "Motion", "Newsprint",
-					"Perspective", "Pinstripes", "Puzzle", "Sideline", "Stacks", "Tiles", "Transcend")
-				}
+	'en-'	{
+			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Austin", "Banded", "Facet", "Filigree", "Grid",
+				"Integral", "Ion (Dark)", "Ion (Light)", "Motion", "Retrospect",
+				"Semaphore", "Sideline", "Slice (Dark)", "Slice (Light)", "ViewMaster",
+				"Whisp")
 			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Alphabet", "Annual", "Austere", "Austin", "Conservative",
+				"Contrast", "Cubicles", "Exposure", "Grid", "Mod", "Motion", "Newsprint",
+				"Perspective", "Pinstripes", "Puzzle", "Sideline", "Stacks", "Tiles", "Transcend")
+			}
+		}
 
-		'es-'	{
-				If($xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "Con bandas", "Cortar (oscuro)", "CuadrÃ­cula", 
-					"Whisp", "Faceta", "Filigrana", "Integral", "Ion (claro)", 
-					"Ion (oscuro)", "LÃ­nea lateral", "Movimiento", "Retrospectiva", 
-					"SemÃ¡foro", "Slice (luz)", "Vista principal", "Whisp")
-				}
-				ElseIf($xWordVersion -eq $wdWord2013)
-				{
-					$xArray = ("Whisp", "Vista principal", "Filigrana", "Austin",
-					"Slice (luz)", "Faceta", "SemÃ¡foro", "Retrospectiva", "CuadrÃ­cula",
-					"Movimiento", "Cortar (oscuro)", "LÃ­nea lateral", "Ion (oscuro)",
-					"Ion (claro)", "Integral", "Con bandas")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Alfabeto", "Anual", "Austero", "Austin", "Conservador",
-					"Contraste", "CuadrÃ­cula", "CubÃ­culos", "ExposiciÃ³n", "LÃ­nea lateral",
-					"Moderno", "Mosaicos", "Movimiento", "Papel periÃ³dico",
-					"Perspectiva", "Pilas", "Puzzle", "Rayas", "Sobrepasar")
-				}
+	'es-'	{
+			If($xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Austin", "Con bandas", "Cortar (oscuro)", "Cuadrícula", 
+				"Whisp", "Faceta", "Filigrana", "Integral", "Ion (claro)", 
+				"Ion (oscuro)", "Línea lateral", "Movimiento", "Retrospectiva", 
+				"Semáforo", "Slice (luz)", "Vista principal", "Whisp")
 			}
+			ElseIf($xWordVersion -eq $wdWord2013)
+			{
+				$xArray = ("Whisp", "Vista principal", "Filigrana", "Austin",
+				"Slice (luz)", "Faceta", "Semáforo", "Retrospectiva", "Cuadrícula",
+				"Movimiento", "Cortar (oscuro)", "Línea lateral", "Ion (oscuro)",
+				"Ion (claro)", "Integral", "Con bandas")
+			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Alfabeto", "Anual", "Austero", "Austin", "Conservador",
+				"Contraste", "Cuadrícula", "Cubículos", "Exposición", "Línea lateral",
+				"Moderno", "Mosaicos", "Movimiento", "Papel periódico",
+				"Perspectiva", "Pilas", "Puzzle", "Rayas", "Sobrepasar")
+			}
+		}
 
-		'fi-'	{
-				If($xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
-					"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
-					"Sektori (vaalea)", "VaihtuvavÃ¤rinen", "ViewMaster", "Austin",
-					"Kuiskaus", "Liike", "Ruudukko", "Sivussa")
-				}
-				ElseIf($xWordVersion -eq $wdWord2013)
-				{
-					$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
-					"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
-					"Sektori (vaalea)", "VaihtuvavÃ¤rinen", "ViewMaster", "Austin",
-					"Kiehkura", "Liike", "Ruudukko", "Sivussa")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Aakkoset", "Askeettinen", "Austin", "Kontrasti",
-					"Laatikot", "Liike", "Liituraita", "Mod", "Osittain peitossa",
-					"Palapeli", "Perinteinen", "Perspektiivi", "Pinot", "Ruudukko",
-					"Ruudut", "Sanomalehtipaperi", "Sivussa", "Vuotuinen", "Ylitys")
-				}
+	'fi-'	{
+			If($xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
+				"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
+				"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
+				"Kuiskaus", "Liike", "Ruudukko", "Sivussa")
 			}
+			ElseIf($xWordVersion -eq $wdWord2013)
+			{
+				$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
+				"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
+				"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
+				"Kiehkura", "Liike", "Ruudukko", "Sivussa")
+			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Aakkoset", "Askeettinen", "Austin", "Kontrasti",
+				"Laatikot", "Liike", "Liituraita", "Mod", "Osittain peitossa",
+				"Palapeli", "Perinteinen", "Perspektiivi", "Pinot", "Ruudukko",
+				"Ruudut", "Sanomalehtipaperi", "Sivussa", "Vuotuinen", "Ylitys")
+			}
+		}
 
-		'fr-'	{
-				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Ã€ bandes", "Austin", "Facette", "Filigrane", 
-					"Guide", "IntÃ©grale", "Ion (clair)", "Ion (foncÃ©)", 
-					"Lignes latÃ©rales", "Quadrillage", "RÃ©trospective", "Secteur (clair)", 
-					"Secteur (foncÃ©)", "SÃ©maphore", "ViewMaster", "Whisp")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Alphabet", "Annuel", "AustÃ¨re", "Austin", 
-					"Blocs empilÃ©s", "Classique", "Contraste", "Emplacements de bureau", 
-					"Exposition", "Guide", "Ligne latÃ©rale", "Moderne", 
-					"MosaÃ¯ques", "Mots croisÃ©s", "Papier journal", "Perspective",
-					"Quadrillage", "Rayures fines", "Transcendant")
-				}
+	'fr-'	{
+			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("À bandes", "Austin", "Facette", "Filigrane", 
+				"Guide", "Intégrale", "Ion (clair)", "Ion (foncé)", 
+				"Lignes latérales", "Quadrillage", "Rétrospective", "Secteur (clair)", 
+				"Secteur (foncé)", "Sémaphore", "ViewMaster", "Whisp")
 			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Alphabet", "Annuel", "Austère", "Austin", 
+				"Blocs empilés", "Classique", "Contraste", "Emplacements de bureau", 
+				"Exposition", "Guide", "Ligne latérale", "Moderne", 
+				"Mosaïques", "Mots croisés", "Papier journal", "Perspective",
+				"Quadrillage", "Rayures fines", "Transcendant")
+			}
+		}
 
-		'nb-'	{
-				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "BevegElse", "Dempet", "Fasett", "Filigran",
-					"Integral", "Ion (lys)", "Ion (mÃ¸rk)", "Retrospekt", "Rutenett",
-					"Sektor (lys)", "Sektor (mÃ¸rk)", "Semafor", "Sidelinje", "Stripet",
-					"ViewMaster")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Alfabet", "Ã…rlig", "Avistrykk", "Austin", "Avlukker",
-					"BevegElse", "Engasjement", "Enkel", "Fliser", "Konservativ",
-					"Kontrast", "Mod", "Perspektiv", "Puslespill", "Rutenett", "Sidelinje",
-					"Smale striper", "Stabler", "Transcenderende")
-				}
+	'nb-'	{
+			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Austin", "BevegElse", "Dempet", "Fasett", "Filigran",
+				"Integral", "Ion (lys)", "Ion (mørk)", "Retrospekt", "Rutenett",
+				"Sektor (lys)", "Sektor (mørk)", "Semafor", "Sidelinje", "Stripet",
+				"ViewMaster")
 			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Alfabet", "Årlig", "Avistrykk", "Austin", "Avlukker",
+				"BevegElse", "Engasjement", "Enkel", "Fliser", "Konservativ",
+				"Kontrast", "Mod", "Perspektiv", "Puslespill", "Rutenett", "Sidelinje",
+				"Smale striper", "Stabler", "Transcenderende")
+			}
+		}
 
-		'nl-'	{
-				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "Beweging", "Facet", "Filigraan", "Gestreept",
-					"Integraal", "Ion (donker)", "Ion (licht)", "Raster",
-					"Segment (Light)", "Semafoor", "Slice (donker)", "Spriet",
-					"Terugblik", "Terzijde", "ViewMaster")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Aantrekkelijk", "Alfabet", "Austin", "Bescheiden",
-					"Beweging", "Blikvanger", "Contrast", "Eenvoudig", "Jaarlijks",
-					"Krantenpapier", "Krijtstreep", "Kubussen", "Mod", "Perspectief",
-					"Puzzel", "Raster", "Stapels",
-					"Tegels", "Terzijde")
-				}
+	'nl-'	{
+			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Austin", "Beweging", "Facet", "Filigraan", "Gestreept",
+				"Integraal", "Ion (donker)", "Ion (licht)", "Raster",
+				"Segment (Light)", "Semafoor", "Slice (donker)", "Spriet",
+				"Terugblik", "Terzijde", "ViewMaster")
 			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Aantrekkelijk", "Alfabet", "Austin", "Bescheiden",
+				"Beweging", "Blikvanger", "Contrast", "Eenvoudig", "Jaarlijks",
+				"Krantenpapier", "Krijtstreep", "Kubussen", "Mod", "Perspectief",
+				"Puzzel", "Raster", "Stapels",
+				"Tegels", "Terzijde")
+			}
+		}
 
-		'pt-'	{
-				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("AnimaÃ§Ã£o", "Austin", "Em Tiras", "ExibiÃ§Ã£o Mestra",
-					"Faceta", "Fatia (Clara)", "Fatia (Escura)", "Filete", "Filigrana", 
-					"Grade", "Integral", "Ãon (Claro)", "Ãon (Escuro)", "Linha Lateral",
-					"Retrospectiva", "SemÃ¡foro")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Alfabeto", "AnimaÃ§Ã£o", "Anual", "Austero", "Austin", "Baias",
-					"Conservador", "Contraste", "ExposiÃ§Ã£o", "Grade", "Ladrilhos",
-					"Linha Lateral", "Listras", "Mod", "Papel Jornal", "Perspectiva", "Pilhas",
-					"Quebra-cabeÃ§a", "Transcend")
-				}
+	'pt-'	{
+			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Animação", "Austin", "Em Tiras", "Exibição Mestra",
+				"Faceta", "Fatia (Clara)", "Fatia (Escura)", "Filete", "Filigrana", 
+				"Grade", "Integral", "Íon (Claro)", "Íon (Escuro)", "Linha Lateral",
+				"Retrospectiva", "Semáforo")
 			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Alfabeto", "Animação", "Anual", "Austero", "Austin", "Baias",
+				"Conservador", "Contraste", "Exposição", "Grade", "Ladrilhos",
+				"Linha Lateral", "Listras", "Mod", "Papel Jornal", "Perspectiva", "Pilhas",
+				"Quebra-cabeça", "Transcend")
+			}
+		}
 
-		'sv-'	{
-				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "Band", "Fasett", "Filigran", "Integrerad", "Jon (ljust)",
-					"Jon (mÃ¶rkt)", "Knippe", "RutnÃ¤t", "RÃ¶rElse", "Sektor (ljus)", "Sektor (mÃ¶rk)",
-					"Semafor", "Sidlinje", "VisaHuvudsida", "Ã…terblick")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("AlfabetmÃ¶nster", "Austin", "Enkelt", "Exponering", "Konservativt",
-					"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "RutnÃ¤t",
-					"RÃ¶rElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Ã…rligt",
-					"Ã-vergÃ¥ende")
-				}
+	'sv-'	{
+			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Austin", "Band", "Fasett", "Filigran", "Integrerad", "Jon (ljust)",
+				"Jon (mörkt)", "Knippe", "Rutnät", "RörElse", "Sektor (ljus)", "Sektor (mörk)",
+				"Semafor", "Sidlinje", "VisaHuvudsida", "Återblick")
 			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Alfabetmönster", "Austin", "Enkelt", "Exponering", "Konservativt",
+				"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "Rutnät",
+				"RörElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Årligt",
+				"Övergående")
+			}
+		}
 
 		Default	{
 					If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
@@ -3501,8 +3551,8 @@ Function CheckWordPrereq
 	#find out our session (usually "1" except on TS/RDC or Citrix)
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
-	#Find out if winword is running in our session
-	[bool]$wordrunning = $null -ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	#Find out if winword runsning in our session
+	[bool]$wordrunning = $null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
 		$ErrorActionPreference = $SaveEAPreference
@@ -3731,7 +3781,7 @@ Function SetupWord
 			'ca-'	{
 					If($CoverPage -eq "Sideline")
 					{
-						$CoverPage = "LÃ­nia lateral"
+						$CoverPage = "Línia lateral"
 						$CPChanged = $True
 					}
 				}
@@ -3755,7 +3805,7 @@ Function SetupWord
 			'es-'	{
 					If($CoverPage -eq "Sideline")
 					{
-						$CoverPage = "LÃ­nea lateral"
+						$CoverPage = "Línea lateral"
 						$CPChanged = $True
 					}
 				}
@@ -3773,12 +3823,12 @@ Function SetupWord
 					{
 						If($Script:WordVersion -eq $wdWord2013 -or $Script:WordVersion -eq $wdWord2016)
 						{
-							$CoverPage = "Lignes latÃ©rales"
+							$CoverPage = "Lignes latérales"
 							$CPChanged = $True
 						}
 						Else
 						{
-							$CoverPage = "Ligne latÃ©rale"
+							$CoverPage = "Ligne latérale"
 							$CPChanged = $True
 						}
 					}
@@ -5266,9 +5316,9 @@ Function CheckExcelPrereq
 	#find out our session (usually "1" except on TS/RDC or Citrix)
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
-	#Find out if excel is running in our session
-	[bool]$excelrunning = $null -ne ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
-	
+	#Find out if excel runsning in our session
+	[bool]$excelrunning = $null –ne ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+
 	If($excelrunning)
 	{
 		$ErrorActionPreference = $SaveEAPreference
@@ -5310,7 +5360,19 @@ Function Check-NeededPSSnapins
 			Else
 			{
 				#Snapin is registered, but not loaded, loading it now:
-				Add-PSSnapin -Name $snapin -EA 0 *>$Null
+				Write-Host "Loading Windows PowerShell snap-in: $snapin"
+				Add-PSSnapin -Name $snapin -EA 0
+
+				If(!($?))
+				{
+					Write-Error "
+	`n`n
+	Error loading snapin: $($error[0].Exception.Message)
+	`n`n
+	Script cannot continue.
+	`n`n"
+					Return $false
+				}				
 			}
 		}
 	}
@@ -5318,7 +5380,9 @@ Function Check-NeededPSSnapins
 	If($FoundMissingSnapin)
 	{
 		Write-Warning "Missing Windows PowerShell snap-ins Detected:"
-		$missingSnapins | ForEach-Object {Write-Warning "($_)"}
+		Write-Host ""
+		$missingSnapins | ForEach-Object {Write-Host "`tMissing Snapin: ($_)"}
+		Write-Host ""
 		Return $False
 	}
 	Else
@@ -7159,7 +7223,7 @@ Function OutputMachines
 		{
 			WriteHTMLLine 2 0 "Machine Catalog: $($Catalog.Name)"
 			$rowdata = @()
-			$columnHeaders = @("Machine type",($global:htmlsb),$xCatalogType,$htmlwhite)
+			$columnHeaders = @("Description",($global:htmlsb),$Catalog.Description,$htmlwhite)
 			If($Catalog.ProvisioningType -eq "MCS")
 			{
 				$rowdata += @(,('Description',($global:htmlsb),$Catalog.Description,$htmlwhite))
@@ -8254,7 +8318,7 @@ Function OutputMachineDetails
 			$ScriptInformation += @{Data = "Delivery Group"; Value = $Machine.DesktopGroupName; }
 			If($NoSessions -eq $False)
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
 				$ScriptInformation += @{Data = "User Display Name"; Value = $name; }
 				$cnt = -1
@@ -8266,7 +8330,7 @@ Function OutputMachineDetails
 						$ScriptInformation += @{Data = ""; Value = $tmp; }
 					}
 				}
-                ## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
+                ## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
 				$ScriptInformation += @{Data = "User"; Value = $name; }
 				$cnt = -1
@@ -8278,7 +8342,7 @@ Function OutputMachineDetails
 						$ScriptInformation += @{Data = ""; Value = $tmp; }
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
+                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
 				$ScriptInformation += @{Data = "UPN"; Value = $upn; }
 				$cnt = -1
@@ -8592,7 +8656,7 @@ Function OutputMachineDetails
 			$ScriptInformation += @{Data = "Delivery Group"; Value = $Machine.DesktopGroupName; }
 			If($NoSessions -eq $False)
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
 				$ScriptInformation += @{Data = "User Display Name"; Value = $name; }
 				$cnt = -1
@@ -8604,7 +8668,7 @@ Function OutputMachineDetails
 						$ScriptInformation += @{Data = ""; Value = $tmp; }
 					}
 				}
-                ## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
+                ## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
 				$ScriptInformation += @{Data = "User"; Value = $name; }
 				$cnt = -1
@@ -8616,7 +8680,7 @@ Function OutputMachineDetails
 						$ScriptInformation += @{Data = ""; Value = $tmp; }
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
+                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
 				$ScriptInformation += @{Data = "UPN"; Value = $upn; }
 				$cnt = -1
@@ -8946,7 +9010,7 @@ Function OutputMachineDetails
 			Line 2 "Delivery Group`t`t`t: " $Machine.DesktopGroupName
 			If($NoSessions -eq $False)
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
 				Line 2 "User Display Name`t`t: " $name
 				$cnt = -1
@@ -8958,7 +9022,7 @@ Function OutputMachineDetails
 						Line 6 "  " $tmp
 					}
 				}
-                ## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
+                ## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
 				Line 2 "User`t`t`t`t: " $name
 				$cnt = -1
@@ -8970,7 +9034,7 @@ Function OutputMachineDetails
 						Line 6 "  " $tmp
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
+                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
 				Line 2 "UPN`t`t`t`t: " $upn
 				$cnt = -1
@@ -9148,7 +9212,7 @@ Function OutputMachineDetails
 			Line 2 "Delivery Group`t`t`t: " $Machine.DesktopGroupName
 			If($NoSessions -eq $False)
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
 				Line 2 "User Display Name`t`t: " $name
 				$cnt = -1
@@ -9160,7 +9224,7 @@ Function OutputMachineDetails
 						Line 6 "  " $tmp
 					}
 				}
-                ## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
+                ## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
 				Line 2 "User`t`t`t`t: " $name
 				$cnt = -1
@@ -9172,7 +9236,7 @@ Function OutputMachineDetails
 						Line 6 "  " $tmp
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
+                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
 				Line 2 "UPN`t`t`t`t: " $upn
 				$cnt = -1
@@ -9367,7 +9431,7 @@ Function OutputMachineDetails
 			$rowdata += @(,('Delivery Group',($global:htmlsb),$Machine.DesktopGroupName,$htmlwhite))
 			If($NoSessions -eq $False)
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
 				$rowdata += @(,('User Display Name',($global:htmlsb),$name,$htmlwhite))
 				$cnt = -1
@@ -9379,7 +9443,7 @@ Function OutputMachineDetails
 						$rowdata += @(,('',($global:htmlsb),$tmp,$htmlwhite))
 					}
 				}
-                ## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
+                ## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
 				$rowdata += @(,('User',($global:htmlsb),$name,$htmlwhite))
 				$cnt = -1
@@ -9391,7 +9455,7 @@ Function OutputMachineDetails
 						$rowdata += @(,('',($global:htmlsb),$tmp,$htmlwhite))
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
+                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
 				$rowdata += @(,('UPN',($global:htmlsb),$upn,$htmlwhite))
 				$cnt = -1
@@ -9602,7 +9666,7 @@ Function OutputMachineDetails
 			$rowdata += @(,('Delivery Group',($global:htmlsb),$Machine.DesktopGroupName,$htmlwhite))
 			If($NoSessions -eq $False)
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
 				$rowdata += @(,('User Display Name',($global:htmlsb),$name,$htmlwhite))
 				$cnt = -1
@@ -9614,7 +9678,7 @@ Function OutputMachineDetails
 						$rowdata += @(,('',($global:htmlsb),$tmp,$htmlwhite))
 					}
 				}
-                ## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
+                ## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
 				$rowdata += @(,('User',($global:htmlsb),$name,$htmlwhite))
 				$cnt = -1
@@ -9626,7 +9690,7 @@ Function OutputMachineDetails
 						$rowdata += @(,('',($global:htmlsb),$tmp,$htmlwhite))
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
+                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
 				$rowdata += @(,('UPN',($global:htmlsb),$upn,$htmlwhite))
 				$cnt = -1
@@ -14520,15 +14584,15 @@ Function ProcessPolicies
 		}
 		Else
 		{
-			#thanks to the Citrix Engineering Team for helping me solve processing Citrix AD based Policies
+			#thanks to the Citrix Engineering Team for helping me solve processing Citrix AD-based Policies
 			Write-Verbose "$(Get-Date -Format G): "
-			Write-Verbose "$(Get-Date -Format G): `tSee if there are any Citrix AD based policies to process"
+			Write-Verbose "$(Get-Date -Format G): `tSee if there are any Citrix AD-based policies to process"
 			$CtxGPOArray = @()
 			$CtxGPOArray = GetCtxGPOsInAD
 			If($CtxGPOArray -is [Array] -and $CtxGPOArray.Count -gt 0)
 			{
 				Write-Verbose "$(Get-Date -Format G): "
-				Write-Verbose "$(Get-Date -Format G): `tThere are $($CtxGPOArray.Count) Citrix AD based policies to process"
+				Write-Verbose "$(Get-Date -Format G): `tThere are $($CtxGPOArray.Count) Citrix AD-based policies to process"
 				Write-Verbose "$(Get-Date -Format G): "
 
 				[array]$CtxGPOArray = $CtxGPOArray | Sort-Object -unique
@@ -14580,7 +14644,7 @@ Function ProcessPolicies
 			}
 			Else
 			{
-				Write-Verbose "$(Get-Date -Format G): There are no Citrix AD based policies to process"
+				Write-Verbose "$(Get-Date -Format G): There are no Citrix AD-based policies to process"
 				Write-Verbose "$(Get-Date -Format G): "
 			}
 		}
@@ -14624,14 +14688,14 @@ Function ProcessPolicySummary
 	Else
 	{
 		Write-Verbose "$(Get-Date -Format G): "
-		Write-Verbose "$(Get-Date -Format G): See if there are any Citrix AD based policies to process"
+		Write-Verbose "$(Get-Date -Format G): See if there are any Citrix AD-based policies to process"
 		$CtxGPOArray = @()
 		$CtxGPOArray = GetCtxGPOsInAD
 		If($CtxGPOArray -is [Array] -and $CtxGPOArray.Count -gt 0)
 		{
 			[array]$CtxGPOArray = $CtxGPOArray | Sort-Object -unique
 			Write-Verbose "$(Get-Date -Format G): "
-			Write-Verbose "$(Get-Date -Format G): `tThere are $($CtxGPOArray.Count) Citrix AD based policies to process"
+			Write-Verbose "$(Get-Date -Format G): `tThere are $($CtxGPOArray.Count) Citrix AD-based policies to process"
 			Write-Verbose "$(Get-Date -Format G): "
 			
 			ForEach($CtxGPO in $CtxGPOArray)
@@ -14667,7 +14731,7 @@ Function ProcessPolicySummary
 		}
 		Else
 		{
-			Write-Verbose "$(Get-Date -Format G): There are no Citrix AD based policies to process"
+			Write-Verbose "$(Get-Date -Format G): There are no Citrix AD-based policies to process"
 			Write-Verbose "$(Get-Date -Format G): "
 		}
 	}
@@ -28123,6 +28187,7 @@ Function OutputDatastores
 	[string]$ConfigDBSQLVersion = "Unable to determine"
 	[string]$ConfigSQLServerPrincipalNameIPAddress = ""
 	[string]$ConfigSQLServerMirrorNameIPAddress = ""
+	$SQLServerNames = @()
 	
 	$ConfigDBs = Get-ConfigDBConnection @CVADParams1
 
@@ -28146,10 +28211,14 @@ Function OutputDatastores
 		If($ConfigSQLServerPrincipalName.Contains("\"))
 		{
 			$ConfigSQLServerPrincipalNameIPAddress = Get-IPAddress $ConfigSQLServerPrincipalName.Substring(0,$ConfigSQLServerPrincipalName.IndexOf("\"))
+			#add in V3.23 get hardware info for the sql server(s)
+			$SQLServerNames += $ConfigSQLServerPrincipalName.Substring(0,$ConfigSQLServerPrincipalName.IndexOf("\"))
 		}
 		Else
 		{
 			$ConfigSQLServerPrincipalNameIPAddress = Get-IPAddress $ConfigSQLServerPrincipalName
+			#add in V3.23 get hardware info for the sql server(s)
+			$SQLServerNames += $ConfigSQLServerPrincipalName
 		}
 
 		If($ConfigSQLServerMirrorName -ne "Not Configured")
@@ -28157,10 +28226,14 @@ Function OutputDatastores
 			If($ConfigSQLServerMirrorName.Contains("\"))
 			{
 				$ConfigSQLServerMirrorNameIPAddress = Get-IPAddress $ConfigSQLServerMirrorName.Substring(0,$ConfigSQLServerMirrorName.IndexOf("\"))
+				#add in V3.23 get hardware info for the sql server(s)
+				$SQLServerNames += $ConfigSQLServerMirrorName.Substring(0,$ConfigSQLServerMirrorName.IndexOf("\"))
 			}
 			Else
 			{
 				$ConfigSQLServerMirrorNameIPAddress = Get-IPAddress $ConfigSQLServerMirrorName
+				#add in V3.23 get hardware info for the sql server(s)
+				$SQLServerNames += $ConfigSQLServerMirrorName
 			}
 		}
 		Else
@@ -28225,10 +28298,14 @@ Function OutputDatastores
 				If($Configdb.MirroringPartner.Contains("\"))
 				{
 					$ConfigDBMirroringPartnerIPAddress = Get-IPAddress $Configdb.MirroringPartner.Substring(0,$Configdb.MirroringPartner.IndexOf("\"))
+					#add in V3.23 get hardware info for the sql server(s)
+					$SQLServerNames += $Configdb.MirroringPartner.Substring(0,$Configdb.MirroringPartner.IndexOf("\"))
 				}
 				Else
 				{
 					$ConfigDBMirroringPartnerIPAddress = Get-IPAddress $Configdb.MirroringPartner
+					#add in V3.23 get hardware info for the sql server(s)
+					$SQLServerNames += $Configdb.MirroringPartner
 				}
 				$ConfigDBMirroringPartnerInstance	= $Configdb.MirroringPartnerInstance
 				$ConfigDBMirroringSafetyLevel		= $Configdb.MirroringSafetyLevel
@@ -28238,10 +28315,14 @@ Function OutputDatastores
 				If($Configdb.MirroringPartner.Contains("\"))
 				{
 					$ConfigDBMirroringWitnessIPAddress = Get-IPAddress $Configdb.MirroringWitness.Substring(0,$Configdb.MirroringWitness.IndexOf("\"))
+					#add in V3.23 get hardware info for the sql server(s)
+					$SQLServerNames += $Configdb.MirroringWitness.Substring(0,$Configdb.MirroringWitness.IndexOf("\"))
 				}
 				Else
 				{
 					$ConfigDBMirroringWitnessIPAddress = Get-IPAddress $Configdb.MirroringWitness
+					#add in V3.23 get hardware info for the sql server(s)
+					$SQLServerNames += $Configdb.MirroringWitness
 				}
 				$ConfigDBMirroringWitnessStatus		= $Configdb.MirroringWitnessStatus
 			}
@@ -28323,10 +28404,14 @@ Function OutputDatastores
 		If($LogSQLServerPrincipalName.Contains("\"))
 		{
 			$LogSQLServerPrincipalNameIPAddress = Get-IPAddress $LogSQLServerPrincipalName.Substring(0,$LogSQLServerPrincipalName.IndexOf("\"))
+			#add in V3.23 get hardware info for the sql server(s)
+			$SQLServerNames += $LogSQLServerPrincipalName.Substring(0,$LogSQLServerPrincipalName.IndexOf("\"))
 		}
 		Else
 		{
 			$LogSQLServerPrincipalNameIPAddress = Get-IPAddress $LogSQLServerPrincipalName
+			#add in V3.23 get hardware info for the sql server(s)
+			$SQLServerNames += $LogSQLServerPrincipalName
 		}
 
 		If($LogSQLServerMirrorName -ne "Not Configured")
@@ -28334,10 +28419,14 @@ Function OutputDatastores
 			If($LogSQLServerMirrorName.Contains("\"))
 			{
 				$LogSQLServerMirrorNameIPAddress = Get-IPAddress $LogSQLServerMirrorName.Substring(0,$LogSQLServerMirrorName.IndexOf("\"))
+				#add in V3.23 get hardware info for the sql server(s)
+				$SQLServerNames += $LogSQLServerMirrorName.Substring(0,$LogSQLServerMirrorName.IndexOf("\"))
 			}
 			Else
 			{
 				$LogSQLServerMirrorNameIPAddress = Get-IPAddress $LogSQLServerMirrorName
+				#add in V3.23 get hardware info for the sql server(s)
+				$SQLServerNames += $LogSQLServerMirrorName
 			}
 		}
 		Else
@@ -28366,11 +28455,11 @@ Function OutputDatastores
 				}
 			}
 
-			$LogDBParent             = $LogDB.Parent
-			$LogDBCollation          = $LogDB.Collation
-			$LogDBSQLVersion         = GetSQLVersion $SQLsrv
+			$LogDBParent			 = $LogDB.Parent
+			$LogDBCollation			 = $LogDB.Collation
+			$LogDBSQLVersion		 = GetSQLVersion $SQLsrv
 			$LogDBCompatibilityLevel = GetDBCompatibilityLevel $LogDB.CompatibilityLevel $SQLsrv
-			$LogDBCreateDate         = $LogDB.CreateDate.ToString()
+			$LogDBCreateDate		 = $LogDB.CreateDate.ToString()
 
 			If($LogDB.IsReadCommittedSnapshotOn)
 			{
@@ -28402,10 +28491,14 @@ Function OutputDatastores
 				If($Logdb.MirroringPartner.Contains("\"))
 				{
 					$LogDBMirroringPartnerIPAddress = Get-IPAddress $Logdb.MirroringPartner.Substring(0,$Logdb.MirroringPartner.IndexOf("\"))
+					#add in V3.23 get hardware info for the sql server(s)
+					$SQLServerNames += $Logdb.MirroringPartner.Substring(0,$Logdb.MirroringPartner.IndexOf("\"))
 				}
 				Else
 				{
 					$LogDBMirroringPartnerIPAddress = Get-IPAddress $Logdb.MirroringPartner
+					#add in V3.23 get hardware info for the sql server(s)
+					$SQLServerNames += $Logdb.MirroringPartner
 				}
 				$LogDBMirroringPartnerInstance	= $LogDB.MirroringPartnerInstance
 				$LogDBMirroringSafetyLevel		= $LogDB.MirroringSafetyLevel
@@ -28414,10 +28507,14 @@ Function OutputDatastores
 				If($Logdb.MirroringPartner.Contains("\"))
 				{
 					$LogDBMirroringWitnessIPAddress = Get-IPAddress $Logdb.MirroringWitness.Substring(0,$Logdb.MirroringWitness.IndexOf("\"))
+					#add in V3.23 get hardware info for the sql server(s)
+					$SQLServerNames += $Logdb.MirroringWitness.Substring(0,$Logdb.MirroringWitness.IndexOf("\"))
 				}
 				Else
 				{
 					$LogDBMirroringWitnessIPAddress = Get-IPAddress $Logdb.MirroringWitness
+					#add in V3.23 get hardware info for the sql server(s)
+					$SQLServerNames += $Logdb.MirroringWitness
 				}
 				$LogDBMirroringWitnessStatus	= $LogDB.MirroringWitnessStatus
 			}
@@ -28502,10 +28599,14 @@ Function OutputDatastores
 		If($MonitorSQLServerPrincipalName.Contains("\"))
 		{
 			$MonitorSQLServerPrincipalNameIPAddress = Get-IPAddress $MonitorSQLServerPrincipalName.Substring(0,$MonitorSQLServerPrincipalName.IndexOf("\"))
+			#add in V3.23 get hardware info for the sql server(s)
+			$SQLServerNames += $MonitorSQLServerPrincipalName.Substring(0,$MonitorSQLServerPrincipalName.IndexOf("\"))
 		}
 		Else
 		{
 			$MonitorSQLServerPrincipalNameIPAddress = Get-IPAddress $MonitorSQLServerPrincipalName
+			#add in V3.23 get hardware info for the sql server(s)
+			$SQLServerNames += $MonitorSQLServerPrincipalName
 		}
 
 		If($MonitorSQLServerMirrorName -ne "Not Configured")
@@ -28513,10 +28614,14 @@ Function OutputDatastores
 			If($MonitorSQLServerMirrorName.Contains("\"))
 			{
 				$MonitorSQLServerMirrorNameIPAddress = Get-IPAddress $MonitorSQLServerMirrorName.Substring(0,$MonitorSQLServerMirrorName.IndexOf("\"))
+				#add in V3.23 get hardware info for the sql server(s)
+				$SQLServerNames += $MonitorSQLServerMirrorName.Substring(0,$MonitorSQLServerMirrorName.IndexOf("\"))
 			}
 			Else
 			{
 				$MonitorSQLServerMirrorNameIPAddress = Get-IPAddress $MonitorSQLServerMirrorName
+				#add in V3.23 get hardware info for the sql server(s)
+				$SQLServerNames += $MonitorSQLServerMirrorName
 			}
 		}
 		Else
@@ -28581,10 +28686,14 @@ Function OutputDatastores
 				If($Monitordb.MirroringPartner.Contains("\"))
 				{
 					$MonitorDBMirroringPartnerIPAddress = Get-IPAddress $Monitordb.MirroringPartner.Substring(0,$Monitordb.MirroringPartner.IndexOf("\"))
+					#add in V3.23 get hardware info for the sql server(s)
+					$SQLServerNames += $Monitordb.MirroringPartner.Substring(0,$Monitordb.MirroringPartner.IndexOf("\"))
 				}
 				Else
 				{
 					$MonitorDBMirroringPartnerIPAddress = Get-IPAddress $Monitordb.MirroringPartner
+					#add in V3.23 get hardware info for the sql server(s)
+					$SQLServerNames += $Monitordb.MirroringPartner
 				}
 				$MonitorDBMirroringPartnerInstance	= $MonitorDB.MirroringPartnerInstance
 				$MonitorDBMirroringSafetyLevel		= $MonitorDB.MirroringSafetyLevel
@@ -28592,11 +28701,15 @@ Function OutputDatastores
 				$MonitorDBMirroringWitness			= $MonitorDB.MirroringWitness
 				If($Configdb.MirroringPartner.Contains("\"))
 				{
-					$ConfigDBMirroringWitnessIPAddress = Get-IPAddress $Configdb.MirroringWitness.Substring(0,$Configdb.MirroringWitness.IndexOf("\"))
+					$MonitorDBMirroringWitnessIPAddress = Get-IPAddress $MonitorDB.MirroringWitness.Substring(0,$MonitorDB.MirroringWitness.IndexOf("\"))
+					#add in V3.23 get hardware info for the sql server(s)
+					$SQLServerNames += $MonitorDB.MirroringWitness.Substring(0,$MonitorDB.MirroringWitness.IndexOf("\"))
 				}
 				Else
 				{
-					$ConfigDBMirroringWitnessIPAddress = Get-IPAddress $Configdb.MirroringWitness
+					$MonitorDBMirroringWitnessIPAddress = Get-IPAddress $MonitorDB.MirroringWitness
+					#add in V3.23 get hardware info for the sql server(s)
+					$SQLServerNames += $MonitorDB.MirroringWitness
 				}
 				$MonitorDBMirroringWitnessStatus	= $MonitorDB.MirroringWitnessStatus
 			}
@@ -28613,7 +28726,6 @@ Function OutputDatastores
 			}
 
 			#check for log backup status
-			$MonitorDBLastBackupDate = "Database backup not detected"
 			If($MonitorDBRecoveryModel -eq "Simple")
 			{
 				If($MonitorDBLastLogBackupDate -eq "1/1/0001 12:00:00 AM")
@@ -28637,7 +28749,7 @@ Function OutputDatastores
 		}
 		
 		$MonitorConfig = $Null
-		$MonitorConfig = Get-MonitorConfiguration @CVADParams1
+		$MonitorConfig = Get-MonitorConfiguration @XDParams1
 		
 		If($? -and $Null -ne $MonitorConfig)
 		{
@@ -29647,6 +29759,20 @@ Function OutputDatastores
 			$msg = ""
 			$columnWidths = @("200","50")
 			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "250"
+		}
+		
+		If($Hardware)
+		{
+			$SQLServerNames = $SQLServerNames | Sort-Object -Unique
+			
+			ForEach($SQLServerName in $SQLServerNames)
+			{
+				If($MSWord -or $PDF)
+				{
+					$Script:Selection.InsertNewPage()
+				}
+				GetComputerWMIInfo $SQLServerName
+			}
 		}
 	}
 	Else
@@ -31340,7 +31466,7 @@ Function OutputControllers
 				$testresults = Test-NetConnection -ComputerName $Controller.DNSName -InformationLevel Quiet -EA 0 3>$Null
 				If($testresults)
 				{
-					#Second, see if the remote registy service is running
+					#Second, see if the remote registy service runsning
 					$serviceresults = Get-Service -ComputerName $Controller.DNSName -Name "RemoteRegistry" -EA 0
 					If($? -and $Null -ne $serviceresults)
 					{
@@ -32082,10 +32208,10 @@ Function OutputHosting
 	<#
 		ConnectionType DisplayName                                      PluginFactoryName                 UsesCloudInfrastructure
 		-------------- -----------                                      -----------------                 -----------------------
-				 SCVMM MicrosoftÂ® System Center Virtual Machine Manager MicrosoftPSFactory                                  False
-			   VCenter VMware vSphereÂ®                                  VmwareFactory                                       False
-			 XenServer Citrix HypervisorÂ®                               XenFactory                                          False
-			 WakeOnLAN MicrosoftÂ® Configuration Manager Wake on LAN     ConfigMgrWOLMachineManagerFactory                   False
+				 SCVMM Microsoft® System Center Virtual Machine Manager MicrosoftPSFactory                                  False
+			   VCenter VMware vSphere®                                  VmwareFactory                                       False
+			 XenServer Citrix Hypervisor®                               XenFactory                                          False
+			 WakeOnLAN Microsoft® Configuration Manager Wake on LAN     ConfigMgrWOLMachineManagerFactory                   False
 				Custom Nutanix AHV                                      AcropolisFactory                              		False
 				Custom Remote PC Wake on LAN                            VdaWOLMachineManagerFactory                         False
 	#>	
@@ -33198,6 +33324,11 @@ Function OutputLicensingOverview
 		$msg = ""
 		$columnWidths = @("175","125")
 		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "300"
+	}
+	
+	If($Hardware)
+	{
+		GetComputerWMIInfo $Script:CVADSite1.LicenseServerName
 	}
 }
 
@@ -34591,20 +34722,107 @@ Function ProcessScriptSetup
 	{
 		#We're missing Citrix Snapins that we need
 		$ErrorActionPreference = $SaveEAPreference
-		Write-Error "
-		`n`n
-		Missing Citrix PowerShell Snap-ins Detected, check the console above for more information. 
-		`n`n
-		Are you sure you are running this script against a CVAD 2006 or later Controller? 
-		`n`n
-		If you are running the script remotely, did you install Studio or the PowerShell snapins on $($env:computername)?
-		`n`n
-		Please see the Prerequisites section in the ReadMe file https://carlwebster.sharefile.com/d-s8e431271460494c9
-		`n`n
-		Script will now close.
-		`n`n
+		
+		If(Get-Command Get-ConfigSite)
+		{
+			$CVADSite2 = Get-ConfigSite -AdminAddress $AdminAddress -EA 0
+
+			[version]$CVADSiteVersion = $CVADSite2.ProductVersion
+			$CVADSiteVersionReal = "Unknown"
+			Switch ($CVADSiteVersion)
+			{
+				"7.28"	{$CVADSiteVersionReal = "CVAD 2012"; Break}
+				"7.27"	{$CVADSiteVersionReal = "CVAD 2009"; Break}
+				"7.26"	{$CVADSiteVersionReal = "CVAD 2006"; Break}
+				"7.25"	{$CVADSiteVersionReal = "CVAD 2003"; Break}
+				"7.24"	{$CVADSiteVersionReal = "CVAD 1912"; Break}
+				"7.23"	{$CVADSiteVersionReal = "CVAD 1909"; Break}
+				"7.22"	{$CVADSiteVersionReal = "CVAD 1906"; Break}
+				"7.21"	{$CVADSiteVersionReal = "CVAD 1903"; Break}
+				"7.20"	{$CVADSiteVersionReal = "CVAD 1811"; Break}
+				"7.19"	{$CVADSiteVersionReal = "CVAD 1808"; Break}
+				"7.18"	{$CVADSiteVersionReal = "XA/XD 7.18"; Break}
+				"7.17"	{$CVADSiteVersionReal = "XA/XD 7.17"; Break}
+				"7.16"	{$CVADSiteVersionReal = "XA/XD 7.16"; Break}
+				"7.15"	{$CVADSiteVersionReal = "XA/XD 7.15"; Break}
+				"7.14"	{$CVADSiteVersionReal = "XA/XD 7.14"; Break}
+				"7.13"	{$CVADSiteVersionReal = "XA/XD 7.13"; Break}
+				"7.12"	{$CVADSiteVersionReal = "XA/XD 7.12"; Break}
+				"7.11"	{$CVADSiteVersionReal = "XA/XD 7.11"; Break}
+				"7.9"	{$CVADSiteVersionReal = "XA/XD 7.9"; Break}
+				"7.8"	{$CVADSiteVersionReal = "XA/XD 7.8"; Break}
+				"7.7"	{$CVADSiteVersionReal = "XA/XD 7.7"; Break}
+				"7.6"	{$CVADSiteVersionReal = "XA/XD 7.6"; Break}
+				"7.5"	{$CVADSiteVersionReal = "XA/XD 7.5"; Break}
+				"7.1"	{$CVADSiteVersionReal = "XD 7.1"; Break}
+				"7.0"	{$CVADSiteVersionReal = "XD 7.0"; Break}
+				Default	{$CVADSiteVersionReal = "Unknown"; Break}
+			}
+			Write-Verbose "$(Get-Date -Format G): You are running version $CVADSiteVersion ($CVADSiteVersionReal)"
+	
+			If($CVADSiteVersion.Major -eq 0 -and $CVADSiteVersion.Minor -eq 0)
+			{
+				#something is wrong, we shouldn't be here
+				Write-Error "
+	`n`n
+	Something bad happened. We shouldn't be here. Could not find the version information.
+	`n`n
+	Script cannot continue
+	`n`n
 		"
-		Exit
+				AbortScript
+			}
+			ElseIf($CVADSiteVersion.Major -eq 7 -and $CVADSiteVersion.Minor -lt 26)
+			{
+				#this is not a CVAD 2006 or later Site, script cannot proceed
+				Write-Host "You are running version $CVADSiteVersion ($CVADSiteVersionReal)" -ForegroundColor White
+				Write-Error "
+	`n`n
+	Missing Citrix PowerShell Snap-ins Detected, check the console above for more information. 
+	`n`n
+	This script is designed for CVAD 2006 and later and should not be run on $CVADSiteVersionReal.
+	`n`n
+	If you are running XA/XD 7.0 through 7.7, please use: 
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+	`n`n
+	If you are running XA/XD 7.8 through CVAD 2006, please use:
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+	`n`n
+	If you are running Citrix Cloud, please use:
+	https://carlwebster.com/downloads/download-info/citrix-cloud-citrix-virtual-apps-and-desktops-service/
+	`n`n
+	Script cannot continue
+	`n`n
+		"
+				AbortScript
+			}
+		}
+		Else
+		{
+			Write-Error "
+	`n`n
+	Missing Citrix PowerShell Snap-ins Detected, check the console above for more information. 
+	`n`n
+	This script is designed for CVAD 2006 and later and should not be run on any other version.
+	`n`n
+	If you are running XA/XD 7.0 through 7.7, please use: 
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+	`n`n
+	If you are running XA/XD 7.8 through CVAD 2006, please use:
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+	`n`n
+	If you are running Citrix Cloud, please use:
+	https://carlwebster.com/downloads/download-info/citrix-cloud-citrix-virtual-apps-and-desktops-service/
+	`n`n
+	If you are running the script remotely, did you install Studio or the PowerShell snapins on $($env:computername)?
+	`n`n
+	Please see the Prerequisites section in the ReadMe file https://carlwebster.sharefile.com/d-s8e431271460494c9
+	`n`n
+	Script will now close.
+	`n`n
+		"
+			Exit
+		}
 	}
 
 	$Script:DoPolicies = $True
@@ -34720,9 +34938,9 @@ Function ProcessScriptSetup
 		Write-Warning "CVAD Site1 information could not be retrieved. Script cannot continue"
 		Write-Error "
 	`n`n
-Unable to connect to Delivery Controller: $($CVADParams1.adminaddress)
+	Unable to connect to Delivery Controller: $($CVADParams1.adminaddress)
 	`n`n
-cmdlet failed: $($error[ 0 ].ToString())
+	cmdlet failed: $($error[ 0 ].ToString())
 	`n`n
 		"
 		AbortScript
@@ -34736,78 +34954,95 @@ cmdlet failed: $($error[ 0 ].ToString())
 		Write-Warning "CVAD Site2 information could not be retrieved. Script cannot continue"
 		Write-Error "
 	`n`n
-cmdlet failed $($error[ 0 ].ToString())
+	cmdlet failed $($error[ 0 ].ToString())
 	`n`n
 		"
 		AbortScript
 	}
 
-	$Script:CVADSiteVersion = $Script:CVADSite2.ProductVersion
-	$tmp = $Script:CVADSiteVersion.Split(".")
-	[int]$MajorVersion = $tmp[0]
-	[int]$MinorVersion = $tmp[1]
-
-	If($MajorVersion -eq 7)
+	[version]$Script:CVADSiteVersion = $Script:CVADSite2.ProductVersion
+	$Script:CVADSiteVersionReal = "Unknown"
+	Switch ($Script:CVADSiteVersion)
 	{
-		#this is a CVAD 7.x Site, now test to see if it is less than 7.26 (CVAD 2006)
-		If($MinorVersion -lt 26)
-		{
-			Write-Warning "You are running version $Script:CVADSiteVersion"
-			Write-Warning "Are the PowerShell Snapins/Modules or Studio installed?"
-			Write-Error "
-	`n`n
-This script is designed for CVAD 2006 and later and should not be run on 2003 and earlier.
-	`n`n
-Script cannot continue
-	`n`n
-			"
-			AbortScript
-		}
+		"7.28"	{$Script:CVADSiteVersionReal = "CVAD 2012"; Break}
+		"7.27"	{$Script:CVADSiteVersionReal = "CVAD 2009"; Break}
+		"7.26"	{$Script:CVADSiteVersionReal = "CVAD 2006"; Break}
+		"7.25"	{$Script:CVADSiteVersionReal = "CVAD 2003"; Break}
+		"7.24"	{$Script:CVADSiteVersionReal = "CVAD 1912"; Break}
+		"7.23"	{$Script:CVADSiteVersionReal = "CVAD 1909"; Break}
+		"7.22"	{$Script:CVADSiteVersionReal = "CVAD 1906"; Break}
+		"7.21"	{$Script:CVADSiteVersionReal = "CVAD 1903"; Break}
+		"7.20"	{$Script:CVADSiteVersionReal = "CVAD 1811"; Break}
+		"7.19"	{$Script:CVADSiteVersionReal = "CVAD 1808"; Break}
+		"7.18"	{$Script:CVADSiteVersionReal = "XA/XD 7.18"; Break}
+		"7.17"	{$Script:CVADSiteVersionReal = "XA/XD 7.17"; Break}
+		"7.16"	{$Script:CVADSiteVersionReal = "XA/XD 7.16"; Break}
+		"7.15"	{$Script:CVADSiteVersionReal = "XA/XD 7.15"; Break}
+		"7.14"	{$Script:CVADSiteVersionReal = "XA/XD 7.14"; Break}
+		"7.13"	{$Script:CVADSiteVersionReal = "XA/XD 7.13"; Break}
+		"7.12"	{$Script:CVADSiteVersionReal = "XA/XD 7.12"; Break}
+		"7.11"	{$Script:CVADSiteVersionReal = "XA/XD 7.11"; Break}
+		"7.9"	{$Script:CVADSiteVersionReal = "XA/XD 7.9"; Break}
+		"7.8"	{$Script:CVADSiteVersionReal = "XA/XD 7.8"; Break}
+		"7.7"	{$Script:CVADSiteVersionReal = "XA/XD 7.7"; Break}
+		"7.6"	{$Script:CVADSiteVersionReal = "XA/XD 7.6"; Break}
+		"7.5"	{$Script:CVADSiteVersionReal = "XA/XD 7.5"; Break}
+		"7.1"	{$Script:CVADSiteVersionReal = "XD 7.1"; Break}
+		"7.0"	{$Script:CVADSiteVersionReal = "XD 7.0"; Break}
+		Default	{$Script:CVADSiteVersionReal = "Unknown"; Break}
 	}
-	ElseIf($MajorVersion -eq 0 -and $MinorVersion -eq 0)
+	Write-Verbose "$(Get-Date -Format G): You are running version $Script:CVADSiteVersion ($Script:CVADSiteVersionReal)"
+	
+	If($Script:CVADSiteVersion.Major -eq 0 -and $Script:CVADSiteVersion.Minor -eq 0)
 	{
 		#something is wrong, we shouldn't be here
 		Write-Error "
 	`n`n
-Something bad happened. We shouldn't be here. Could not find the version information.
+	Something bad happened. We shouldn't be here. Could not find the version information.
 	`n`n
-Script cannot continue
+	Script cannot continue
 	`n`n
 		"
 		AbortScript
 	}
-	Else
+	ElseIf($Script:CVADSite2.ProductCode -eq "CVADS")
 	{
 		#this is not a CVAD 2006 or later Site, script cannot proceed
-		Write-Warning "You are running version $Script:CVADSiteVersion"
-		Write-Warning "Are the PowerShell Snapins/Modules or Studio installed?"
+		Write-Host "You are running on Citrix Cloud" -ForegroundColor White
 		Write-Error "
 	`n`n
-This script is designed for CVAD 2006 and later and should not be run on other versions of CVAD.
+	This script is designed for On-Premises CVAD 2006 and later and should not be run on Citrix Cloud. Please use:
 	`n`n
-Script cannot continue
+	https://carlwebster.com/downloads/download-info/citrix-cloud-citrix-virtual-apps-and-desktops-service/
+	`n`n
+	Script cannot continue
+	`n`n
+		"
+		AbortScript
+	ElseIf($Script:CVADSiteVersion.Major -eq 7 -and $Script:CVADSiteVersion.Minor -lt 26)
+	{
+		#this is not a CVAD 2006 or later Site, script cannot proceed
+		Write-Host "You are running version $Script:CVADSiteVersion ($Script:CVADSiteVersionReal)" -ForegroundColor White
+		Write-Error "
+	`n`n
+	This script is designed for CVAD 2006 and later and should not be run on $Script:CVADSiteVersionReal.
+	`n`n
+	If you are running XA/XD 7.0 through 7.7, please use: 
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+	`n`n
+	If you are running XA/XD 7.8 through CVAD 2006, please use:
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+	`n`n
+	If you are running Citrix Cloud, please use:
+	https://carlwebster.com/downloads/download-info/citrix-cloud-citrix-virtual-apps-and-desktops-service/
+	`n`n
+	Script cannot continue
 	`n`n
 		"
 		AbortScript
 	}
-	
-	$tmp = $Script:CVADSiteVersion
-	Switch ($tmp)
-	{
-		"7.28"	{$Script:CVADSiteVersion = "2012"; Break}
-		"7.27"	{$Script:CVADSiteVersion = "2009"; Break}
-		"7.26"	{$Script:CVADSiteVersion = "2006"; Break}
-		"7.25"	{$Script:CVADSiteVersion = "2003"; Break}
-		"7.24"	{$Script:CVADSiteVersion = "1912"; Break}
-		"7.23"	{$Script:CVADSiteVersion = "1909"; Break}
-		"7.22"	{$Script:CVADSiteVersion = "1906"; Break}
-		"7.21"	{$Script:CVADSiteVersion = "1903"; Break}
-		"7.20"	{$Script:CVADSiteVersion = "1811"; Break}
-		"7.19"	{$Script:CVADSiteVersion = "1808"; Break}
-		Default	{$Script:CVADSiteVersion = $tmp; Break}
 	}
-	Write-Verbose "$(Get-Date -Format G): You are running version $Script:CVADSiteVersion"
-
+	
 	[string]$Script:CVADSiteName = $Script:CVADSite2.SiteName
 	Switch ($Section)
 	{
@@ -34835,7 +35070,7 @@ Script cannot continue
 	
 	#$asm = [reflection.assembly]::loadwithpartialname('microsoft.sqlserver.smo')
 	$asm = [System.Reflection.Assembly]::LoadFrom("C:\Program Files\Citrix\XenDesktopPoshSdk\Module\Citrix.XenDesktop.Admin.V1\Citrix.XenDesktop.Admin\Microsoft.SqlServer.Smo.dll")
-	If( $null -eq $asm )
+	If( $null –eq $asm )
 	{
 		Write-Verbose "$(Get-Date -Format G): `tSQL Server Assembly could not be loaded"
 		$Script:SQLServerLoaded = $False
@@ -35902,4 +36137,4 @@ UpdateDocumentProperties $AbstractTitle $SubjectTitle
 ProcessDocumentOutput
 
 ProcessScriptEnd
-#endregion
+#endregionn

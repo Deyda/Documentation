@@ -31,10 +31,10 @@
 	The script can run on a DHCP server or a Windows 8.x or Windows 10 computer with RSAT installed.
 		
 	Remote Server Administration Tools for Windows 8 
-		http://www.microsoft.com/en-us/download/details.aspx?id=28972
+		https://carlwebster.sharefile.com/d-s791075d451fc415ca83ec8958b385a95
 		
 	Remote Server Administration Tools for Windows 8.1 
-		http://www.microsoft.com/en-us/download/details.aspx?id=39296
+		https://carlwebster.sharefile.com/d-s37209afb73dc48f497745924ed854226
 		
 	Remote Server Administration Tools for Windows 10
 		http://www.microsoft.com/en-us/download/details.aspx?id=45520
@@ -83,21 +83,6 @@
 		Spanish
 		Swedish
 		
-.PARAMETER HTML
-	Creates an HTML file with an .html extension.
-	This parameter is set True if no other output format is selected.
-.PARAMETER MSWord
-	SaveAs DOCX file
-	This parameter is disabled by default.
-.PARAMETER PDF
-	SaveAs PDF file instead of DOCX file.
-	This parameter is disabled by default.
-	The PDF file is roughly 5X to 10X larger than the DOCX file.
-	This parameter requires Microsoft Word to be installed.
-	This parameter uses the Word SaveAs PDF capability.
-.PARAMETER Text
-	Creates a formatted text file with a .txt extension.
-	This parameter is disabled by default.
 .PARAMETER ComputerName
 	DHCP server to run the script against.
 	The computername is used for the report title.
@@ -107,14 +92,6 @@
 	computer name.
 	
 	If both ComputerName and AllDHCPServers are used, AllDHCPServers is used.
-.PARAMETER AddDateTime
-	Adds a date Timestamp to the end of the file name.
-	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will either be:
-		DHCP Inventory Report for Server <server> for the Domain <domain>_2020-06-01_1800.html (or .txt or .docx or .pdf)
-		DHCP Inventory for All DHCP Servers for the Domain <domain>_2020-06-01_1800.html (or .txt or .docx or .pdf)
-	This parameter is disabled by default.
 .PARAMETER AllDHCPServers
 	The script processes all Authorized DHCP servers that are online.
 	"All DHCP Servers" is used for the report title.
@@ -122,6 +99,66 @@
 	
 	If both ComputerName and AllDHCPServers are used, AllDHCPServers is used.
 	This parameter has an alias of ALL.
+.PARAMETER HTML
+	Creates an HTML file with an .html extension.
+	This parameter is set True if no other output format is selected.
+.PARAMETER Text
+	Creates a formatted text file with a .txt extension.
+	This parameter is disabled by default.
+.PARAMETER Hardware
+	Use WMI to gather hardware information on Computer System, Disks, Processor, and 
+	Network Interface Cards
+
+	This parameter may require the script runs from an elevated PowerShell session 
+	using an account with permission to retrieve hardware information (i.e., Domain 
+	Admin or Local Administrator).
+
+	Selecting this parameter adds to both the time it takes to run the script and 
+	size of the report.
+
+	This parameter is disabled by default.
+	This parameter has an alias of HW.
+.PARAMETER IncludeLeases
+	Include DHCP lease information.
+	The default is to not included lease information.
+.PARAMETER IncludeOptions
+	Include DHCP Options information.
+	The default is to not included Options information.
+.PARAMETER AddDateTime
+	Adds a date Timestamp to the end of the file name.
+	The timestamp is in the format of yyyy-MM-dd_HHmm.
+	June 1, 2021 at 6PM is 2021-06-01_1800.
+	Output filename will either be:
+		DHCP Inventory Report for Server <server> for the Domain <domain>_2021-06-01_1800.html (or .txt or .docx or .pdf)
+		DHCP Inventory for All DHCP Servers for the Domain <domain>_2021-06-01_1800.html (or .txt or .docx or .pdf)
+	This parameter is disabled by default.
+.PARAMETER Dev
+	Clears errors at the beginning of the script.
+	Outputs all errors to a text file at the end of the script.
+	
+	This is used when the script developer requests more troubleshooting data.
+	The text file is placed in the same folder from where the script runs.
+	
+	This parameter is disabled by default.
+.PARAMETER Folder
+	Specifies the optional output folder to save the output report. 
+.PARAMETER Log
+	Generates a log file for troubleshooting.
+.PARAMETER ScriptInfo
+	Outputs information about the script to a text file.
+	The text file is placed in the same folder from where the script runs.
+	
+	This parameter is disabled by default.
+	This parameter has an alias of SI.
+.PARAMETER MSWord
+	SaveAs DOCX file
+	This parameter is disabled by default.
+.PARAMETER PDF
+	SaveAs PDF file instead of DOCX file.
+	This parameter is disabled by default.
+	The PDF file is roughly 5X to 10X larger than the DOCX file.
+	This parameter requires Microsoft Word to be installed.
+	This parameter uses the Word SaveAs PDF capability.
 .PARAMETER CompanyAddress
 	Company Address used for the Cover Page, if the Cover Page has the Address field.
 	
@@ -219,43 +256,11 @@
 	The default value is Sideline.
 	This parameter has an alias of CP.
 	This parameter is only valid with the MSWORD and PDF output parameters.
-.PARAMETER Dev
-	Clears errors at the beginning of the script.
-	Outputs all errors to a text file at the end of the script.
-	
-	This is used when the script developer requests more troubleshooting data.
-	The text file is placed in the same folder from where the script runs.
-	
-	This parameter is disabled by default.
-.PARAMETER Folder
-	Specifies the optional output folder to save the output report. 
-.PARAMETER Hardware
-	Use WMI to gather hardware information on Computer System, Disks, Processor, and 
-	Network Interface Cards
-
-	This parameter may require the script runs from an elevated PowerShell session 
-	using an account with permission to retrieve hardware information (i.e., Domain 
-	Admin or Local Administrator).
-
-	Selecting this parameter adds to both the time it takes to run the script and 
-	size of the report.
-
-	This parameter is disabled by default.
-	This parameter has an alias of HW.
-.PARAMETER IncludeLeases
-	Include DHCP lease information.
-	The default is to not included lease information.
-.PARAMETER IncludeOptions
-	Include DHCP Options information.
-	The default is to not included Options information.
-.PARAMETER Log
-	Generates a log file for troubleshooting.
-.PARAMETER ScriptInfo
-	Outputs information about the script to a text file.
-	The text file is placed in the same folder from where the script runs.
-	
-	This parameter is disabled by default.
-	This parameter has an alias of SI.
+.PARAMETER UserName
+	Username used for the Cover Page and Footer.
+	The default value is contained in $env:username
+	This parameter has an alias of UN.
+	This parameter is only valid with the MSWORD and PDF output parameters.
 .PARAMETER SmtpServer
 	Specifies the optional email server to send the output report. 
 .PARAMETER SmtpPort
@@ -270,11 +275,6 @@
 .PARAMETER To
 	Specifies the username for the To email address.
 	If SmtpServer is used, this is a required parameter.
-.PARAMETER UserName
-	Username used for the Cover Page and Footer.
-	The default value is contained in $env:username
-	This parameter has an alias of UN.
-	This parameter is only valid with the MSWORD and PDF output parameters.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-DHCP.ps1 -ComputerName DHCPServer01 -MSWord
 	
@@ -572,10 +572,10 @@
 	No objects are output from this script.  This script creates a Word, PDF, HTML or 
 	formatted text document.
 .NOTES
-	NAME: Docu-DHCP.ps1
-	VERSION: 2.02
+	NAME: DHCP_Inventory_V2.ps1
+	VERSION: 2.03
 	AUTHOR: Carl Webster and Michael B. Smith
-	LASTEDIT: November 5, 2020
+	LASTEDIT: January 9, 2021
 #>
 
 #endregion
@@ -587,27 +587,50 @@
 
 Param(
 	[parameter(Mandatory=$False)] 
+	[string]$ComputerName="LocalHost",
+	
+	[parameter(Mandatory=$False)] 
+	[Alias("ALL")]
+	[Switch]$AllDHCPServers=$False,
+	
+	[parameter(Mandatory=$False)] 
 	[Switch]$HTML=$False,
 
+	[parameter(Mandatory=$False)] 
+	[Switch]$Text=$False,
+
+	[parameter(Mandatory=$False)] 
+	[Alias("HW")]
+	[Switch]$Hardware=$False,
+
+	[parameter(Mandatory=$False)] 
+	[Switch]$IncludeLeases=$False,
+
+	[parameter(Mandatory=$False)] 
+	[Switch]$IncludeOptions=$False,
+
+	[parameter(Mandatory=$False)] 
+	[Switch]$AddDateTime=$False,
+	
+	[parameter(Mandatory=$False)] 
+	[Switch]$Dev=$False,
+	
+	[parameter(Mandatory=$False)] 
+	[string]$Folder="",
+	
+	[parameter(Mandatory=$False)] 
+	[Switch]$Log=$False,
+	
+	[parameter(Mandatory=$False)] 
+	[Alias("SI")]
+	[Switch]$ScriptInfo=$False,
+	
 	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
 	[Switch]$MSWord=$False,
 
 	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
 	[Switch]$PDF=$False,
 
-	[parameter(Mandatory=$False)] 
-	[Switch]$Text=$False,
-
-	[parameter(Mandatory=$False)] 
-	[string]$ComputerName="LocalHost",
-	
-	[parameter(Mandatory=$False)] 
-	[Switch]$AddDateTime=$False,
-	
-	[parameter(Mandatory=$False)] 
-	[Alias("ALL")]
-	[Switch]$AllDHCPServers=$False,
-	
 	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
 	[Alias("CA")]
 	[ValidateNotNullOrEmpty()]
@@ -638,29 +661,6 @@ Param(
 	[ValidateNotNullOrEmpty()]
 	[string]$CoverPage="Sideline", 
 
-	[parameter(Mandatory=$False)] 
-	[Switch]$Dev=$False,
-	
-	[parameter(Mandatory=$False)] 
-	[string]$Folder="",
-	
-	[parameter(Mandatory=$False)] 
-	[Alias("HW")]
-	[Switch]$Hardware=$False,
-
-	[parameter(Mandatory=$False)] 
-	[Switch]$IncludeLeases=$False,
-
-	[parameter(Mandatory=$False)] 
-	[Switch]$IncludeOptions=$False,
-
-	[parameter(Mandatory=$False)] 
-	[Switch]$Log=$False,
-	
-	[parameter(Mandatory=$False)] 
-	[Alias("SI")]
-	[Switch]$ScriptInfo=$False,
-	
 	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
 	[Alias("UN")]
 	[ValidateNotNullOrEmpty()]
@@ -698,6 +698,13 @@ Param(
 
 #Version 1.0 released to the community on May 31, 2014
 
+#Version 2.03 9-Jan-2021
+#	Added to the Computer Hardware section, the server's Power Plan
+#	Fixed Date calculation errors with IPv4 and IPv6 statistics and script runtime
+#	Reordered parameters in an order recommended by Guy Leech
+#	Updated help text
+#	Updated ReadMe file
+#
 #Version 2.02 5-Nov-2020
 #	Added to the server properties, "Is a domain controller" with a value of Yes or No
 #	Changed all Write-Verbose $(Get-Date) to add -Format G to put the dates in the user's locale
@@ -805,9 +812,9 @@ Param(
 #Version 1.42 17-Dec-2019
 #	Fix Swedish Table of Contents (Thanks to Johan Kallio)
 #		From 
-#			'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckning2'; Break }
+#			'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
 #		To
-#			'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckn2'; Break }
+#			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
 #	Updated help text
 #
 #Version 1.41 8-Jan-2019
@@ -852,6 +859,9 @@ Param(
 #
 #Version 1.33 13-Feb-2017
 #	Fixed French wording for Table of Contents 2 (Thanks to David Rouquier)
+#
+#Version 1.32 7-Nov-2016
+#	Added Chinese language support
 #
 #Version 1.31 24-Oct-2016
 #	Add HTML output
@@ -1303,7 +1313,7 @@ Function GetComputerWMIInfo
 
 		ForEach($Item in $ComputerItems)
 		{
-			OutputComputerItem $Item $ComputerOS
+			OutputComputerItem $Item $ComputerOS $RemoteComputerName
 		}
 	}
 	ElseIf(!$?)
@@ -1684,7 +1694,25 @@ Function GetComputerWMIInfo
 
 Function OutputComputerItem
 {
-	Param([object]$Item, [string]$OS)
+	Param([object]$Item, [string]$OS, [string]$RemoteComputerName)
+	
+	#get computer's power plan
+	#https://techcommunity.microsoft.com/t5/core-infrastructure-and-security/get-the-active-power-plan-of-multiple-servers-with-powershell/ba-p/370429
+	
+	try 
+	{
+
+		$PowerPlan = (Get-WmiObject -ComputerName $RemoteComputerName -Class Win32_PowerPlan -Namespace "root\cimv2\power" |
+			Where-Object {$_.IsActive -eq $true} |
+			Select-Object @{Name = "PowerPlan"; Expression = {$_.ElementName}}).PowerPlan
+	}
+
+	catch 
+	{
+
+		$PowerPlan = $_.Exception
+
+	}	
 	
 	If($MSWord -or $PDF)
 	{
@@ -1693,6 +1721,7 @@ Function OutputComputerItem
 		$ItemInformation.Add(@{ Data = "Model"; Value = $Item.model; }) > $Null
 		$ItemInformation.Add(@{ Data = "Domain"; Value = $Item.domain; }) > $Null
 		$ItemInformation.Add(@{ Data = "Operating System"; Value = $OS; }) > $Null
+		$ItemInformation.Add(@{ Data = "Power Plan"; Value = $PowerPlan; }) > $Null
 		$ItemInformation.Add(@{ Data = "Total Ram"; Value = "$($Item.totalphysicalram) GB"; }) > $Null
 		$ItemInformation.Add(@{ Data = "Physical Processors (sockets)"; Value = $Item.NumberOfProcessors; }) > $Null
 		$ItemInformation.Add(@{ Data = "Logical Processors (cores w/HT)"; Value = $Item.NumberOfLogicalProcessors; }) > $Null
@@ -1721,6 +1750,7 @@ Function OutputComputerItem
 		Line 2 "Model`t`t`t`t: " $Item.model
 		Line 2 "Domain`t`t`t`t: " $Item.domain
 		Line 2 "Operating System`t`t: " $OS
+		Line 2 "Power Plan`t`t`t: " $PowerPlan
 		Line 2 "Total Ram`t`t`t: $($Item.totalphysicalram) GB"
 		Line 2 "Physical Processors (sockets)`t: " $Item.NumberOfProcessors
 		Line 2 "Logical Processors (cores w/HT)`t: " $Item.NumberOfLogicalProcessors
@@ -1732,6 +1762,8 @@ Function OutputComputerItem
 		$columnHeaders = @("Manufacturer",($htmlsilver -bor $htmlBold),$Item.manufacturer,$htmlwhite)
 		$rowdata += @(,('Model',($htmlsilver -bor $htmlBold),$Item.model,$htmlwhite))
 		$rowdata += @(,('Domain',($htmlsilver -bor $htmlBold),$Item.domain,$htmlwhite))
+		$rowdata += @(,('Operating System',($htmlsilver -bor $htmlBold),$OS,$htmlwhite))
+		$rowdata += @(,('Power Plan',($htmlsilver -bor $htmlBold),$PowerPlan,$htmlwhite))
 		$rowdata += @(,('Total Ram',($htmlsilver -bor $htmlBold),"$($Item.totalphysicalram) GB",$htmlwhite))
 		$rowdata += @(,('Physical Processors (sockets)',($htmlsilver -bor $htmlBold),$Item.NumberOfProcessors,$htmlwhite))
 		$rowdata += @(,('Logical Processors (cores w/HT)',($htmlsilver -bor $htmlBold),$Item.NumberOfLogicalProcessors,$htmlwhite))
@@ -2495,21 +2527,23 @@ Function SetWordHashTable
 	#nl - Dutch
 	#pt - Portuguese
 	#sv - Swedish
+	#zh - Chinese
 	
 	[string]$toc = $(
 		Switch ($CultureCode)
 		{
-			'ca-'	{ 'Taula automÃ¡tica 2'; Break }
+			'ca-'	{ 'Taula automática 2'; Break }
 			'da-'	{ 'Automatisk tabel 2'; Break }
 			'de-'	{ 'Automatische Tabelle 2'; Break }
 			'en-'	{ 'Automatic Table 2'; Break }
-			'es-'	{ 'Tabla automÃ¡tica 2'; Break }
+			'es-'	{ 'Tabla automática 2'; Break }
 			'fi-'	{ 'Automaattinen taulukko 2'; Break }
-			'fr-'	{ 'Table automatiqueÂ 2'; Break } #changed 10-feb-2017 david roquier and samuel legrand
+			'fr-'	{ 'Table automatique 2'; Break } #changed 10-feb-2017 david roquier and samuel legrand
 			'nb-'	{ 'Automatisk tabell 2'; Break }
 			'nl-'	{ 'Automatische inhoudsopgave 2'; Break }
-			'pt-'	{ 'SumÃ¡rio AutomÃ¡tico 2'; Break }
-			'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckn2'; Break }
+			'pt-'	{ 'Sumário Automático 2'; Break }
+			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
+			'zh-'	{ '自动目录 2'; Break }
 		}
 	)
 
@@ -2530,6 +2564,7 @@ Function GetCulture
 	#codes obtained from http://support.microsoft.com/kb/221435
 	#http://msdn.microsoft.com/en-us/library/bb213877(v=office.12).aspx
 	$CatalanArray = 1027
+	$ChineseArray = 2052,3076,5124,4100
 	$DanishArray = 1030
 	$DutchArray = 2067, 1043
 	$EnglishArray = 3081, 10249, 4105, 9225, 6153, 8201, 5129, 13321, 7177, 11273, 2057, 1033, 12297
@@ -2552,11 +2587,12 @@ Function GetCulture
 	#nl - Dutch
 	#pt - Portuguese
 	#sv - Swedish
-
+	#zh - Chinese
 
 	Switch ($WordValue)
 	{
 		{$CatalanArray -contains $_}	{$CultureCode = "ca-"}
+		{$ChineseArray -contains $_}	{$CultureCode = "zh-"}
 		{$DanishArray -contains $_}		{$CultureCode = "da-"}
 		{$DutchArray -contains $_}		{$CultureCode = "nl-"}
 		{$EnglishArray -contains $_}	{$CultureCode = "en-"}
@@ -2585,23 +2621,23 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
-					"Integral", "IÃ³ (clar)", "IÃ³ (fosc)", "LÃ­nia lateral",
-					"Moviment", "QuadrÃ­cula", "Retrospectiu", "Sector (clar)",
-					"Sector (fosc)", "SemÃ for", "VisualitzaciÃ³ principal", "Whisp")
+					"Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
+					"Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
+					"Sector (fosc)", "Semàfor", "Visualització principal", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
-					"Integral", "IÃ³ (clar)", "IÃ³ (fosc)", "LÃ­nia lateral",
-					"Moviment", "QuadrÃ­cula", "Retrospectiu", "Sector (clar)",
-					"Sector (fosc)", "SemÃ for", "VisualitzaciÃ³", "Whisp")
+					"Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
+					"Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
+					"Sector (fosc)", "Semàfor", "Visualització", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
 					$xArray = ("Alfabet", "Anual", "Austin", "Conservador",
-					"Contrast", "Cubicles", "DiplomÃ tic", "ExposiciÃ³",
-					"LÃ­nia lateral", "Mod", "Mosiac", "Moviment", "Paper de diari",
-					"Perspectiva", "Piles", "QuadrÃ­cula", "Sobri",
+					"Contrast", "Cubicles", "Diplomàtic", "Exposició",
+					"Línia lateral", "Mod", "Mosiac", "Moviment", "Paper de diari",
+					"Perspectiva", "Piles", "Quadrícula", "Sobri",
 					"Transcendir", "Trencaclosques")
 				}
 			}
@@ -2609,24 +2645,24 @@ Function ValidateCoverPage
 		'da-'	{
 				If($xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("Austin", "BevÃ¦gElse", "Brusen", "Facet", "Filigran", 
-					"Gitter", "Integral", "Ion (lys)", "Ion (mÃ¸rk)", 
+					$xArray = ("Austin", "BevægElse", "Brusen", "Facet", "Filigran", 
+					"Gitter", "Integral", "Ion (lys)", "Ion (mørk)", 
 					"Retro", "Semafor", "Sidelinje", "Stribet", 
-					"Udsnit (lys)", "Udsnit (mÃ¸rk)", "Visningsmaster")
+					"Udsnit (lys)", "Udsnit (mørk)", "Visningsmaster")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
-					$xArray = ("BevÃ¦gElse", "Brusen", "Ion (lys)", "Filigran",
+					$xArray = ("BevægElse", "Brusen", "Ion (lys)", "Filigran",
 					"Retro", "Semafor", "Visningsmaster", "Integral",
 					"Facet", "Gitter", "Stribet", "Sidelinje", "Udsnit (lys)",
-					"Udsnit (mÃ¸rk)", "Ion (mÃ¸rk)", "Austin")
+					"Udsnit (mørk)", "Ion (mørk)", "Austin")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("BevÃ¦gElse", "Moderat", "Perspektiv", "Firkanter",
-					"Overskrid", "Alfabet", "Kontrast", "Stakke", "Fliser", "GÃ¥de",
+					$xArray = ("BevægElse", "Moderat", "Perspektiv", "Firkanter",
+					"Overskrid", "Alfabet", "Kontrast", "Stakke", "Fliser", "Gåde",
 					"Gitter", "Austin", "Eksponering", "Sidelinje", "Enkel",
-					"NÃ¥lestribet", "Ã…rlig", "Avispapir", "Tradionel")
+					"Nålestribet", "Årlig", "Avispapir", "Tradionel")
 				}
 			}
 
@@ -2634,22 +2670,22 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "Bewegung", "Facette", "Filigran", 
-					"GebÃ¤ndert", "Integral", "Ion (dunkel)", "Ion (hell)", 
-					"Pfiff", "Randlinie", "Raster", "RÃ¼ckblick", 
+					"Gebändert", "Integral", "Ion (dunkel)", "Ion (hell)", 
+					"Pfiff", "Randlinie", "Raster", "Rückblick", 
 					"Segment (dunkel)", "Segment (hell)", "Semaphor", 
 					"ViewMaster")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Semaphor", "Segment (hell)", "Ion (hell)",
-					"Raster", "Ion (dunkel)", "Filigran", "RÃ¼ckblick", "Pfiff",
+					"Raster", "Ion (dunkel)", "Filigran", "Rückblick", "Pfiff",
 					"ViewMaster", "Segment (dunkel)", "Verbunden", "Bewegung",
 					"Randlinie", "Austin", "Integral", "Facette")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
 					$xArray = ("Alphabet", "Austin", "Bewegung", "Durchscheinend",
-					"Herausgestellt", "JÃ¤hrlich", "Kacheln", "Kontrast", "Kubistisch",
+					"Herausgestellt", "Jährlich", "Kacheln", "Kontrast", "Kubistisch",
 					"Modern", "Nadelstreifen", "Perspektive", "Puzzle", "Randlinie",
 					"Raster", "Schlicht", "Stapel", "Traditionell", "Zeitungspapier")
 				}
@@ -2674,23 +2710,23 @@ Function ValidateCoverPage
 		'es-'	{
 				If($xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("Austin", "Con bandas", "Cortar (oscuro)", "CuadrÃ­cula", 
+					$xArray = ("Austin", "Con bandas", "Cortar (oscuro)", "Cuadrícula", 
 					"Whisp", "Faceta", "Filigrana", "Integral", "Ion (claro)", 
-					"Ion (oscuro)", "LÃ­nea lateral", "Movimiento", "Retrospectiva", 
-					"SemÃ¡foro", "Slice (luz)", "Vista principal", "Whisp")
+					"Ion (oscuro)", "Línea lateral", "Movimiento", "Retrospectiva", 
+					"Semáforo", "Slice (luz)", "Vista principal", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Whisp", "Vista principal", "Filigrana", "Austin",
-					"Slice (luz)", "Faceta", "SemÃ¡foro", "Retrospectiva", "CuadrÃ­cula",
-					"Movimiento", "Cortar (oscuro)", "LÃ­nea lateral", "Ion (oscuro)",
+					"Slice (luz)", "Faceta", "Semáforo", "Retrospectiva", "Cuadrícula",
+					"Movimiento", "Cortar (oscuro)", "Línea lateral", "Ion (oscuro)",
 					"Ion (claro)", "Integral", "Con bandas")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
 					$xArray = ("Alfabeto", "Anual", "Austero", "Austin", "Conservador",
-					"Contraste", "CuadrÃ­cula", "CubÃ­culos", "ExposiciÃ³n", "LÃ­nea lateral",
-					"Moderno", "Mosaicos", "Movimiento", "Papel periÃ³dico",
+					"Contraste", "Cuadrícula", "Cubículos", "Exposición", "Línea lateral",
+					"Moderno", "Mosaicos", "Movimiento", "Papel periódico",
 					"Perspectiva", "Pilas", "Puzzle", "Rayas", "Sobrepasar")
 				}
 			}
@@ -2700,14 +2736,14 @@ Function ValidateCoverPage
 				{
 					$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
 					"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
-					"Sektori (vaalea)", "VaihtuvavÃ¤rinen", "ViewMaster", "Austin",
+					"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
 					"Kuiskaus", "Liike", "Ruudukko", "Sivussa")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
 					"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
-					"Sektori (vaalea)", "VaihtuvavÃ¤rinen", "ViewMaster", "Austin",
+					"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
 					"Kiehkura", "Liike", "Ruudukko", "Sivussa")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
@@ -2722,17 +2758,17 @@ Function ValidateCoverPage
 		'fr-'	{
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("Ã€ bandes", "Austin", "Facette", "Filigrane", 
-					"Guide", "IntÃ©grale", "Ion (clair)", "Ion (foncÃ©)", 
-					"Lignes latÃ©rales", "Quadrillage", "RÃ©trospective", "Secteur (clair)", 
-					"Secteur (foncÃ©)", "SÃ©maphore", "ViewMaster", "Whisp")
+					$xArray = ("À bandes", "Austin", "Facette", "Filigrane", 
+					"Guide", "Intégrale", "Ion (clair)", "Ion (foncé)", 
+					"Lignes latérales", "Quadrillage", "Rétrospective", "Secteur (clair)", 
+					"Secteur (foncé)", "Sémaphore", "ViewMaster", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("Alphabet", "Annuel", "AustÃ¨re", "Austin", 
-					"Blocs empilÃ©s", "Classique", "Contraste", "Emplacements de bureau", 
-					"Exposition", "Guide", "Ligne latÃ©rale", "Moderne", 
-					"MosaÃ¯ques", "Mots croisÃ©s", "Papier journal", "Perspective",
+					$xArray = ("Alphabet", "Annuel", "Austère", "Austin", 
+					"Blocs empilés", "Classique", "Contraste", "Emplacements de bureau", 
+					"Exposition", "Guide", "Ligne latérale", "Moderne", 
+					"Mosaïques", "Mots croisés", "Papier journal", "Perspective",
 					"Quadrillage", "Rayures fines", "Transcendant")
 				}
 			}
@@ -2741,13 +2777,13 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "BevegElse", "Dempet", "Fasett", "Filigran",
-					"Integral", "Ion (lys)", "Ion (mÃ¸rk)", "Retrospekt", "Rutenett",
-					"Sektor (lys)", "Sektor (mÃ¸rk)", "Semafor", "Sidelinje", "Stripet",
+					"Integral", "Ion (lys)", "Ion (mørk)", "Retrospekt", "Rutenett",
+					"Sektor (lys)", "Sektor (mørk)", "Semafor", "Sidelinje", "Stripet",
 					"ViewMaster")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("Alfabet", "Ã…rlig", "Avistrykk", "Austin", "Avlukker",
+					$xArray = ("Alfabet", "Årlig", "Avistrykk", "Austin", "Avlukker",
 					"BevegElse", "Engasjement", "Enkel", "Fliser", "Konservativ",
 					"Kontrast", "Mod", "Perspektiv", "Puslespill", "Rutenett", "Sidelinje",
 					"Smale striper", "Stabler", "Transcenderende")
@@ -2775,17 +2811,17 @@ Function ValidateCoverPage
 		'pt-'	{
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("AnimaÃ§Ã£o", "Austin", "Em Tiras", "ExibiÃ§Ã£o Mestra",
+					$xArray = ("Animação", "Austin", "Em Tiras", "Exibição Mestra",
 					"Faceta", "Fatia (Clara)", "Fatia (Escura)", "Filete", "Filigrana", 
-					"Grade", "Integral", "Ãon (Claro)", "Ãon (Escuro)", "Linha Lateral",
-					"Retrospectiva", "SemÃ¡foro")
+					"Grade", "Integral", "Íon (Claro)", "Íon (Escuro)", "Linha Lateral",
+					"Retrospectiva", "Semáforo")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("Alfabeto", "AnimaÃ§Ã£o", "Anual", "Austero", "Austin", "Baias",
-					"Conservador", "Contraste", "ExposiÃ§Ã£o", "Grade", "Ladrilhos",
+					$xArray = ("Alfabeto", "Animação", "Anual", "Austero", "Austin", "Baias",
+					"Conservador", "Contraste", "Exposição", "Grade", "Ladrilhos",
 					"Linha Lateral", "Listras", "Mod", "Papel Jornal", "Perspectiva", "Pilhas",
-					"Quebra-cabeÃ§a", "Transcend")
+					"Quebra-cabeça", "Transcend")
 				}
 			}
 
@@ -2793,15 +2829,25 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "Band", "Fasett", "Filigran", "Integrerad", "Jon (ljust)",
-					"Jon (mÃ¶rkt)", "Knippe", "RutnÃ¤t", "RÃ¶rElse", "Sektor (ljus)", "Sektor (mÃ¶rk)",
-					"Semafor", "Sidlinje", "VisaHuvudsida", "Ã…terblick")
+					"Jon (mörkt)", "Knippe", "Rutnät", "RörElse", "Sektor (ljus)", "Sektor (mörk)",
+					"Semafor", "Sidlinje", "VisaHuvudsida", "Återblick")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("AlfabetmÃ¶nster", "Austin", "Enkelt", "Exponering", "Konservativt",
-					"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "RutnÃ¤t",
-					"RÃ¶rElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Ã…rligt",
-					"Ã-vergÃ¥ende")
+					$xArray = ("Alfabetmönster", "Austin", "Enkelt", "Exponering", "Konservativt",
+					"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "Rutnät",
+					"RörElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Årligt",
+					"Övergående")
+				}
+			}
+
+		'zh-'	{
+				If($xWordVersion -eq $wdWord2010 -or $xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+				{
+					$xArray = ('奥斯汀', '边线型', '花丝', '怀旧', '积分',
+					'离子(浅色)', '离子(深色)', '母版型', '平面', '切片(浅色)',
+					'切片(深色)', '丝状', '网格', '镶边', '信号灯',
+					'运动型')
 				}
 			}
 
@@ -2856,7 +2902,7 @@ Function CheckWordPrereq
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
 	#Find out if winword is running in our session
-	[bool]$wordrunning = $null -ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$wordrunning = $null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
 		$ErrorActionPreference = $SaveEAPreference
@@ -3090,7 +3136,7 @@ Function SetupWord
 			'ca-'	{
 					If($CoverPage -eq "Sideline")
 					{
-						$CoverPage = "LÃ­nia lateral"
+						$CoverPage = "Línia lateral"
 						$CPChanged = $True
 					}
 				}
@@ -3114,7 +3160,7 @@ Function SetupWord
 			'es-'	{
 					If($CoverPage -eq "Sideline")
 					{
-						$CoverPage = "LÃ­nea lateral"
+						$CoverPage = "Línea lateral"
 						$CPChanged = $True
 					}
 				}
@@ -3132,12 +3178,12 @@ Function SetupWord
 					{
 						If($Script:WordVersion -eq $wdWord2013 -or $Script:WordVersion -eq $wdWord2016)
 						{
-							$CoverPage = "Lignes latÃ©rales"
+							$CoverPage = "Lignes latérales"
 							$CPChanged = $True
 						}
 						Else
 						{
-							$CoverPage = "Ligne latÃ©rale"
+							$CoverPage = "Ligne latérale"
 							$CPChanged = $True
 						}
 					}
@@ -3171,6 +3217,14 @@ Function SetupWord
 					If($CoverPage -eq "Sideline")
 					{
 						$CoverPage = "Sidlinje"
+						$CPChanged = $True
+					}
+				}
+
+			'zh-'	{
+					If($CoverPage -eq "Sideline")
+					{
+						$CoverPage = "边线型"
 						$CPChanged = $True
 					}
 				}
@@ -6967,7 +7021,7 @@ Function ProcessIPv4Statistics
 
 	If($? -and $Null -ne $Statistics)
 	{
-		$UpTime = $(Get-Date -Format G) - $Statistics.ServerStartTime
+		$UpTime = $(Get-Date) - $Statistics.ServerStartTime
 		$Str = [string]::format("{0} days, {1} hours, {2} minutes, {3} seconds", `
 			$UpTime.Days, `
 			$UpTime.Hours, `
@@ -13036,7 +13090,7 @@ Function ProcessIPv6Properties
 
 	If($? -and $Null -ne $Statistics)
 	{
-		$UpTime = $(Get-Date -Format G) - $Statistics.ServerStartTime
+		$UpTime = $(Get-Date) - $Statistics.ServerStartTime
 		$Str = [string]::format("{0} days, {1} hours, {2} minutes, {3} seconds", `
 			$UpTime.Days, `
 			$UpTime.Hours, `
@@ -13686,7 +13740,7 @@ Function ProcessScriptEnd
 	#http://poshtips.com/measuring-elapsed-time-in-powershell/
 	Write-Verbose "$(Get-Date -Format G): Script started: $($Script:StartTime)"
 	Write-Verbose "$(Get-Date -Format G): Script ended: $(Get-Date -Format G)"
-	$runtime = $(Get-Date -Format G) - $Script:StartTime
+	$runtime = $(Get-Date) - $Script:StartTime
 	$Str = [string]::format("{0} days, {1} hours, {2} minutes, {3}.{4} seconds", `
 		$runtime.Days, `
 		$runtime.Hours, `

@@ -6,13 +6,14 @@
 	Creates a complete inventory of a Citrix PVS 5.x, 6.x or 7.x farm using Microsoft Word 
 	2010, 2013, or 2016.
 .DESCRIPTION
-	Creates a complete inventory of a Citrix PVS 5.x, 6.x or 7.x farm using Microsoft Word 
+	Creates a complete inventory of a Citrix PVS 5.x, 6.x, or 7.x farm using Microsoft Word 
 	and PowerShell.
-	Creates a Word document named after the PVS 5.x, 6.x or 7.x farm.
-	Document includes a Cover Page, Table of Contents and Footer.
+	Creates a Word document named after the PVS 5.x, 6.x, or 7.x farm.
+	Document includes a Cover Page, Table of Contents, and Footer.
 	Version 4 and later include support for the following language versions of Microsoft 
 	Word:
 		Catalan
+		Chinese
 		Danish
 		Dutch
 		English
@@ -24,6 +25,44 @@
 		Spanish
 		Swedish
 
+.PARAMETER AdminAddress
+	Specifies the name of a PVS server that the PowerShell script will connect to. 
+	Using this parameter requires the script be run from an elevated PowerShell session.
+	Starting with V4.26 of the script, this requirement is now checked.
+	This parameter has an alias of AA.
+.PARAMETER User
+	Specifies the user used for the AdminAddress connection. 
+.PARAMETER Domain
+	Specifies the domain used for the AdminAddress connection. 
+.PARAMETER Password
+	Specifies the password used for the AdminAddress connection. 
+.PARAMETER AddDateTime
+	Adds a date time stamp to the end of the file name.
+	Time stamp is in the format of yyyy-MM-dd_HHmm.
+	June 1, 2021 at 6PM is 2021-06-01_1800.
+	Output filename will be ReportName_2021-06-01_1800.docx (or .pdf).
+	This parameter is disabled by default.
+.PARAMETER Folder
+	Specifies the optional output folder to save the output report. 
+.PARAMETER Hardware
+	Use WMI to gather hardware information on: Computer System, Disks, Processor and 
+	Network Interface Cards
+	This parameter is disabled by default.
+.PARAMETER StartDate
+	Start date, in MM/DD/YYYY format, for the Audit Trail report.
+	Default is today's date minus seven days.
+.PARAMETER EndDate
+	End date, in MM/DD/YYYY format, for the Audit Trail report.
+	Default is today's date.
+.PARAMETER MSWord
+	SaveAs DOCX file
+	This parameter is set True if no other output format is selected.
+.PARAMETER PDF
+	SaveAs PDF file instead of DOCX file.
+	This parameter is disabled by default.
+	The PDF file is roughly 5X to 10X larger than the DOCX file.
+	This parameter requires Microsoft Word to be installed.
+	This parameter uses the Word SaveAs PDF capability.
 .PARAMETER CompanyName
 	Company Name to use for the Cover Page.  
 	Default value is contained in 
@@ -87,44 +126,6 @@
 	Default value is contained in $env:username
 	This parameter has an alias of UN.
 	This parameter is only valid with the MSWORD and PDF output parameters.
-.PARAMETER PDF
-	SaveAs PDF file instead of DOCX file.
-	This parameter is disabled by default.
-	The PDF file is roughly 5X to 10X larger than the DOCX file.
-	This parameter requires Microsoft Word to be installed.
-	This parameter uses the Word SaveAs PDF capability.
-.PARAMETER MSWord
-	SaveAs DOCX file
-	This parameter is set True if no other output format is selected.
-.PARAMETER Hardware
-	Use WMI to gather hardware information on: Computer System, Disks, Processor and 
-	Network Interface Cards
-	This parameter is disabled by default.
-.PARAMETER AdminAddress
-	Specifies the name of a PVS server that the PowerShell script will connect to. 
-	Using this parameter requires the script be run from an elevated PowerShell session.
-	Starting with V4.26 of the script, this requirement is now checked.
-	This parameter has an alias of AA.
-.PARAMETER User
-	Specifies the user used for the AdminAddress connection. 
-.PARAMETER Domain
-	Specifies the domain used for the AdminAddress connection. 
-.PARAMETER Password
-	Specifies the password used for the AdminAddress connection. 
-.PARAMETER StartDate
-	Start date, in MM/DD/YYYY format, for the Audit Trail report.
-	Default is today's date minus seven days.
-.PARAMETER EndDate
-	End date, in MM/DD/YYYY format, for the Audit Trail report.
-	Default is today's date.
-.PARAMETER AddDateTime
-	Adds a date time stamp to the end of the file name.
-	Time stamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be ReportName_2020-06-01_1800.docx (or .pdf).
-	This parameter is disabled by default.
-.PARAMETER Folder
-	Specifies the optional output folder to save the output report. 
 .PARAMETER SmtpServer
 	Specifies the optional email server to send the output report. 
 .PARAMETER SmtpPort
@@ -340,10 +341,10 @@
 .OUTPUTS
 	No objects are output from this script.  This script creates a Word or PDF document.
 .NOTES
-	NAME: Docu-PVS_V4.ps1
-	VERSION: 4.292
-	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith, Jeff Wouters and Iain Brighton)
-	LASTEDIT: May 10, 2020
+	NAME: PVS_Inventory_V43.ps1
+	VERSION: 4.30
+	AUTHOR: Carl Webster (with a lot of help from Michael B. Smith, Jeff Wouters, and Iain Brighton)
+	LASTEDIT: January 19, 2021
 #>
 
 
@@ -351,24 +352,6 @@
 [CmdletBinding(SupportsShouldProcess = $False, ConfirmImpact = "None", DefaultParameterSetName = "Word") ]
 
 Param(
-	[parameter(ParameterSetName="Word",Mandatory=$False)] 
-	[Switch]$MSWord=$False,
-
-	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
-	[Switch]$PDF=$False,
-
-	[parameter(Mandatory=$False)] 
-	[Switch]$Hardware=$False, 
-
-	[parameter(Mandatory=$False)] 
-	[Datetime]$StartDate = ((Get-Date -displayhint date).AddDays(-7)),
-
-	[parameter(Mandatory=$False)] 
-	[Datetime]$EndDate = (Get-Date -displayhint date),
-	
-	[parameter(Mandatory=$False)] 
-	[Switch]$AddDateTime=$False,
-	
 	[parameter(Mandatory=$False)] 
 	[Alias("AA")]
 	[string]$AdminAddress="",
@@ -383,8 +366,26 @@ Param(
 	[string]$Password="",
 	
 	[parameter(Mandatory=$False)] 
+	[Switch]$AddDateTime=$False,
+	
+	[parameter(Mandatory=$False)] 
 	[string]$Folder="",
 	
+	[parameter(Mandatory=$False)] 
+	[Switch]$Hardware=$False, 
+
+	[parameter(Mandatory=$False)] 
+	[Datetime]$StartDate = ((Get-Date -displayhint date).AddDays(-7)),
+
+	[parameter(Mandatory=$False)] 
+	[Datetime]$EndDate = (Get-Date -displayhint date),
+	
+	[parameter(ParameterSetName="Word",Mandatory=$False)] 
+	[Switch]$MSWord=$False,
+
+	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
+	[Switch]$PDF=$False,
+
 	[parameter(ParameterSetName="Word",Mandatory=$False)] 
 	[parameter(ParameterSetName="PDF",Mandatory=$False)] 
 	[Alias("CN")]
@@ -428,6 +429,17 @@ Param(
 #This script written for "Benji", March 19, 2012
 #Thanks to Michael B. Smith, Joe Shonk and Stephane Thirion for testing and fine-tuning tips 
 
+#Version 4.30 19-Jan-2021
+#	Added to the Computer Hardware section, the server's Power Plan (requested by JLuhring)
+#	Changed all Verbose statements from Get-Date to Get-Date -Format G as requested by Guy Leech
+#	Changed getting the path for the PVS snapin from the environment variable for "ProgramFiles" to the console installation path (Thanks to Guy Leech)
+#	Check for the McliPSSnapIn snapin before installing the .Net snapins
+#		If the snapin already exists, there was no need to install and register the .Net V2 and V4 snapins for every script run
+#	Reformatted Appendix A to make it fit the content better
+#	Reordered parameters in an order recommended by Guy Leech
+#	Updated the help text
+#	Updated the ReadMe file
+#
 #Version 4.292 10-May-2020
 #	Add checking for a Word version of 0, which indicates the Office installation needs repairing
 #	Add Receive Side Scaling setting to Function OutputNICItem
@@ -452,6 +464,9 @@ Param(
 #	Code clean up from Visual Studio Code
 #Version 4.28 13-Feb-2017
 #	Fixed French wording for Table of Contents 2 (Thanks to David Rouquier)
+#
+#Version 4.27 7-Nov-2016
+#	Added Chinese language support
 #
 #Version 4.26 12-Sep-2016
 #	Added an alias AA for AdminAddress to match the other scripts that use AdminAddress
@@ -526,32 +541,32 @@ If($MSWord -eq $False -and $PDF -eq $False)
 	$MSWord = $True
 }
 
-Write-Verbose "$(Get-Date): Testing output parameters"
+Write-Verbose "$(Get-Date -Format G): Testing output parameters"
 
 If($MSWord)
 {
-	Write-Verbose "$(Get-Date): MSWord is set"
+	Write-Verbose "$(Get-Date -Format G): MSWord is set"
 }
 ElseIf($PDF)
 {
-	Write-Verbose "$(Get-Date): PDF is set"
+	Write-Verbose "$(Get-Date -Format G): PDF is set"
 }
 Else
 {
 	$ErrorActionPreference = $SaveEAPreference
-	Write-Verbose "$(Get-Date): Unable to determine output parameter"
+	Write-Verbose "$(Get-Date -Format G): Unable to determine output parameter"
 	If($MSWord -eq $Null)
 	{
-		Write-Verbose "$(Get-Date): MSWord is Null"
+		Write-Verbose "$(Get-Date -Format G): MSWord is Null"
 	}
 	ElseIf($PDF -eq $Null)
 	{
-		Write-Verbose "$(Get-Date): PDF is Null"
+		Write-Verbose "$(Get-Date -Format G): PDF is Null"
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): MSWord is $($MSWord)"
-		Write-Verbose "$(Get-Date): PDF is $($PDF)"
+		Write-Verbose "$(Get-Date -Format G): MSWord is $($MSWord)"
+		Write-Verbose "$(Get-Date -Format G): PDF is $($PDF)"
 	}
 	Write-Error "
 	`n`n
@@ -567,7 +582,7 @@ Else
 
 If($Folder -ne "")
 {
-	Write-Verbose "$(Get-Date): Testing folder path"
+	Write-Verbose "$(Get-Date -Format G): Testing folder path"
 	#does it exist
 	If(Test-Path $Folder -EA 0)
 	{
@@ -575,7 +590,7 @@ If($Folder -ne "")
 		If(Test-Path $Folder -pathType Container -EA 0)
 		{
 			#it exists and it is a folder
-			Write-Verbose "$(Get-Date): Folder path $Folder exists and is a folder"
+			Write-Verbose "$(Get-Date -Format G): Folder path $Folder exists and is a folder"
 		}
 		Else
 		{
@@ -687,7 +702,7 @@ If($MSWord -or $PDF)
 {
 	#try and fix the issue with the $CompanyName variable
 	$CoName = $CompanyName
-	Write-Verbose "$(Get-Date): CoName is $($CoName)"
+	Write-Verbose "$(Get-Date -Format G): CoName is $($CoName)"
 	
 	#the following values were attained from 
 	#http://groovy.codehaus.org/modules/scriptom/1.6.0/scriptom-office-2K3-tlb/apidocs/
@@ -700,6 +715,7 @@ If($MSWord -or $PDF)
 	[int]$wdSeekPrimaryFooter = 4
 	[int]$wdStory = 6
 	[int]$wdColorRed = 255
+	[int]$wdColorWhite = 16777215
 	[int]$wdColorBlack = 0
 	[int]$wdWord2007 = 12
 	[int]$wdWord2010 = 14
@@ -754,7 +770,7 @@ If($MSWord -or $PDF)
 Function SendEmail
 {
 	Param([array]$Attachments)
-	Write-Verbose "$(Get-Date): Prepare to email"
+	Write-Verbose "$(Get-Date -Format G): Prepare to email"
 
 	$emailAttachment = $Attachments
 	$emailSubject = $Script:Title
@@ -794,13 +810,13 @@ $Script:Title is attached.
 		
 		If($?)
 		{
-			Write-Verbose "$(Get-Date): Email successfully sent using anonymous credentials"
+			Write-Verbose "$(Get-Date -Format G): Email successfully sent using anonymous credentials"
 		}
 		ElseIf(!$?)
 		{
 			$e = $error[0]
 
-			Write-Verbose "$(Get-Date): Email was not sent:"
+			Write-Verbose "$(Get-Date -Format G): Email was not sent:"
 			Write-Warning "$(Get-Date): Exception: $e.Exception" 
 		}
 	}
@@ -808,7 +824,7 @@ $Script:Title is attached.
 	{
 		If($UseSSL)
 		{
-			Write-Verbose "$(Get-Date): Trying to send email using current user's credentials with SSL"
+			Write-Verbose "$(Get-Date -Format G): Trying to send email using current user's credentials with SSL"
 			Send-MailMessage -Attachments $emailAttachment -Body $emailBody -BodyAsHtml -From $From `
 			-Port $SmtpPort -SmtpServer $SmtpServer -Subject $emailSubject -To $To `
 			-UseSSL *>$Null
@@ -828,7 +844,7 @@ $Script:Title is attached.
 			If($null -ne $e.Exception -and $e.Exception.ToString().Contains("5.7"))
 			{
 				#The server response was: 5.7.xx SMTP; Client was not authenticated to send anonymous mail during MAIL FROM
-				Write-Verbose "$(Get-Date): Current user's credentials failed. Ask for usable credentials."
+				Write-Verbose "$(Get-Date -Format G): Current user's credentials failed. Ask for usable credentials."
 
 				If($Dev)
 				{
@@ -854,19 +870,19 @@ $Script:Title is attached.
 
 				If($?)
 				{
-					Write-Verbose "$(Get-Date): Email successfully sent using new credentials"
+					Write-Verbose "$(Get-Date -Format G): Email successfully sent using new credentials"
 				}
 				ElseIf(!$?)
 				{
 					$e = $error[0]
 
-					Write-Verbose "$(Get-Date): Email was not sent:"
+					Write-Verbose "$(Get-Date -Format G): Email was not sent:"
 					Write-Warning "$(Get-Date): Exception: $e.Exception" 
 				}
 			}
 			Else
 			{
-				Write-Verbose "$(Get-Date): Email was not sent:"
+				Write-Verbose "$(Get-Date -Format G): Email was not sent:"
 				Write-Warning "$(Get-Date): Exception: $e.Exception" 
 			}
 		}
@@ -889,8 +905,8 @@ Function GetComputerWMIInfo
 	# modified 2-Apr-2018 to add ComputerOS information
 
 	#Get Computer info
-	Write-Verbose "$(Get-Date): `t`tProcessing WMI Computer information"
-	Write-Verbose "$(Get-Date): `t`t`tHardware information"
+	Write-Verbose "$(Get-Date -Format G): `t`tProcessing WMI Computer information"
+	Write-Verbose "$(Get-Date -Format G): `t`t`tHardware information"
 	If($MSWord -or $PDF)
 	{
 		WriteWordLine 3 0 "Computer Information: $($RemoteComputerName)"
@@ -919,12 +935,12 @@ Function GetComputerWMIInfo
 
 		ForEach($Item in $ComputerItems)
 		{
-			OutputComputerItem $Item $ComputerOS
+			OutputComputerItem $Item $ComputerOS $RemoteComputerName
 		}
 	}
 	ElseIf(!$?)
 	{
-		Write-Verbose "$(Get-Date): Get-WmiObject win32_computersystem failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_computersystem failed for $($RemoteComputerName)"
 		Write-Warning "Get-WmiObject win32_computersystem failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
@@ -936,7 +952,7 @@ Function GetComputerWMIInfo
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): No results Returned for Computer information"
+		Write-Verbose "$(Get-Date -Format G): No results Returned for Computer information"
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "No results Returned for Computer information" "" $Null 0 $False $True
@@ -944,7 +960,7 @@ Function GetComputerWMIInfo
 	}
 	
 	#Get Disk info
-	Write-Verbose "$(Get-Date): `t`t`tDrive information"
+	Write-Verbose "$(Get-Date -Format G): `t`t`tDrive information"
 
 	If($MSWord -or $PDF)
 	{
@@ -979,7 +995,7 @@ Function GetComputerWMIInfo
 	}
 	ElseIf(!$?)
 	{
-		Write-Verbose "$(Get-Date): Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)"
 		Write-Warning "Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
@@ -991,7 +1007,7 @@ Function GetComputerWMIInfo
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): No results Returned for Drive information"
+		Write-Verbose "$(Get-Date -Format G): No results Returned for Drive information"
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "No results Returned for Drive information" "" $Null 0 $False $True
@@ -1000,7 +1016,7 @@ Function GetComputerWMIInfo
 	
 
 	#Get CPU's and stepping
-	Write-Verbose "$(Get-Date): `t`t`tProcessor information"
+	Write-Verbose "$(Get-Date -Format G): `t`t`tProcessor information"
 
 	If($MSWord -or $PDF)
 	{
@@ -1031,7 +1047,7 @@ Function GetComputerWMIInfo
 	}
 	ElseIf(!$?)
 	{
-		Write-Verbose "$(Get-Date): Get-WmiObject win32_Processor failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_Processor failed for $($RemoteComputerName)"
 		Write-Warning "Get-WmiObject win32_Processor failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
@@ -1043,7 +1059,7 @@ Function GetComputerWMIInfo
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): No results Returned for Processor information"
+		Write-Verbose "$(Get-Date -Format G): No results Returned for Processor information"
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "No results Returned for Processor information" "" $Null 0 $False $True
@@ -1051,7 +1067,7 @@ Function GetComputerWMIInfo
 	}
 
 	#Get Nics
-	Write-Verbose "$(Get-Date): `t`t`tNIC information"
+	Write-Verbose "$(Get-Date -Format G): `t`t`tNIC information"
 
 	If($MSWord -or $PDF)
 	{
@@ -1105,7 +1121,7 @@ Function GetComputerWMIInfo
 				ElseIf(!$?)
 				{
 					Write-Warning "$(Get-Date): Error retrieving NIC information"
-					Write-Verbose "$(Get-Date): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
+					Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 					Write-Warning "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 					If($MSWORD -or $PDF)
 					{
@@ -1118,7 +1134,7 @@ Function GetComputerWMIInfo
 				}
 				Else
 				{
-					Write-Verbose "$(Get-Date): No results Returned for NIC information"
+					Write-Verbose "$(Get-Date -Format G): No results Returned for NIC information"
 					If($MSWORD -or $PDF)
 					{
 						WriteWordLine 0 2 "No results Returned for NIC information" "" $Null 0 $False $True
@@ -1130,7 +1146,7 @@ Function GetComputerWMIInfo
 	ElseIf(!$?)
 	{
 		Write-Warning "$(Get-Date): Error retrieving NIC configuration information"
-		Write-Verbose "$(Get-Date): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 		Write-Warning "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
@@ -1143,7 +1159,7 @@ Function GetComputerWMIInfo
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): No results Returned for NIC configuration information"
+		Write-Verbose "$(Get-Date -Format G): No results Returned for NIC configuration information"
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "No results Returned for NIC configuration information" "" $Null 0 $False $True
@@ -1158,8 +1174,26 @@ Function GetComputerWMIInfo
 
 Function OutputComputerItem
 {
-	Param([object]$Item, [string]$OS)
+	Param([object]$Item, [string]$OS, [string]$RemoteComputerName)
 	# modified 2-Apr-2018 to add Operating System information
+	
+	#get computer's power plan
+	#https://techcommunity.microsoft.com/t5/core-infrastructure-and-security/get-the-active-power-plan-of-multiple-servers-with-powershell/ba-p/370429
+	
+	try 
+	{
+
+		$PowerPlan = (Get-WmiObject -ComputerName $RemoteComputerName -Class Win32_PowerPlan -Namespace "root\cimv2\power" |
+			Where-Object {$_.IsActive -eq $true} |
+			Select-Object @{Name = "PowerPlan"; Expression = {$_.ElementName}}).PowerPlan
+	}
+
+	catch 
+	{
+
+		$PowerPlan = $_.Exception
+
+	}	
 	
 	If($MSWord -or $PDF)
 	{
@@ -1168,6 +1202,7 @@ Function OutputComputerItem
 		$ItemInformation += @{ Data = "Model"; Value = $Item.model; }
 		$ItemInformation += @{ Data = "Domain"; Value = $Item.domain; }
 		$ItemInformation += @{ Data = "Operating System"; Value = $OS; }
+		$ItemInformation += @{ Data = "Power Plan"; Value = $PowerPlan; }
 		$ItemInformation += @{ Data = "Total Ram"; Value = "$($Item.totalphysicalram) GB"; }
 		$ItemInformation += @{ Data = "Physical Processors (sockets)"; Value = $Item.NumberOfProcessors; }
 		$ItemInformation += @{ Data = "Logical Processors (cores w/HT)"; Value = $Item.NumberOfLogicalProcessors; }
@@ -1676,6 +1711,7 @@ Function SetWordHashTable
 	#nl - Dutch
 	#pt - Portuguese
 	#sv - Swedish
+	#zh - Chinese
 	
 	[string]$toc = $(
 		Switch ($CultureCode)
@@ -1692,6 +1728,7 @@ Function SetWordHashTable
 			'pt-'	{ 'Sumário Automático 2'; Break }
 			# fix in 4.291 thanks to Johan Kallio 'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
 			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
+			'zh-'	{ '自动目录 2'; Break }
 		}
 	)
 
@@ -1712,6 +1749,7 @@ Function GetCulture
 	#codes obtained from http://support.microsoft.com/kb/221435
 	#http://msdn.microsoft.com/en-us/library/bb213877(v=office.12).aspx
 	$CatalanArray = 1027
+	$ChineseArray = 2052,3076,5124,4100
 	$DanishArray = 1030
 	$DutchArray = 2067, 1043
 	$EnglishArray = 3081, 10249, 4105, 9225, 6153, 8201, 5129, 13321, 7177, 11273, 2057, 1033, 12297
@@ -1734,10 +1772,12 @@ Function GetCulture
 	#nl - Dutch
 	#pt - Portuguese
 	#sv - Swedish
+	#zh - Chinese
 
 	Switch ($WordValue)
 	{
 		{$CatalanArray -contains $_} {$CultureCode = "ca-"}
+		{$ChineseArray -contains $_} {$CultureCode = "zh-"}
 		{$DanishArray -contains $_} {$CultureCode = "da-"}
 		{$DutchArray -contains $_} {$CultureCode = "nl-"}
 		{$EnglishArray -contains $_} {$CultureCode = "en-"}
@@ -1983,6 +2023,16 @@ Function ValidateCoverPage
 					"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "Rutnät",
 					"RörElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Årligt",
 					"Övergående")
+				}
+			}
+
+		'zh-'	{
+				If($xWordVersion -eq $wdWord2010 -or $xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+				{
+					$xArray = ('奥斯汀', '边线型', '花丝', '怀旧', '积分',
+					'离子(浅色)', '离子(深色)', '母版型', '平面', '切片(浅色)',
+					'切片(深色)', '丝状', '网格', '镶边', '信号灯',
+					'运动型')
 				}
 			}
 
@@ -2351,7 +2401,7 @@ Function _SetDocumentProperty
 Function AbortScript
 {
 	$Script:Word.quit()
-	Write-Verbose "$(Get-Date): System Cleanup"
+	Write-Verbose "$(Get-Date -Format G): System Cleanup"
 	[System.Runtime.Interopservices.Marshal]::ReleaseComObject($Script:Word) | Out-Null
 	If(Test-Path variable:global:word)
 	{
@@ -2359,7 +2409,7 @@ Function AbortScript
 	}
 	[gc]::collect() 
 	[gc]::WaitForPendingFinalizers()
-	Write-Verbose "$(Get-Date): Script has been aborted"
+	Write-Verbose "$(Get-Date -Format G): Script has been aborted"
 	$ErrorActionPreference = $SaveEAPreference
 	Exit
 }
@@ -2806,43 +2856,43 @@ Function SetWordTableAlternateRowColor
 
 Function ShowScriptOptions
 {
-	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): "
+	Write-Verbose "$(Get-Date -Format G): "
+	Write-Verbose "$(Get-Date -Format G): "
 	If($MSWord -or $PDF)
 	{
-		Write-Verbose "$(Get-Date): Company Name  : $($CompanyName)"
-		Write-Verbose "$(Get-Date): Cover Page    : $($CoverPage)"
-		Write-Verbose "$(Get-Date): User Name     : $($UserName)"
-		Write-Verbose "$(Get-Date): Save As Word  : $($Word)"
-		Write-Verbose "$(Get-Date): Save As PDF   : $($PDF)"
-		Write-Verbose "$(Get-Date): Title         : $($Script:Title)"
-		Write-Verbose "$(Get-Date): HW Inventory  : $($Hardware)"
-		Write-Verbose "$(Get-Date): Filename1     : $($filename1)"
+		Write-Verbose "$(Get-Date -Format G): Company Name  : $($CompanyName)"
+		Write-Verbose "$(Get-Date -Format G): Cover Page    : $($CoverPage)"
+		Write-Verbose "$(Get-Date -Format G): User Name     : $($UserName)"
+		Write-Verbose "$(Get-Date -Format G): Save As Word  : $($Word)"
+		Write-Verbose "$(Get-Date -Format G): Save As PDF   : $($PDF)"
+		Write-Verbose "$(Get-Date -Format G): Title         : $($Script:Title)"
+		Write-Verbose "$(Get-Date -Format G): HW Inventory  : $($Hardware)"
+		Write-Verbose "$(Get-Date -Format G): Filename1     : $($filename1)"
 		If($PDF)
 		{
-			Write-Verbose "$(Get-Date): Filename2     : $($filename2)"
+			Write-Verbose "$(Get-Date -Format G): Filename2     : $($filename2)"
 		}
-		Write-Verbose "$(Get-Date): Word version  : $($WordProduct)"
-		Write-Verbose "$(Get-Date): Word language : $($Script:WordLanguageValue)"
+		Write-Verbose "$(Get-Date -Format G): Word version  : $($WordProduct)"
+		Write-Verbose "$(Get-Date -Format G): Word language : $($Script:WordLanguageValue)"
 	}
 	If(![System.String]::IsNullOrEmpty( $SmtpServer ))
 	{
-		Write-Verbose "$(Get-Date): Smtp Server   : $($SmtpServer)"
-		Write-Verbose "$(Get-Date): Smtp Port     : $($SmtpPort)"
-		Write-Verbose "$(Get-Date): Use SSL       : $($UseSSL)"
-		Write-Verbose "$(Get-Date): From          : $($From)"
-		Write-Verbose "$(Get-Date): To            : $($To)"
+		Write-Verbose "$(Get-Date -Format G): Smtp Server   : $($SmtpServer)"
+		Write-Verbose "$(Get-Date -Format G): Smtp Port     : $($SmtpPort)"
+		Write-Verbose "$(Get-Date -Format G): Use SSL       : $($UseSSL)"
+		Write-Verbose "$(Get-Date -Format G): From          : $($From)"
+		Write-Verbose "$(Get-Date -Format G): To            : $($To)"
 	}
-	Write-Verbose "$(Get-Date): Add DateTime : $($AddDateTime)"
-	Write-Verbose "$(Get-Date): OS Detected  : $($Script:RunningOS)"
-	Write-Verbose "$(Get-Date): PSUICulture  : $($PSUICulture)"
-	Write-Verbose "$(Get-Date): PSCulture    : $($PSCulture)"
-	Write-Verbose "$(Get-Date): PoSH version : $($Host.Version)"
-	Write-Verbose "$(Get-Date): PVS version  : $($PVSFullVersion)"
-	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): Script start : $($Script:StartTime)"
-	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): "
+	Write-Verbose "$(Get-Date -Format G): Add DateTime : $($AddDateTime)"
+	Write-Verbose "$(Get-Date -Format G): OS Detected  : $($Script:RunningOS)"
+	Write-Verbose "$(Get-Date -Format G): PSUICulture  : $($PSUICulture)"
+	Write-Verbose "$(Get-Date -Format G): PSCulture    : $($PSCulture)"
+	Write-Verbose "$(Get-Date -Format G): PoSH version : $($Host.Version)"
+	Write-Verbose "$(Get-Date -Format G): PVS version  : $($PVSFullVersion)"
+	Write-Verbose "$(Get-Date -Format G): "
+	Write-Verbose "$(Get-Date -Format G): Script start : $($Script:StartTime)"
+	Write-Verbose "$(Get-Date -Format G): "
+	Write-Verbose "$(Get-Date -Format G): "
 }
 
 Function validStateProp( [object] $object, [string] $topLevel, [string] $secondLevel )
@@ -2863,10 +2913,10 @@ Function validStateProp( [object] $object, [string] $topLevel, [string] $secondL
 
 Function SetupWord
 {
-	Write-Verbose "$(Get-Date): Setting up Word"
+	Write-Verbose "$(Get-Date -Format G): Setting up Word"
     
 	# Setup word for output
-	Write-Verbose "$(Get-Date): Create Word comObject."
+	Write-Verbose "$(Get-Date -Format G): Create Word comObject."
 	$Script:Word = New-Object -comobject "Word.Application" -EA 0 4>$Null
 	
 	If(!$? -or $Null -eq $Script:Word)
@@ -2885,7 +2935,7 @@ Function SetupWord
 		Exit
 	}
 
-	Write-Verbose "$(Get-Date): Determine Word language value"
+	Write-Verbose "$(Get-Date -Format G): Determine Word language value"
 	If( ( validStateProp $Script:Word Language Value__ ) )
 	{
 		[int]$Script:WordLanguageValue = [int]$Script:Word.Language.Value__
@@ -2909,7 +2959,7 @@ Function SetupWord
 		"
 		AbortScript
 	}
-	Write-Verbose "$(Get-Date): Word language value is $($Script:WordLanguageValue)"
+	Write-Verbose "$(Get-Date -Format G): Word language value is $($Script:WordLanguageValue)"
 	
 	$Script:WordCultureCode = GetCulture $Script:WordLanguageValue
 	
@@ -2976,7 +3026,7 @@ Function SetupWord
 	#only validate CompanyName if the field is blank
 	If([String]::IsNullOrEmpty($Script:CoName))
 	{
-		Write-Verbose "$(Get-Date): Company name is blank.  Retrieve company name from registry."
+		Write-Verbose "$(Get-Date -Format G): Company name is blank.  Retrieve company name from registry."
 		$TmpName = ValidateCompanyName
 		
 		If([String]::IsNullOrEmpty($TmpName))
@@ -2988,13 +3038,13 @@ Function SetupWord
 		Else
 		{
 			$Script:CoName = $TmpName
-			Write-Verbose "$(Get-Date): Updated company name to $($Script:CoName)"
+			Write-Verbose "$(Get-Date -Format G): Updated company name to $($Script:CoName)"
 		}
 	}
 
 	If($Script:WordCultureCode -ne "en-")
 	{
-		Write-Verbose "$(Get-Date): Check Default Cover Page for $($WordCultureCode)"
+		Write-Verbose "$(Get-Date -Format G): Check Default Cover Page for $($WordCultureCode)"
 		[bool]$CPChanged = $False
 		Switch ($Script:WordCultureCode)
 		{
@@ -3085,15 +3135,23 @@ Function SetupWord
 						$CPChanged = $True
 					}
 				}
+
+			'zh-'	{
+					If($CoverPage -eq "Sideline")
+					{
+						$CoverPage = "边线型"
+						$CPChanged = $True
+					}
+				}
 		}
 
 		If($CPChanged)
 		{
-			Write-Verbose "$(Get-Date): Changed Default Cover Page from Sideline to $($CoverPage)"
+			Write-Verbose "$(Get-Date -Format G): Changed Default Cover Page from Sideline to $($CoverPage)"
 		}
 	}
 
-	Write-Verbose "$(Get-Date): Validate cover page $($CoverPage) for culture code $($Script:WordCultureCode)"
+	Write-Verbose "$(Get-Date -Format G): Validate cover page $($CoverPage) for culture code $($Script:WordCultureCode)"
 	[bool]$ValidCP = $False
 	
 	$ValidCP = ValidateCoverPage $Script:WordVersion $CoverPage $Script:WordCultureCode
@@ -3101,8 +3159,8 @@ Function SetupWord
 	If(!$ValidCP)
 	{
 		$ErrorActionPreference = $SaveEAPreference
-		Write-Verbose "$(Get-Date): Word language value $($Script:WordLanguageValue)"
-		Write-Verbose "$(Get-Date): Culture code $($Script:WordCultureCode)"
+		Write-Verbose "$(Get-Date -Format G): Word language value $($Script:WordLanguageValue)"
+		Write-Verbose "$(Get-Date -Format G): Culture code $($Script:WordCultureCode)"
 		Write-Error "
 		`n`n
 		`t`t
@@ -3121,7 +3179,7 @@ Function SetupWord
 
 	#http://jdhitsolutions.com/blog/2012/05/san-diego-2012-powershell-deep-dive-slides-and-demos/
 	#using Jeff's Demo-WordReport.ps1 file for examples
-	Write-Verbose "$(Get-Date): Load Word Templates"
+	Write-Verbose "$(Get-Date -Format G): Load Word Templates"
 
 	[bool]$Script:CoverPagesExist = $False
 	[bool]$BuildingBlocksExist = $False
@@ -3130,7 +3188,7 @@ Function SetupWord
 	#word 2010/2013/2016
 	$BuildingBlocksCollection = $Script:Word.Templates | Where-Object {$_.name -eq "Built-In Building Blocks.dotx"}
 
-	Write-Verbose "$(Get-Date): Attempt to load cover page $($CoverPage)"
+	Write-Verbose "$(Get-Date -Format G): Attempt to load cover page $($CoverPage)"
 	$part = $Null
 
 	$BuildingBlocksCollection | 
@@ -3163,16 +3221,16 @@ Function SetupWord
 
 	If(!$Script:CoverPagesExist)
 	{
-		Write-Verbose "$(Get-Date): Cover Pages are not installed or the Cover Page $($CoverPage) does not exist."
+		Write-Verbose "$(Get-Date -Format G): Cover Pages are not installed or the Cover Page $($CoverPage) does not exist."
 		Write-Warning "Cover Pages are not installed or the Cover Page $($CoverPage) does not exist."
 		Write-Warning "This report will not have a Cover Page."
 	}
 
-	Write-Verbose "$(Get-Date): Create empty word doc"
+	Write-Verbose "$(Get-Date -Format G): Create empty word doc"
 	$Script:Doc = $Script:Word.Documents.Add()
 	If($Null -eq $Script:Doc)
 	{
-		Write-Verbose "$(Get-Date): "
+		Write-Verbose "$(Get-Date -Format G): "
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Error "
 		`n`n
@@ -3189,7 +3247,7 @@ Function SetupWord
 	$Script:Selection = $Script:Word.Selection
 	If($Null -eq $Script:Selection)
 	{
-		Write-Verbose "$(Get-Date): "
+		Write-Verbose "$(Get-Date -Format G): "
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Error "
 		`n`n
@@ -3208,7 +3266,7 @@ Function SetupWord
 	$Script:Word.ActiveDocument.DefaultTabStop = 36
 
 	#Disable Spell and Grammar Check to resolve issue and improve performance (from Pat Coughlin)
-	Write-Verbose "$(Get-Date): Disable grammar and spell checking"
+	Write-Verbose "$(Get-Date -Format G): Disable grammar and spell checking"
 	#bug reported 1-Apr-2014 by Tim Mangan
 	#save current options first before turning them off
 	$Script:CurrentGrammarOption = $Script:Word.Options.CheckGrammarAsYouType
@@ -3219,17 +3277,17 @@ Function SetupWord
 	If($BuildingBlocksExist)
 	{
 		#insert new page, getting ready for table of contents
-		Write-Verbose "$(Get-Date): Insert new page, getting ready for table of contents"
+		Write-Verbose "$(Get-Date -Format G): Insert new page, getting ready for table of contents"
 		$part.Insert($Script:Selection.Range,$True) | Out-Null
 		$Script:Selection.InsertNewPage()
 
 		#table of contents
-		Write-Verbose "$(Get-Date): Table of Contents - $($Script:MyHash.Word_TableOfContents)"
+		Write-Verbose "$(Get-Date -Format G): Table of Contents - $($Script:MyHash.Word_TableOfContents)"
 		$toc = $BuildingBlocks.BuildingBlockEntries.Item($Script:MyHash.Word_TableOfContents)
 		If($Null -eq $toc)
 		{
-			Write-Verbose "$(Get-Date): "
-			Write-Verbose "$(Get-Date): Table of Content - $($Script:MyHash.Word_TableOfContents) could not be retrieved."
+			Write-Verbose "$(Get-Date -Format G): "
+			Write-Verbose "$(Get-Date -Format G): Table of Content - $($Script:MyHash.Word_TableOfContents) could not be retrieved."
 			Write-Warning "This report will not have a Table of Contents."
 		}
 		Else
@@ -3239,16 +3297,16 @@ Function SetupWord
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): Table of Contents are not installed."
+		Write-Verbose "$(Get-Date -Format G): Table of Contents are not installed."
 		Write-Warning "Table of Contents are not installed so this report will not have a Table of Contents."
 	}
 
 	#set the footer
-	Write-Verbose "$(Get-Date): Set the footer"
+	Write-Verbose "$(Get-Date -Format G): Set the footer"
 	[string]$footertext = "Report created by $username"
 
 	#get the footer
-	Write-Verbose "$(Get-Date): Get the footer and format font"
+	Write-Verbose "$(Get-Date -Format G): Get the footer and format font"
 	$Script:Doc.ActiveWindow.ActivePane.view.SeekView = $wdSeekPrimaryFooter
 	#get the footer and format font
 	$footers = $Script:Doc.Sections.Last.Footers
@@ -3262,15 +3320,15 @@ Function SetupWord
 			$footer.range.Font.Bold = $True
 		}
 	} #end ForEach
-	Write-Verbose "$(Get-Date): Footer text"
+	Write-Verbose "$(Get-Date -Format G): Footer text"
 	$Script:Selection.HeaderFooter.Range.Text = $footerText
 
 	#add page numbering
-	Write-Verbose "$(Get-Date): Add page numbering"
+	Write-Verbose "$(Get-Date -Format G): Add page numbering"
 	$Script:Selection.HeaderFooter.PageNumbers.Add($wdAlignPageNumberRight) | Out-Null
 
 	FindWordDocumentEnd
-	Write-Verbose "$(Get-Date):"
+	Write-Verbose "$(Get-Date -Format G):"
 	#end of Jeff Hicks 
 }
 
@@ -3282,7 +3340,7 @@ Function UpdateDocumentProperties
 	{
 		If($Script:CoverPagesExist)
 		{
-			Write-Verbose "$(Get-Date): Set Cover Page Properties"
+			Write-Verbose "$(Get-Date -Format G): Set Cover Page Properties"
 			_SetDocumentProperty $Script:Doc.BuiltInDocumentProperties "Company" $Script:CoName
 			_SetDocumentProperty $Script:Doc.BuiltInDocumentProperties "Title" $Script:title
 			_SetDocumentProperty $Script:Doc.BuiltInDocumentProperties "Author" $username
@@ -3312,7 +3370,7 @@ Function UpdateDocumentProperties
 			[string]$abstract = (Get-Date -Format d).ToString()
 			$ab.Text = $abstract
 
-			Write-Verbose "$(Get-Date): Update the Table of Contents"
+			Write-Verbose "$(Get-Date -Format G): Update the Table of Contents"
 			#update the Table of Contents
 			$Script:Doc.TablesOfContents.item(1).Update()
 			$cp = $Null
@@ -3329,7 +3387,7 @@ Function SaveandCloseDocumentandShutdownWord
 	$Script:Word.Options.CheckGrammarAsYouType = $Script:CurrentGrammarOption
 	$Script:Word.Options.CheckSpellingAsYouType = $Script:CurrentSpellingOption
 
-	Write-Verbose "$(Get-Date): Save and Close document and Shutdown Word"
+	Write-Verbose "$(Get-Date -Format G): Save and Close document and Shutdown Word"
 	If($Script:WordVersion -eq $wdWord2010)
 	{
 		#the $saveFormat below passes StrictMode 2
@@ -3338,11 +3396,11 @@ Function SaveandCloseDocumentandShutdownWord
 		#http://msdn.microsoft.com/en-us/library/microsoft.office.interop.word.wdsaveformat(v=office.14).aspx
 		If($PDF)
 		{
-			Write-Verbose "$(Get-Date): Saving as DOCX file first before saving to PDF"
+			Write-Verbose "$(Get-Date -Format G): Saving as DOCX file first before saving to PDF"
 		}
 		Else
 		{
-			Write-Verbose "$(Get-Date): Saving DOCX file"
+			Write-Verbose "$(Get-Date -Format G): Saving DOCX file"
 		}
 		If($AddDateTime)
 		{
@@ -3352,12 +3410,12 @@ Function SaveandCloseDocumentandShutdownWord
 				$Script:FileName2 += "_$(Get-Date -f yyyy-MM-dd_HHmm).pdf"
 			}
 		}
-		Write-Verbose "$(Get-Date): Running Word 2010 and detected operating system $($Script:RunningOS)"
+		Write-Verbose "$(Get-Date -Format G): Running Word 2010 and detected operating system $($Script:RunningOS)"
 		$saveFormat = [Enum]::Parse([Microsoft.Office.Interop.Word.WdSaveFormat], "wdFormatDocumentDefault")
 		$Script:Doc.SaveAs([REF]$Script:FileName1, [ref]$SaveFormat)
 		If($PDF)
 		{
-			Write-Verbose "$(Get-Date): Now saving as PDF"
+			Write-Verbose "$(Get-Date -Format G): Now saving as PDF"
 			$saveFormat = [Enum]::Parse([Microsoft.Office.Interop.Word.WdSaveFormat], "wdFormatPDF")
 			$Script:Doc.SaveAs([REF]$Script:FileName2, [ref]$saveFormat)
 		}
@@ -3366,11 +3424,11 @@ Function SaveandCloseDocumentandShutdownWord
 	{
 		If($PDF)
 		{
-			Write-Verbose "$(Get-Date): Saving as DOCX file first before saving to PDF"
+			Write-Verbose "$(Get-Date -Format G): Saving as DOCX file first before saving to PDF"
 		}
 		Else
 		{
-			Write-Verbose "$(Get-Date): Saving DOCX file"
+			Write-Verbose "$(Get-Date -Format G): Saving DOCX file"
 		}
 		If($AddDateTime)
 		{
@@ -3380,24 +3438,24 @@ Function SaveandCloseDocumentandShutdownWord
 				$Script:FileName2 += "_$(Get-Date -f yyyy-MM-dd_HHmm).pdf"
 			}
 		}
-		Write-Verbose "$(Get-Date): Running Word 2013 and detected operating system $($Script:RunningOS)"
+		Write-Verbose "$(Get-Date -Format G): Running Word 2013 and detected operating system $($Script:RunningOS)"
 		$Script:Doc.SaveAs2([REF]$Script:FileName1, [ref]$wdFormatDocumentDefault)
 		If($PDF)
 		{
-			Write-Verbose "$(Get-Date): Now saving as PDF"
+			Write-Verbose "$(Get-Date -Format G): Now saving as PDF"
 			$Script:Doc.SaveAs([REF]$Script:FileName2, [ref]$wdFormatPDF)
 		}
 	}
 
-	Write-Verbose "$(Get-Date): Closing Word"
+	Write-Verbose "$(Get-Date -Format G): Closing Word"
 	$Script:Doc.Close()
 	$Script:Word.Quit()
 	If($PDF)
 	{
-		Write-Verbose "$(Get-Date): Deleting $($Script:FileName1) since only $($Script:FileName2) is needed"
+		Write-Verbose "$(Get-Date -Format G): Deleting $($Script:FileName1) since only $($Script:FileName2) is needed"
 		Remove-Item $Script:FileName1
 	}
-	Write-Verbose "$(Get-Date): System Cleanup"
+	Write-Verbose "$(Get-Date -Format G): System Cleanup"
 	[System.Runtime.Interopservices.Marshal]::ReleaseComObject($Script:Word) | Out-Null
 	If(Test-Path variable:global:word)
 	{
@@ -3458,20 +3516,121 @@ Function SetFileName1andFileName2
 
 $script:startTime = get-date
 
-Write-Verbose "$(Get-Date): Checking for McliPSSnapin"
-If(!(Check-NeededPSSnapins "McliPSSnapIn")){
+Write-Verbose "$(Get-Date -Format G): Checking for McliPSSnapin"
+If(!(Check-NeededPSSnapins "McliPSSnapIn"))
+{
 	#We're missing Citrix Snapins that we need
-	$ErrorActionPreference = $SaveEAPreference
-	Write-Error "
-	`n`n
-	`t`t
-	Missing Citrix PowerShell Snap-ins Detected, check the console above for more information.
-	`n`n
-	`t`t
-	Script will now close.
-	`n`n
-	"
-	Exit
+	#$PFiles = [System.Environment]::GetEnvironmentVariable('ProgramFiles')
+	#changed in 1.23 to the console installation path
+	#this should return <DriveLetter:>\Program Files\Citrix\Provisioning Services Console\
+	$PFiles = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Citrix\ProvisioningServices' -Name ConsoleTargetDir -ErrorAction SilentlyContinue)|Select-Object -ExpandProperty ConsoleTargetDir
+	$PVSDLLPath = Join-Path -Path $PFiles -ChildPath "McliPSSnapIn.dll"
+	#Let's see if the DLLs can be registered
+	Write-Verbose "$(Get-Date -Format G): Attempting to register the .Net V2 snapins"
+	#If(Test-Path "$PFiles\Citrix\Provisioning Services Console\McliPSSnapIn.dll" -EA 0)
+	If(Test-Path $PVSDLLPath -EA 0)
+	{
+		$installutil = $env:systemroot + '\Microsoft.NET\Framework\v2.0.50727\installutil.exe'
+		If(Test-Path $installutil -EA 0)
+		{
+			#&$installutil "$PFiles\Citrix\Provisioning Services Console\McliPSSnapIn.dll" > $Null
+			&$installutil $PVSDLLPath > $Null
+		
+			If(!$?)
+			{
+				Write-Verbose "$(Get-Date -Format G): Unable to register the 32-bit V2 PowerShell Snap-in."
+			}
+			Else
+			{
+				Write-Verbose "$(Get-Date -Format G): Registered the 32-bit V2 PowerShell Snap-in."
+			}
+		}
+
+		$installutil = $env:systemroot + '\Microsoft.NET\Framework64\v2.0.50727\installutil.exe'
+		If(Test-Path $installutil -EA 0)
+		{
+			#&$installutil "$PFiles\Citrix\Provisioning Services Console\McliPSSnapIn.dll" > $Null
+			&$installutil $PVSDLLPath > $Null
+		
+			If(!$?)
+			{
+				Write-Verbose "$(Get-Date -Format G): Unable to register the 64-bit V2 PowerShell Snap-in."
+			}
+			Else
+			{
+				Write-Verbose "$(Get-Date -Format G): Registered the 64-bit V2 PowerShell Snap-in."
+			}
+		}
+	}
+	Else
+	{
+		Write-Verbose "$(Get-Date -Format G): Unable to find $PVSDLLPath"
+	}
+	
+	Write-Host -foregroundcolor Yellow -backgroundcolor Black "VERBOSE: $(Get-Date -Format G): Attempting to register the .Net V4 snapins"
+	#If(Test-Path "$PFiles\Citrix\Provisioning Services Console\McliPSSnapIn.dll" -EA 0)
+	If(Test-Path $PVSDLLPath -EA 0)
+	{
+		$installutil = $env:systemroot + '\Microsoft.NET\Framework\v4.0.30319\installutil.exe'
+		If(Test-Path $installutil -EA 0)
+		{
+			#&$installutil "$PFiles\Citrix\Provisioning Services Console\McliPSSnapIn.dll" > $Null
+			&$installutil $PVSDLLPath > $Null
+		
+			If(!$?)
+			{
+				Write-Verbose "$(Get-Date -Format G): Unable to register the 32-bit V4 PowerShell Snap-in."
+			}
+			Else
+			{
+				Write-Verbose "$(Get-Date -Format G): Registered the 32-bit V4 PowerShell Snap-in."
+			}
+		}
+
+		$installutil = $env:systemroot + '\Microsoft.NET\Framework64\v4.0.30319\installutil.exe'
+		If(Test-Path $installutil -EA 0)
+		{
+			#&$installutil "$PFiles\Citrix\Provisioning Services Console\McliPSSnapIn.dll" > $Null
+			&$installutil $PVSDLLPath > $Null
+		
+			If(!$?)
+			{
+				Write-Verbose "$(Get-Date -Format G): Unable to register the 64-bit V4 PowerShell Snap-in."
+			}
+			Else
+			{
+				Write-Verbose "$(Get-Date -Format G): Registered the 64-bit V4 PowerShell Snap-in."
+			}
+		}
+	}
+	Else
+	{
+		Write-Verbose "$(Get-Date -Format G): Unable to find $PVSDLLPath"
+	}
+
+	Write-Verbose "$(Get-Date -Format G): Rechecking for McliPSSnapin"
+	If(!(Check-NeededPSSnapins "McliPSSnapIn"))
+	{
+		#We're missing Citrix Snapins that we need
+		Write-Error "
+		`n`n
+		`t`t
+		Missing Citrix PowerShell Snap-ins Detected, check the console above for more information.
+		`n`n
+		`t`t
+		Script will now close.
+		`n`n
+		"
+		Exit
+	}
+	Else
+	{
+		Write-Verbose "$(Get-Date -Format G): Citrix PowerShell Snap-ins detected at $PVSDLLPath"
+	}
+}
+Else
+{
+	Write-Verbose "$(Get-Date -Format G): Citrix PowerShell Snap-ins detected."
 }
 
 #setup remoting if $AdminAddress is not empty
@@ -3481,7 +3640,7 @@ Function ElevatedSession
 
 	If($currentPrincipal.IsInRole( [Security.Principal.WindowsBuiltInRole]::Administrator ))
 	{
-		Write-Verbose "$(Get-Date): This is an elevated PowerShell session"
+		Write-Verbose "$(Get-Date -Format G): This is an elevated PowerShell session"
 		Return $True
 	}
 	Else
@@ -3538,11 +3697,11 @@ If(![System.String]::IsNullOrEmpty($AdminAddress))
 	If($error.Count -eq 0)
 	{
 		$Remoting = $True
-		Write-Verbose "$(Get-Date): This script is being run remotely against server $($AdminAddress)"
+		Write-Verbose "$(Get-Date -Format G): This script is being run remotely against server $($AdminAddress)"
 		If(![System.String]::IsNullOrEmpty($User))
 		{
-			Write-Verbose "$(Get-Date): User=$($User)"
-			Write-Verbose "$(Get-Date): Domain=$($Domain)"
+			Write-Verbose "$(Get-Date -Format G): User=$($User)"
+			Write-Verbose "$(Get-Date -Format G): Domain=$($Domain)"
 		}
 	}
 	Else 
@@ -3555,7 +3714,7 @@ If(![System.String]::IsNullOrEmpty($AdminAddress))
 	}
 }
 
-Write-Verbose "$(Get-Date): Verifying PVS SOAP and Stream Services are running"
+Write-Verbose "$(Get-Date -Format G): Verifying PVS SOAP and Stream Services are running"
 $soapserver = $Null
 $StreamService = $Null
 
@@ -3617,7 +3776,7 @@ If($StreamService.Status -ne "Running")
 }
 
 #get PVS major version
-Write-Verbose "$(Get-Date): Getting PVS version info"
+Write-Verbose "$(Get-Date -Format G): Getting PVS version info"
 
 $error.Clear()
 $tempversion = mcli-info version
@@ -3662,7 +3821,7 @@ $PVSFullVersion = $Version.mapiVersion.SubString(0,3)
 [bool]$FarmAutoAddEnabled = $False
 
 #build PVS farm values
-Write-Verbose "$(Get-Date): Build PVS farm values"
+Write-Verbose "$(Get-Date -Format G): Build PVS farm values"
 #there can only be one farm
 [string]$GetWhat = "Farm"
 [string]$GetParam = ""
@@ -3689,7 +3848,7 @@ If($Farm -eq $Null)
 [string]$Script:Title="Inventory Report for the $($FarmName) Farm"
 SetFileName1andFileName2 "$($farm.FarmName)"
 
-Write-Verbose "$(Get-Date): Processing PVS Farm Information"
+Write-Verbose "$(Get-Date -Format G): Processing PVS Farm Information"
 $selection.InsertNewPage()
 WriteWordLine 1 0 "PVS Farm Information"
 #general tab
@@ -3705,7 +3864,7 @@ Else
 }
 
 #security tab
-Write-Verbose "$(Get-Date): `tProcessing Security Tab"
+Write-Verbose "$(Get-Date -Format G): `tProcessing Security Tab"
 WriteWordLine 2 0 "Security"
 WriteWordLine 0 1 "Groups with Farm Administrator access:"
 #build security tab values
@@ -3726,7 +3885,7 @@ If($AuthGroups -ne $Null)
 }
 
 #groups tab
-Write-Verbose "$(Get-Date): `tProcessing Groups Tab"
+Write-Verbose "$(Get-Date -Format G): `tProcessing Groups Tab"
 WriteWordLine 2 0 "Groups"
 WriteWordLine 0 1 "All the Security Groups that can be assigned access rights:"
 $GetWhat = "authgroup"
@@ -3746,7 +3905,7 @@ If($AuthGroups -ne $Null)
 }
 
 #licensing tab
-Write-Verbose "$(Get-Date): `tProcessing Licensing Tab"
+Write-Verbose "$(Get-Date -Format G): `tProcessing Licensing Tab"
 WriteWordLine 2 0 "Licensing"
 WriteWordLine 0 1 "License server name`t: " $farm.licenseServer
 WriteWordLine 0 1 "License server port`t: " $farm.licenseServerPort
@@ -3764,7 +3923,7 @@ If($PVSVersion -eq "5")
 }
 
 #options tab
-Write-Verbose "$(Get-Date): `tProcessing Options Tab"
+Write-Verbose "$(Get-Date -Format G): `tProcessing Options Tab"
 WriteWordLine 2 0 "Options"
 WriteWordLine 0 1 "Auto-Add"
 WriteWordLine 0 2 "Enable auto-add: " -nonewline
@@ -3803,7 +3962,7 @@ Else
 If($PVSVersion -eq "6" -or $PVSVersion -eq "7")
 {
 	#vDisk Version tab
-	Write-Verbose "$(Get-Date): `tProcessing vDisk Version Tab"
+	Write-Verbose "$(Get-Date -Format G): `tProcessing vDisk Version Tab"
 	WriteWordLine 2 0 "vDisk Version"
 	WriteWordLine 0 1 "Alert if number of versions from base image exceeds`t`t: " $farm.maxVersions
 	WriteWordLine 0 1 "Merge after automated vDisk update, if over alert threshold`t: " -nonewline
@@ -3826,7 +3985,7 @@ If($PVSVersion -eq "6" -or $PVSVersion -eq "7")
 }
 
 #status tab
-Write-Verbose "$(Get-Date): `tProcessing Status Tab"
+Write-Verbose "$(Get-Date -Format G): `tProcessing Status Tab"
 WriteWordLine 2 0 "Status"
 WriteWordLine 0 1 "Current status of the farm:"
 WriteWordLine 0 2 "Database server`t: " $farm.databaseServerName
@@ -3851,13 +4010,13 @@ Else
 {
 	WriteWordLine 0 2 "Active Directory groups are not used for access rights"
 }
-Write-Verbose "$(Get-Date): "
+Write-Verbose "$(Get-Date -Format G): "
 	
 $farm = $Null
 $authgroups = $Null
 
 #build site values
-Write-Verbose "$(Get-Date): Processing Sites"
+Write-Verbose "$(Get-Date -Format G): Processing Sites"
 $AdvancedItems1 = @()
 $AdvancedItems2 = @()
 $GetWhat = "site"
@@ -3867,7 +4026,7 @@ $PVSSites = BuildPVSObject $GetWhat $GetParam $ErrorTxt
 
 ForEach($PVSSite in $PVSSites)
 {
-	Write-Verbose "$(Get-Date): `tProcessing Site $($PVSSite.siteName)"
+	Write-Verbose "$(Get-Date -Format G): `tProcessing Site $($PVSSite.siteName)"
 	$selection.InsertNewPage()
 	WriteWordLine 1 0 "Site properties"
 	#general tab
@@ -3883,7 +4042,7 @@ ForEach($PVSSite in $PVSSites)
 	}
 
 	#security tab
-	Write-Verbose "$(Get-Date): `t`tProcessing Security Tab"
+	Write-Verbose "$(Get-Date -Format G): `t`tProcessing Security Tab"
 	$temp = $PVSSite.SiteName
 	$GetWhat = "authgroup"
 	$GetParam = "sitename = $temp"
@@ -3907,7 +4066,7 @@ ForEach($PVSSite in $PVSSites)
 	#MAK User and Password are encrypted
 
 	#options tab
-	Write-Verbose "$(Get-Date): `t`tProcessing Options Tab"
+	Write-Verbose "$(Get-Date -Format G): `t`tProcessing Options Tab"
 	WriteWordLine 2 0 "Options"
 	WriteWordLine 0 1 "Auto-Add"
 	If($PVSVersion -eq "5" -or (($PVSVersion -eq "6" -or $PVSVersion -eq "7") -and $FarmAutoAddEnabled))
@@ -3930,7 +4089,7 @@ ForEach($PVSSite in $PVSSites)
 		}
 
 		#vDisk Update
-		Write-Verbose "$(Get-Date): `t`tProcessing vDisk Update Tab"
+		Write-Verbose "$(Get-Date -Format G): `t`tProcessing vDisk Update Tab"
 		WriteWordLine 2 0 "vDisk Update"
 		If($PVSSite.enableDiskUpdate -eq "1")
 		{
@@ -3945,7 +4104,7 @@ ForEach($PVSSite in $PVSSites)
 	}
 
 	#process all servers in site
-	Write-Verbose "$(Get-Date): `t`tProcessing Servers in Site $($PVSSite.siteName)"
+	Write-Verbose "$(Get-Date -Format G): `t`tProcessing Servers in Site $($PVSSite.siteName)"
 	$temp = $PVSSite.SiteName
 	$GetWhat = "server"
 	$GetParam = "sitename = $temp"
@@ -3955,9 +4114,9 @@ ForEach($PVSSite in $PVSSites)
 	WriteWordLine 2 0 "Servers"
 	ForEach($Server in $Servers)
 	{
-		Write-Verbose "$(Get-Date): `t`t`tProcessing Server $($Server.serverName)"
+		Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing Server $($Server.serverName)"
 		#general tab
-		Write-Verbose "$(Get-Date): `t`t`t`tProcessing General Tab"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing General Tab"
 		WriteWordLine 3 0 $Server.serverName
 		WriteWordLine 0 0 "Server Properties"
 		WriteWordLine 0 1 "General"
@@ -3977,7 +4136,7 @@ ForEach($PVSSite in $PVSSites)
 			WriteWordLine 0 0 "No"
 		}
 			
-		Write-Verbose "$(Get-Date): `t`t`t`tProcessing Network Tab"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Network Tab"
 		WriteWordLine 0 1 "Network"
 		If($PVSVersion -eq "7")
 		{
@@ -3998,10 +4157,10 @@ ForEach($PVSSite in $PVSSites)
 			WriteWordLine 0 2 "Management IP`t`t: " $Server.managementIp
 		}
 			
-		Write-Verbose "$(Get-Date): `t`t`t`tProcessing Stores Tab"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Stores Tab"
 		WriteWordLine 0 1 "Stores"
 		#process all stores for this server
-		Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing Stores for server"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing Stores for server"
 		$temp = $Server.serverName
 		$GetWhat = "serverstore"
 		$GetParam = "servername = $temp"
@@ -4013,7 +4172,7 @@ ForEach($PVSSite in $PVSSites)
 		{
 			ForEach($store in $stores)
 			{
-				Write-Verbose "$(Get-Date): `t`t`t`t`t`tProcessing Store $($store.storename)"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`t`t`tProcessing Store $($store.storename)"
 				WriteWordLine 0 3 "Store`t: " $store.storename
 				WriteWordLine 0 3 "Path`t: " -nonewline
 				If($store.path.length -gt 0)
@@ -4037,7 +4196,7 @@ ForEach($PVSSite in $PVSSites)
 			}
 		}
 
-		Write-Verbose "$(Get-Date): `t`t`t`tProcessing Options Tab"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Options Tab"
 		WriteWordLine 0 1 "Options"
 		If($PVSVersion -eq "5")
 		{
@@ -4120,7 +4279,7 @@ ForEach($PVSSite in $PVSSites)
 		
 		If($PVSVersion -ne "7")
 		{
-			Write-Verbose "$(Get-Date): `t`t`t`tProcessing Logging Tab"
+			Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Logging Tab"
 			WriteWordLine 0 1 "Logging"
 			WriteWordLine 0 2 "Logging level: " -nonewline
 			Switch ($Server.logLevel)
@@ -4141,7 +4300,7 @@ ForEach($PVSSite in $PVSSites)
 		
 		#create array for appendix A
 		
-		Write-Verbose "$(Get-Date): `t`t`t`t`tGather Advanced server info for Appendix A and B"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tGather Advanced server info for Appendix A and B"
 		$obj1 = New-Object -TypeName PSObject
 		$obj2 = New-Object -TypeName PSObject
 		
@@ -4166,8 +4325,8 @@ ForEach($PVSSite in $PVSSites)
 		$AdvancedItems2 +=  $obj2
 		
 		#advanced button at the bottom
-		Write-Verbose "$(Get-Date): `t`t`t`tProcessing Server Advanced button"
-		Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing Server Tab"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Server Advanced button"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing Server Tab"
 		WriteWordLine 0 1 "Advanced"
 		WriteWordLine 0 2 "Server"
 		WriteWordLine 0 3 "Threads per port`t`t: " $Server.threadsPerPort
@@ -4176,7 +4335,7 @@ ForEach($PVSSite in $PVSSites)
 		WriteWordLine 0 3 "Local concurrent I/O limit`t: $($Server.localConcurrentIoLimit) (transactions)"
 		WriteWordLine 0 3 "Remote concurrent I/O limit`t: $($Server.remoteConcurrentIoLimit) (transactions)"
 
-		Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing Network Tab"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing Network Tab"
 		WriteWordLine 0 2 "Network"
 		WriteWordLine 0 3 "Ethernet MTU`t`t`t: $($Server.maxTransmissionUnits) (bytes)"
 		WriteWordLine 0 3 "I/O burst size`t`t`t: $($Server.ioBurstSize) (KB)"
@@ -4190,7 +4349,7 @@ ForEach($PVSSite in $PVSSites)
 			WriteWordLine 0 0 "No"
 		}
 
-		Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing Pacing Tab"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing Pacing Tab"
 		WriteWordLine 0 2 "Pacing"
 		WriteWordLine 0 3 "Boot pause seconds`t`t: " $Server.bootPauseSeconds
 		$MaxBootTime = SecondsToMinutes $Server.maxBootSeconds
@@ -4212,7 +4371,7 @@ ForEach($PVSSite in $PVSSites)
 			WriteWordLine 0 3 "vDisk Creation pacing`t`t: " $Server.vDiskCreatePacing
 		}
 
-		Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing Device Tab"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing Device Tab"
 		WriteWordLine 0 2 "Device"
 		$LicenseTimeout = SecondsToMinutes $Server.licenseTimeout
 		If($PVSVersion -eq "7")
@@ -4239,14 +4398,14 @@ ForEach($PVSSite in $PVSSites)
 	#now to process the stuff available via a right-click on each server
 
 	#Configure Bootstrap is first
-	Write-Verbose "$(Get-Date): `t`t`tProcessing Bootstrap files"
+	Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing Bootstrap files"
 	WriteWordLine 2 0 "Configure Bootstrap settings"
 	ForEach($Server in $Servers)
 	{
-		Write-Verbose "$(Get-Date): `t`t`tTesting to see if $($server.ServerName) is online and reachable"
+		Write-Verbose "$(Get-Date -Format G): `t`t`tTesting to see if $($server.ServerName) is online and reachable"
 		If(Test-Connection -ComputerName $server.servername -quiet -EA 0)
 		{
-			Write-Verbose "$(Get-Date): `t`t`t`tProcessing Bootstrap files for Server $($server.servername)"
+			Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Bootstrap files for Server $($server.servername)"
 			#first get all bootstrap files for the server
 			$temp = $server.serverName
 			$GetWhat = "ServerBootstrapNames"
@@ -4305,8 +4464,8 @@ ForEach($PVSSite in $PVSSites)
 				}
 				If($ServerBootstraps -ne $Null)
 				{
-					Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing Bootstrap file $($ServerBootstrap.Bootstrapname)"
-					Write-Verbose "$(Get-Date): `t`t`t`t`t`tProcessing General Tab"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing Bootstrap file $($ServerBootstrap.Bootstrapname)"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`t`tProcessing General Tab"
 					WriteWordLine 0 1 "General"	
 					ForEach($ServerBootstrap in $ServerBootstraps)
 					{
@@ -4340,7 +4499,7 @@ ForEach($PVSSite in $PVSSites)
 							WriteWordLine 0 2 "Port`t`t: " $ServerBootstrap.bootserver4_Port
 						}
 						WriteWordLine 0 0 ""
-						Write-Verbose "$(Get-Date): `t`t`t`t`t`tProcessing Options Tab"
+						Write-Verbose "$(Get-Date -Format G): `t`t`t`t`t`tProcessing Options Tab"
 						WriteWordLine 0 1 "Options"
 						WriteWordLine 0 2 "Verbose mode`t`t`t: " -nonewline
 						If($ServerBootstrap.verboseMode -eq "1")
@@ -4408,12 +4567,12 @@ ForEach($PVSSite in $PVSSites)
 		}
 		Else
 		{
-			Write-Verbose "$(Get-Date): `t`t`t`tServer $($server.servername) is offline"
+			Write-Verbose "$(Get-Date -Format G): `t`t`t`tServer $($server.servername) is offline"
 		}
 	}		
 
 	#process all vDisks in site
-	Write-Verbose "$(Get-Date): `t`tProcessing all vDisks in site"
+	Write-Verbose "$(Get-Date -Format G): `t`tProcessing all vDisks in site"
 	$Temp = $PVSSite.SiteName
 	$GetWhat = "DiskInfo"
 	$GetParam = "siteName = $Temp"
@@ -4425,13 +4584,13 @@ ForEach($PVSSite in $PVSSites)
 	{
 		ForEach($Disk in $Disks)
 		{
-			Write-Verbose "$(Get-Date): `t`t`tProcessing vDisk $($Disk.diskLocatorName)"
+			Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing vDisk $($Disk.diskLocatorName)"
 			WriteWordLine 3 0 $Disk.diskLocatorName
 			If($PVSVersion -eq "5")
 			{
 				#PVS 5.x
 				WriteWordLine 0 1 "vDisk Properties"
-				Write-Verbose "$(Get-Date): `t`t`t`tProcessing General Tab"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing General Tab"
 				WriteWordLine 0 2 "General"
 				WriteWordLine 0 3 "Store`t`t`t: " $Disk.storeName
 				WriteWordLine 0 3 "Site`t`t`t: " $Disk.siteName
@@ -4480,8 +4639,8 @@ ForEach($PVSSite in $PVSSites)
 				}
 
 				WriteWordLine 0 1 "vDisk File Properties"
-				Write-Verbose "$(Get-Date): `t`t`t`tProcessing vDisk File Properties"
-				Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing General Tab"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing vDisk File Properties"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing General Tab"
 				WriteWordLine 0 2 "General"
 				WriteWordLine 0 3 "Name`t`t: " $Disk.diskLocatorName
 				WriteWordLine 0 3 "Size`t`t: " (($Disk.diskSize/1024)/1024)/1024 -nonewline
@@ -4499,7 +4658,7 @@ ForEach($PVSSite in $PVSSites)
 					WriteWordLine 0 3 "Type`t`t: " $Disk.imageType
 				}
 
-				Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing Mode Tab"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing Mode Tab"
 				WriteWordLine 0 2 "Mode"
 				WriteWordLine 0 3 "Access mode: " -nonewline
 				If($Disk.writeCacheType -eq "0")
@@ -4556,7 +4715,7 @@ ForEach($PVSSite in $PVSSites)
 					}
 					WriteWordLine 0 3 "Schedule the next vDisk update to occur on`t: $($Disk.activeDate)"
 				}
-				Write-Verbose "$(Get-Date): `t`t`t`tProcessing Identification Tab"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Identification Tab"
 				WriteWordLine 0 2 "Identification"
 				WriteWordLine 0 3 "Version`t`t: Major:$($Disk.majorRelease) Minor:$($Disk.minorRelease) Build:$($Disk.build)"
 				WriteWordLine 0 3 "Serial #`t`t: " $Disk.serialNumber
@@ -4603,7 +4762,7 @@ ForEach($PVSSite in $PVSSites)
 					WriteWordLine 0 3 "Hardware target: " $Disk.hardwareTarget
 				}
 
-				Write-Verbose "$(Get-Date): `t`t`t`tProcessing Volume Licensing Tab"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Volume Licensing Tab"
 				WriteWordLine 0 2 "Microsoft Volume Licensing"
 				WriteWordLine 0 3 "Microsoft license type: " -nonewline
 				Switch ($Disk.licenseMode)
@@ -4614,7 +4773,7 @@ ForEach($PVSSite in $PVSSites)
 					Default {WriteWordLine 0 0 "Volume License Mode could not be determined: $($Disk.licenseMode)"; Break}
 				}
 				#options tab
-				Write-Verbose "$(Get-Date): `t`t`t`tProcessing Options Tab"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Options Tab"
 				WriteWordLine 0 2 "Options"
 				WriteWordLine 0 3 "High availability (HA): " -nonewline
 				If($Disk.haEnabled -eq "1")
@@ -4650,8 +4809,8 @@ ForEach($PVSSite in $PVSSites)
 			{
 				#PVS 6.x or 7.x
 				WriteWordLine 0 1 "vDisk Properties"
-				Write-Verbose "$(Get-Date): `t`t`tProcessing vDisk Properties"
-				Write-Verbose "$(Get-Date): `t`t`t`tProcessing General Tab"
+				Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing vDisk Properties"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing General Tab"
 				WriteWordLine 0 2 "General"
 				WriteWordLine 0 3 "Site`t`t: " $Disk.siteName
 				WriteWordLine 0 3 "Store`t`t: " $Disk.storeName
@@ -4720,7 +4879,7 @@ ForEach($PVSSite in $PVSSites)
 					WriteWordLine 0 0 "No"
 				}
 				
-				Write-Verbose "$(Get-Date): `t`t`t`tProcessing Identification Tab"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Identification Tab"
 				WriteWordLine 0 2 "Identification"
 				If(![String]::IsNullOrEmpty($Disk.description))
 				{
@@ -4769,7 +4928,7 @@ ForEach($PVSSite in $PVSSites)
 					WriteWordLine 0 3 "Hardware target: " $Disk.hardwareTarget
 				}
 
-				Write-Verbose "$(Get-Date): `t`t`t`tProcessing Volume Licensing Tab"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Volume Licensing Tab"
 				WriteWordLine 0 2 "Microsoft Volume Licensing"
 				WriteWordLine 0 3 "Microsoft license type: " -nonewline
 				Switch ($Disk.licenseMode)
@@ -4780,7 +4939,7 @@ ForEach($PVSSite in $PVSSites)
 					Default {WriteWordLine 0 0 "Volume License Mode could not be determined: $($Disk.licenseMode)"; Break}
 				}
 
-				Write-Verbose "$(Get-Date): `t`t`t`tProcessing Auto Update Tab"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Auto Update Tab"
 				WriteWordLine 0 2 "Auto Update"
 				If($Disk.activationDateEnabled -eq "0")
 				{
@@ -4824,7 +4983,7 @@ ForEach($PVSSite in $PVSSites)
 				#process Versions menu
 				#get versions info
 				#thanks to the PVS Product team for their help in understanding the Versions information
-				Write-Verbose "$(Get-Date): `t`t`tProcessing vDisk Versions"
+				Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing vDisk Versions"
 				$error.Clear()
 				$MCLIGetResult = Mcli-Get DiskVersion -p diskLocatorName="$($Disk.diskLocatorName)",storeName="$($disk.storeName)",siteName="$($disk.siteName)"
 				If($error.Count -eq 0)
@@ -4894,7 +5053,7 @@ ForEach($PVSSite in $PVSSites)
 						
 						ForEach($DiskVersion in $DiskVersions)
 						{
-							Write-Verbose "$(Get-Date): `t`t`t`tProcessing vDisk Version $($DiskVersion.version)"
+							Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing vDisk Version $($DiskVersion.version)"
 							WriteWordLine 0 2 "Version`t`t`t`t`t: " -NoNewLine
 							If($DiskVersion.version -eq $BootingVersion)
 							{
@@ -5010,7 +5169,7 @@ ForEach($PVSSite in $PVSSites)
 				}
 				
 				#process vDisk Load Balancing Menu
-				Write-Verbose "$(Get-Date): `t`t`tProcessing vDisk Load Balancing Menu"
+				Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing vDisk Load Balancing Menu"
 				WriteWordLine 3 1 "vDisk Load Balancing"
 				If(![String]::IsNullOrEmpty($Disk.serverName))
 				{
@@ -5044,7 +5203,7 @@ ForEach($PVSSite in $PVSSites)
 	#process all vDisk Update Management in site (PVS 6.x and 7 only)
 	If($PVSVersion -eq "6" -or $PVSVersion -eq "7")
 	{
-		Write-Verbose "$(Get-Date): `t`tProcessing vDisk Update Management"
+		Write-Verbose "$(Get-Date -Format G): `t`tProcessing vDisk Update Management"
 		$Temp = $PVSSite.SiteName
 		$GetWhat = "UpdateTask"
 		$GetParam = "siteName = $Temp"
@@ -5056,7 +5215,7 @@ ForEach($PVSSite in $PVSSites)
 			If($PVSVersion -eq "6")
 			{
 				#process all virtual hosts for this site
-				Write-Verbose "$(Get-Date): `t`t`tProcessing virtual hosts (PVS6)"
+				Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing virtual hosts (PVS6)"
 				WriteWordLine 0 1 "Hosts"
 				$Temp = $PVSSite.SiteName
 				$GetWhat = "VirtualHostingPool"
@@ -5068,8 +5227,8 @@ ForEach($PVSSite in $PVSSites)
 					WriteWordLine 3 0 "Hosts"
 					ForEach($vHost in $vHosts)
 					{
-						Write-Verbose "$(Get-Date): `t`t`t`tProcessing virtual host $($vHost.virtualHostingPoolName)"
-						Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing General Tab"
+						Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing virtual host $($vHost.virtualHostingPoolName)"
+						Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing General Tab"
 						WriteWordLine 4 0 $vHost.virtualHostingPoolName
 						WriteWordLine 0 2 "General"
 						WriteWordLine 0 3 "Type`t`t: " -nonewline
@@ -5087,7 +5246,7 @@ ForEach($PVSSite in $PVSSites)
 						}
 						WriteWordLine 0 3 "Host`t`t: " $vHost.server
 						
-						Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing Advanced Tab"
+						Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing Advanced Tab"
 						WriteWordLine 0 2 "Advanced"
 						WriteWordLine 0 3 "Update limit`t`t: " $vHost.updateLimit
 						WriteWordLine 0 3 "Update timeout`t`t: $($vHost.updateTimeout) minutes"
@@ -5098,7 +5257,7 @@ ForEach($PVSSite in $PVSSites)
 			}
 			WriteWordLine 0 1 "vDisks"
 			#process all the Update Managed vDisks for this site
-			Write-Verbose "$(Get-Date): `t`t`tProcessing all Update Managed vDisks for this site"
+			Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing all Update Managed vDisks for this site"
 			$Temp = $PVSSite.SiteName
 			$GetParam = "siteName = $Temp"
 			$GetWhat = "diskUpdateDevice"
@@ -5109,8 +5268,8 @@ ForEach($PVSSite in $PVSSites)
 				WriteWordLine 3 0 "vDisks"
 				ForEach($ManagedvDisk in $ManagedvDisks)
 				{
-					Write-Verbose "$(Get-Date): `t`t`t`tProcessing Managed vDisk $($ManagedvDisk.storeName)`\$($ManagedvDisk.disklocatorName)"
-					Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing General Tab"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Managed vDisk $($ManagedvDisk.storeName)`\$($ManagedvDisk.disklocatorName)"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing General Tab"
 					WriteWordLine 4 0 "$($ManagedvDisk.storeName)`\$($ManagedvDisk.disklocatorName)"
 					WriteWordLine 0 2 "General"
 					WriteWordLine 0 3 "vDisk`t`t: " "$($ManagedvDisk.storeName)`\$($ManagedvDisk.disklocatorName)"
@@ -5120,7 +5279,7 @@ ForEach($PVSSite in $PVSSites)
 					WriteWordLine 0 3 "VM MAC`t: " $ManagedvDisk.deviceMac
 					WriteWordLine 0 3 "VM Port`t: " $ManagedvDisk.port
 									
-					Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing Personality Tab"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing Personality Tab"
 					#process all personality strings for this device
 					$Temp = $ManagedvDisk.deviceName
 					$GetWhat = "DevicePersonality"
@@ -5137,7 +5296,7 @@ ForEach($PVSSite in $PVSSites)
 						}
 					}
 					
-					Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing Status Tab"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing Status Tab"
 					WriteWordLine 0 2 "Status"
 					$Temp = $ManagedvDisk.deviceId
 					$GetWhat = "deviceInfo"
@@ -5146,7 +5305,7 @@ ForEach($PVSSite in $PVSSites)
 					$Device = BuildPVSObject $GetWhat $GetParam $ErrorTxt
 					DeviceStatus $Device
 					
-					Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing Logging Tab"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing Logging Tab"
 					WriteWordLine 0 2 "Logging"
 					WriteWordLine 0 3 "Logging level: " -nonewline
 					Switch ($ManagedvDisk.logLevel)
@@ -5165,11 +5324,11 @@ ForEach($PVSSite in $PVSSites)
 			
 			If($Tasks -ne $Null)
 			{
-				Write-Verbose "$(Get-Date): `t`t`tProcessing all Update Managed Tasks for this site"
+				Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing all Update Managed Tasks for this site"
 				ForEach($Task in $Tasks)
 				{
-					Write-Verbose "$(Get-Date): `t`t`t`tProcessing Task $($Task.updateTaskName)"
-					Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing General Tab"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Task $($Task.updateTaskName)"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing General Tab"
 					WriteWordLine 0 1 "Tasks"
 					WriteWordLine 0 2 "General"
 					WriteWordLine 0 3 "Name`t`t: " $Task.updateTaskName
@@ -5186,7 +5345,7 @@ ForEach($PVSSite in $PVSSites)
 					{
 						WriteWordLine 0 0 "Yes"
 					}
-					Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing Schedule Tab"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing Schedule Tab"
 					WriteWordLine 0 2 "Schedule"
 					WriteWordLine 0 3 "Recurrence: " -nonewline
 					Switch ($Task.recurrence)
@@ -5283,7 +5442,7 @@ ForEach($PVSSite in $PVSSites)
 						}
 					}
 					
-					Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing vDisks Tab"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing vDisks Tab"
 					WriteWordLine 0 2 "vDisks"
 					WriteWordLine 0 3 "vDisks to be updated by this task:"
 					$Temp = $ManagedvDisk.deviceId
@@ -5303,7 +5462,7 @@ ForEach($PVSSite in $PVSSites)
 						}
 					}
 					
-					Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing ESD Tab"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing ESD Tab"
 					WriteWordLine 0 2 "ESD"
 					WriteWordLine 0 3 "ESD client to use: " -nonewline
 					Switch ($Task.esdType)
@@ -5314,7 +5473,7 @@ ForEach($PVSSite in $PVSSites)
 						Default {WriteWordLine 0 0 "ESD Client could not be determined: $($Task.esdType)"; Break}
 					}
 					
-					Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing Scripts Tab"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing Scripts Tab"
 					If(![String]::IsNullOrEmpty($Task.preUpdateScript) -or ![String]::IsNullOrEmpty($Task.preVmScript) -or ![String]::IsNullOrEmpty($Task.postVmScript) -or ![String]::IsNullOrEmpty($Task.postUpdateScript))
 					{
 						WriteWordLine 0 2 "Scripts"
@@ -5337,7 +5496,7 @@ ForEach($PVSSite in $PVSSites)
 						}
 					}
 					
-					Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing Access Tab"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing Access Tab"
 					WriteWordLine 0 2 "Access"
 					WriteWordLine 0 3 "Upon successful completion, access assigned to the vDisk: " -nonewline
 					Switch ($Task.postUpdateApprove)
@@ -5353,7 +5512,7 @@ ForEach($PVSSite in $PVSSites)
 	}
 
 	#process all device collections in site
-	Write-Verbose "$(Get-Date): `t`tProcessing all device collections in site"
+	Write-Verbose "$(Get-Date -Format G): `t`tProcessing all device collections in site"
 	$Temp = $PVSSite.SiteName
 	$GetWhat = "Collection"
 	$GetParam = "siteName = $Temp"
@@ -5365,8 +5524,8 @@ ForEach($PVSSite in $PVSSites)
 		WriteWordLine 2 0 "Device Collections"
 		ForEach($Collection in $Collections)
 		{
-			Write-Verbose "$(Get-Date): `t`t`tProcessing Collection $($Collection.collectionName)"
-			Write-Verbose "$(Get-Date): `t`t`t`tProcessing General Tab"
+			Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing Collection $($Collection.collectionName)"
+			Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing General Tab"
 			WriteWordLine 3 0 $Collection.collectionName
 			WriteWordLine 0 1 "General"
 			If(![String]::IsNullOrEmpty($Collection.description))
@@ -5379,7 +5538,7 @@ ForEach($PVSSite in $PVSSites)
 				WriteWordLine 0 2 "Name: " $Collection.collectionName
 			}
 
-			Write-Verbose "$(Get-Date): `t`t`t`tProcessing Security Tab"
+			Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Security Tab"
 			WriteWordLine 0 2 "Security"
 			$Temp = $Collection.collectionId
 			$GetWhat = "authGroup"
@@ -5445,7 +5604,7 @@ ForEach($PVSSite in $PVSSites)
 				WriteWordLine 0 3 "Groups with 'Device Operator' access`t`t: None defined"
 			}
 
-			Write-Verbose "$(Get-Date): `t`t`t`tProcessing Auto-Add Tab"
+			Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Auto-Add Tab"
 			WriteWordLine 0 2 "Auto-Add"
 			If($FarmAutoAddEnabled)
 			{
@@ -5479,7 +5638,7 @@ ForEach($PVSSite in $PVSSites)
 				WriteWordLine 0 3 "The auto-add feature is not enabled at the PVS Farm level"
 			}
 			#for each collection process each device
-			Write-Verbose "$(Get-Date): `t`t`tProcessing each collection process for each device"
+			Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing each collection process for each device"
 			$Temp = $Collection.collectionId
 			$GetWhat = "deviceInfo"
 			$GetParam = "collectionId = $Temp"
@@ -5490,7 +5649,7 @@ ForEach($PVSSite in $PVSSites)
 			{
 				ForEach($Device in $Devices)
 				{
-					Write-Verbose "$(Get-Date): `t`t`t`tProcessing Device $($Device.deviceName)"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Device $($Device.deviceName)"
 					If($Device.type -eq "3")
 					{
 						WriteWordLine 0 1 "Device with Personal vDisk Properties"
@@ -5499,7 +5658,7 @@ ForEach($PVSSite in $PVSSites)
 					{
 						WriteWordLine 0 1 "Target Device Properties"
 					}
-					Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing General Tab"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing General Tab"
 					WriteWordLine 0 2 "General"
 					WriteWordLine 0 3 "Name`t`t`t: " $Device.deviceName
 					If(![String]::IsNullOrEmpty($Device.description))
@@ -5549,7 +5708,7 @@ ForEach($PVSSite in $PVSSites)
 						WriteWordLine 0 3 "vDisk`t`t`t: " $Device.diskLocatorName
 						WriteWordLine 0 3 "Personal vDisk Drive`t: " $Device.pvdDriveLetter
 					}
-					Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing vDisks Tab"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing vDisks Tab"
 					WriteWordLine 0 2 "vDisks"
 					#process all vdisks for this device
 					$Temp = $Device.deviceName
@@ -5576,7 +5735,7 @@ ForEach($PVSSite in $PVSSites)
 						WriteWordLine 0 0 "No"
 					}
 					#process all bootstrap files for this device
-					Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing all bootstrap files for this device"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing all bootstrap files for this device"
 					$Temp = $Device.deviceName
 					$GetWhat = "DeviceBootstraps"
 					$GetParam = "deviceName = $Temp"
@@ -5591,7 +5750,7 @@ ForEach($PVSSite in $PVSSites)
 						}
 					}
 					
-					Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing Authentication Tab"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing Authentication Tab"
 					WriteWordLine 0 2 "Authentication"
 					WriteWordLine 0 3 "Type of authentication to use for this device: " -nonewline
 					Switch ($Device.authentication)
@@ -5602,7 +5761,7 @@ ForEach($PVSSite in $PVSSites)
 						Default {WriteWordLine 0 0 "Authentication type could not be determined: $($Device.authentication)"; Break}
 					}
 					
-					Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing Personality Tab"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing Personality Tab"
 					#process all personality strings for this device
 					$Temp = $Device.deviceName
 					$GetWhat = "DevicePersonality"
@@ -5629,7 +5788,7 @@ ForEach($PVSSite in $PVSSites)
 	#process all user groups in site (PVS 5.6 only)
 	If($PVSVersion -eq "5")
 	{
-		Write-Verbose "$(Get-Date): `t`t`tProcessing all user groups in site"
+		Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing all user groups in site"
 		$Temp = $PVSSite.siteName
 		$GetWhat = "UserGroup"
 		$GetParam = "siteName = $Temp"
@@ -5640,8 +5799,8 @@ ForEach($PVSSite in $PVSSites)
 		{
 			ForEach($UserGroup in $UserGroups)
 			{
-				Write-Verbose "$(Get-Date): `t`t`t`tProcessing User Group $($UserGroup.userGroupName)"
-				Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing General Tab"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing User Group $($UserGroup.userGroupName)"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing General Tab"
 				WriteWordLine 0 1 "General"
 				WriteWordLine 0 2 "Name`t`t`t: " $UserGroup.userGroupName
 				If(![String]::IsNullOrEmpty($UserGroup.description))
@@ -5662,14 +5821,14 @@ ForEach($PVSSite in $PVSSites)
 					WriteWordLine 0 0 "Yes"
 				}
 				#process all vDisks for usergroup
-				Write-Verbose "$(Get-Date): Process all vDisks for user group"
+				Write-Verbose "$(Get-Date -Format G): Process all vDisks for user group"
 				$Temp = $UserGroup.userGroupId
 				$GetWhat = "DiskInfo"
 				$GetParam = "userGroupId = $Temp"
 				$ErrorTxt = "User Group Disk information"
 				$vDisks = BuildPVSObject $GetWhat $GetParam $ErrorTxt
 
-				Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing vDisk Tab"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing vDisk Tab"
 				WriteWordLine 0 1 "vDisk"
 				WriteWordLine 0 2 "vDisks for this user group:"
 				If($vDisks -ne $Null)
@@ -5684,7 +5843,7 @@ ForEach($PVSSite in $PVSSites)
 	}
 	
 	#process all site views in site
-	Write-Verbose "$(Get-Date): `t`tProcessing all site views in site"
+	Write-Verbose "$(Get-Date -Format G): `t`tProcessing all site views in site"
 	$Temp = $PVSSite.siteName
 	$GetWhat = "SiteView"
 	$GetParam = "siteName = $Temp"
@@ -5696,8 +5855,8 @@ ForEach($PVSSite in $PVSSites)
 	{
 		ForEach($SiteView in $SiteViews)
 		{
-			Write-Verbose "$(Get-Date): `t`t`tProcessing Site View $($SiteView.siteViewName)"
-			Write-Verbose "$(Get-Date): `t`t`t`tProcessing General Tab"
+			Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing Site View $($SiteView.siteViewName)"
+			Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing General Tab"
 			WriteWordLine 3 0 $SiteView.siteViewName
 			WriteWordLine 0 1 "View Properties"
 			WriteWordLine 0 2 "General"
@@ -5711,7 +5870,7 @@ ForEach($PVSSite in $PVSSites)
 				WriteWordLine 0 3 "Name: " $SiteView.siteViewName
 			}
 			
-			Write-Verbose "$(Get-Date): `t`t`t`tProcessing Members Tab"
+			Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Members Tab"
 			WriteWordLine 0 2 "Members"
 			#process each target device contained in the site view
 			$Temp = $SiteView.siteViewId
@@ -5735,7 +5894,7 @@ ForEach($PVSSite in $PVSSites)
 	If($PVSVersion -eq "7")
 	{
 		#process all virtual hosts for this site
-		Write-Verbose "$(Get-Date): `t`t`tProcessing virtual hosts (PVS7)"
+		Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing virtual hosts (PVS7)"
 		$Temp = $PVSSite.SiteName
 		$GetWhat = "VirtualHostingPool"
 		$GetParam = "siteName = $Temp"
@@ -5746,8 +5905,8 @@ ForEach($PVSSite in $PVSSites)
 			WriteWordLine 2 0 "Hosts"
 			ForEach($vHost in $vHosts)
 			{
-				Write-Verbose "$(Get-Date): `t`t`t`tProcessing virtual host $($vHost.virtualHostingPoolName)"
-				Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing General Tab"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing virtual host $($vHost.virtualHostingPoolName)"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing General Tab"
 				WriteWordLine 4 0 $vHost.virtualHostingPoolName
 				WriteWordLine 0 2 "General"
 				WriteWordLine 0 3 "Type`t`t: " -nonewline
@@ -5765,7 +5924,7 @@ ForEach($PVSSite in $PVSSites)
 				}
 				WriteWordLine 0 3 "Host`t`t: " $vHost.server
 				
-				Write-Verbose "$(Get-Date): `t`t`t`t`tProcessing vDisk Update Tab"
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tProcessing vDisk Update Tab"
 				WriteWordLine 0 2 "Update limit`t`t: " $vHost.updateLimit
 				WriteWordLine 0 2 "Update timeout`t`t: $($vHost.updateTimeout) minutes"
 				WriteWordLine 0 2 "Shutdown timeout`t: $($vHost.shutdownTimeout) minutes"
@@ -5775,7 +5934,7 @@ ForEach($PVSSite in $PVSSites)
 	}
 	
 	#add Audit Trail
-	Write-Verbose "$(Get-Date): `t`t`tProcessing Audit Trail"
+	Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing Audit Trail"
 	$error.Clear()
 	
 	#the audittrail call requires the dates in YYYY/MM/DD format
@@ -5825,7 +5984,7 @@ ForEach($PVSSite in $PVSSites)
 			$selection.InsertNewPage()
 			WriteWordLine 2 0 "Audit Trail"
 			WriteWordLine 0 0 "Audit Trail for dates $($StartDate) through $($EndDate)"
-			Write-Verbose "$(Get-Date): `t`t$NumAudits Audit Trail entries found"
+			Write-Verbose "$(Get-Date -Format G): `t`t$NumAudits Audit Trail entries found"
 
 			If($MSWord -or $PDF)
 			{
@@ -6054,12 +6213,12 @@ ForEach($PVSSite in $PVSSites)
 				FindWordDocumentEnd
 				$TableRange = $Null
 				$Table = $Null
-				Write-Verbose "$(Get-Date):"
+				Write-Verbose "$(Get-Date -Format G):"
 			}
 		}
 	}
 }
-Write-Verbose "$(Get-Date): "
+Write-Verbose "$(Get-Date -Format G): "
 
 $PVSSites            = $Null
 $authgroups          = $Null
@@ -6075,7 +6234,7 @@ $Members             = $Null
 $SiteViews           = $Null
 
 #process the farm views now
-Write-Verbose "$(Get-Date): Processing all PVS Farm Views"
+Write-Verbose "$(Get-Date -Format G): Processing all PVS Farm Views"
 $selection.InsertNewPage()
 WriteWordLine 1 0 "Farm Views"
 $Temp = $PVSSite.siteName
@@ -6087,8 +6246,8 @@ If($FarmViews -ne $Null)
 {
 	ForEach($FarmView in $FarmViews)
 	{
-		Write-Verbose "$(Get-Date): `tProcessing Farm View $($FarmView.farmViewName)"
-		Write-Verbose "$(Get-Date): `t`tProcessing General Tab"
+		Write-Verbose "$(Get-Date -Format G): `tProcessing Farm View $($FarmView.farmViewName)"
+		Write-Verbose "$(Get-Date -Format G): `t`tProcessing General Tab"
 		WriteWordLine 2 0 $FarmView.farmViewName
 		WriteWordLine 0 1 "View Properties"
 		WriteWordLine 0 2 "General"
@@ -6102,7 +6261,7 @@ If($FarmViews -ne $Null)
 			WriteWordLine 0 3 "Name: " $FarmView.farmViewName
 		}
 		
-		Write-Verbose "$(Get-Date): `t`tProcessing Members Tab"
+		Write-Verbose "$(Get-Date -Format G): `t`tProcessing Members Tab"
 		WriteWordLine 0 2 "Members"
 		#process each target device contained in the farm view
 		$Temp = $FarmView.farmViewId
@@ -6123,12 +6282,12 @@ Else
 {
 	WriteWordLine 0 1 "There are no Farm Views configured"
 }
-Write-Verbose "$(Get-Date): "
+Write-Verbose "$(Get-Date -Format G): "
 $FarmViews = $Null
 $Members = $Null
 
 #process the stores now
-Write-Verbose "$(Get-Date): Processing Stores"
+Write-Verbose "$(Get-Date -Format G): Processing Stores"
 $selection.InsertNewPage()
 WriteWordLine 1 0 "Stores Properties"
 $GetWhat = "Store"
@@ -6139,8 +6298,8 @@ If($Stores -ne $Null)
 {
 	ForEach($Store in $Stores)
 	{
-		Write-Verbose "$(Get-Date): `tProcessing Store $($Store.StoreName)"
-		Write-Verbose "$(Get-Date): `t`tProcessing General Tab"
+		Write-Verbose "$(Get-Date -Format G): `tProcessing Store $($Store.StoreName)"
+		Write-Verbose "$(Get-Date -Format G): `t`tProcessing General Tab"
 		WriteWordLine 2 0 $Store.StoreName
 		WriteWordLine 0 1 "General"
 		WriteWordLine 0 2 "Name`t`t: " $Store.StoreName
@@ -6159,7 +6318,7 @@ If($Stores -ne $Null)
 			WriteWordLine 0 0 $Store.siteName
 		}
 		
-		Write-Verbose "$(Get-Date): `t`tProcessing Servers Tab"
+		Write-Verbose "$(Get-Date -Format G): `t`tProcessing Servers Tab"
 		WriteWordLine 0 1 "Servers"
 		#find the servers (and the site) that serve this store
 		$GetWhat = "Server"
@@ -6172,7 +6331,7 @@ If($Stores -ne $Null)
 		{
 			ForEach($Server in $Servers)
 			{
-				Write-Verbose "$(Get-Date): `t`t`tProcessing Server $($Server.serverName)"
+				Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing Server $($Server.serverName)"
 				$Temp = $Server.serverName
 				$GetWhat = "ServerStore"
 				$GetParam = "serverName = $Temp"
@@ -6192,7 +6351,7 @@ If($Stores -ne $Null)
 			WriteWordLine 0 3 $StoreServer
 		}
 
-		Write-Verbose "$(Get-Date): `t`tProcessing Paths Tab"
+		Write-Verbose "$(Get-Date -Format G): `t`tProcessing Paths Tab"
 		WriteWordLine 0 1 "Paths"
 		WriteWordLine 0 2 "Default store path: " $Store.path
 		If(![String]::IsNullOrEmpty($Store.cachePath))
@@ -6207,15 +6366,15 @@ Else
 {
 	WriteWordLine 0 1 "There are no Stores configured"
 }
-Write-Verbose "$(Get-Date): "
+Write-Verbose "$(Get-Date -Format G): "
 $Stores = $Null
 $Servers = $Null
 $StoreSite = $Null
 $StoreServers = $Null
 $ServerStore = $Null
 
-Write-Verbose "$(Get-Date): Create Appendix A Advanced Server Items (Server/Network)"
-Write-Verbose "$(Get-Date): `t`tAdd Advanced Server Items table to doc"
+Write-Verbose "$(Get-Date -Format G): Create Appendix A Advanced Server Items (Server/Network)"
+Write-Verbose "$(Get-Date -Format G): `t`tAdd Advanced Server Items table to doc"
 If($MSWord -or $PDF)
 {
 	$selection.InsertNewPage()
@@ -6251,27 +6410,35 @@ ForEach($Item in $AdvancedItems1)
 
 If($MSWord -or $PDF)
 {
-	## Add the table to the document, using the hashtable (-Alt is short for -AlternateBackgroundColor!)
 	$Table = AddWordTable -Hashtable $ItemsWordTable `
 	-Columns ServerName, ThreadsperPort, BuffersperThread, ServerCacheTimeout, LocalConcurrentIOLimit, RemoteConcurrentIOLimit, EthernetMTU, IOBurstSize, EnableNonblockingIO `
 	-Headers "Server Name", "Threads per Port", "Buffers per Thread", "Server Cache Timeout", "Local Concurrent IO Limit", "Remote Concurrent IO Limit", "Ethernet MTU", "IO Burst Size", "Enable Non-blocking IO" `
-	-AutoFit $wdAutoFitContent;
+	-AutoFit $wdAutoFitFixed;
 
-	## IB - Set the header row format after the SetWordTableAlternateRowColor function as it will paint the header row!
+	SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 	SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
 	$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
+	$Table.Columns.Item(1).Width = 56;
+	$Table.Columns.Item(2).Width = 55;
+	$Table.Columns.Item(3).Width = 55;
+	$Table.Columns.Item(4).Width = 55;
+	$Table.Columns.Item(5).Width = 55;
+	$Table.Columns.Item(6).Width = 55;
+	$Table.Columns.Item(7).Width = 55;
+	$Table.Columns.Item(8).Width = 55;
+	$Table.Columns.Item(8).Width = 55;
+
 	FindWordDocumentEnd
-	$TableRange = $Null
 	$Table = $Null
 }
 
-Write-Verbose "$(Get-Date): `tFinished Creating Appendix A - Advanced Server Items (Server/Network)"
-Write-Verbose "$(Get-Date): "
+Write-Verbose "$(Get-Date -Format G): `tFinished Creating Appendix A - Advanced Server Items (Server/Network)"
+Write-Verbose "$(Get-Date -Format G): "
 
-Write-Verbose "$(Get-Date): Create Appendix B Advanced Server Items (Pacing/Device)"
-Write-Verbose "$(Get-Date): `t`tAdd Advanced Server Items table to doc"
+Write-Verbose "$(Get-Date -Format G): Create Appendix B Advanced Server Items (Pacing/Device)"
+Write-Verbose "$(Get-Date -Format G): `t`tAdd Advanced Server Items table to doc"
 
 If($MSWord -or $PDF)
 {
@@ -6320,10 +6487,10 @@ If($MSWord -or $PDF)
 	$Table = $Null
 }
 
-Write-Verbose "$(Get-Date): `tFinished Creating Appendix B - Advanced Server Items (Pacing/Device)"
-Write-Verbose "$(Get-Date): "
+Write-Verbose "$(Get-Date -Format G): `tFinished Creating Appendix B - Advanced Server Items (Pacing/Device)"
+Write-Verbose "$(Get-Date -Format G): "
 
-Write-Verbose "$(Get-Date): Finishing up document"
+Write-Verbose "$(Get-Date -Format G): Finishing up document"
 #end of document processing
 
 $AbstractTitle = "Citrix Provisioning Services Inventory"
@@ -6335,8 +6502,8 @@ If($MSWORD -or $PDF)
     SaveandCloseDocumentandShutdownWord
 }
 
-Write-Verbose "$(Get-Date): Script has completed"
-Write-Verbose "$(Get-Date): "
+Write-Verbose "$(Get-Date -Format G): Script has completed"
+Write-Verbose "$(Get-Date -Format G): "
 
 $GotFile = $False
 
@@ -6344,8 +6511,8 @@ If($PDF)
 {
 	If(Test-Path "$($Script:FileName2)")
 	{
-		Write-Verbose "$(Get-Date): $($Script:FileName2) is ready for use"
-		Write-Verbose "$(Get-Date): "
+		Write-Verbose "$(Get-Date -Format G): $($Script:FileName2) is ready for use"
+		Write-Verbose "$(Get-Date -Format G): "
 		$GotFile = $True
 	}
 	Else
@@ -6358,8 +6525,8 @@ Else
 {
 	If(Test-Path "$($Script:FileName1)")
 	{
-		Write-Verbose "$(Get-Date): $($Script:FileName1) is ready for use"
-		Write-Verbose "$(Get-Date): "
+		Write-Verbose "$(Get-Date -Format G): $($Script:FileName1) is ready for use"
+		Write-Verbose "$(Get-Date -Format G): "
 		$GotFile = $True
 	}
 	Else
@@ -6383,11 +6550,11 @@ If($GotFile -and ![System.String]::IsNullOrEmpty( $SmtpServer ))
 	SendEmail $emailAttachment
 }
 
-Write-Verbose "$(Get-Date): "
+Write-Verbose "$(Get-Date -Format G): "
 
 #http://poshtips.com/measuring-elapsed-time-in-powershell/
-Write-Verbose "$(Get-Date): Script started: $($Script:StartTime)"
-Write-Verbose "$(Get-Date): Script ended: $(Get-Date)"
+Write-Verbose "$(Get-Date -Format G): Script started: $($Script:StartTime)"
+Write-Verbose "$(Get-Date -Format G): Script ended: $(Get-Date)"
 $runtime = $(Get-Date) - $Script:StartTime
 $Str = [string]::format("{0} days, {1} hours, {2} minutes, {3}.{4} seconds", `
 	$runtime.Days, `
@@ -6395,7 +6562,7 @@ $Str = [string]::format("{0} days, {1} hours, {2} minutes, {3}.{4} seconds", `
 	$runtime.Minutes, `
 	$runtime.Seconds,
 	$runtime.Milliseconds)
-Write-Verbose "$(Get-Date): Elapsed time: $($Str)"
+Write-Verbose "$(Get-Date -Format G): Elapsed time: $($Str)"
 $runtime = $Null
 $Str = $Null
 $ErrorActionPreference = $SaveEAPreference

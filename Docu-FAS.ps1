@@ -14,12 +14,12 @@
 	
 	This script requires an elevated PowerShell session.
 
-	Word is NOT needed to run the script. This script will output in Text and HTML.
+	Word is NOT needed to run the script. This script outputs in Text and HTML.
 	The default output format is HTML.
 	
 	Creates an output file named CitrixFASInventory.<fileextension>.
 	
-	Word and PDF Document includes a Cover Page, Table of Contents and Footer.
+	Word and PDF Document includes a Cover Page, Table of Contents, and Footer.
 	Includes support for the following language versions of Microsoft Word:
 		Catalan
 		Chinese
@@ -40,6 +40,67 @@
 	HTML is now the default report format.
 	
 	This parameter is set True if no other output format is selected.
+.PARAMETER Text
+	Creates a formatted text file with a .txt extension.
+	
+	This parameter is disabled by default.
+.PARAMETER AddDateTime
+	Adds a date timestamp to the end of the file name.
+	
+	The timestamp is in the format of yyyy-MM-dd_HHmm.
+	June 1, 2021 at 6PM is 2021-06-01_1800.
+	
+	Output filename will be ReportName_2021-06-01_1800.<fileextension>.
+	
+	This parameter is disabled by default.
+	This parameter has an alias of ADT.
+.PARAMETER Dev
+	Clears errors at the beginning of the script.
+	Outputs all errors to a text file at the end of the script.
+	
+	This is used when the script developer requests more troubleshooting data.
+	The text file is placed in the same folder from where the script is run.
+	
+	This parameter is disabled by default.
+.PARAMETER Folder
+	Specifies the optional output folder to save the output report. 
+.PARAMETER Hardware
+	Use WMI to gather hardware information on Computer System, Disks, Processor, and 
+	Network Interface Cards for the Certificate Authority server(s) and the FAS 
+	server(s).
+
+	This parameter may require using an account with permission to retrieve hardware 
+	information (i.e. Domain Admin or Local Administrator, this includes Local 
+	Administrator on the Certificate Authority server(s)).
+
+	Selecting this parameter will add to both the time it takes to run the script and 
+	size of the report.
+
+	This parameter is disabled by default.
+	This parameter has an alias of HW.
+.PARAMETER Log
+	Generates a log file for troubleshooting.
+.PARAMETER ScriptInfo
+	Outputs information about the script to a text file.
+	The text file is placed in the same folder from where the script is run.
+	
+	This parameter is disabled by default.
+	This parameter has an alias of SI.
+.PARAMETER CitrixTemplatesOnly
+	When processing the Microsoft certificate templates, only process the templates
+	with Citrix in the template name.
+	
+	If you make a copy of a Citrix template and do not include "Citrix" in the
+	template name, that template is not included.
+
+	This parameter is disabled by default.
+	This parameter has an alias of CTO.
+.PARAMETER LimitUserCertificates
+	Use this parameter to limit the number of FAS user certificates included in the 
+	report.
+	
+	By default, this is set to [int]::MaxValue which is 2,147,483,647.
+	This parameter has an alias of LUC.
 .PARAMETER MSWord
 	SaveAs DOCX file
 	
@@ -54,29 +115,6 @@
 	This parameter uses Word's SaveAs PDF capability.
 
 	This parameter is disabled by default.
-.PARAMETER Text
-	Creates a formatted text file with a .txt extension.
-	
-	This parameter is disabled by default.
-.PARAMETER AddDateTime
-	Adds a date timestamp to the end of the file name.
-	
-	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	
-	Output filename will be ReportName_2020-06-01_1800.<fileextension>.
-	
-	This parameter is disabled by default.
-	This parameter has an alias of ADT.
-.PARAMETER CitrixTemplatesOnly
-	When processing the Microsoft certificate templates, only process the templates
-	with Citrix in the template name.
-	
-	If you make a copy of a Citrix template and do not include "Citrix" in the
-	template name, that template is not included.
-
-	This parameter is disabled by default.
-	This parameter has an alias of CTO.
 .PARAMETER CompanyAddress
 	Company Address to use for the Cover Page, if the Cover Page has the Address field.
 	
@@ -176,48 +214,11 @@
 	The default value is Sideline.
 	This parameter has an alias of CP.
 	This parameter is only valid with the MSWORD and PDF output parameters.
-.PARAMETER Dev
-	Clears errors at the beginning of the script.
-	Outputs all errors to a text file at the end of the script.
-	
-	This is used when the script developer requests more troubleshooting data.
-	The text file is placed in the same folder from where the script is run.
-	
-	This parameter is disabled by default.
-.PARAMETER Folder
-	Specifies the optional output folder to save the output report. 
-.PARAMETER From
-	Specifies the username for the From email address.
-	
-	If SmtpServer or To are used, this is a required parameter.
-.PARAMETER Hardware
-	Use WMI to gather hardware information on Computer System, Disks, Processor, and 
-	Network Interface Cards for the Certificate Authority server(s) and the FAS 
-	server(s).
-
-	This parameter may require using an account with permission to retrieve hardware 
-	information (i.e. Domain Admin or Local Administrator, this includes Local 
-	Administrator on the Certificate Authority server(s)).
-
-	Selecting this parameter will add to both the time it takes to run the script and 
-	size of the report.
-
-	This parameter is disabled by default.
-	This parameter has an alias of HW.
-.PARAMETER LimitUserCertificates
-	Use this parameter to limit the number of FAS user certificates included in the 
-	report.
-	
-	By default, this is set to [int]::MaxValue which is 2,147,483,647.
-	This parameter has an alias of LUC.
-.PARAMETER Log
-	Generates a log file for troubleshooting.
-.PARAMETER ScriptInfo
-	Outputs information about the script to a text file.
-	The text file is placed in the same folder from where the script is run.
-	
-	This parameter is disabled by default.
-	This parameter has an alias of SI.
+.PARAMETER UserName
+	Username to use for the Cover Page and Footer.
+	The default value is contained in $env:username
+	This parameter has an alias of UN.
+	This parameter is only valid with the MSWORD and PDF output parameters.
 .PARAMETER SmtpPort
 	Specifies the SMTP port for the SmtpServer. 
 	The default is 25.
@@ -225,15 +226,14 @@
 	Specifies the optional email server to send the output report(s). 
 	
 	If From or To are used, this is a required parameter.
+.PARAMETER From
+	Specifies the username for the From email address.
+	
+	If SmtpServer or To are used, this is a required parameter.
 .PARAMETER To
 	Specifies the username for the To email address.
 	
 	If SmtpServer or From are used, this is a required parameter.
-.PARAMETER UserName
-	Username to use for the Cover Page and Footer.
-	The default value is contained in $env:username
-	This parameter has an alias of UN.
-	This parameter is only valid with the MSWORD and PDF output parameters.
 .PARAMETER UseSSL
 	Specifies whether to use SSL for the SmtpServer.
 	The default is False.
@@ -458,10 +458,10 @@
 	No objects are output from this script. 
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
-	NAME: Docu-FAS.ps1
-	VERSION: 1.11
+	NAME: FAS_Inventory_V1.ps1
+	VERSION: 1.12
 	AUTHOR: Carl Webster and Michael B. Smith
-	LASTEDIT: May 9, 2020
+	LASTEDIT: January 10, 2021
 #>
 
 #endregion
@@ -474,12 +474,6 @@ Param(
 	[parameter(Mandatory=$False)] 
 	[Switch]$HTML=$False,
 
-	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
-	[Switch]$MSWord=$False,
-
-	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
-	[Switch]$PDF=$False,
-
 	[parameter(Mandatory=$False)] 
 	[Switch]$Text=$False,
 
@@ -488,9 +482,36 @@ Param(
 	[Switch]$AddDateTime=$False,
 	
 	[parameter(Mandatory=$False)] 
+	[Switch]$Dev=$False,
+	
+	[parameter(Mandatory=$False)] 
+	[string]$Folder="",
+	
+	[parameter(Mandatory=$False)] 
+	[Alias("HW")]
+	[Switch]$Hardware=$False,
+
+	[parameter(Mandatory=$False)] 
+	[Switch]$Log=$False,
+	
+	[parameter(Mandatory=$False)] 
+	[Alias("SI")]
+	[Switch]$ScriptInfo=$False,
+	
+	[parameter(Mandatory=$False)] 
 	[Alias("CTO")]
 	[Switch]$CitrixTemplatesOnly=$False,
 	
+	[parameter(Mandatory=$False)] 
+	[Alias("LUC")]
+	[Int]$LimitUserCertificates=[int]::MaxValue,
+
+	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
+	[Switch]$MSWord=$False,
+
+	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
+	[Switch]$PDF=$False,
+
 	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
 	[Alias("CA")]
 	[ValidateNotNullOrEmpty()]
@@ -521,40 +542,19 @@ Param(
 	[ValidateNotNullOrEmpty()]
 	[string]$CoverPage="Sideline", 
 
-	[parameter(Mandatory=$False)] 
-	[Switch]$Dev=$False,
-	
-	[parameter(Mandatory=$False)] 
-	[string]$Folder="",
-	
-	[parameter(Mandatory=$False)] 
-	[string]$From="",
+	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
+	[Alias("UN")]
+	[ValidateNotNullOrEmpty()]
+	[string]$UserName=$env:username,
 
-	[parameter(Mandatory=$False)] 
-	[Alias("HW")]
-	[Switch]$Hardware=$False,
-
-	[parameter(Mandatory=$False)] 
-	[Alias("LUC")]
-	[Int]$LimitUserCertificates=[int]::MaxValue,
-
-	[parameter(Mandatory=$False)] 
-	[Switch]$Log=$False,
-	
-	[parameter(Mandatory=$False)] 
-	[Alias("SI")]
-	[Switch]$ScriptInfo=$False,
-	
 	[parameter(Mandatory=$False)] 
 	[int]$SmtpPort=25,
 
 	[parameter(Mandatory=$False)] 
 	[string]$SmtpServer="",
 
-	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
-	[Alias("UN")]
-	[ValidateNotNullOrEmpty()]
-	[string]$UserName=$env:username,
+	[parameter(Mandatory=$False)] 
+	[string]$From="",
 
 	[parameter(Mandatory=$False)] 
 	[string]$To="",
@@ -570,6 +570,13 @@ Param(
 #@carlwebster on Twitter
 #http://www.CarlWebster.com
 #Created on March 31, 2019
+#
+#Version 1.12
+#	Added to the Computer Hardware section, the server's Power Plan
+#	Changed all Write-Verbose statements from Get-Date to Get-Date -Format G as requested by Guy Leech
+#	Reordered parameters in an order recommended by Guy Leech
+#	Updated help text
+#	Updated ReadMe file
 #
 #Version 1.11 9-May-2020
 #	Add checking for a Word version of 0, which indicates the Office installation needs repairing
@@ -588,9 +595,9 @@ Param(
 #	Fixed several alignment issues in the Text output option
 #	Fixed Swedish Table of Contents (Thanks to Johan Kallio)
 #		From 
-#			'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckning2'; Break }
+#			'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
 #		To
-#			'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckn2'; Break }
+#			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
 #
 #Version 1.01 18-May-2019
 #	Fix some typos in the help text and remove some unneeded comments
@@ -619,24 +626,24 @@ If($MSWord -eq $False -and $PDF -eq $False -and $Text -eq $False -and $HTML -eq 
 
 If($MSWord)
 {
-	Write-Verbose "$(Get-Date): MSWord is set"
+	Write-Verbose "$(Get-Date -Format G): MSWord is set"
 }
 If($PDF)
 {
-	Write-Verbose "$(Get-Date): PDF is set"
+	Write-Verbose "$(Get-Date -Format G): PDF is set"
 }
 If($Text)
 {
-	Write-Verbose "$(Get-Date): Text is set"
+	Write-Verbose "$(Get-Date -Format G): Text is set"
 }
 If($HTML)
 {
-	Write-Verbose "$(Get-Date): HTML is set"
+	Write-Verbose "$(Get-Date -Format G): HTML is set"
 }
 
 If($Folder -ne "")
 {
-	Write-Verbose "$(Get-Date): Testing folder path"
+	Write-Verbose "$(Get-Date -Format G): Testing folder path"
 	#does it exist
 	If(Test-Path $Folder -EA 0)
 	{
@@ -644,7 +651,7 @@ If($Folder -ne "")
 		If(Test-Path $Folder -pathType Container -EA 0)
 		{
 			#it exists and it is a folder
-			Write-Verbose "$(Get-Date): Folder path $Folder exists and is a folder"
+			Write-Verbose "$(Get-Date -Format G): Folder path $Folder exists and is a folder"
 		}
 		Else
 		{
@@ -700,12 +707,12 @@ If($Log)
 	try 
 	{
 		Start-Transcript -Path $Script:LogPath -Force -Verbose:$false | Out-Null
-		Write-Verbose "$(Get-Date): Transcript/log started at $Script:LogPath"
+		Write-Verbose "$(Get-Date -Format G): Transcript/log started at $Script:LogPath"
 		$Script:StartLog = $true
 	} 
 	catch 
 	{
-		Write-Verbose "$(Get-Date): Transcript/log failed at $Script:LogPath"
+		Write-Verbose "$(Get-Date -Format G): Transcript/log failed at $Script:LogPath"
 		$Script:StartLog = $false
 	}
 }
@@ -936,8 +943,8 @@ Function GetComputerWMIInfo
 	# modified 29-Apr-2018 to change from Arrays to New-Object System.Collections.ArrayList
 
 	#Get Computer info
-	Write-Verbose "$(Get-Date): `t`tProcessing WMI Computer information"
-	Write-Verbose "$(Get-Date): `t`t`tHardware information"
+	Write-Verbose "$(Get-Date -Format G): `t`tProcessing WMI Computer information"
+	Write-Verbose "$(Get-Date -Format G): `t`t`tHardware information"
 	If($MSWord -or $PDF)
 	{
 		WriteWordLine 3 0 "Computer Information: $($RemoteComputerName)"
@@ -974,12 +981,12 @@ Function GetComputerWMIInfo
 
 		ForEach($Item in $ComputerItems)
 		{
-			OutputComputerItem $Item $ComputerOS
+			OutputComputerItem $Item $ComputerOS $RemoteComputerName
 		}
 	}
 	ElseIf(!$?)
 	{
-		Write-Verbose "$(Get-Date): Get-WmiObject win32_computersystem failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_computersystem failed for $($RemoteComputerName)"
 		Write-Warning "Get-WmiObject win32_computersystem failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
@@ -1006,7 +1013,7 @@ Function GetComputerWMIInfo
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): No results Returned for Computer information"
+		Write-Verbose "$(Get-Date -Format G): No results Returned for Computer information"
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "No results Returned for Computer information" "" $Null 0 $False $True
@@ -1022,7 +1029,7 @@ Function GetComputerWMIInfo
 	}
 	
 	#Get Disk info
-	Write-Verbose "$(Get-Date): `t`t`tDrive information"
+	Write-Verbose "$(Get-Date -Format G): `t`t`tDrive information"
 
 	If($MSWord -or $PDF)
 	{
@@ -1063,7 +1070,7 @@ Function GetComputerWMIInfo
 	}
 	ElseIf(!$?)
 	{
-		Write-Verbose "$(Get-Date): Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)"
 		Write-Warning "Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
@@ -1089,7 +1096,7 @@ Function GetComputerWMIInfo
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): No results Returned for Drive information"
+		Write-Verbose "$(Get-Date -Format G): No results Returned for Drive information"
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "No results Returned for Drive information" "" $Null 0 $False $True
@@ -1105,7 +1112,7 @@ Function GetComputerWMIInfo
 	}
 	
 	#Get CPU's and stepping
-	Write-Verbose "$(Get-Date): `t`t`tProcessor information"
+	Write-Verbose "$(Get-Date -Format G): `t`t`tProcessor information"
 
 	If($MSWord -or $PDF)
 	{
@@ -1142,7 +1149,7 @@ Function GetComputerWMIInfo
 	}
 	ElseIf(!$?)
 	{
-		Write-Verbose "$(Get-Date): Get-WmiObject win32_Processor failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_Processor failed for $($RemoteComputerName)"
 		Write-Warning "Get-WmiObject win32_Processor failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
@@ -1168,7 +1175,7 @@ Function GetComputerWMIInfo
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): No results Returned for Processor information"
+		Write-Verbose "$(Get-Date -Format G): No results Returned for Processor information"
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "No results Returned for Processor information" "" $Null 0 $False $True
@@ -1184,7 +1191,7 @@ Function GetComputerWMIInfo
 	}
 
 	#Get Nics
-	Write-Verbose "$(Get-Date): `t`t`tNIC information"
+	Write-Verbose "$(Get-Date -Format G): `t`t`tNIC information"
 
 	If($MSWord -or $PDF)
 	{
@@ -1246,7 +1253,7 @@ Function GetComputerWMIInfo
 				ElseIf(!$?)
 				{
 					Write-Warning "$(Get-Date): Error retrieving NIC information"
-					Write-Verbose "$(Get-Date): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
+					Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 					Write-Warning "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 					If($MSWORD -or $PDF)
 					{
@@ -1275,7 +1282,7 @@ Function GetComputerWMIInfo
 				}
 				Else
 				{
-					Write-Verbose "$(Get-Date): No results Returned for NIC information"
+					Write-Verbose "$(Get-Date -Format G): No results Returned for NIC information"
 					If($MSWORD -or $PDF)
 					{
 						WriteWordLine 0 2 "No results Returned for NIC information" "" $Null 0 $False $True
@@ -1295,7 +1302,7 @@ Function GetComputerWMIInfo
 	ElseIf(!$?)
 	{
 		Write-Warning "$(Get-Date): Error retrieving NIC configuration information"
-		Write-Verbose "$(Get-Date): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 		Write-Warning "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
@@ -1324,7 +1331,7 @@ Function GetComputerWMIInfo
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): No results Returned for NIC configuration information"
+		Write-Verbose "$(Get-Date -Format G): No results Returned for NIC configuration information"
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "No results Returned for NIC configuration information" "" $Null 0 $False $True
@@ -1355,7 +1362,25 @@ Function GetComputerWMIInfo
 
 Function OutputComputerItem
 {
-	Param([object]$Item, [string]$OS)
+	Param([object]$Item, [string]$OS, [string]$RemoteComputerName)
+	
+	#get computer's power plan
+	#https://techcommunity.microsoft.com/t5/core-infrastructure-and-security/get-the-active-power-plan-of-multiple-servers-with-powershell/ba-p/370429
+	
+	try 
+	{
+
+		$PowerPlan = (Get-WmiObject -ComputerName $RemoteComputerName -Class Win32_PowerPlan -Namespace "root\cimv2\power" |
+			Where-Object {$_.IsActive -eq $true} |
+			Select-Object @{Name = "PowerPlan"; Expression = {$_.ElementName}}).PowerPlan
+	}
+
+	catch 
+	{
+
+		$PowerPlan = $_.Exception
+
+	}	
 	
 	If($MSWord -or $PDF)
 	{
@@ -1364,12 +1389,14 @@ Function OutputComputerItem
 		$ItemInformation.Add(@{ Data = "Model"; Value = $Item.model; }) > $Null
 		$ItemInformation.Add(@{ Data = "Domain"; Value = $Item.domain; }) > $Null
 		$ItemInformation.Add(@{ Data = "Operating System"; Value = $OS; }) > $Null
+		$ItemInformation.Add(@{ Data = "Power Plan"; Value = $PowerPlan; }) > $Null
 		$ItemInformation.Add(@{ Data = "Total Ram"; Value = "$($Item.totalphysicalram) GB"; }) > $Null
 		$ItemInformation.Add(@{ Data = "Physical Processors (sockets)"; Value = $Item.NumberOfProcessors; }) > $Null
 		$ItemInformation.Add(@{ Data = "Logical Processors (cores w/HT)"; Value = $Item.NumberOfLogicalProcessors; }) > $Null
 		$Table = AddWordTable -Hashtable $ItemInformation `
 		-Columns Data,Value `
 		-List `
+		-Format $wdTableGrid `
 		-AutoFit $wdAutoFitFixed;
 
 		## Set first column format
@@ -1391,6 +1418,7 @@ Function OutputComputerItem
 		Line 2 "Model`t`t`t`t: " $Item.model
 		Line 2 "Domain`t`t`t`t: " $Item.domain
 		Line 2 "Operating System`t`t: " $OS
+		Line 2 "Power Plan`t`t`t: " $PowerPlan
 		Line 2 "Total Ram`t`t`t: $($Item.totalphysicalram) GB"
 		Line 2 "Physical Processors (sockets)`t: " $Item.NumberOfProcessors
 		Line 2 "Logical Processors (cores w/HT)`t: " $Item.NumberOfLogicalProcessors
@@ -1402,6 +1430,8 @@ Function OutputComputerItem
 		$columnHeaders = @("Manufacturer",($htmlsilver -bor $htmlBold),$Item.manufacturer,$htmlwhite)
 		$rowdata += @(,('Model',($htmlsilver -bor $htmlBold),$Item.model,$htmlwhite))
 		$rowdata += @(,('Domain',($htmlsilver -bor $htmlBold),$Item.domain,$htmlwhite))
+		$rowdata += @(,('Operating System',($htmlsilver -bor $htmlBold),$OS,$htmlwhite))
+		$rowdata += @(,('Power Plan',($htmlsilver -bor $htmlBold),$PowerPlan,$htmlwhite))
 		$rowdata += @(,('Total Ram',($htmlsilver -bor $htmlBold),"$($Item.totalphysicalram) GB",$htmlwhite))
 		$rowdata += @(,('Physical Processors (sockets)',($htmlsilver -bor $htmlBold),$Item.NumberOfProcessors,$htmlwhite))
 		$rowdata += @(,('Logical Processors (cores w/HT)',($htmlsilver -bor $htmlBold),$Item.NumberOfLogicalProcessors,$htmlwhite))
@@ -2139,23 +2169,25 @@ Function SetWordHashTable
 	#nl - Dutch
 	#pt - Portuguese
 	#sv - Swedish
+	#zh - Chinese
 	
 	[string]$toc = $(
 		Switch ($CultureCode)
 		{
-			'ca-'	{ 'Taula automÃ¡tica 2'; Break }
+			'ca-'	{ 'Taula automática 2'; Break }
 			'da-'	{ 'Automatisk tabel 2'; Break }
 			'de-'	{ 'Automatische Tabelle 2'; Break }
 			'en-'	{ 'Automatic Table 2'; Break }
-			'es-'	{ 'Tabla automÃ¡tica 2'; Break }
+			'es-'	{ 'Tabla automática 2'; Break }
 			'fi-'	{ 'Automaattinen taulukko 2'; Break }
 #			'fr-'	{ 'Sommaire Automatique 2'; Break }
-			'fr-'	{ 'Table automatiqueÂ 2'; Break } #changed 10-feb-2017 david roquier and samuel legrand
+			'fr-'	{ 'Table automatique 2'; Break } #changed 10-feb-2017 david roquier and samuel legrand
 			'nb-'	{ 'Automatisk tabell 2'; Break }
 			'nl-'	{ 'Automatische inhoudsopgave 2'; Break }
-			'pt-'	{ 'SumÃ¡rio AutomÃ¡tico 2'; Break }
-			# fix in 1.90 thanks to Johan Kallio 'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckning2'; Break }
-			'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckn2'; Break }
+			'pt-'	{ 'Sumário Automático 2'; Break }
+			# fix in 1.90 thanks to Johan Kallio 'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
+			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
+			'zh-'	{ '自动目录 2'; Break }
 		}
 	)
 
@@ -2199,10 +2231,12 @@ Function GetCulture
 	#nl - Dutch
 	#pt - Portuguese
 	#sv - Swedish
+	#zh - Chinese
 
 	Switch ($WordValue)
 	{
 		{$CatalanArray -contains $_}	{$CultureCode = "ca-"}
+		{$ChineseArray -contains $_}	{$CultureCode = "zh-"}
 		{$DanishArray -contains $_}		{$CultureCode = "da-"}
 		{$DutchArray -contains $_}		{$CultureCode = "nl-"}
 		{$EnglishArray -contains $_}	{$CultureCode = "en-"}
@@ -2231,23 +2265,23 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
-					"Integral", "IÃ³ (clar)", "IÃ³ (fosc)", "LÃ­nia lateral",
-					"Moviment", "QuadrÃ­cula", "Retrospectiu", "Sector (clar)",
-					"Sector (fosc)", "SemÃ for", "VisualitzaciÃ³ principal", "Whisp")
+					"Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
+					"Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
+					"Sector (fosc)", "Semàfor", "Visualització principal", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
-					"Integral", "IÃ³ (clar)", "IÃ³ (fosc)", "LÃ­nia lateral",
-					"Moviment", "QuadrÃ­cula", "Retrospectiu", "Sector (clar)",
-					"Sector (fosc)", "SemÃ for", "VisualitzaciÃ³", "Whisp")
+					"Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
+					"Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
+					"Sector (fosc)", "Semàfor", "Visualització", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
 					$xArray = ("Alfabet", "Anual", "Austin", "Conservador",
-					"Contrast", "Cubicles", "DiplomÃ tic", "ExposiciÃ³",
-					"LÃ­nia lateral", "Mod", "Mosiac", "Moviment", "Paper de diari",
-					"Perspectiva", "Piles", "QuadrÃ­cula", "Sobri",
+					"Contrast", "Cubicles", "Diplomàtic", "Exposició",
+					"Línia lateral", "Mod", "Mosiac", "Moviment", "Paper de diari",
+					"Perspectiva", "Piles", "Quadrícula", "Sobri",
 					"Transcendir", "Trencaclosques")
 				}
 			}
@@ -2255,24 +2289,24 @@ Function ValidateCoverPage
 		'da-'	{
 				If($xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("Austin", "BevÃ¦gElse", "Brusen", "Facet", "Filigran", 
-					"Gitter", "Integral", "Ion (lys)", "Ion (mÃ¸rk)", 
+					$xArray = ("Austin", "BevægElse", "Brusen", "Facet", "Filigran", 
+					"Gitter", "Integral", "Ion (lys)", "Ion (mørk)", 
 					"Retro", "Semafor", "Sidelinje", "Stribet", 
-					"Udsnit (lys)", "Udsnit (mÃ¸rk)", "Visningsmaster")
+					"Udsnit (lys)", "Udsnit (mørk)", "Visningsmaster")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
-					$xArray = ("BevÃ¦gElse", "Brusen", "Ion (lys)", "Filigran",
+					$xArray = ("BevægElse", "Brusen", "Ion (lys)", "Filigran",
 					"Retro", "Semafor", "Visningsmaster", "Integral",
 					"Facet", "Gitter", "Stribet", "Sidelinje", "Udsnit (lys)",
-					"Udsnit (mÃ¸rk)", "Ion (mÃ¸rk)", "Austin")
+					"Udsnit (mørk)", "Ion (mørk)", "Austin")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("BevÃ¦gElse", "Moderat", "Perspektiv", "Firkanter",
-					"Overskrid", "Alfabet", "Kontrast", "Stakke", "Fliser", "GÃ¥de",
+					$xArray = ("BevægElse", "Moderat", "Perspektiv", "Firkanter",
+					"Overskrid", "Alfabet", "Kontrast", "Stakke", "Fliser", "Gåde",
 					"Gitter", "Austin", "Eksponering", "Sidelinje", "Enkel",
-					"NÃ¥lestribet", "Ã…rlig", "Avispapir", "Tradionel")
+					"Nålestribet", "Årlig", "Avispapir", "Tradionel")
 				}
 			}
 
@@ -2280,22 +2314,22 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "Bewegung", "Facette", "Filigran", 
-					"GebÃ¤ndert", "Integral", "Ion (dunkel)", "Ion (hell)", 
-					"Pfiff", "Randlinie", "Raster", "RÃ¼ckblick", 
+					"Gebändert", "Integral", "Ion (dunkel)", "Ion (hell)", 
+					"Pfiff", "Randlinie", "Raster", "Rückblick", 
 					"Segment (dunkel)", "Segment (hell)", "Semaphor", 
 					"ViewMaster")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Semaphor", "Segment (hell)", "Ion (hell)",
-					"Raster", "Ion (dunkel)", "Filigran", "RÃ¼ckblick", "Pfiff",
+					"Raster", "Ion (dunkel)", "Filigran", "Rückblick", "Pfiff",
 					"ViewMaster", "Segment (dunkel)", "Verbunden", "Bewegung",
 					"Randlinie", "Austin", "Integral", "Facette")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
 					$xArray = ("Alphabet", "Austin", "Bewegung", "Durchscheinend",
-					"Herausgestellt", "JÃ¤hrlich", "Kacheln", "Kontrast", "Kubistisch",
+					"Herausgestellt", "Jährlich", "Kacheln", "Kontrast", "Kubistisch",
 					"Modern", "Nadelstreifen", "Perspektive", "Puzzle", "Randlinie",
 					"Raster", "Schlicht", "Stapel", "Traditionell", "Zeitungspapier")
 				}
@@ -2320,23 +2354,23 @@ Function ValidateCoverPage
 		'es-'	{
 				If($xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("Austin", "Con bandas", "Cortar (oscuro)", "CuadrÃ­cula", 
+					$xArray = ("Austin", "Con bandas", "Cortar (oscuro)", "Cuadrícula", 
 					"Whisp", "Faceta", "Filigrana", "Integral", "Ion (claro)", 
-					"Ion (oscuro)", "LÃ­nea lateral", "Movimiento", "Retrospectiva", 
-					"SemÃ¡foro", "Slice (luz)", "Vista principal", "Whisp")
+					"Ion (oscuro)", "Línea lateral", "Movimiento", "Retrospectiva", 
+					"Semáforo", "Slice (luz)", "Vista principal", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Whisp", "Vista principal", "Filigrana", "Austin",
-					"Slice (luz)", "Faceta", "SemÃ¡foro", "Retrospectiva", "CuadrÃ­cula",
-					"Movimiento", "Cortar (oscuro)", "LÃ­nea lateral", "Ion (oscuro)",
+					"Slice (luz)", "Faceta", "Semáforo", "Retrospectiva", "Cuadrícula",
+					"Movimiento", "Cortar (oscuro)", "Línea lateral", "Ion (oscuro)",
 					"Ion (claro)", "Integral", "Con bandas")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
 					$xArray = ("Alfabeto", "Anual", "Austero", "Austin", "Conservador",
-					"Contraste", "CuadrÃ­cula", "CubÃ­culos", "ExposiciÃ³n", "LÃ­nea lateral",
-					"Moderno", "Mosaicos", "Movimiento", "Papel periÃ³dico",
+					"Contraste", "Cuadrícula", "Cubículos", "Exposición", "Línea lateral",
+					"Moderno", "Mosaicos", "Movimiento", "Papel periódico",
 					"Perspectiva", "Pilas", "Puzzle", "Rayas", "Sobrepasar")
 				}
 			}
@@ -2346,14 +2380,14 @@ Function ValidateCoverPage
 				{
 					$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
 					"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
-					"Sektori (vaalea)", "VaihtuvavÃ¤rinen", "ViewMaster", "Austin",
+					"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
 					"Kuiskaus", "Liike", "Ruudukko", "Sivussa")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
 					"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
-					"Sektori (vaalea)", "VaihtuvavÃ¤rinen", "ViewMaster", "Austin",
+					"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
 					"Kiehkura", "Liike", "Ruudukko", "Sivussa")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
@@ -2368,17 +2402,17 @@ Function ValidateCoverPage
 		'fr-'	{
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("Ã€ bandes", "Austin", "Facette", "Filigrane", 
-					"Guide", "IntÃ©grale", "Ion (clair)", "Ion (foncÃ©)", 
-					"Lignes latÃ©rales", "Quadrillage", "RÃ©trospective", "Secteur (clair)", 
-					"Secteur (foncÃ©)", "SÃ©maphore", "ViewMaster", "Whisp")
+					$xArray = ("À bandes", "Austin", "Facette", "Filigrane", 
+					"Guide", "Intégrale", "Ion (clair)", "Ion (foncé)", 
+					"Lignes latérales", "Quadrillage", "Rétrospective", "Secteur (clair)", 
+					"Secteur (foncé)", "Sémaphore", "ViewMaster", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("Alphabet", "Annuel", "AustÃ¨re", "Austin", 
-					"Blocs empilÃ©s", "Classique", "Contraste", "Emplacements de bureau", 
-					"Exposition", "Guide", "Ligne latÃ©rale", "Moderne", 
-					"MosaÃ¯ques", "Mots croisÃ©s", "Papier journal", "Perspective",
+					$xArray = ("Alphabet", "Annuel", "Austère", "Austin", 
+					"Blocs empilés", "Classique", "Contraste", "Emplacements de bureau", 
+					"Exposition", "Guide", "Ligne latérale", "Moderne", 
+					"Mosaïques", "Mots croisés", "Papier journal", "Perspective",
 					"Quadrillage", "Rayures fines", "Transcendant")
 				}
 			}
@@ -2387,13 +2421,13 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "BevegElse", "Dempet", "Fasett", "Filigran",
-					"Integral", "Ion (lys)", "Ion (mÃ¸rk)", "Retrospekt", "Rutenett",
-					"Sektor (lys)", "Sektor (mÃ¸rk)", "Semafor", "Sidelinje", "Stripet",
+					"Integral", "Ion (lys)", "Ion (mørk)", "Retrospekt", "Rutenett",
+					"Sektor (lys)", "Sektor (mørk)", "Semafor", "Sidelinje", "Stripet",
 					"ViewMaster")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("Alfabet", "Ã…rlig", "Avistrykk", "Austin", "Avlukker",
+					$xArray = ("Alfabet", "Årlig", "Avistrykk", "Austin", "Avlukker",
 					"BevegElse", "Engasjement", "Enkel", "Fliser", "Konservativ",
 					"Kontrast", "Mod", "Perspektiv", "Puslespill", "Rutenett", "Sidelinje",
 					"Smale striper", "Stabler", "Transcenderende")
@@ -2421,17 +2455,17 @@ Function ValidateCoverPage
 		'pt-'	{
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("AnimaÃ§Ã£o", "Austin", "Em Tiras", "ExibiÃ§Ã£o Mestra",
+					$xArray = ("Animação", "Austin", "Em Tiras", "Exibição Mestra",
 					"Faceta", "Fatia (Clara)", "Fatia (Escura)", "Filete", "Filigrana", 
-					"Grade", "Integral", "Ãon (Claro)", "Ãon (Escuro)", "Linha Lateral",
-					"Retrospectiva", "SemÃ¡foro")
+					"Grade", "Integral", "Íon (Claro)", "Íon (Escuro)", "Linha Lateral",
+					"Retrospectiva", "Semáforo")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("Alfabeto", "AnimaÃ§Ã£o", "Anual", "Austero", "Austin", "Baias",
-					"Conservador", "Contraste", "ExposiÃ§Ã£o", "Grade", "Ladrilhos",
+					$xArray = ("Alfabeto", "Animação", "Anual", "Austero", "Austin", "Baias",
+					"Conservador", "Contraste", "Exposição", "Grade", "Ladrilhos",
 					"Linha Lateral", "Listras", "Mod", "Papel Jornal", "Perspectiva", "Pilhas",
-					"Quebra-cabeÃ§a", "Transcend")
+					"Quebra-cabeça", "Transcend")
 				}
 			}
 
@@ -2439,15 +2473,25 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "Band", "Fasett", "Filigran", "Integrerad", "Jon (ljust)",
-					"Jon (mÃ¶rkt)", "Knippe", "RutnÃ¤t", "RÃ¶rElse", "Sektor (ljus)", "Sektor (mÃ¶rk)",
-					"Semafor", "Sidlinje", "VisaHuvudsida", "Ã…terblick")
+					"Jon (mörkt)", "Knippe", "Rutnät", "RörElse", "Sektor (ljus)", "Sektor (mörk)",
+					"Semafor", "Sidlinje", "VisaHuvudsida", "Återblick")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("AlfabetmÃ¶nster", "Austin", "Enkelt", "Exponering", "Konservativt",
-					"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "RutnÃ¤t",
-					"RÃ¶rElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Ã…rligt",
-					"Ã-vergÃ¥ende")
+					$xArray = ("Alfabetmönster", "Austin", "Enkelt", "Exponering", "Konservativt",
+					"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "Rutnät",
+					"RörElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Årligt",
+					"Övergående")
+				}
+			}
+
+		'zh-'	{
+				If($xWordVersion -eq $wdWord2010 -or $xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+				{
+					$xArray = ('奥斯汀', '边线型', '花丝', '怀旧', '积分',
+					'离子(浅色)', '离子(深色)', '母版型', '平面', '切片(浅色)',
+					'切片(深色)', '丝状', '网格', '镶边', '信号灯',
+					'运动型')
 				}
 			}
 
@@ -2493,7 +2537,7 @@ Function CheckWordPrereq
 	
 	#Find out if winword is running in our session
 	#fixed by MBS
-	[bool]$wordrunning = $null -ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$wordrunning = $null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
 		Write-Host "`n`n`tPlease close all instances of Microsoft Word before running this report.`n`n"
@@ -2601,7 +2645,7 @@ Function validObject( [object] $object, [string] $topLevel )
 
 Function SetupWord
 {
-	Write-Verbose "$(Get-Date): Setting up Word"
+	Write-Verbose "$(Get-Date -Format G): Setting up Word"
     
 	If(!$AddDateTime)
 	{
@@ -2621,7 +2665,7 @@ Function SetupWord
 	}
 
 	# Setup word for output
-	Write-Verbose "$(Get-Date): Create Word comObject."
+	Write-Verbose "$(Get-Date -Format G): Create Word comObject."
 	$Script:Word = New-Object -comobject "Word.Application" -EA 0 4>$Null
 	
 	If(!$? -or $Null -eq $Script:Word)
@@ -2639,7 +2683,7 @@ Function SetupWord
 		AbortScript
 	}
 
-	Write-Verbose "$(Get-Date): Determine Word language value"
+	Write-Verbose "$(Get-Date -Format G): Determine Word language value"
 	If( ( validStateProp $Script:Word Language Value__ ) )
 	{
 		[int]$Script:WordLanguageValue = [int]$Script:Word.Language.Value__
@@ -2662,7 +2706,7 @@ Function SetupWord
 		"
 		AbortScript
 	}
-	Write-Verbose "$(Get-Date): Word language value is $($Script:WordLanguageValue)"
+	Write-Verbose "$(Get-Date -Format G): Word language value is $($Script:WordLanguageValue)"
 	
 	$Script:WordCultureCode = GetCulture $Script:WordLanguageValue
 	
@@ -2727,7 +2771,7 @@ Function SetupWord
 	#only validate CompanyName if the field is blank
 	If([String]::IsNullOrEmpty($CompanyName))
 	{
-		Write-Verbose "$(Get-Date): Company name is blank. Retrieve company name from registry."
+		Write-Verbose "$(Get-Date -Format G): Company name is blank. Retrieve company name from registry."
 		$TmpName = ValidateCompanyName
 		
 		If([String]::IsNullOrEmpty($TmpName))
@@ -2747,7 +2791,7 @@ Function SetupWord
 		Else
 		{
 			$Script:CoName = $TmpName
-			Write-Verbose "$(Get-Date): Updated company name to $($Script:CoName)"
+			Write-Verbose "$(Get-Date -Format G): Updated company name to $($Script:CoName)"
 		}
 	}
 	Else
@@ -2757,14 +2801,14 @@ Function SetupWord
 
 	If($Script:WordCultureCode -ne "en-")
 	{
-		Write-Verbose "$(Get-Date): Check Default Cover Page for $($WordCultureCode)"
+		Write-Verbose "$(Get-Date -Format G): Check Default Cover Page for $($WordCultureCode)"
 		[bool]$CPChanged = $False
 		Switch ($Script:WordCultureCode)
 		{
 			'ca-'	{
 					If($CoverPage -eq "Sideline")
 					{
-						$CoverPage = "LÃ­nia lateral"
+						$CoverPage = "Línia lateral"
 						$CPChanged = $True
 					}
 				}
@@ -2788,7 +2832,7 @@ Function SetupWord
 			'es-'	{
 					If($CoverPage -eq "Sideline")
 					{
-						$CoverPage = "LÃ­nea lateral"
+						$CoverPage = "Línea lateral"
 						$CPChanged = $True
 					}
 				}
@@ -2806,12 +2850,12 @@ Function SetupWord
 					{
 						If($Script:WordVersion -eq $wdWord2013 -or $Script:WordVersion -eq $wdWord2016)
 						{
-							$CoverPage = "Lignes latÃ©rales"
+							$CoverPage = "Lignes latérales"
 							$CPChanged = $True
 						}
 						Else
 						{
-							$CoverPage = "Ligne latÃ©rale"
+							$CoverPage = "Ligne latérale"
 							$CPChanged = $True
 						}
 					}
@@ -2848,23 +2892,31 @@ Function SetupWord
 						$CPChanged = $True
 					}
 				}
+
+			'zh-'	{
+					If($CoverPage -eq "Sideline")
+					{
+						$CoverPage = "边线型"
+						$CPChanged = $True
+					}
+				}
 		}
 
 		If($CPChanged)
 		{
-			Write-Verbose "$(Get-Date): Changed Default Cover Page from Sideline to $($CoverPage)"
+			Write-Verbose "$(Get-Date -Format G): Changed Default Cover Page from Sideline to $($CoverPage)"
 		}
 	}
 
-	Write-Verbose "$(Get-Date): Validate cover page $($CoverPage) for culture code $($Script:WordCultureCode)"
+	Write-Verbose "$(Get-Date -Format G): Validate cover page $($CoverPage) for culture code $($Script:WordCultureCode)"
 	[bool]$ValidCP = $False
 	
 	$ValidCP = ValidateCoverPage $Script:WordVersion $CoverPage $Script:WordCultureCode
 	
 	If(!$ValidCP)
 	{
-		Write-Verbose "$(Get-Date): Word language value $($Script:WordLanguageValue)"
-		Write-Verbose "$(Get-Date): Culture code $($Script:WordCultureCode)"
+		Write-Verbose "$(Get-Date -Format G): Word language value $($Script:WordLanguageValue)"
+		Write-Verbose "$(Get-Date -Format G): Culture code $($Script:WordCultureCode)"
 		Write-Error "
 		`n`n
 		`t`t
@@ -2881,7 +2933,7 @@ Function SetupWord
 
 	#http://jdhitsolutions.com/blog/2012/05/san-diego-2012-powershell-deep-dive-slides-and-demos/
 	#using Jeff's Demo-WordReport.ps1 file for examples
-	Write-Verbose "$(Get-Date): Load Word Templates"
+	Write-Verbose "$(Get-Date -Format G): Load Word Templates"
 
 	[bool]$Script:CoverPagesExist = $False
 	[bool]$BuildingBlocksExist = $False
@@ -2890,7 +2942,7 @@ Function SetupWord
 	#word 2010/2013/2016
 	$BuildingBlocksCollection = $Script:Word.Templates | Where-Object{$_.name -eq "Built-In Building Blocks.dotx"}
 
-	Write-Verbose "$(Get-Date): Attempt to load cover page $($CoverPage)"
+	Write-Verbose "$(Get-Date -Format G): Attempt to load cover page $($CoverPage)"
 	$part = $Null
 
 	$BuildingBlocksCollection | 
@@ -2923,16 +2975,16 @@ Function SetupWord
 
 	If(!$Script:CoverPagesExist)
 	{
-		Write-Verbose "$(Get-Date): Cover Pages are not installed or the Cover Page $($CoverPage) does not exist."
+		Write-Verbose "$(Get-Date -Format G): Cover Pages are not installed or the Cover Page $($CoverPage) does not exist."
 		Write-Warning "Cover Pages are not installed or the Cover Page $($CoverPage) does not exist."
 		Write-Warning "This report will not have a Cover Page."
 	}
 
-	Write-Verbose "$(Get-Date): Create empty word doc"
+	Write-Verbose "$(Get-Date -Format G): Create empty word doc"
 	$Script:Doc = $Script:Word.Documents.Add()
 	If($Null -eq $Script:Doc)
 	{
-		Write-Verbose "$(Get-Date): "
+		Write-Verbose "$(Get-Date -Format G): "
 		Write-Error "
 		`n`n
 		`t`t
@@ -2948,7 +3000,7 @@ Function SetupWord
 	$Script:Selection = $Script:Word.Selection
 	If($Null -eq $Script:Selection)
 	{
-		Write-Verbose "$(Get-Date): "
+		Write-Verbose "$(Get-Date -Format G): "
 		Write-Error "
 		`n`n
 		`t`t
@@ -2966,7 +3018,7 @@ Function SetupWord
 	$Script:Word.ActiveDocument.DefaultTabStop = 36
 
 	#Disable Spell and Grammar Check to resolve issue and improve performance (from Pat Coughlin)
-	Write-Verbose "$(Get-Date): Disable grammar and spell checking"
+	Write-Verbose "$(Get-Date -Format G): Disable grammar and spell checking"
 	#bug reported 1-Apr-2014 by Tim Mangan
 	#save current options first before turning them off
 	$Script:CurrentGrammarOption = $Script:Word.Options.CheckGrammarAsYouType
@@ -2977,17 +3029,17 @@ Function SetupWord
 	If($BuildingBlocksExist)
 	{
 		#insert new page, getting ready for table of contents
-		Write-Verbose "$(Get-Date): Insert new page, getting ready for table of contents"
+		Write-Verbose "$(Get-Date -Format G): Insert new page, getting ready for table of contents"
 		$part.Insert($Script:Selection.Range,$True) | Out-Null
 		$Script:Selection.InsertNewPage()
 
 		#table of contents
-		Write-Verbose "$(Get-Date): Table of Contents - $($Script:MyHash.Word_TableOfContents)"
+		Write-Verbose "$(Get-Date -Format G): Table of Contents - $($Script:MyHash.Word_TableOfContents)"
 		$toc = $BuildingBlocks.BuildingBlockEntries.Item($Script:MyHash.Word_TableOfContents)
 		If($Null -eq $toc)
 		{
-			Write-Verbose "$(Get-Date): "
-			Write-Verbose "$(Get-Date): Table of Content - $($Script:MyHash.Word_TableOfContents) could not be retrieved."
+			Write-Verbose "$(Get-Date -Format G): "
+			Write-Verbose "$(Get-Date -Format G): Table of Content - $($Script:MyHash.Word_TableOfContents) could not be retrieved."
 			Write-Warning "This report will not have a Table of Contents."
 		}
 		Else
@@ -2997,16 +3049,16 @@ Function SetupWord
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): Table of Contents are not installed."
+		Write-Verbose "$(Get-Date -Format G): Table of Contents are not installed."
 		Write-Warning "Table of Contents are not installed so this report will not have a Table of Contents."
 	}
 
 	#set the footer
-	Write-Verbose "$(Get-Date): Set the footer"
+	Write-Verbose "$(Get-Date -Format G): Set the footer"
 	[string]$footertext = "Report created by $username"
 
 	#get the footer
-	Write-Verbose "$(Get-Date): Get the footer and format font"
+	Write-Verbose "$(Get-Date -Format G): Get the footer and format font"
 	$Script:Doc.ActiveWindow.ActivePane.view.SeekView = $wdSeekPrimaryFooter
 	#get the footer and format font
 	$footers = $Script:Doc.Sections.Last.Footers
@@ -3020,15 +3072,15 @@ Function SetupWord
 			$footer.range.Font.Bold = $True
 		}
 	} #end ForEach
-	Write-Verbose "$(Get-Date): Footer text"
+	Write-Verbose "$(Get-Date -Format G): Footer text"
 	$Script:Selection.HeaderFooter.Range.Text = $footerText
 
 	#add page numbering
-	Write-Verbose "$(Get-Date): Add page numbering"
+	Write-Verbose "$(Get-Date -Format G): Add page numbering"
 	$Script:Selection.HeaderFooter.PageNumbers.Add($wdAlignPageNumberRight) | Out-Null
 
 	FindWordDocumentEnd
-	Write-Verbose "$(Get-Date):"
+	Write-Verbose "$(Get-Date -Format G):"
 	#end of Jeff Hicks 
 }
 
@@ -3041,7 +3093,7 @@ Function UpdateDocumentProperties
 	{
 		If($Script:CoverPagesExist)
 		{
-			Write-Verbose "$(Get-Date): Set Cover Page Properties"
+			Write-Verbose "$(Get-Date -Format G): Set Cover Page Properties"
 			#8-Jun-2017 put these 4 items in alpha order
             Set-DocumentProperty -Document $Script:Doc -DocProperty Author -Value $UserName
             Set-DocumentProperty -Document $Script:Doc -DocProperty Company -Value $Script:CoName
@@ -3093,7 +3145,7 @@ Function UpdateDocumentProperties
 			[string]$abstract = (Get-Date -Format d).ToString()
 			$ab.Text = $abstract
 
-			Write-Verbose "$(Get-Date): Update the Table of Contents"
+			Write-Verbose "$(Get-Date -Format G): Update the Table of Contents"
 			#update the Table of Contents
 			$Script:Doc.TablesOfContents.item(1).Update()
 			$cp = $Null
@@ -3801,7 +3853,7 @@ Function FormatHTMLTable
 #region other HTML functions
 Function SetupHTML
 {
-	Write-Verbose "$(Get-Date): Setting up HTML"
+	Write-Verbose "$(Get-Date -Format G): Setting up HTML"
 	If(!$AddDateTime)
 	{
 		[string]$Script:HtmlFileName = "$($Script:pwdpath)\$($OutputFileName).html"
@@ -4325,7 +4377,7 @@ Function SaveandCloseDocumentandShutdownWord
 	$Script:Word.Options.CheckGrammarAsYouType = $Script:CurrentGrammarOption
 	$Script:Word.Options.CheckSpellingAsYouType = $Script:CurrentSpellingOption
 
-	Write-Verbose "$(Get-Date): Save and Close document and Shutdown Word"
+	Write-Verbose "$(Get-Date -Format G): Save and Close document and Shutdown Word"
 	If($Script:WordVersion -eq $wdWord2010)
 	{
 		#the $saveFormat below passes StrictMode 2
@@ -4334,18 +4386,18 @@ Function SaveandCloseDocumentandShutdownWord
 		#http://msdn.microsoft.com/en-us/library/microsoft.office.interop.word.wdsaveformat(v=office.14).aspx
 		If($PDF)
 		{
-			Write-Verbose "$(Get-Date): Saving as DOCX file first before saving to PDF"
+			Write-Verbose "$(Get-Date -Format G): Saving as DOCX file first before saving to PDF"
 		}
 		Else
 		{
-			Write-Verbose "$(Get-Date): Saving DOCX file"
+			Write-Verbose "$(Get-Date -Format G): Saving DOCX file"
 		}
-		Write-Verbose "$(Get-Date): Running $($Script:WordProduct) and detected operating system $($Script:RunningOS)"
+		Write-Verbose "$(Get-Date -Format G): Running $($Script:WordProduct) and detected operating system $($Script:RunningOS)"
 		$saveFormat = [Enum]::Parse([Microsoft.Office.Interop.Word.WdSaveFormat], "wdFormatDocumentDefault")
 		$Script:Doc.SaveAs([REF]$Script:WordFileName, [ref]$SaveFormat)
 		If($PDF)
 		{
-			Write-Verbose "$(Get-Date): Now saving as PDF"
+			Write-Verbose "$(Get-Date -Format G): Now saving as PDF"
 			$saveFormat = [Enum]::Parse([Microsoft.Office.Interop.Word.WdSaveFormat], "wdFormatPDF")
 			$Script:Doc.SaveAs([REF]$Script:PDFFileName, [ref]$saveFormat)
 		}
@@ -4354,25 +4406,25 @@ Function SaveandCloseDocumentandShutdownWord
 	{
 		If($PDF)
 		{
-			Write-Verbose "$(Get-Date): Saving as DOCX file first before saving to PDF"
+			Write-Verbose "$(Get-Date -Format G): Saving as DOCX file first before saving to PDF"
 		}
 		Else
 		{
-			Write-Verbose "$(Get-Date): Saving DOCX file"
+			Write-Verbose "$(Get-Date -Format G): Saving DOCX file"
 		}
-		Write-Verbose "$(Get-Date): Running $($Script:WordProduct) and detected operating system $($Script:RunningOS)"
+		Write-Verbose "$(Get-Date -Format G): Running $($Script:WordProduct) and detected operating system $($Script:RunningOS)"
 		$Script:Doc.SaveAs2([REF]$Script:WordFileName, [ref]$wdFormatDocumentDefault)
 		If($PDF)
 		{
-			Write-Verbose "$(Get-Date): Now saving as PDF"
+			Write-Verbose "$(Get-Date -Format G): Now saving as PDF"
 			$Script:Doc.SaveAs([REF]$Script:PDFFileName, [ref]$wdFormatPDF)
 		}
 	}
 
-	Write-Verbose "$(Get-Date): Closing Word"
+	Write-Verbose "$(Get-Date -Format G): Closing Word"
 	$Script:Doc.Close()
 	$Script:Word.Quit()
-	Write-Verbose "$(Get-Date): System Cleanup"
+	Write-Verbose "$(Get-Date -Format G): System Cleanup"
 	[System.Runtime.Interopservices.Marshal]::ReleaseComObject($Script:Word) | Out-Null
 	Remove-Variable -Name word -Scope Script 4>$Null
 	Remove-Variable -Name Doc  -Scope Script 4>$Null
@@ -4390,14 +4442,14 @@ Function SaveandCloseDocumentandShutdownWord
 	$wordprocess = (Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}
 	If($null -ne $wordprocess -and $wordprocess.Id -gt 0)
 	{
-		Write-Verbose "$(Get-Date): WinWord process is still running. Attempting to stop WinWord process # $($wordprocess.Id)"
+		Write-Verbose "$(Get-Date -Format G): WinWord process is still running. Attempting to stop WinWord process # $($wordprocess.Id)"
 		Stop-Process $wordprocess.Id -EA 0
 	}
 }
 
 Function SetupText
 {
-	Write-Verbose "$(Get-Date): Setting up Text"
+	Write-Verbose "$(Get-Date -Format G): Setting up Text"
 	[System.Text.StringBuilder] $Script:Output = New-Object System.Text.StringBuilder( 16384 )
 
 	If(!$AddDateTime)
@@ -4412,13 +4464,13 @@ Function SetupText
 
 Function SaveandCloseTextDocument
 {
-	Write-Verbose "$(Get-Date): Saving Text file"
+	Write-Verbose "$(Get-Date -Format G): Saving Text file"
 	Write-Output $Script:Output.ToString() | Out-File $Script:TextFileName 4>$Null
 }
 
 Function SaveandCloseHTMLDocument
 {
-	Write-Verbose "$(Get-Date): Saving HTML file"
+	Write-Verbose "$(Get-Date -Format G): Saving HTML file"
 	Out-File -FilePath $Script:HtmlFileName -Append -InputObject "<p></p></body></html>" 4>$Null
 }
 
@@ -4468,7 +4520,7 @@ Function ProcessDocumentOutput
 		{
 			If(Test-Path "$($Script:WordFileName)")
 			{
-				Write-Verbose "$(Get-Date): $($Script:WordFileName) is ready for use"
+				Write-Verbose "$(Get-Date -Format G): $($Script:WordFileName) is ready for use"
 				$GotFile = $True
 			}
 			Else
@@ -4481,7 +4533,7 @@ Function ProcessDocumentOutput
 		{
 			If(Test-Path "$($Script:PDFFileName)")
 			{
-				Write-Verbose "$(Get-Date): $($Script:PDFFileName) is ready for use"
+				Write-Verbose "$(Get-Date -Format G): $($Script:PDFFileName) is ready for use"
 				$GotFile = $True
 			}
 			Else
@@ -4494,7 +4546,7 @@ Function ProcessDocumentOutput
 		{
 			If(Test-Path "$($Script:TextFileName)")
 			{
-				Write-Verbose "$(Get-Date): $($Script:TextFileName) is ready for use"
+				Write-Verbose "$(Get-Date -Format G): $($Script:TextFileName) is ready for use"
 				$GotFile = $True
 			}
 			Else
@@ -4507,7 +4559,7 @@ Function ProcessDocumentOutput
 		{
 			If(Test-Path "$($Script:HTMLFileName)")
 			{
-				Write-Verbose "$(Get-Date): $($Script:HTMLFileName) is ready for use"
+				Write-Verbose "$(Get-Date -Format G): $($Script:HTMLFileName) is ready for use"
 				$GotFile = $True
 			}
 			Else
@@ -4546,80 +4598,80 @@ Function ProcessDocumentOutput
 
 Function ShowScriptOptions
 {
-	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): Add DateTime         : $($AddDateTime)"
-	Write-Verbose "$(Get-Date): Citrix Templates Only: $($CitrixTemplatesOnly)"
+	Write-Verbose "$(Get-Date -Format G): "
+	Write-Verbose "$(Get-Date -Format G): "
+	Write-Verbose "$(Get-Date -Format G): Add DateTime         : $($AddDateTime)"
+	Write-Verbose "$(Get-Date -Format G): Citrix Templates Only: $($CitrixTemplatesOnly)"
 	If($MSWORD -or $PDF)
 	{
-		Write-Verbose "$(Get-Date): Company Name         : $($Script:CoName)"
-		Write-Verbose "$(Get-Date): Company Address      : $($CompanyAddress)"
-		Write-Verbose "$(Get-Date): Company Email        : $($CompanyEmail)"
-		Write-Verbose "$(Get-Date): Company Fax          : $($CompanyFax)"
-		Write-Verbose "$(Get-Date): Company Phone        : $($CompanyPhone)"
-		Write-Verbose "$(Get-Date): Cover Page           : $($CoverPage)"
+		Write-Verbose "$(Get-Date -Format G): Company Name         : $($Script:CoName)"
+		Write-Verbose "$(Get-Date -Format G): Company Address      : $($CompanyAddress)"
+		Write-Verbose "$(Get-Date -Format G): Company Email        : $($CompanyEmail)"
+		Write-Verbose "$(Get-Date -Format G): Company Fax          : $($CompanyFax)"
+		Write-Verbose "$(Get-Date -Format G): Company Phone        : $($CompanyPhone)"
+		Write-Verbose "$(Get-Date -Format G): Cover Page           : $($CoverPage)"
 	}
-	Write-Verbose "$(Get-Date): Dev                  : $($Dev)"
+	Write-Verbose "$(Get-Date -Format G): Dev                  : $($Dev)"
 	If($Dev)
 	{
-		Write-Verbose "$(Get-Date): DevErrorFile         : $($Script:DevErrorFile)"
+		Write-Verbose "$(Get-Date -Format G): DevErrorFile         : $($Script:DevErrorFile)"
 	}
 	If($MSWord)
 	{
-		Write-Verbose "$(Get-Date): Word FileName        : $($Script:WordFileName)"
+		Write-Verbose "$(Get-Date -Format G): Word FileName        : $($Script:WordFileName)"
 	}
 	If($HTML)
 	{
-		Write-Verbose "$(Get-Date): HTML FileName        : $($Script:HtmlFileName)"
+		Write-Verbose "$(Get-Date -Format G): HTML FileName        : $($Script:HtmlFileName)"
 	} 
 	If($PDF)
 	{
-		Write-Verbose "$(Get-Date): PDF FileName         : $($Script:PDFFileName)"
+		Write-Verbose "$(Get-Date -Format G): PDF FileName         : $($Script:PDFFileName)"
 	}
 	If($Text)
 	{
-		Write-Verbose "$(Get-Date): Text FileName        : $($Script:TextFileName)"
+		Write-Verbose "$(Get-Date -Format G): Text FileName        : $($Script:TextFileName)"
 	}
-	Write-Verbose "$(Get-Date): Folder               : $($Folder)"
-	Write-Verbose "$(Get-Date): From                 : $($From)"
-	Write-Verbose "$(Get-Date): Hardware Inventory   : $($Hardware)"
-	Write-Verbose "$(Get-Date): Limit User Certs     : $($LimitUserCertificates)"
-	Write-Verbose "$(Get-Date): Log                  : $($Log)"
-	Write-Verbose "$(Get-Date): Save As HTML         : $($HTML)"
-	Write-Verbose "$(Get-Date): Save As PDF          : $($PDF)"
-	Write-Verbose "$(Get-Date): Save As TEXT         : $($TEXT)"
-	Write-Verbose "$(Get-Date): Save As WORD         : $($MSWORD)"
-	Write-Verbose "$(Get-Date): ScriptInfo           : $($ScriptInfo)"
-	Write-Verbose "$(Get-Date): Smtp Port            : $($SmtpPort)"
-	Write-Verbose "$(Get-Date): Smtp Server          : $($SmtpServer)"
-	Write-Verbose "$(Get-Date): Title                : $($Script:FASDisplayName)"
-	Write-Verbose "$(Get-Date): To                   : $($To)"
-	Write-Verbose "$(Get-Date): Use SSL              : $($UseSSL)"
+	Write-Verbose "$(Get-Date -Format G): Folder               : $($Folder)"
+	Write-Verbose "$(Get-Date -Format G): From                 : $($From)"
+	Write-Verbose "$(Get-Date -Format G): Hardware Inventory   : $($Hardware)"
+	Write-Verbose "$(Get-Date -Format G): Limit User Certs     : $($LimitUserCertificates)"
+	Write-Verbose "$(Get-Date -Format G): Log                  : $($Log)"
+	Write-Verbose "$(Get-Date -Format G): Save As HTML         : $($HTML)"
+	Write-Verbose "$(Get-Date -Format G): Save As PDF          : $($PDF)"
+	Write-Verbose "$(Get-Date -Format G): Save As TEXT         : $($TEXT)"
+	Write-Verbose "$(Get-Date -Format G): Save As WORD         : $($MSWORD)"
+	Write-Verbose "$(Get-Date -Format G): ScriptInfo           : $($ScriptInfo)"
+	Write-Verbose "$(Get-Date -Format G): Smtp Port            : $($SmtpPort)"
+	Write-Verbose "$(Get-Date -Format G): Smtp Server          : $($SmtpServer)"
+	Write-Verbose "$(Get-Date -Format G): Title                : $($Script:FASDisplayName)"
+	Write-Verbose "$(Get-Date -Format G): To                   : $($To)"
+	Write-Verbose "$(Get-Date -Format G): Use SSL              : $($UseSSL)"
 	If($MSWORD -or $PDF)
 	{
-		Write-Verbose "$(Get-Date): User Name            : $($UserName)"
+		Write-Verbose "$(Get-Date -Format G): User Name            : $($UserName)"
 	}
-	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): OS Detected          : $($Script:RunningOS)"
-	Write-Verbose "$(Get-Date): PoSH version         : $($Host.Version)"
-	Write-Verbose "$(Get-Date): PSCulture            : $($PSCulture)"
-	Write-Verbose "$(Get-Date): PSUICulture          : $($PSUICulture)"
+	Write-Verbose "$(Get-Date -Format G): "
+	Write-Verbose "$(Get-Date -Format G): OS Detected          : $($Script:RunningOS)"
+	Write-Verbose "$(Get-Date -Format G): PoSH version         : $($Host.Version)"
+	Write-Verbose "$(Get-Date -Format G): PSCulture            : $($PSCulture)"
+	Write-Verbose "$(Get-Date -Format G): PSUICulture          : $($PSUICulture)"
 	If($MSWORD -or $PDF)
 	{
-		Write-Verbose "$(Get-Date): Word language        : $($Script:WordLanguageValue)"
-		Write-Verbose "$(Get-Date): Word version         : $($Script:WordProduct)"
+		Write-Verbose "$(Get-Date -Format G): Word language        : $($Script:WordLanguageValue)"
+		Write-Verbose "$(Get-Date -Format G): Word version         : $($Script:WordProduct)"
 	}
-	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): Script start         : $($Script:StartTime)"
-	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): "
+	Write-Verbose "$(Get-Date -Format G): "
+	Write-Verbose "$(Get-Date -Format G): Script start         : $($Script:StartTime)"
+	Write-Verbose "$(Get-Date -Format G): "
+	Write-Verbose "$(Get-Date -Format G): "
 }
 
 Function AbortScript
 {
 	[gc]::collect() 
 	[gc]::WaitForPendingFinalizers()
-	Write-Verbose "$(Get-Date): Script has been aborted"
+	Write-Verbose "$(Get-Date -Format G): Script has been aborted"
 	Exit
 }
 
@@ -5058,7 +5110,7 @@ function ConvertFrom-Sddl-MBS
 Function SendEmail
 {
 	Param([array]$Attachments)
-	Write-Verbose "$(Get-Date): Prepare to email"
+	Write-Verbose "$(Get-Date -Format G): Prepare to email"
 
 	$emailAttachment = $Attachments
 	$emailSubject = $Script:Title
@@ -5098,13 +5150,13 @@ $Script:Title is attached.
 		
 		If($?)
 		{
-			Write-Verbose "$(Get-Date): Email successfully sent using anonymous credentials"
+			Write-Verbose "$(Get-Date -Format G): Email successfully sent using anonymous credentials"
 		}
 		ElseIf(!$?)
 		{
 			$e = $error[0]
 
-			Write-Verbose "$(Get-Date): Email was not sent:"
+			Write-Verbose "$(Get-Date -Format G): Email was not sent:"
 			Write-Warning "$(Get-Date): Exception: $e.Exception" 
 		}
 	}
@@ -5112,7 +5164,7 @@ $Script:Title is attached.
 	{
 		If($UseSSL)
 		{
-			Write-Verbose "$(Get-Date): Trying to send email using current user's credentials with SSL"
+			Write-Verbose "$(Get-Date -Format G): Trying to send email using current user's credentials with SSL"
 			Send-MailMessage -Attachments $emailAttachment -Body $emailBody -BodyAsHtml -From $From `
 			-Port $SmtpPort -SmtpServer $SmtpServer -Subject $emailSubject -To $To `
 			-UseSSL *>$Null
@@ -5132,7 +5184,7 @@ $Script:Title is attached.
 			If($null -ne $e.Exception -and $e.Exception.ToString().Contains("5.7"))
 			{
 				#The server response was: 5.7.xx SMTP; Client was not authenticated to send anonymous mail during MAIL FROM
-				Write-Verbose "$(Get-Date): Current user's credentials failed. Ask for usable credentials."
+				Write-Verbose "$(Get-Date -Format G): Current user's credentials failed. Ask for usable credentials."
 
 				If($Dev)
 				{
@@ -5158,19 +5210,19 @@ $Script:Title is attached.
 
 				If($?)
 				{
-					Write-Verbose "$(Get-Date): Email successfully sent using new credentials"
+					Write-Verbose "$(Get-Date -Format G): Email successfully sent using new credentials"
 				}
 				ElseIf(!$?)
 				{
 					$e = $error[0]
 
-					Write-Verbose "$(Get-Date): Email was not sent:"
+					Write-Verbose "$(Get-Date -Format G): Email was not sent:"
 					Write-Warning "$(Get-Date): Exception: $e.Exception" 
 				}
 			}
 			Else
 			{
-				Write-Verbose "$(Get-Date): Email was not sent:"
+				Write-Verbose "$(Get-Date -Format G): Email was not sent:"
 				Write-Warning "$(Get-Date): Exception: $e.Exception" 
 			}
 		}
@@ -5185,19 +5237,19 @@ Function ElevatedSession
 
 	If($currentPrincipal.IsInRole( [Security.Principal.WindowsBuiltInRole]::Administrator ))
 	{
-		Write-Verbose "$(Get-Date): This is an elevated PowerShell session"
+		Write-Verbose "$(Get-Date -Format G): This is an elevated PowerShell session"
 		Return $True
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): This is NOT an elevated PowerShell session"
+		Write-Verbose "$(Get-Date -Format G): This is NOT an elevated PowerShell session"
 		Return $False
 	}
 }
 
 Function CheckElevation
 {
-	Write-Verbose "$(Get-Date): Testing for elevated PowerShell session."
+	Write-Verbose "$(Get-Date -Format G): Testing for elevated PowerShell session."
 	#see if session is elevated
 	$Elevated = ElevatedSession
 	
@@ -5213,7 +5265,7 @@ Function CheckElevation
 		Rerun the script from an elevated PowerShell session. The script will now close.
 		`n`n
 		"
-		Write-Verbose "$(Get-Date): "
+		Write-Verbose "$(Get-Date -Format G): "
 		AbortScript
 	}
 }
@@ -5262,12 +5314,12 @@ Function ProcessScriptSetup
 #region script end
 Function ProcessScriptEnd
 {
-	Write-Verbose "$(Get-Date): Script has completed"
-	Write-Verbose "$(Get-Date): "
+	Write-Verbose "$(Get-Date -Format G): Script has completed"
+	Write-Verbose "$(Get-Date -Format G): "
 
 	#http://poshtips.com/measuring-elapsed-time-in-powershell/
-	Write-Verbose "$(Get-Date): Script started: $($Script:StartTime)"
-	Write-Verbose "$(Get-Date): Script ended: $(Get-Date)"
+	Write-Verbose "$(Get-Date -Format G): Script started: $($Script:StartTime)"
+	Write-Verbose "$(Get-Date -Format G): Script ended: $(Get-Date)"
 	$runtime = $(Get-Date) - $Script:StartTime
 	$Str = [string]::format("{0} days, {1} hours, {2} minutes, {3}.{4} seconds",
 		$runtime.Days,
@@ -5275,7 +5327,7 @@ Function ProcessScriptEnd
 		$runtime.Minutes,
 		$runtime.Seconds,
 		$runtime.Milliseconds)
-	Write-Verbose "$(Get-Date): Elapsed time: $($Str)"
+	Write-Verbose "$(Get-Date -Format G): Elapsed time: $($Str)"
 
 	If($Dev)
 	{
@@ -5367,11 +5419,11 @@ Function ProcessScriptEnd
 			try 
 			{
 				Stop-Transcript | Out-Null
-				Write-Verbose "$(Get-Date): $Script:LogPath is ready for use"
+				Write-Verbose "$(Get-Date -Format G): $Script:LogPath is ready for use"
 			} 
 			catch 
 			{
-				Write-Verbose "$(Get-Date): Transcript/log stop failed"
+				Write-Verbose "$(Get-Date -Format G): Transcript/log stop failed"
 			}
 		}
 	}
@@ -5383,7 +5435,7 @@ Function ProcessScriptEnd
 #region process root certificate
 Function ProcessRootCA
 {
-	Write-Verbose "$(Get-Date): Retrieving Root Certificate Information"
+	Write-Verbose "$(Get-Date -Format G): Retrieving Root Certificate Information"
 	$CA = (Get-FasMsCertificateAuthority -EA 0 | Where-Object {$_.IsDefault -eq $True}).Address
 	
 	If(!($?) -or ($Null -eq $CA))
@@ -5397,7 +5449,7 @@ Function ProcessRootCA
 		The script will now close.
 		`n`n
 		"
-		Write-Verbose "$(Get-Date): "
+		Write-Verbose "$(Get-Date -Format G): "
 		
 		If(($MSWORD -or $PDF) -and ($Script:CoverPagesExist))
 		{
@@ -5409,7 +5461,7 @@ Function ProcessRootCA
 		AbortScript
 	}
 	
-	Write-Verbose "$(Get-Date): Retrieving data for $($CA) in cert:\CurrentUser\CA"
+	Write-Verbose "$(Get-Date -Format G): Retrieving data for $($CA) in cert:\CurrentUser\CA"
 	$TmpArray = $CA.Split("\")
 	$CAServer = $TmpARray[0]
 	$CAName = $TmpArray[1]
@@ -5484,7 +5536,7 @@ Function OutputRootCA
 {
 	Param([object] $RCAObj)
 	
-	Write-Verbose "$(Get-Date): Add Root Certificate Information"
+	Write-Verbose "$(Get-Date -Format G): Add Root Certificate Information"
 	If($MSWord -or $PDF)
 	{
 		$Script:Selection.InsertNewPage()
@@ -5562,7 +5614,7 @@ Function OutputRootCA
 #region process certificate authorities
 Function ProcessCAs
 {
-	Write-Verbose "$(Get-Date): Retrieving Certificate Authorities Information"
+	Write-Verbose "$(Get-Date -Format G): Retrieving Certificate Authorities Information"
 	$FASCAs = New-Object System.Collections.ArrayList
 
 	$CAs = Get-FasMsCertificateAuthority -EA 0
@@ -5632,7 +5684,7 @@ Function ProcessCAs
 Function OutputCAs
 {
 	Param([array] $FASCAs)
-	Write-Verbose "$(Get-Date): Output Certificate Authorities Information"
+	Write-Verbose "$(Get-Date -Format G): Output Certificate Authorities Information"
 	
 	If($FASCAs -like "*error*" -or $FASCAs -like "*warning*")
 	{
@@ -5840,7 +5892,7 @@ Function OutputCAs
 #region process FAS server
 Function ProcessFASServer
 {
-	Write-Verbose "$(Get-Date): Retrieving FAS server Information"
+	Write-Verbose "$(Get-Date -Format G): Retrieving FAS server Information"
 	$results = Get-FasServer -EA 0
 	
 	If(!$? -or $null -eq $results)
@@ -5854,7 +5906,7 @@ Function ProcessFASServer
 		The script cannot run without FAS server data. The script will now close.
 		`n`n
 		"
-		Write-Verbose "$(Get-Date): "
+		Write-Verbose "$(Get-Date -Format G): "
 		If(($MSWORD -or $PDF) -and ($Script:CoverPagesExist))
 		{
 			$AbstractTitle = "Citrix FAS Inventory"
@@ -5903,7 +5955,7 @@ Function OutputFASServer
 {
 	Param([array]$FASServers)
 	
-	Write-Verbose "$(Get-Date): Output FAS server Information"
+	Write-Verbose "$(Get-Date -Format G): Output FAS server Information"
 	$FASServers = $FASServers | Sort-Object Address
 	
 	If($MSWord -or $PDF)
@@ -6221,7 +6273,7 @@ Function ProcessPrivateKeyPoolInfo
 #region process FAS rules
 Function ProcessFASRules
 {
-	Write-Verbose "$(Get-Date): Retrieving FAS rules Information"
+	Write-Verbose "$(Get-Date -Format G): Retrieving FAS rules Information"
 	$results = Get-FasRule -EA 0
 	
 	If(!($?))
@@ -6324,7 +6376,7 @@ Function OutputFASRules
 {
 	Param([array]$FASRules)
 	
-	Write-Verbose "$(Get-Date): Output FAS Rules Information"
+	Write-Verbose "$(Get-Date -Format G): Output FAS Rules Information"
 	
 	If($FASRules -like "*error*" -or $FASRules -like "*warning*")
 	{
@@ -6611,7 +6663,7 @@ Function OutputFASRules
 #region Process User Certificates
 Function ProcessUserCertificates
 {
-	Write-Verbose "$(Get-Date): Retrieving User Certificate Information"
+	Write-Verbose "$(Get-Date -Format G): Retrieving User Certificate Information"
 	$results = Get-FasUserCertificate -MaximumRecordCount $LimitUserCertificates -EA 0
 	
 	If(!($?))
@@ -6651,7 +6703,7 @@ Function OutputUserCertificates
 {
 	Param([array]$UserCerts)
 	
-	Write-Verbose "$(Get-Date): Output User Certificate Information"
+	Write-Verbose "$(Get-Date -Format G): Output User Certificate Information"
 	
 	If($UserCerts -like "*error*" -or $UserCerts -like "*warning*")
 	{
@@ -6795,7 +6847,7 @@ ProcessUserCertificates
 #endregion
 
 #region finish script
-Write-Verbose "$(Get-Date): Finishing up document"
+Write-Verbose "$(Get-Date -Format G): Finishing up document"
 #end of document processing
 
 If(($MSWORD -or $PDF) -and ($Script:CoverPagesExist))
@@ -6808,4 +6860,4 @@ If(($MSWORD -or $PDF) -and ($Script:CoverPagesExist))
 ProcessDocumentOutput "Regular"
 
 ProcessScriptEnd
-#endregion
+#endregionnn
