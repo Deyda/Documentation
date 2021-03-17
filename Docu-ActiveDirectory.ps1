@@ -15,9 +15,10 @@
 	
 	Version 3.0 changes the default output report from Word to HTML.
 	
-	Word and PDF document includes a Cover Page, Table of Contents and Footer.
+	Word and PDF document includes a Cover Page, Table of Contents, and Footer.
 	Includes support for the following language versions of Microsoft Word:
 		Catalan
+		Chinese
 		Danish
 		Dutch
 		English
@@ -31,12 +32,12 @@
 
 	The script requires at least PowerShell version 3 but runs best in version 5.
 
-	Word is NOT needed to run the script. This script will output in Text and HTML.
+	Word is NOT needed to run the script. This script outputs in Text and HTML.
 	
 	You do NOT have to run this script on a domain controller. This script was developed 
 	and run from a Windows 10 VM.
 
-	While most of the script can be run with a non-admin account, there are some features 
+	While most of the script can run with a non-admin account, there are some features 
 	that will not or may not work without domain admin or enterprise admin rights.  
 	The Hardware and Services parameters require domain admin privileges.  
 	
@@ -53,21 +54,200 @@
 	
 	To run the script from a workstation, RSAT is required.
 	
+	Remote Server Administration Tools for Windows 7 with Service Pack 1 (SP1)
+		https://carlwebster.sharefile.com/d-sace5ee0f1ada47289ca14be544878a24
+		
 	Remote Server Administration Tools for Windows 8 
-		http://www.microsoft.com/en-us/download/details.aspx?id=28972
+		https://carlwebster.sharefile.com/d-s791075d451fc415ca83ec8958b385a95
 		
 	Remote Server Administration Tools for Windows 8.1 
-		http://www.microsoft.com/en-us/download/details.aspx?id=39296
+		https://carlwebster.sharefile.com/d-s37209afb73dc48f497745924ed854226
 		
 	Remote Server Administration Tools for Windows 10
 		http://www.microsoft.com/en-us/download/details.aspx?id=45520
 	
+.PARAMETER ADDomain
+	Specifies an Active Directory domain object by providing one of the following 
+	property values. The identifier in parentheses is the LDAP display name for the 
+	attribute. All values are for the domainDNS object that represents the domain.
+
+	Distinguished Name
+
+	Example: DC=labaddomain,DC=com
+
+	GUID (objectGUID)
+
+	Example: b147a813-9938-4a89-bc93-58a0d36c41c3
+
+	Security Identifier (objectSid)
+
+	Example: S-1-5-21-3916992870-515249095-1421388220
+
+	DNS domain name
+
+	Example: labaddomain.com
+
+	NetBIOS domain name
+
+	Example: labaddomain
+
+	If both ADForest and ADDomain are specified, ADDomain takes precedence.
+.PARAMETER ADForest
+	Specifies an Active Directory forest object by providing one of the following 
+	attribute values. 
+	The identifier in parentheses is the LDAP display name for the attribute.
+
+	Fully qualified domain name
+		Example: labaddomain.com
+	GUID (objectGUID)
+		Example: b147a813-9938-4a89-bc93-58a0d36c41c3
+	DNS host name
+		Example: labaddomain.com
+	NetBIOS name
+		Example: labaddomain
+	
+	Default value is $Env:USERDNSDOMAIN	
+	
+	If both ADForest and ADDomain are specified, ADDomain takes precedence.
+.PARAMETER ComputerName
+	Specifies which domain controller to use to run the script against.
+	If ADForest is a trusted forest, then ComputerName is required to detect the 
+	existence of ADForest.
+	ComputerName can be entered as the NetBIOS name, FQDN, localhost, or IP Address.
+	If entered as localhost, the actual computer name is determined and used.
+	If entered as an IP address, an attempt is made to determine and use the actual 
+	computer name.
+	
+	This parameter has an alias of ServerName.
+	Default value is $Env:USERDNSDOMAIN	
+.PARAMETER MaxDetails
+	Adds maximum detail to the report.
+	
+	This is the same as using the following parameters:
+		DCDNSInfo
+		GPOInheritance
+		Hardware
+		IncludeUserInfo
+		Services
+	
+	WARNING: Using this parameter can create an extremely large report and 
+	can take a very long time to run.
+
+	This parameter has an alias of MAX.
 .PARAMETER HTML
 	Creates an HTML file with an .html extension.
 	
 	HTML is now the default report format.
 	
 	This parameter is set True if no other output format is selected.
+.PARAMETER Text
+	Creates a formatted text file with a .txt extension.
+	
+	This parameter is disabled by default.
+.PARAMETER AddDateTime
+	Adds a date timestamp to the end of the file name.
+	
+	The timestamp is in the format of yyyy-MM-dd_HHmm.
+	June 1, 2021 at 6PM is 2021-06-01_1800.
+	
+	Output filename will be ReportName_2021-06-01_1800.docx (or .pdf).
+	
+	This parameter is disabled by default.
+	This parameter has an alias of ADT.
+.PARAMETER Dev
+	Clears errors at the beginning of the script.
+	Outputs all errors to a text file at the end of the script.
+	
+	This is used when the script developer requests more troubleshooting data.
+	The text file is placed in the same folder from where the script runs.
+	
+	This parameter is disabled by default.
+.PARAMETER Folder
+	Specifies the optional output folder to save the output report. 
+.PARAMETER Log
+	Generates a log file for troubleshooting.
+.PARAMETER ScriptInfo
+	Outputs information about the script to a text file.
+	The text file is placed in the same folder from where the script runs.
+	
+	This parameter is disabled by default.
+	This parameter has an alias of SI.
+.PARAMETER DCDNSInfo 
+	Use WMI to gather, for each domain controller, the IP Address, and each DNS server 
+	configured.
+	This parameter requires the script to run from an elevated PowerShell session 
+	using an account with permission to retrieve hardware information (i.e., Domain 
+	Admin).
+	Selecting this parameter adds an extra section to the report.
+	This parameter is disabled by default.
+.PARAMETER GPOInheritance
+	In the Group Policies by OU section adds Inherited GPOs in addition to the GPOs 
+	directly linked.
+	Adds a second column to the table GPO Type.
+	
+	This parameter is disabled by default.
+	This parameter has an alias of GPO.
+.PARAMETER Hardware
+	Use WMI to gather hardware information on Computer System, Disks, Processor, and 
+	Network Interface Cards
+	
+	This parameter requires the script to run from an elevated PowerShell session 
+	using an account with permission to retrieve hardware information (i.e., Domain 
+	Admin).
+	
+	Selecting this parameter will add to both the time it takes to run the script and 
+	size of the report.
+	
+	This parameter is disabled by default.
+.PARAMETER IncludeUserInfo
+	For the User Miscellaneous Data section outputs a table with the SamAccountName
+	and DistinguishedName of the users in the All Users counts:
+	
+		Disabled users
+		Unknown users
+		Locked out users
+		All users with password expired
+		All users whose password never expires
+		All users with password not required
+		All users who cannot change password
+		All users with SID History
+		All users with Homedrive set in ADUC
+		All users whose Primary Group is not Domain Users
+		All users with RDS HomeDrive set in ADUC
+		All Names in the ForeignSecurityPrincipals container that are orphan SIDs
+	
+	The Text output option is limited to the first 25 characters of the SamAccountName
+	and the first 116 characters of the DistinguishedName.
+	
+	This parameter is disabled by default.
+	This parameter has an alias of IU.
+.PARAMETER Section
+	Processes one or more sections of the report.
+	Valid options are:
+		Forest
+		Sites
+		Domains (includes Domain Controllers and optional Hardware, Services and 
+		DCDNSInfo)
+		OUs (Organizational Units)
+		Groups
+		GPOs
+		Misc (Miscellaneous data)
+		All
+
+	This parameter defaults to All sections.
+	
+	Multiple sections are separated by a comma. -Section forest, domains
+.PARAMETER Services
+	Gather information on all services running on domain controllers.
+	Servers that are configured to automatically start but are not running will be 
+	colored in red.
+	Used on Domain Controllers only.
+	This parameter requires the script be run from an elevated PowerShell session
+	using an account with permission to retrieve service information (i.e. Domain 
+	Admin).
+	Selecting this parameter will add to both the time it takes to run the script and 
+	size of the report.
+	This parameter is disabled by default.
 .PARAMETER MSWord
 	SaveAs DOCX file
 	
@@ -82,63 +262,6 @@
 	This parameter uses Word's SaveAs PDF capability.
 
 	This parameter is disabled by default.
-.PARAMETER Text
-	Creates a formatted text file with a .txt extension.
-	
-	This parameter is disabled by default.
-.PARAMETER AddDateTime
-	Adds a date timestamp to the end of the file name.
-	
-	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	
-	Output filename will be ReportName_2020-06-01_1800.docx (or .pdf).
-	
-	This parameter is disabled by default.
-	This parameter has an alias of ADT.
-.PARAMETER ADDomain
-	Specifies an Active Directory domain object by providing one of the following 
-	property values. The identifier in parentheses is the LDAP display name for the 
-	attribute. All values are for the domainDNS object that represents the domain.
-
-	Distinguished Name
-
-	Example: DC=tullahoma,DC=corp,DC=labaddomain,DC=com
-
-	GUID (objectGUID)
-
-	Example: b9fa5fbd-4334-4a98-85f1-3a3a44069fc6
-
-	Security Identifier (objectSid)
-
-	Example: S-1-5-21-3643273344-1505409314-3732760578
-
-	DNS domain name
-
-	Example: tullahoma.corp.labaddomain.com
-
-	NetBIOS domain name
-
-	Example: Tullahoma
-
-	If both ADForest and ADDomain are specified, ADDomain takes precedence.
-.PARAMETER ADForest
-	Specifies an Active Directory forest object by providing one of the following 
-	attribute values. 
-	The identifier in parentheses is the LDAP display name for the attribute.
-
-	Fully qualified domain name
-		Example: labaddomain.com
-	GUID (objectGUID)
-		Example: 599c3d2e-e61e-4d20-7b77-030d99495e19
-	DNS host name
-		Example: labaddomain.com
-	NetBIOS name
-		Example: labaddomain
-	
-	Default value is $Env:USERDNSDOMAIN	
-	
-	If both ADForest and ADDomain are specified, ADDomain takes precedence.
 .PARAMETER CompanyAddress
 	Company Address to use for the Cover Page, if the Cover Page has the Address field.
 	
@@ -191,20 +314,9 @@
 	
 	This parameter is only valid with the MSWORD and PDF output parameters.
 	This parameter has an alias of CPh.
-.PARAMETER ComputerName
-	Specifies which domain controller to use to run the script against.
-	If ADForest is a trusted forest, then ComputerName is required to detect the 
-	existence of ADForest.
-	ComputerName can be entered as the NetBIOS name, FQDN, localhost or IP Address.
-	If entered as localhost, the actual computer name is determined and used.
-	If entered as an IP address, an attempt is made to determine and use the actual 
-	computer name.
-	
-	This parameter has an alias of ServerName.
-	Default value is $Env:USERDNSDOMAIN	
 .PARAMETER CoverPage
 	What Microsoft Word Cover Page to use.
-	Only Word 2010, 2013 and 2016 are supported.
+	Only Word 2010, 2013, and 2016 are supported.
 	(default cover pages in Word en-US)
 	
 	Valid input is:
@@ -250,115 +362,6 @@
 	The default value is Sideline.
 	This parameter has an alias of CP.
 	This parameter is only valid with the MSWORD and PDF output parameters.
-.PARAMETER DCDNSInfo 
-	Use WMI to gather, for each domain controller, the IP Address, and each DNS server 
-	configured.
-	This parameter requires the script be run from an elevated PowerShell session 
-	using an account with permission to retrieve hardware information (i.e. Domain 
-	Admin).
-	Selecting this parameter will add an extra section to the report.
-	This parameter is disabled by default.
-.PARAMETER Dev
-	Clears errors at the beginning of the script.
-	Outputs all errors to a text file at the end of the script.
-	
-	This is used when the script developer requests more troubleshooting data.
-	The text file is placed in the same folder from where the script is run.
-	
-	This parameter is disabled by default.
-.PARAMETER Folder
-	Specifies the optional output folder to save the output report. 
-.PARAMETER From
-	Specifies the username for the From email address.
-	
-	If SmtpServer or To are used, this is a required parameter.
-.PARAMETER GPOInheritance
-	In the Group Policies by OU section, adds Inherited GPOs in addition to the GPOs 
-	directly linked.
-	Adds a second column to the table GPO Type.
-	The text file is placed in the same folder from where the script is run.
-	
-	This parameter is disabled by default.
-	This parameter has an alias of GPO.
-.PARAMETER Hardware
-	Use WMI to gather hardware information on Computer System, Disks, Processor, and 
-	Network Interface Cards
-	This parameter requires the script be run from an elevated PowerShell session 
-	using an account with permission to retrieve hardware information (i.e. Domain 
-	Admin).
-	Selecting this parameter will add to both the time it takes to run the script and 
-	size of the report.
-	This parameter is disabled by default.
-.PARAMETER IncludeUserInfo
-	For the User Miscellaneous Data section outputs a table with the SamAccountName
-	and DistinguishedName of the users in the All Users counts:
-	
-		Disabled users
-		Unknown users
-		Locked out users
-		All users with password expired
-		All users whose password never expires
-		All users with password not required
-		All users who cannot change password
-		All users with SID History
-		All users with Homedrive set in ADUC
-		All users whose Primary Group is not Domain Users
-		All users with RDS HomeDrive set in ADUC
-	
-	The Text output option is limited to the first 25 characters of the SamAccountName
-	and the first 116 characters of the DistinguishedName.
-	
-	This parameter is disabled by default.
-	This parameter has an alias of IU.
-.PARAMETER Log
-	Generates a log file for troubleshooting.
-.PARAMETER MaxDetails
-	Adds maximum detail to the report.
-	
-	This is the same as using the following parameters:
-		DCDNSInfo
-		GPOInheritance
-		Hardware
-		IncludeUserInfo
-		Services
-	
-	WARNING: Using this parameter can create an extremely large report and 
-	can take a very long time to run.
-
-	This parameter has an alias of MAX.
-.PARAMETER ScriptInfo
-	Outputs information about the script to a text file.
-	The text file is placed in the same folder from where the script is run.
-	
-	This parameter is disabled by default.
-	This parameter has an alias of SI.
-.PARAMETER Section
-	Processes one or more sections of the report.
-	Valid options are:
-		Forest
-		Sites
-		Domains (includes Domain Controllers and optional Hardware, Services and 
-		DCDNSInfo)
-		OUs (Organizational Units)
-		Groups
-		GPOs
-		Misc (Miscellaneous data)
-		All
-
-	This parameter defaults to All sections.
-	
-	Multiple sections are separated by a comma. -Section forest, domains
-.PARAMETER Services
-	Gather information on all services running on domain controllers.
-	Servers that are configured to automatically start but are not running will be 
-	colored in red.
-	Used on Domain Controllers only.
-	This parameter requires the script be run from an elevated PowerShell session
-	using an account with permission to retrieve service information (i.e. Domain 
-	Admin).
-	Selecting this parameter will add to both the time it takes to run the script and 
-	size of the report.
-	This parameter is disabled by default.
 .PARAMETER SmtpPort
 	Specifies the SMTP port for the SmtpServer. 
 
@@ -367,6 +370,10 @@
 	Specifies the optional email server to send the output report(s). 
 	
 	If From or To are used, this is a required parameter.
+.PARAMETER From
+	Specifies the username for the From email address.
+	
+	If SmtpServer or To are used, this is a required parameter.
 .PARAMETER To
 	Specifies the username for the To email address.
 	
@@ -392,7 +399,7 @@
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -MSWord
 	
-	Will use all default values.
+	Uses all default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -405,8 +412,8 @@
 	ADForest defaults to the value of $Env:USERDNSDOMAIN.
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
-	value for ComputerName.
+	a domain controller that is also a global catalog server and uses that as the value 
+	for ComputerName.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -ADForest company.tld
 	
@@ -415,8 +422,8 @@
 	company.tld for the AD Forest.
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
-	value for ComputerName.
+	a domain controller that is also a global catalog server and uses that as the value 
+	for ComputerName.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -ADDomain 
 	child.company.tld
@@ -426,8 +433,8 @@
 	child.company.tld for the AD Domain.
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
-	value for ComputerName.
+	a domain controller that is also a global catalog server and uses that as the value 
+	for ComputerName.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -ADForest parent.company.tld -ADDomain 
 	child.company.tld
@@ -436,18 +443,19 @@
 	
 	Because both ADForest and ADDomain are specified, ADDomain wins and child.company.tld 
 	is used for AD Domain.
+	
 	ADForest is set to the value of ADDomain.
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
-	value for ComputerName.
+	a domain controller that is also a global catalog server and uses that as the value 
+	for ComputerName.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -ADForest company.tld -ComputerName DC01 
 	-MSWord
 	
 	Creates a Microsoft Word report.
 	
-	Will use all default values.
+	Uses all default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -457,11 +465,12 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 	company.tld for the AD Forest
-	The script will be run remotely on the DC01 domain controller.
+	
+	The script runs remotely on the DC01 domain controller.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -PDF -ADForest corp.carlwebster.com
 	
-	Will use all default values and save the document as a PDF file.
+	Uses all default values and saves the document as a PDF file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -473,66 +482,69 @@
 	corp.carlwebster.com for the AD Forest.
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
-	value for ComputerName.
+	a domain controller that is also a global catalog server and uses that as the value 
+	for ComputerName.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -Text -ADForest corp.carlwebster.com
 	
-	Will use all default values and save the document as a formatted text file.
+	Uses all default values and saves the document as a formatted text file.
 
 	corp.carlwebster.com for the AD Forest.
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
-	value for ComputerName.
+	a domain controller that is also a global catalog server and uses that as the value 
+	for ComputerName.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -HTML -ADForest corp.carlwebster.com
 	
-	Will use all default values and save the document as an HTML file.
+	Uses all default values and saves the document as an HTML file.
 
 	corp.carlwebster.com for the AD Forest.
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
-	value for ComputerName.
+	a domain controller that is also a global catalog server and uses that as the value 
+	for ComputerName.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -hardware
 	
 	Creates an HTML report.
-	Will use all default values and add additional information for each domain controller 
-	about its hardware.
+	
+	Uses all default values and adds additional information for each domain controller about 
+	its hardware.
 
 	ADForest defaults to the value of $Env:USERDNSDOMAIN.
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
-	value for ComputerName.
+	a domain controller that is also a global catalog server and uses that as the value 
+	for ComputerName.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -services
 	
 	Creates an HTML report.
-	Will use all default values and add additional information for the services running 
-	on each domain controller.
+	
+	Will use all default values and add additional information for the services running on 
+	each domain controller.
 
 	ADForest defaults to the value of $Env:USERDNSDOMAIN.
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
-	value for ComputerName.
+	a domain controller that is also a global catalog server and uses that as the value 
+	for ComputerName.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -DCDNSInfo
 	
 	Creates an HTML report.
-	Will use all default values and add additional information for each domain controller 
-	about its DNS IP configuration.
+	
+	Uses all default values and adds additional information for each domain controller about 
+	its DNS IP configuration.
 
-	An extra section will be added to the end of the report.
+	An extra section is added to the end of the report.
 
 	ADForest defaults to the value of $Env:USERDNSDOMAIN.
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
-	value for ComputerName.
+	a domain controller that is also a global catalog server and uses that as the value 
+	for ComputerName.
 .EXAMPLE
 	PS C:\PSScript .\Docu-ActiveDirectory.ps1 -MSWord -CompanyName "Carl Webster 
 	Consulting" -CoverPage "Mod" -UserName "Carl Webster" -ComputerName ADDC01
@@ -561,8 +573,8 @@
 	ADForest defaults to the value of $Env:USERDNSDOMAIN.
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
-	value for ComputerName.
+	a domain controller that is also a global catalog server and uses that as the value 
+	for ComputerName.
 .EXAMPLE
 	PS C:\PSScript .\Docu-ActiveDirectory.ps1 -MSWord -CompanyName "Sherlock Holmes 
     Consulting" -CoverPage Exposure -UserName "Dr. Watson" -CompanyAddress "221B Baker 
@@ -581,8 +593,8 @@
 	ADForest defaults to the value of $Env:USERDNSDOMAIN.
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
-	value for ComputerName.
+	a domain controller that is also a global catalog server and uses that as the value 
+	for ComputerName.
 .EXAMPLE
 	PS C:\PSScript .\Docu-ActiveDirectory.ps1 -MSWord -CompanyName "Sherlock Holmes 
 	Consulting" -CoverPage Facet -UserName "Dr. Watson" -CompanyEmail 
@@ -599,8 +611,8 @@
 	ADForest defaults to the value of $Env:USERDNSDOMAIN.
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
-	value for ComputerName.
+	a domain controller that is also a global catalog server and uses that as the value 
+	for ComputerName.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -ADForest company.tld -AddDateTime
 	
@@ -609,18 +621,18 @@
 	company.tld for the AD Forest.
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
-	value for ComputerName.
+	a domain controller that is also a global catalog server and uses that as the value 
+	for ComputerName.
 
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be company.tld_2020-06-01_1800.docx.
+	June 1, 2021 at 6PM is 2021-06-01_1800.
+	The output filename is company.tld_2021-06-01_1800.docx.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -PDF -ADForest corp.carlwebster.com 
 	-AddDateTime
 	
-	Will use all default values and save the document as a PDF file.
+	Uses all default values and saves the document as a PDF file.
 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or
@@ -633,13 +645,13 @@
 	corp.carlwebster.com for the AD Forest.
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
-	value for ComputerName.
+	a domain controller that is also a global catalog server and uses that as the value 
+	for ComputerName.
 
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be corp.carlwebster.com_2020-06-01_1800.PDF
+	June 1, 2021 at 6PM is 2021-06-01_1800.
+	The output filename is corp.carlwebster.com_2021-06-01_1800.PDF
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -ADForest corp.carlwebster.com -Folder 
 	\\FileServer\ShareName
@@ -649,10 +661,10 @@
 	corp.carlwebster.com for the AD Forest.
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
-	value for ComputerName.
+	a domain controller that is also a global catalog server and uses that as the value 
+	for ComputerName.
 	
-	The output file will be saved in the path \\FileServer\ShareName.
+	The output file is saved in the path \\FileServer\ShareName.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -Section Forest
 
@@ -661,10 +673,10 @@
 	ADForest defaults to the value of $Env:USERDNSDOMAIN
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
-	value for ComputerName.
+	a domain controller that is also a global catalog server and uses that as the value 
+	for ComputerName.
 	
-	The report will include only the Forest section.
+	The report includes only the Forest section.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -Section groups, misc -ADForest 
 	WebstersLab.com -ServerName PrimaryDC.websterslab.com
@@ -674,7 +686,7 @@
 	WebstersLab.com for ADForest.
 	PrimaryDC.websterslab.com for ComputerName.
 	
-	The report will include only the Groups and Miscellaneous sections.
+	The report includes only the Groups and Miscellaneous sections.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -MaxDetails
 	
@@ -690,38 +702,38 @@
 		Section         = "All"
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -SmtpServer mail.domain.tld -From 
-	XDAdmin@domain.tld -To ITGroup@domain.tld	
+	ADAdmin@domain.tld -To ITGroup@domain.tld	
 
-	The script will use the email server mail.domain.tld, sending from XDAdmin@domain.tld, 
-	sending to ITGroup@domain.tld.
+	The script uses the email server mail.domain.tld, sending from ADAdmin@domain.tld 
+	and sending to ITGroup@domain.tld.
 
-	The script will use the default SMTP port 25 and will not use SSL.
+	The script uses the default SMTP port 25 and does not use SSL.
 
-	If the current user's credentials are not valid to send email, 
-	the user will be prompted to enter valid credentials.
+	If the current user's credentials are not valid to send an email, the script prompts 
+	the user to enter valid credentials.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -SmtpServer mailrelay.domain.tld -From 
 	Anonymous@domain.tld -To ITGroup@domain.tld	
 
 	***SENDING UNAUTHENTICATED EMAIL***
 
-	The script will use the email server mailrelay.domain.tld, sending from 
-	anonymous@domain.tld, sending to ITGroup@domain.tld.
+	The script uses the email server mailrelay.domain.tld, sending from 
+	anonymous@domain.tld and sending to ITGroup@domain.tld.
 
-	To send unauthenticated email using an email relay server requires the From email account 
-	to use the name Anonymous.
+	To send an unauthenticated email using an email relay server requires the From email 
+	account to use the name Anonymous.
 
-	The script will use the default SMTP port 25 and will not use SSL.
+	The script uses the default SMTP port 25 and does not use SSL.
 	
 	***GMAIL/G SUITE SMTP RELAY***
 	https://support.google.com/a/answer/2956491?hl=en
 	https://support.google.com/a/answer/176600?hl=en
 
-	To send email using a Gmail or g-suite account, you may have to turn ON
-	the "Less secure app access" option on your account.
+	To send an email using a Gmail or g-suite account, you may have to turn ON the "Less 
+	secure app access" option on your account.
 	***GMAIL/G SUITE SMTP RELAY***
 
-	The script will generate an anonymous secure password for the anonymous@domain.tld 
+	The script generates an anonymous, secure password for the anonymous@domain.tld 
 	account.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -SmtpServer 
@@ -736,42 +748,42 @@
 	
 	***OFFICE 365 Example***
 
-	The script will use the email server labaddomain-com.mail.protection.outlook.com, 
-	sending from SomeEmailAddress@labaddomain.com, sending to ITGroupDL@labaddomain.com.
+	The script uses the email server labaddomain-com.mail.protection.outlook.com, sending 
+	from SomeEmailAddress@labaddomain.com and sending to ITGroupDL@labaddomain.com.
 
-	The script will use the default SMTP port 25 and will use SSL.
+	The script uses the default SMTP port 25 and SSL.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -SmtpServer smtp.office365.com -SmtpPort 587 
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
-	The script will use the email server smtp.office365.com on port 587 using SSL, 
-	sending from webster@carlwebster.com, sending to ITGroup@carlwebster.com.
+	The script uses the email server smtp.office365.com on port 587 using SSL, sending from 
+	webster@carlwebster.com and sending to ITGroup@carlwebster.com.
 
-	If the current user's credentials are not valid to send email, 
-	the user will be prompted to enter valid credentials.
+	If the current user's credentials are not valid to send an email, the script prompts 
+	the user to enter valid credentials.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -SmtpServer smtp.gmail.com -SmtpPort 587 
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
 	*** NOTE ***
-	To send email using a Gmail or g-suite account, you may have to turn ON
-	the "Less secure app access" option on your account.
+	To send an email using a Gmail or g-suite account, you may have to turn ON the "Less 
+	secure app access" option on your account.
 	*** NOTE ***
 	
-	The script will use the email server smtp.gmail.com on port 587 using SSL, 
-	sending from webster@gmail.com, sending to ITGroup@carlwebster.com.
+	The script uses the email server smtp.gmail.com on port 587 using SSL, sending from 
+	webster@gmail.com and sending to ITGroup@carlwebster.com.
 
-	If the current user's credentials are not valid to send email, 
-	the user will be prompted to enter valid credentials.
+	If the current user's credentials are not valid to send an email, the script prompts 
+	the user to enter valid credentials.
 .INPUTS
 	None.  You cannot pipe objects to this script.
 .OUTPUTS
 	No objects are output from this script.  This script creates a Word or PDF document.
 .NOTES
 	NAME: Docu-ActiveDirectory.ps1
-	VERSION: 3.01
+	VERSION: 3.03
 	AUTHOR: Carl Webster and Michael B. Smith
-	LASTEDIT: October 12, 2020
+	LASTEDIT: February 20, 2021
 #>
 
 
@@ -780,13 +792,21 @@
 
 Param(
 	[parameter(Mandatory=$False)] 
+	[string]$ADDomain="", 
+
+	[parameter(Mandatory=$False)] 
+	[string]$ADForest=$Env:USERDNSDOMAIN, 
+
+	[parameter(Mandatory=$False)] 
+	[Alias("ServerName")]
+	[string]$ComputerName=$Env:USERDNSDOMAIN,
+	
+	[parameter(Mandatory=$False)] 
+	[Alias("MAX")]
+	[Switch]$MaxDetails=$False,
+
+	[parameter(Mandatory=$False)] 
 	[Switch]$HTML=$False,
-
-	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
-	[Switch]$MSWord=$False,
-
-	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
-	[Switch]$PDF=$False,
 
 	[parameter(Mandatory=$False)] 
 	[Switch]$Text=$False,
@@ -796,10 +816,44 @@ Param(
 	[Switch]$AddDateTime=$False,
 	
 	[parameter(Mandatory=$False)] 
-	[string]$ADDomain="", 
+	[Switch]$Dev=$False,
+	
+	[parameter(Mandatory=$False)] 
+	[string]$Folder="",
+	
+	[parameter(Mandatory=$False)] 
+	[Switch]$Log=$False,
+	
+	[parameter(Mandatory=$False)] 
+	[Alias("SI")]
+	[Switch]$ScriptInfo=$False,
 
 	[parameter(Mandatory=$False)] 
-	[string]$ADForest=$Env:USERDNSDOMAIN, 
+	[Switch]$DCDNSInfo=$False, 
+
+	[parameter(Mandatory=$False)] 
+	[Switch]$GPOInheritance=$False, 
+
+	[parameter(Mandatory=$False)] 
+	[Switch]$Hardware=$False, 
+
+	[parameter(Mandatory=$False)] 
+	[Alias("IU")]
+	[Switch]$IncludeUserInfo=$False,
+	
+	[Parameter( Mandatory = $False )]
+	[ValidateSet( 'Forest', 'Sites', 'Domains', 'OUs',
+		'Groups', 'GPOs', 'Misc', 'All' )]
+	[String[]] $Section = 'All',
+
+	[parameter(Mandatory=$False )] 
+	[Switch]$Services=$False,
+	
+	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
+	[Switch]$MSWord=$False,
+
+	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
+	[Switch]$PDF=$False,
 
 	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
 	[Alias("CA")]
@@ -826,56 +880,16 @@ Param(
 	[ValidateNotNullOrEmpty()]
 	[string]$CompanyPhone="",
     
-	[parameter(Mandatory=$False)] 
-	[Alias("ServerName")]
-	[string]$ComputerName=$Env:USERDNSDOMAIN,
-	
-	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
+	[parameter(ParameterSetName="WordPDF",Mandatory=$False)]
 	[Alias("CP")]
 	[ValidateNotNullOrEmpty()]
 	[string]$CoverPage="Sideline", 
 
-	[parameter(Mandatory=$False)] 
-	[Switch]$DCDNSInfo=$False, 
+	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
+	[Alias("UN")]
+	[ValidateNotNullOrEmpty()]
+	[string]$UserName=$env:username,
 
-	[parameter(Mandatory=$False)] 
-	[Switch]$Dev=$False,
-	
-	[parameter(Mandatory=$False)] 
-	[string]$Folder="",
-	
-	[parameter(Mandatory=$False)] 
-	[string]$From="",
-
-	[parameter(Mandatory=$False)] 
-	[Switch]$GPOInheritance=$False, 
-
-	[parameter(Mandatory=$False)] 
-	[Switch]$Hardware=$False, 
-
-	[parameter(Mandatory=$False)] 
-	[Alias("IU")]
-	[Switch]$IncludeUserInfo=$False,
-	
-	[parameter(Mandatory=$False)] 
-	[Switch]$Log=$False,
-	
-	[parameter(Mandatory=$False)] 
-	[Alias("MAX")]
-	[Switch]$MaxDetails=$False,
-
-	[parameter(Mandatory=$False)] 
-	[Alias("SI")]
-	[Switch]$ScriptInfo=$False,
-
-	[Parameter( Mandatory = $False )]
-	[ValidateSet( 'Forest', 'Sites', 'Domains', 'OUs',
-		'Groups', 'GPOs', 'Misc', 'All' )]
-	[String[]] $Section = 'All',
-
-	[parameter(Mandatory=$False )] 
-	[Switch]$Services=$False,
-	
 	[parameter(Mandatory=$False)] 
 	[int]$SmtpPort=25,
 
@@ -886,15 +900,13 @@ Param(
 	[Switch]$SuperVerbose = $false,
 	
 	[parameter(Mandatory=$False)] 
-	[string]$To="",
-
-	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
-	[Alias("UN")]
-	[ValidateNotNullOrEmpty()]
-	[string]$UserName=$env:username,
+	[string]$From="",
 
 	[parameter(Mandatory=$False)] 
-	[Switch]$UseSSL=$False
+	[string]$To="",
+
+	[parameter(Mandatory=$False)] 
+	[Switch]$UseSSL=$False 
 
 	)
 	
@@ -913,6 +925,49 @@ Param(
 #
 #Version 2.0 is based on version 1.20
 #
+#Version 3.03 22-Feb-2021
+#	Added a Try/Catch and -LDAPFilter when checking for the Exchange schema attributes to suppress the error if Exchange is not installed
+#	Added Domain SID to the Domain Information section
+#	Added SYSVOL State to Function OutputADFileLocations
+#		If SYSVOL State is not 4, highlight in red
+#	Added updates from Michael B. Smith for MaxPasswordAge
+#		Update Function getDSUsers
+#		Update Function GetMaximumPasswordAge
+#	Changed from using Test-Connection to Test-NetConnection -Port 88
+#		Port 88 is the KDC and is unique to DCs (thanks to Matthew Woolnough for the suggestion)
+#	Cleaned up console output
+#	In Function BuildMultiColumnTable:
+#		Prevent a division by 0 error if $MaxLength was 0
+#		Fixed OutOfBounds array error (appears to be a corner case when there are 11 subnets assigned to a Site)
+#	Fixed bug to now catch empty Site Subnet arrays
+#		Added text "No Subnets linked to this site"
+#	Updated Function GetComputerServices to add "***" in the Text output when the service type is Automatic and Status is Stopped
+#	Updated Function getDSUsers to handle processing accounts in the Foreign Security Principals container
+#		Find all orphaned SIDs
+#		Get a count of orphaned SIDs
+#		Added Function OutputFSPUserInfo to output the Orphaned SIDs and the groups those SIDs are members of
+#	Updated Function ProcessGroupInformation to put HTML output in Red when:
+#		Password Last Change is null or not set
+#		Password Never Expires is True
+#		Account is Disabled
+#	Updated the help text
+#	Updated the ReadMe file
+#	When processing Groups for attribute adminCount -eq 1, fixed where the group name doesn’t match the samAccountName or the distinguishedName
+#	When processing Groups that have attribute adminCount -eq 1, check if there was an error retrieving members of the group
+#		If there was an error, add the text "Unable to retrieve group members. Check for orphaned SIDs." in place of the group members
+#
+#Version 3.02 9-Jan-2021
+#	Added to the Computer Hardware section, the server's Power Plan
+#	Changed all Write-Verbose statements from Get-Date to Get-Date -Format G as requested by Guy Leech
+#	Clean up some spacing in the HTML output
+#	Fixed issue with the Services and OU tables where highlighted cells were not in red
+#	Fixed issue with the Word/PDF Domain Admins table with the missing Domain column
+#	In Function OutputTimeServerRegistryKeys, change the call to w32tm to use Invoke-Command to get around access denied errors
+#	Reordered parameters in an order recommended by Guy Leech
+#	Updated Exchange schema versions to include up to Exchange 2016 CU19 and Exchange 2019 CU8
+#	Updated help text
+#	Updated ReadMe file
+#	
 #Version 3.01 12-Oct-2020
 #	Handle the Domain Admins privileged group processing and output the same way the Enterprise and Schema Admins are done
 #
@@ -978,9 +1033,9 @@ Param(
 #		Updated Functions Line and SaveAndCloseTextDocument
 #	Fix Swedish Table of Contents (Thanks to Johan Kallio)
 #		From 
-#			'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckning2'; Break }
+#			'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
 #		To
-#			'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckn2'; Break }
+#			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
 #	Fixed all WriteHTMLLine lines that were supposed to be in bold. Used MBS' updates.
 #	Fixed issues with the Domain Admins Privileged Group where the user type was assumed to be a User
 #		Added checking for the object type and handling Groups and Users
@@ -1023,7 +1078,7 @@ $global:emailCredentials = $Null
 
 ## v3.00
 $script:ExtraSpecialVerbose = $false
-$script:MyVersion           = '3.00'
+$script:MyVersion           = '3.03'
 
 Function wv
 {
@@ -1038,19 +1093,19 @@ If($MSWord -eq $False -and $PDF -eq $False -and $Text -eq $False -and $HTML -eq 
 
 If($MSWord)
 {
-	Write-Verbose "$(Get-Date): MSWord is set"
+	Write-Verbose "$(Get-Date -Format G): MSWord is set"
 }
 If($PDF)
 {
-	Write-Verbose "$(Get-Date): PDF is set"
+	Write-Verbose "$(Get-Date -Format G): PDF is set"
 }
 If($Text)
 {
-	Write-Verbose "$(Get-Date): Text is set"
+	Write-Verbose "$(Get-Date -Format G): Text is set"
 }
 If($HTML)
 {
-	Write-Verbose "$(Get-Date): HTML is set"
+	Write-Verbose "$(Get-Date -Format G): HTML is set"
 }
 
 If($ADForest -ne "" -and $ADDomain -ne "")
@@ -1072,7 +1127,7 @@ If($MaxDetails)
 
 If($Folder -ne "")
 {
-	Write-Verbose "$(Get-Date): Testing folder path"
+	Write-Verbose "$(Get-Date -Format G): Testing folder path"
 	#does it exist
 	If(Test-Path $Folder -EA 0)
 	{
@@ -1080,16 +1135,17 @@ If($Folder -ne "")
 		If(Test-Path $Folder -pathType Container -EA 0)
 		{
 			#it exists and it is a folder
-			Write-Verbose "$(Get-Date): Folder path $Folder exists and is a folder"
+			Write-Verbose "$(Get-Date -Format G): Folder path $Folder exists and is a folder"
 		}
 		Else
 		{
 			#it exists but it is a file not a folder
+#Do not indent the following write-error lines. Doing so will mess up the console formatting of the error message.
 			Write-Error "
 			`n`n
-			`tFolder $Folder is a file, not a folder.
+	Folder $Folder is a file, not a folder.
 			`n`n
-			`tScript cannot Continue.
+	Script cannot continue.
 			`n`n"
 			Exit
 		}
@@ -1099,12 +1155,11 @@ If($Folder -ne "")
 		#does not exist
 		Write-Error "
 		`n`n
-		`t`t
-		Folder $Folder does not exist.
+	Folder $Folder does not exist.
 		`n`n
-		`t`t
-		Script cannot Continue.
-		`n`n"
+	Script cannot continue.
+		`n`n
+		"
 		Exit
 	}
 }
@@ -1132,12 +1187,12 @@ If($Log)
 	try 
 	{
 		Start-Transcript -Path $Script:LogPath -Force -Verbose:$false | Out-Null
-		Write-Verbose "$(Get-Date): Transcript/log started at $Script:LogPath"
+		Write-Verbose "$(Get-Date -Format G): Transcript/log started at $Script:LogPath"
 		$Script:StartLog = $true
 	} 
 	catch 
 	{
-		Write-Verbose "$(Get-Date): Transcript/log failed at $Script:LogPath"
+		Write-Verbose "$(Get-Date -Format G): Transcript/log failed at $Script:LogPath"
 		$Script:StartLog = $false
 	}
 }
@@ -1234,7 +1289,7 @@ If($MSWord -or $PDF)
 {
 	#try and fix the issue with the $CompanyName variable
 	$Script:CoName = $CompanyName
-	Write-Verbose "$(Get-Date): CoName is $($Script:CoName)"
+	Write-Verbose "$(Get-Date -Format G): CoName is $($Script:CoName)"
 	
 	#the following values were attained from 
 	#http://msdn.microsoft.com/en-us/library/office/aa211923(v=office.11).aspx
@@ -1368,7 +1423,7 @@ If($HTML)
 Function SendEmail
 {
 	Param([array]$Attachments)
-	Write-Verbose "$(Get-Date): Prepare to email"
+	Write-Verbose "$(Get-Date -Format G): Prepare to email"
 
 	$emailAttachment = $Attachments
 	$emailSubject = $Script:Title
@@ -1408,13 +1463,13 @@ $Script:Title is attached.
 		
 		If($?)
 		{
-			Write-Verbose "$(Get-Date): Email successfully sent using anonymous credentials"
+			Write-Verbose "$(Get-Date -Format G): Email successfully sent using anonymous credentials"
 		}
 		ElseIf(!$?)
 		{
 			$e = $error[0]
 
-			Write-Verbose "$(Get-Date): Email was not sent:"
+			Write-Verbose "$(Get-Date -Format G): Email was not sent:"
 			Write-Warning "$(Get-Date): Exception: $e.Exception" 
 		}
 	}
@@ -1422,7 +1477,7 @@ $Script:Title is attached.
 	{
 		If($UseSSL)
 		{
-			Write-Verbose "$(Get-Date): Trying to send email using current user's credentials with SSL"
+			Write-Verbose "$(Get-Date -Format G): Trying to send email using current user's credentials with SSL"
 			Send-MailMessage -Attachments $emailAttachment -Body $emailBody -BodyAsHtml -From $From `
 			-Port $SmtpPort -SmtpServer $SmtpServer -Subject $emailSubject -To $To `
 			-UseSSL *>$Null
@@ -1442,7 +1497,7 @@ $Script:Title is attached.
 			If($null -ne $e.Exception -and $e.Exception.ToString().Contains("5.7"))
 			{
 				#The server response was: 5.7.xx SMTP; Client was not authenticated to send anonymous mail during MAIL FROM
-				Write-Verbose "$(Get-Date): Current user's credentials failed. Ask for usable credentials."
+				Write-Verbose "$(Get-Date -Format G): Current user's credentials failed. Ask for usable credentials."
 
 				If($Dev)
 				{
@@ -1468,19 +1523,19 @@ $Script:Title is attached.
 
 				If($?)
 				{
-					Write-Verbose "$(Get-Date): Email successfully sent using new credentials"
+					Write-Verbose "$(Get-Date -Format G): Email successfully sent using new credentials"
 				}
 				ElseIf(!$?)
 				{
 					$e = $error[0]
 
-					Write-Verbose "$(Get-Date): Email was not sent:"
+					Write-Verbose "$(Get-Date -Format G): Email was not sent:"
 					Write-Warning "$(Get-Date): Exception: $e.Exception" 
 				}
 			}
 			Else
 			{
-				Write-Verbose "$(Get-Date): Email was not sent:"
+				Write-Verbose "$(Get-Date -Format G): Email was not sent:"
 				Write-Warning "$(Get-Date): Exception: $e.Exception" 
 			}
 		}
@@ -1503,8 +1558,8 @@ Function GetComputerWMIInfo
 	# modified 29-Apr-2018 to change from Arrays to New-Object System.Collections.ArrayList
 
 	#Get Computer info
-	Write-Verbose "$(Get-Date): `t`tProcessing WMI Computer information"
-	Write-Verbose "$(Get-Date): `t`t`tHardware information"
+	Write-Verbose "$(Get-Date -Format G): `t`tProcessing WMI Computer information"
+	Write-Verbose "$(Get-Date -Format G): `t`t`tHardware information"
 	If($MSWord -or $PDF)
 	{
 		WriteWordLine 3 0 "Computer Information: $($RemoteComputerName)"
@@ -1541,12 +1596,12 @@ Function GetComputerWMIInfo
 
 		ForEach($Item in $ComputerItems)
 		{
-			OutputComputerItem $Item $ComputerOS
+			OutputComputerItem $Item $ComputerOS $RemoteComputerName
 		}
 	}
 	ElseIf(!$?)
 	{
-		Write-Verbose "$(Get-Date): Get-WmiObject win32_computersystem failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_computersystem failed for $($RemoteComputerName)"
 		Write-Warning "Get-WmiObject win32_computersystem failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
@@ -1573,7 +1628,7 @@ Function GetComputerWMIInfo
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): No results Returned for Computer information"
+		Write-Verbose "$(Get-Date -Format G): No results Returned for Computer information"
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "No results Returned for Computer information" "" $Null 0 $False $True
@@ -1589,7 +1644,7 @@ Function GetComputerWMIInfo
 	}
 	
 	#Get Disk info
-	Write-Verbose "$(Get-Date): `t`t`tDrive information"
+	Write-Verbose "$(Get-Date -Format G): `t`t`tDrive information"
 
 	If($MSWord -or $PDF)
 	{
@@ -1630,7 +1685,7 @@ Function GetComputerWMIInfo
 	}
 	ElseIf(!$?)
 	{
-		Write-Verbose "$(Get-Date): Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)"
 		Write-Warning "Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
@@ -1656,7 +1711,7 @@ Function GetComputerWMIInfo
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): No results Returned for Drive information"
+		Write-Verbose "$(Get-Date -Format G): No results Returned for Drive information"
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "No results Returned for Drive information" "" $Null 0 $False $True
@@ -1672,7 +1727,7 @@ Function GetComputerWMIInfo
 	}
 	
 	#Get CPU's and stepping
-	Write-Verbose "$(Get-Date): `t`t`tProcessor information"
+	Write-Verbose "$(Get-Date -Format G): `t`t`tProcessor information"
 
 	If($MSWord -or $PDF)
 	{
@@ -1709,7 +1764,7 @@ Function GetComputerWMIInfo
 	}
 	ElseIf(!$?)
 	{
-		Write-Verbose "$(Get-Date): Get-WmiObject win32_Processor failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_Processor failed for $($RemoteComputerName)"
 		Write-Warning "Get-WmiObject win32_Processor failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
@@ -1735,7 +1790,7 @@ Function GetComputerWMIInfo
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): No results Returned for Processor information"
+		Write-Verbose "$(Get-Date -Format G): No results Returned for Processor information"
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "No results Returned for Processor information" "" $Null 0 $False $True
@@ -1751,7 +1806,7 @@ Function GetComputerWMIInfo
 	}
 
 	#Get Nics
-	Write-Verbose "$(Get-Date): `t`t`tNIC information"
+	Write-Verbose "$(Get-Date -Format G): `t`t`tNIC information"
 
 	If($MSWord -or $PDF)
 	{
@@ -1813,7 +1868,7 @@ Function GetComputerWMIInfo
 				ElseIf(!$?)
 				{
 					Write-Warning "$(Get-Date): Error retrieving NIC information"
-					Write-Verbose "$(Get-Date): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
+					Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 					Write-Warning "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 					If($MSWORD -or $PDF)
 					{
@@ -1842,7 +1897,7 @@ Function GetComputerWMIInfo
 				}
 				Else
 				{
-					Write-Verbose "$(Get-Date): No results Returned for NIC information"
+					Write-Verbose "$(Get-Date -Format G): No results Returned for NIC information"
 					If($MSWORD -or $PDF)
 					{
 						WriteWordLine 0 2 "No results Returned for NIC information" "" $Null 0 $False $True
@@ -1862,7 +1917,7 @@ Function GetComputerWMIInfo
 	ElseIf(!$?)
 	{
 		Write-Warning "$(Get-Date): Error retrieving NIC configuration information"
-		Write-Verbose "$(Get-Date): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 		Write-Warning "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
@@ -1891,7 +1946,7 @@ Function GetComputerWMIInfo
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): No results Returned for NIC configuration information"
+		Write-Verbose "$(Get-Date -Format G): No results Returned for NIC configuration information"
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "No results Returned for NIC configuration information" "" $Null 0 $False $True
@@ -1922,7 +1977,25 @@ Function GetComputerWMIInfo
 
 Function OutputComputerItem
 {
-	Param([object]$Item, [string]$OS)
+	Param([object]$Item, [string]$OS, [string]$RemoteComputerName)
+	
+	#get computer's power plan
+	#https://techcommunity.microsoft.com/t5/core-infrastructure-and-security/get-the-active-power-plan-of-multiple-servers-with-powershell/ba-p/370429
+	
+	try 
+	{
+
+		$PowerPlan = (Get-WmiObject -ComputerName $RemoteComputerName -Class Win32_PowerPlan -Namespace "root\cimv2\power" |
+			Where-Object {$_.IsActive -eq $true} |
+			Select-Object @{Name = "PowerPlan"; Expression = {$_.ElementName}}).PowerPlan
+	}
+
+	catch 
+	{
+
+		$PowerPlan = $_.Exception
+
+	}	
 	
 	If($MSWord -or $PDF)
 	{
@@ -1931,6 +2004,7 @@ Function OutputComputerItem
 		$ItemInformation.Add(@{ Data = "Model"; Value = $Item.model; }) > $Null
 		$ItemInformation.Add(@{ Data = "Domain"; Value = $Item.domain; }) > $Null
 		$ItemInformation.Add(@{ Data = "Operating System"; Value = $OS; }) > $Null
+		$ItemInformation.Add(@{ Data = "Power Plan"; Value = $PowerPlan; }) > $Null
 		$ItemInformation.Add(@{ Data = "Total Ram"; Value = "$($Item.totalphysicalram) GB"; }) > $Null
 		$ItemInformation.Add(@{ Data = "Physical Processors (sockets)"; Value = $Item.NumberOfProcessors; }) > $Null
 		$ItemInformation.Add(@{ Data = "Logical Processors (cores w/HT)"; Value = $Item.NumberOfLogicalProcessors; }) > $Null
@@ -1959,6 +2033,7 @@ Function OutputComputerItem
 		Line 2 "Model`t`t`t`t: " $Item.model
 		Line 2 "Domain`t`t`t`t: " $Item.domain
 		Line 2 "Operating System`t`t: " $OS
+		Line 2 "Power Plan`t`t`t: " $PowerPlan
 		Line 2 "Total Ram`t`t`t: $($Item.totalphysicalram) GB"
 		Line 2 "Physical Processors (sockets)`t: " $Item.NumberOfProcessors
 		Line 2 "Logical Processors (cores w/HT)`t: " $Item.NumberOfLogicalProcessors
@@ -1970,6 +2045,8 @@ Function OutputComputerItem
 		$columnHeaders = @("Manufacturer",($htmlsilver -bor $htmlBold),$Item.manufacturer,$htmlwhite)
 		$rowdata += @(,('Model',($htmlsilver -bor $htmlBold),$Item.model,$htmlwhite))
 		$rowdata += @(,('Domain',($htmlsilver -bor $htmlBold),$Item.domain,$htmlwhite))
+		$rowdata += @(,('Operating System',($htmlsilver -bor $htmlBold),$OS,$htmlwhite))
+		$rowdata += @(,('Power Plan',($htmlsilver -bor $htmlBold),$PowerPlan,$htmlwhite))
 		$rowdata += @(,('Total Ram',($htmlsilver -bor $htmlBold),"$($Item.totalphysicalram) GB",$htmlwhite))
 		$rowdata += @(,('Physical Processors (sockets)',($htmlsilver -bor $htmlBold),$Item.NumberOfProcessors,$htmlwhite))
 		$rowdata += @(,('Logical Processors (cores w/HT)',($htmlsilver -bor $htmlBold),$Item.NumberOfLogicalProcessors,$htmlwhite))
@@ -1977,7 +2054,7 @@ Function OutputComputerItem
 		$msg = ""
 		$columnWidths = @("150px","200px")
 		FormatHTMLTable $msg -rowarray $rowdata -columnArray $columnheaders -fixedWidth $columnWidths -tablewidth "350"
-		WriteHTMLLine 0 0 " "
+		#WriteHTMLLine 0 0 " "
 	}
 }
 
@@ -2107,7 +2184,7 @@ Function OutputDriveItem
 		$msg = ""
 		$columnWidths = @("150px","200px")
 		FormatHTMLTable $msg -rowarray $rowdata -columnArray $columnheaders -fixedWidth $columnWidths -tablewidth "350"
-		WriteHTMLLine 0 0 " "
+		#WriteHTMLLine 0 0 " "
 	}
 }
 
@@ -2232,7 +2309,7 @@ Function OutputProcessorItem
 		$msg = ""
 		$columnWidths = @("150px","200px")
 		FormatHTMLTable $msg -rowarray $rowdata -columnArray $columnheaders -fixedWidth $columnWidths -tablewidth "350"
-		WriteHTMLLine 0 0 " "
+		#WriteHTMLLine 0 0 " "
 	}
 }
 
@@ -2681,7 +2758,7 @@ Function OutputNicItem
 		$msg = ""
 		$columnWidths = @("150px","200px")
 		FormatHTMLTable $msg -rowarray $rowdata -columnArray $columnheaders -fixedWidth $columnWidths -tablewidth "350"
-		WriteHTMLLine 0 0 " "
+		#WriteHTMLLine 0 0 " "
 	}
 }
 #endregion
@@ -2693,7 +2770,7 @@ Function GetComputerServices
 	# modified 29-Apr-2018 to change from Arrays to New-Object System.Collections.ArrayList
 	
 	#Get Computer services info
-	Write-Verbose "$(Get-Date): `t`tProcessing Computer services information"
+	Write-Verbose "$(Get-Date -Format G): `t`tProcessing Computer services information"
 	If($MSWORD -or $PDF)
 	{
 		WriteWordLine 3 0 "Services"
@@ -2725,17 +2802,15 @@ Function GetComputerServices
 	If($? -and $Null -ne $Services)
 	{
 		[int]$NumServices = $Services.count
-		Write-Verbose "$(Get-Date): `t`t$($NumServices) Services found"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t$($NumServices) Services found"
 
 		If($MSWord -or $PDF)
 		{
 			WriteWordLine 0 1 "Services ($NumServices Services found)"
 
 			$ServicesWordTable = New-Object System.Collections.ArrayList
-			## Create an array of hashtables to store references of cells that we wish to highlight after the table has been added
-			$HighlightedCells = New-Object System.Collections.ArrayList
-			## Seed the $Services row index from the second row
-			[int] $CurrentServiceIndex = 2;
+			$WordHighlightedCells = New-Object System.Collections.ArrayList
+			[int] $CurrentServiceIndex = 2
 		}
 		If($Text)
 		{
@@ -2781,7 +2856,7 @@ Function GetComputerServices
 				## Store "to highlight" cell references
 				If($Service.State -like "Stopped" -and $Service.StartMode -like "Auto") 
 				{
-					$HighlightedCells.Add(@{ Row = $CurrentServiceIndex; Column = 2; }) > $Null
+					$WordHighlightedCells.Add(@{ Row = $CurrentServiceIndex; Column = 2; }) > $Null
 				}
 				$CurrentServiceIndex++;
 			}
@@ -2797,21 +2872,28 @@ Function GetComputerServices
 				{
 					Line 1 "$($Service.DisplayName)  " -NoNewLine
 				}
-				Line 1 "$($Service.State) " -NoNewLine
+				If($Service.State -like "Stopped" -and $Service.StartMode -like "Auto") 
+				{
+					Line 1 "***$($Service.State)*** " -NoNewLine
+				}
+				Else
+				{
+					Line 1 "$($Service.State) " -NoNewLine
+				}
 				Line 1 $Service.StartMode
 			}
 			If($HTML)
 			{
 				If($Service.State -like "Stopped" -and $Service.StartMode -like "Auto") 
 				{
-					$HighlightedCells = $htmlred
+					$HTMLHighlightedCells = $htmlred
 				}
 				Else
 				{
-					$HighlightedCells = $htmlwhite
+					$HTMLHighlightedCells = $htmlwhite
 				} 
 				$rowdata[ $rowIndx ] = @(,($Service.DisplayName,$htmlwhite,
-								$Service.State,$HighlightedCells,
+								$Service.State,$HTMLHighlightedCells,
 								$Service.StartMode,$htmlwhite))
 				$rowIndx++
 			}
@@ -2819,17 +2901,17 @@ Function GetComputerServices
 
 		If($MSWord -or $PDF)
 		{
-			## Add the table to the document, using the hashtable
 			$Table = AddWordTable -Hashtable $ServicesWordTable `
 			-Columns DisplayName, Status, StartMode `
 			-Headers "Display Name", "Status", "Startup Type" `
 			-Format $wdTableGrid `
 			-AutoFit $wdAutoFitContent;
 
-			## IB - Set the header row format after the SetWordTableAlternateRowColor Function as it will paint the header row!
 			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
-			## IB - Set the required highlighted cells
-			SetWordCellFormat -Coordinates $HighlightedCells -Table $Table -Bold -BackgroundColor $wdColorRed -Solid;
+			If($WordHighlightedCells.Count -gt 0)
+			{
+				SetWordCellFormat -Coordinates $WordHighlightedCells -Table $Table -Bold -BackgroundColor $wdColorRed -Solid;
+			}
 
 			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -2939,7 +3021,7 @@ Function BuildDCDNSIPConfigTable
 				
 				If($? -and $Null -ne $ThisNic)
 				{
-					Write-Verbose "$(Get-Date): `t`t`tGather DC DNS IP Config info"
+					Write-Verbose "$(Get-Date -Format G): `t`t`tGather DC DNS IP Config info"
 					$xIPAddress = @()
 					ForEach($IPAddress in $Nic.ipaddress)
 					{
@@ -3009,7 +3091,7 @@ Function BuildDCDNSIPConfigTable
 	}
 	Else
 	{
-		Write-Verbose "$(Get-Date): No results Returned for NIC configuration information"
+		Write-Verbose "$(Get-Date -Format G): No results Returned for NIC configuration information"
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "No results Returned for NIC configuration information" "" $Null 0 $False $True
@@ -3053,21 +3135,23 @@ Function SetWordHashTable
 	#nl - Dutch
 	#pt - Portuguese
 	#sv - Swedish
+	#zh - Chinese
 	
 	[string]$toc = $(
 		Switch ($CultureCode)
 		{
-			'ca-'	{ 'Taula automÃ¡tica 2'; Break }
+			'ca-'	{ 'Taula automática 2'; Break }
 			'da-'	{ 'Automatisk tabel 2'; Break }
 			'de-'	{ 'Automatische Tabelle 2'; Break }
 			'en-'	{ 'Automatic Table 2'; Break }
-			'es-'	{ 'Tabla automÃ¡tica 2'; Break }
+			'es-'	{ 'Tabla automática 2'; Break }
 			'fi-'	{ 'Automaattinen taulukko 2'; Break }
-			'fr-'	{ 'Table automatiqueÂ 2'; Break } #changed 13-feb-2017 david roquier and samuel legrand
+			'fr-'	{ 'Table automatique 2'; Break } #changed 13-feb-2017 david roquier and samuel legrand
 			'nb-'	{ 'Automatisk tabell 2'; Break }
 			'nl-'	{ 'Automatische inhoudsopgave 2'; Break }
-			'pt-'	{ 'SumÃ¡rio AutomÃ¡tico 2'; Break }
-			'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckn2'; Break }
+			'pt-'	{ 'Sumário Automático 2'; Break }
+			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
+			'zh-'	{ '自动目录 2'; Break }
 		}
 	)
 
@@ -3087,6 +3171,7 @@ Function GetCulture
 	
 	#codes obtained from http://msdn.microsoft.com/en-us/library/bb213877(v=office.12).aspx
 	$CatalanArray = 1027
+	$ChineseArray = 2052,3076,5124,4100
 	$DanishArray = 1030
 	$DutchArray = 2067, 1043
 	$EnglishArray = 3081, 10249, 4105, 9225, 6153, 8201, 5129, 13321, 7177, 11273, 2057, 1033, 12297
@@ -3109,10 +3194,12 @@ Function GetCulture
 	#nl - Dutch
 	#pt - Portuguese
 	#sv - Swedish
+	#zh - Chinese
 
 	Switch ($WordValue)
 	{
 		{$CatalanArray -contains $_} {$CultureCode = "ca-"}
+		{$ChineseArray -contains $_} {$CultureCode = "zh-"}
 		{$DanishArray -contains $_} {$CultureCode = "da-"}
 		{$DutchArray -contains $_} {$CultureCode = "nl-"}
 		{$EnglishArray -contains $_} {$CultureCode = "en-"}
@@ -3141,23 +3228,23 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
-					"Integral", "IÃ³ (clar)", "IÃ³ (fosc)", "LÃ­nia lateral",
-					"Moviment", "QuadrÃ­cula", "Retrospectiu", "Sector (clar)",
-					"Sector (fosc)", "SemÃ for", "VisualitzaciÃ³ principal", "Whisp")
+					"Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
+					"Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
+					"Sector (fosc)", "Semàfor", "Visualització principal", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
-					"Integral", "IÃ³ (clar)", "IÃ³ (fosc)", "LÃ­nia lateral",
-					"Moviment", "QuadrÃ­cula", "Retrospectiu", "Sector (clar)",
-					"Sector (fosc)", "SemÃ for", "VisualitzaciÃ³", "Whisp")
+					"Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
+					"Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
+					"Sector (fosc)", "Semàfor", "Visualització", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
 					$xArray = ("Alfabet", "Anual", "Austin", "Conservador",
-					"Contrast", "Cubicles", "DiplomÃ tic", "ExposiciÃ³",
-					"LÃ­nia lateral", "Mod", "Mosiac", "Moviment", "Paper de diari",
-					"Perspectiva", "Piles", "QuadrÃ­cula", "Sobri",
+					"Contrast", "Cubicles", "Diplomàtic", "Exposició",
+					"Línia lateral", "Mod", "Mosiac", "Moviment", "Paper de diari",
+					"Perspectiva", "Piles", "Quadrícula", "Sobri",
 					"Transcendir", "Trencaclosques")
 				}
 			}
@@ -3165,24 +3252,24 @@ Function ValidateCoverPage
 		'da-'	{
 				If($xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("Austin", "BevÃ¦gElse", "Brusen", "Facet", "Filigran", 
-					"Gitter", "Integral", "Ion (lys)", "Ion (mÃ¸rk)", 
+					$xArray = ("Austin", "BevægElse", "Brusen", "Facet", "Filigran", 
+					"Gitter", "Integral", "Ion (lys)", "Ion (mørk)", 
 					"Retro", "Semafor", "Sidelinje", "Stribet", 
-					"Udsnit (lys)", "Udsnit (mÃ¸rk)", "Visningsmaster")
+					"Udsnit (lys)", "Udsnit (mørk)", "Visningsmaster")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
-					$xArray = ("BevÃ¦gElse", "Brusen", "Ion (lys)", "Filigran",
+					$xArray = ("BevægElse", "Brusen", "Ion (lys)", "Filigran",
 					"Retro", "Semafor", "Visningsmaster", "Integral",
 					"Facet", "Gitter", "Stribet", "Sidelinje", "Udsnit (lys)",
-					"Udsnit (mÃ¸rk)", "Ion (mÃ¸rk)", "Austin")
+					"Udsnit (mørk)", "Ion (mørk)", "Austin")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("BevÃ¦gElse", "Moderat", "Perspektiv", "Firkanter",
-					"Overskrid", "Alfabet", "Kontrast", "Stakke", "Fliser", "GÃ¥de",
+					$xArray = ("BevægElse", "Moderat", "Perspektiv", "Firkanter",
+					"Overskrid", "Alfabet", "Kontrast", "Stakke", "Fliser", "Gåde",
 					"Gitter", "Austin", "Eksponering", "Sidelinje", "Enkel",
-					"NÃ¥lestribet", "Ã…rlig", "Avispapir", "Tradionel")
+					"Nålestribet", "Årlig", "Avispapir", "Tradionel")
 				}
 			}
 
@@ -3190,22 +3277,22 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "Bewegung", "Facette", "Filigran", 
-					"GebÃ¤ndert", "Integral", "Ion (dunkel)", "Ion (hell)", 
-					"Pfiff", "Randlinie", "Raster", "RÃ¼ckblick", 
+					"Gebändert", "Integral", "Ion (dunkel)", "Ion (hell)", 
+					"Pfiff", "Randlinie", "Raster", "Rückblick", 
 					"Segment (dunkel)", "Segment (hell)", "Semaphor", 
 					"ViewMaster")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Semaphor", "Segment (hell)", "Ion (hell)",
-					"Raster", "Ion (dunkel)", "Filigran", "RÃ¼ckblick", "Pfiff",
+					"Raster", "Ion (dunkel)", "Filigran", "Rückblick", "Pfiff",
 					"ViewMaster", "Segment (dunkel)", "Verbunden", "Bewegung",
 					"Randlinie", "Austin", "Integral", "Facette")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
 					$xArray = ("Alphabet", "Austin", "Bewegung", "Durchscheinend",
-					"Herausgestellt", "JÃ¤hrlich", "Kacheln", "Kontrast", "Kubistisch",
+					"Herausgestellt", "Jährlich", "Kacheln", "Kontrast", "Kubistisch",
 					"Modern", "Nadelstreifen", "Perspektive", "Puzzle", "Randlinie",
 					"Raster", "Schlicht", "Stapel", "Traditionell", "Zeitungspapier")
 				}
@@ -3230,23 +3317,23 @@ Function ValidateCoverPage
 		'es-'	{
 				If($xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("Austin", "Con bandas", "Cortar (oscuro)", "CuadrÃ­cula", 
+					$xArray = ("Austin", "Con bandas", "Cortar (oscuro)", "Cuadrícula", 
 					"Whisp", "Faceta", "Filigrana", "Integral", "Ion (claro)", 
-					"Ion (oscuro)", "LÃ­nea lateral", "Movimiento", "Retrospectiva", 
-					"SemÃ¡foro", "Slice (luz)", "Vista principal", "Whisp")
+					"Ion (oscuro)", "Línea lateral", "Movimiento", "Retrospectiva", 
+					"Semáforo", "Slice (luz)", "Vista principal", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Whisp", "Vista principal", "Filigrana", "Austin",
-					"Slice (luz)", "Faceta", "SemÃ¡foro", "Retrospectiva", "CuadrÃ­cula",
-					"Movimiento", "Cortar (oscuro)", "LÃ­nea lateral", "Ion (oscuro)",
+					"Slice (luz)", "Faceta", "Semáforo", "Retrospectiva", "Cuadrícula",
+					"Movimiento", "Cortar (oscuro)", "Línea lateral", "Ion (oscuro)",
 					"Ion (claro)", "Integral", "Con bandas")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
 					$xArray = ("Alfabeto", "Anual", "Austero", "Austin", "Conservador",
-					"Contraste", "CuadrÃ­cula", "CubÃ­culos", "ExposiciÃ³n", "LÃ­nea lateral",
-					"Moderno", "Mosaicos", "Movimiento", "Papel periÃ³dico",
+					"Contraste", "Cuadrícula", "Cubículos", "Exposición", "Línea lateral",
+					"Moderno", "Mosaicos", "Movimiento", "Papel periódico",
 					"Perspectiva", "Pilas", "Puzzle", "Rayas", "Sobrepasar")
 				}
 			}
@@ -3256,14 +3343,14 @@ Function ValidateCoverPage
 				{
 					$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
 					"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
-					"Sektori (vaalea)", "VaihtuvavÃ¤rinen", "ViewMaster", "Austin",
+					"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
 					"Kuiskaus", "Liike", "Ruudukko", "Sivussa")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
 					"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
-					"Sektori (vaalea)", "VaihtuvavÃ¤rinen", "ViewMaster", "Austin",
+					"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
 					"Kiehkura", "Liike", "Ruudukko", "Sivussa")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
@@ -3278,17 +3365,17 @@ Function ValidateCoverPage
 		'fr-'	{
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("Ã€ bandes", "Austin", "Facette", "Filigrane", 
-					"Guide", "IntÃ©grale", "Ion (clair)", "Ion (foncÃ©)", 
-					"Lignes latÃ©rales", "Quadrillage", "RÃ©trospective", "Secteur (clair)", 
-					"Secteur (foncÃ©)", "SÃ©maphore", "ViewMaster", "Whisp")
+					$xArray = ("À bandes", "Austin", "Facette", "Filigrane", 
+					"Guide", "Intégrale", "Ion (clair)", "Ion (foncé)", 
+					"Lignes latérales", "Quadrillage", "Rétrospective", "Secteur (clair)", 
+					"Secteur (foncé)", "Sémaphore", "ViewMaster", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("Alphabet", "Annuel", "AustÃ¨re", "Austin", 
-					"Blocs empilÃ©s", "Classique", "Contraste", "Emplacements de bureau", 
-					"Exposition", "Guide", "Ligne latÃ©rale", "Moderne", 
-					"MosaÃ¯ques", "Mots croisÃ©s", "Papier journal", "Perspective",
+					$xArray = ("Alphabet", "Annuel", "Austère", "Austin", 
+					"Blocs empilés", "Classique", "Contraste", "Emplacements de bureau", 
+					"Exposition", "Guide", "Ligne latérale", "Moderne", 
+					"Mosaïques", "Mots croisés", "Papier journal", "Perspective",
 					"Quadrillage", "Rayures fines", "Transcendant")
 				}
 			}
@@ -3297,13 +3384,13 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "BevegElse", "Dempet", "Fasett", "Filigran",
-					"Integral", "Ion (lys)", "Ion (mÃ¸rk)", "Retrospekt", "Rutenett",
-					"Sektor (lys)", "Sektor (mÃ¸rk)", "Semafor", "Sidelinje", "Stripet",
+					"Integral", "Ion (lys)", "Ion (mørk)", "Retrospekt", "Rutenett",
+					"Sektor (lys)", "Sektor (mørk)", "Semafor", "Sidelinje", "Stripet",
 					"ViewMaster")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("Alfabet", "Ã…rlig", "Avistrykk", "Austin", "Avlukker",
+					$xArray = ("Alfabet", "Årlig", "Avistrykk", "Austin", "Avlukker",
 					"BevegElse", "Engasjement", "Enkel", "Fliser", "Konservativ",
 					"Kontrast", "Mod", "Perspektiv", "Puslespill", "Rutenett", "Sidelinje",
 					"Smale striper", "Stabler", "Transcenderende")
@@ -3331,17 +3418,17 @@ Function ValidateCoverPage
 		'pt-'	{
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("AnimaÃ§Ã£o", "Austin", "Em Tiras", "ExibiÃ§Ã£o Mestra",
+					$xArray = ("Animação", "Austin", "Em Tiras", "Exibição Mestra",
 					"Faceta", "Fatia (Clara)", "Fatia (Escura)", "Filete", "Filigrana", 
-					"Grade", "Integral", "Ãon (Claro)", "Ãon (Escuro)", "Linha Lateral",
-					"Retrospectiva", "SemÃ¡foro")
+					"Grade", "Integral", "Íon (Claro)", "Íon (Escuro)", "Linha Lateral",
+					"Retrospectiva", "Semáforo")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("Alfabeto", "AnimaÃ§Ã£o", "Anual", "Austero", "Austin", "Baias",
-					"Conservador", "Contraste", "ExposiÃ§Ã£o", "Grade", "Ladrilhos",
+					$xArray = ("Alfabeto", "Animação", "Anual", "Austero", "Austin", "Baias",
+					"Conservador", "Contraste", "Exposição", "Grade", "Ladrilhos",
 					"Linha Lateral", "Listras", "Mod", "Papel Jornal", "Perspectiva", "Pilhas",
-					"Quebra-cabeÃ§a", "Transcend")
+					"Quebra-cabeça", "Transcend")
 				}
 			}
 
@@ -3349,15 +3436,25 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "Band", "Fasett", "Filigran", "Integrerad", "Jon (ljust)",
-					"Jon (mÃ¶rkt)", "Knippe", "RutnÃ¤t", "RÃ¶rElse", "Sektor (ljus)", "Sektor (mÃ¶rk)",
-					"Semafor", "Sidlinje", "VisaHuvudsida", "Ã…terblick")
+					"Jon (mörkt)", "Knippe", "Rutnät", "RörElse", "Sektor (ljus)", "Sektor (mörk)",
+					"Semafor", "Sidlinje", "VisaHuvudsida", "Återblick")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("AlfabetmÃ¶nster", "Austin", "Enkelt", "Exponering", "Konservativt",
-					"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "RutnÃ¤t",
-					"RÃ¶rElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Ã…rligt",
-					"Ã-vergÃ¥ende")
+					$xArray = ("Alfabetmönster", "Austin", "Enkelt", "Exponering", "Konservativt",
+					"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "Rutnät",
+					"RörElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Årligt",
+					"Övergående")
+				}
+			}
+
+		'zh-'	{
+				If($xWordVersion -eq $wdWord2010 -or $xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+				{
+					$xArray = ('奥斯汀', '边线型', '花丝', '怀旧', '积分',
+					'离子(浅色)', '离子(深色)', '母版型', '平面', '切片(浅色)',
+					'切片(深色)', '丝状', '网格', '镶边', '信号灯',
+					'运动型')
 				}
 			}
 
@@ -3412,7 +3509,7 @@ Function CheckWordPrereq
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
 	#Find out if winword is running in our session
-	[bool]$wordrunning = $null -ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$wordrunning = $null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
 		$ErrorActionPreference = $SaveEAPreference
@@ -3492,7 +3589,7 @@ Function FindWordDocumentEnd
 
 Function SetupWord
 {
-	Write-Verbose "$(Get-Date): Setting up Word"
+	Write-Verbose "$(Get-Date -Format G): Setting up Word"
     
 	If(!$AddDateTime)
 	{
@@ -3512,7 +3609,7 @@ Function SetupWord
 	}
 
 	# Setup word for output
-	Write-Verbose "$(Get-Date): Create Word comObject."
+	Write-Verbose "$(Get-Date -Format G): Create Word comObject."
 	$Script:Word = New-Object -comobject "Word.Application" -EA 0 4>$Null
 	
 	If(!$? -or $Null -eq $Script:Word)
@@ -3530,7 +3627,7 @@ Function SetupWord
 		Exit
 	}
 
-	Write-Verbose "$(Get-Date): Determine Word language value"
+	Write-Verbose "$(Get-Date -Format G): Determine Word language value"
 	If( ( validStateProp $Script:Word Language Value__ ) )
 	{
 		[int]$Script:WordLanguageValue = [int]$Script:Word.Language.Value__
@@ -3554,7 +3651,7 @@ Function SetupWord
 		"
 		AbortScript
 	}
-	Write-Verbose "$(Get-Date): Word language value is $($Script:WordLanguageValue)"
+	Write-Verbose "$(Get-Date -Format G): Word language value is $($Script:WordLanguageValue)"
 	
 	$Script:WordCultureCode = GetCulture $Script:WordLanguageValue
 	
@@ -3614,7 +3711,7 @@ Function SetupWord
 	#only validate CompanyName if the field is blank
 	If([String]::IsNullOrEmpty($CompanyName))
 	{
-		Write-Verbose "$(Get-Date): Company name is blank. Retrieve company name from registry."
+		Write-Verbose "$(Get-Date -Format G): Company name is blank. Retrieve company name from registry."
 		$TmpName = ValidateCompanyName
 		
 		If([String]::IsNullOrEmpty($TmpName))
@@ -3629,7 +3726,7 @@ Function SetupWord
 		Else
 		{
 			$Script:CoName = $TmpName
-			Write-Verbose "$(Get-Date): Updated company name to $($Script:CoName)"
+			Write-Verbose "$(Get-Date -Format G): Updated company name to $($Script:CoName)"
 		}
 	}
 	Else
@@ -3639,14 +3736,14 @@ Function SetupWord
 
 	If($Script:WordCultureCode -ne "en-")
 	{
-		Write-Verbose "$(Get-Date): Check Default Cover Page for $($WordCultureCode)"
+		Write-Verbose "$(Get-Date -Format G): Check Default Cover Page for $($WordCultureCode)"
 		[bool]$CPChanged = $False
 		Switch ($Script:WordCultureCode)
 		{
 			'ca-'	{
 					If($CoverPage -eq "Sideline")
 					{
-						$CoverPage = "LÃ­nia lateral"
+						$CoverPage = "Línia lateral"
 						$CPChanged = $True
 					}
 				}
@@ -3670,7 +3767,7 @@ Function SetupWord
 			'es-'	{
 					If($CoverPage -eq "Sideline")
 					{
-						$CoverPage = "LÃ­nea lateral"
+						$CoverPage = "Línea lateral"
 						$CPChanged = $True
 					}
 				}
@@ -3688,12 +3785,12 @@ Function SetupWord
 					{
 						If($Script:WordVersion -eq $wdWord2013 -or $Script:WordVersion -eq $wdWord2016)
 						{
-							$CoverPage = "Lignes latÃ©rales"
+							$CoverPage = "Lignes latérales"
 							$CPChanged = $True
 						}
 						Else
 						{
-							$CoverPage = "Ligne latÃ©rale"
+							$CoverPage = "Ligne latérale"
 							$CPChanged = $True
 						}
 					}
@@ -3730,15 +3827,23 @@ Function SetupWord
 						$CPChanged = $True
 					}
 				}
+
+			'zh-'	{
+					If($CoverPage -eq "Sideline")
+					{
+						$CoverPage = "边线型"
+						$CPChanged = $True
+					}
+				}
 		}
 
 		If($CPChanged)
 		{
-			Write-Verbose "$(Get-Date): Changed Default Cover Page from Sideline to $($CoverPage)"
+			Write-Verbose "$(Get-Date -Format G): Changed Default Cover Page from Sideline to $($CoverPage)"
 		}
 	}
 
-	Write-Verbose "$(Get-Date): Validate cover page $($CoverPage) for culture code $($Script:WordCultureCode)"
+	Write-Verbose "$(Get-Date -Format G): Validate cover page $($CoverPage) for culture code $($Script:WordCultureCode)"
 	[bool]$ValidCP = $False
 	
 	$ValidCP = ValidateCoverPage $Script:WordVersion $CoverPage $Script:WordCultureCode
@@ -3746,8 +3851,8 @@ Function SetupWord
 	If(!$ValidCP)
 	{
 		$ErrorActionPreference = $SaveEAPreference
-		Write-Verbose "$(Get-Date): Word language value $($Script:WordLanguageValue)"
-		Write-Verbose "$(Get-Date): Culture code $($Script:WordCultureCode)"
+		Write-Verbose "$(Get-Date -Format G): Word language value $($Script:WordLanguageValue)"
+		Write-Verbose "$(Get-Date -Format G): Culture code $($Script:WordCultureCode)"
 		Write-Error "
 		`n`n
 		`t`t
@@ -3764,7 +3869,7 @@ Function SetupWord
 
 	#http://jdhitsolutions.com/blog/2012/05/san-diego-2012-powershell-deep-dive-slides-and-demos/
 	#using Jeff's Demo-WordReport.ps1 file for examples
-	Write-Verbose "$(Get-Date): Load Word Templates"
+	Write-Verbose "$(Get-Date -Format G): Load Word Templates"
 
 	[bool]$Script:CoverPagesExist = $False
 	[bool]$BuildingBlocksExist = $False
@@ -3773,7 +3878,7 @@ Function SetupWord
 	#word 2010/2013/2016
 	$BuildingBlocksCollection = $Script:Word.Templates | Where-Object{$_.name -eq "Built-In Building Blocks.dotx"}
 
-	Write-Verbose "$(Get-Date): Attempt to load cover page $($CoverPage)"
+	Write-Verbose "$(Get-Date -Format G): Attempt to load cover page $($CoverPage)"
 	$part = $Null
 
 	$BuildingBlocksCollection | 
@@ -3806,16 +3911,16 @@ Function SetupWord
 
 	If(!$Script:CoverPagesExist)
 	{
-		Write-Verbose "$(Get-Date): Cover Pages are not installed or the Cover Page $($CoverPage) does not exist."
+		Write-Verbose "$(Get-Date -Format G): Cover Pages are not installed or the Cover Page $($CoverPage) does not exist."
 		Write-Host "Cover Pages are not installed or the Cover Page $($CoverPage) does not exist." -Foreground White
 		Write-Host "This report will not have a Cover Page." -Foreground White
 	}
 
-	Write-Verbose "$(Get-Date): Create empty word doc"
+	Write-Verbose "$(Get-Date -Format G): Create empty word doc"
 	$Script:Doc = $Script:Word.Documents.Add()
 	If($Null -eq $Script:Doc)
 	{
-		Write-Verbose "$(Get-Date): "
+		Write-Verbose "$(Get-Date -Format G): "
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Error "
 		`n`n
@@ -3829,7 +3934,7 @@ Function SetupWord
 	$Script:Selection = $Script:Word.Selection
 	If($Null -eq $Script:Selection)
 	{
-		Write-Verbose "$(Get-Date): "
+		Write-Verbose "$(Get-Date -Format G): "
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Error "
 		`n`n
@@ -3845,7 +3950,7 @@ Function SetupWord
 	$Script:Word.ActiveDocument.DefaultTabStop = 36
 
 	#Disable Spell and Grammar Check to resolve issue and improve performance (from Pat Coughlin)
-	Write-Verbose "$(Get-Date): Disable grammar and spell checking"
+	Write-Verbose "$(Get-Date -Format G): Disable grammar and spell checking"
 	#bug reported 1-Apr-2014 by Tim Mangan
 	#save current options first before turning them off
 	$Script:CurrentGrammarOption = $Script:Word.Options.CheckGrammarAsYouType
@@ -3856,16 +3961,16 @@ Function SetupWord
 	If($BuildingBlocksExist)
 	{
 		#insert new page, getting ready for table of contents
-		Write-Verbose "$(Get-Date): Insert new page, getting ready for table of contents"
+		Write-Verbose "$(Get-Date -Format G): Insert new page, getting ready for table of contents"
 		$part.Insert($Script:Selection.Range,$True) | Out-Null
 		$Script:Selection.InsertNewPage()
 
 		#table of contents
-		Write-Verbose "$(Get-Date): Table of Contents - $($Script:MyHash.Word_TableOfContents)"
+		Write-Verbose "$(Get-Date -Format G): Table of Contents - $($Script:MyHash.Word_TableOfContents)"
 		$toc = $BuildingBlocks.BuildingBlockEntries.Item($Script:MyHash.Word_TableOfContents)
 		If($Null -eq $toc)
 		{
-			Write-Verbose "$(Get-Date): "
+			Write-Verbose "$(Get-Date -Format G): "
 			Write-Host "Table of Content - $($Script:MyHash.Word_TableOfContents) could not be retrieved." -Foreground White
 			Write-Host "This report will not have a Table of Contents." -Foreground White
 		}
@@ -3881,11 +3986,11 @@ Function SetupWord
 	}
 
 	#set the footer
-	Write-Verbose "$(Get-Date): Set the footer"
+	Write-Verbose "$(Get-Date -Format G): Set the footer"
 	[string]$footertext = "Report created by $username"
 
 	#get the footer
-	Write-Verbose "$(Get-Date): Get the footer and format font"
+	Write-Verbose "$(Get-Date -Format G): Get the footer and format font"
 	$Script:Doc.ActiveWindow.ActivePane.view.SeekView = $wdSeekPrimaryFooter
 	#get the footer and format font
 	$footers = $Script:Doc.Sections.Last.Footers
@@ -3899,15 +4004,15 @@ Function SetupWord
 			$footer.range.Font.Bold = $True
 		}
 	} #end ForEach
-	Write-Verbose "$(Get-Date): Footer text"
+	Write-Verbose "$(Get-Date -Format G): Footer text"
 	$Script:Selection.HeaderFooter.Range.Text = $footerText
 
 	#add page numbering
-	Write-Verbose "$(Get-Date): Add page numbering"
+	Write-Verbose "$(Get-Date -Format G): Add page numbering"
 	$Script:Selection.HeaderFooter.PageNumbers.Add($wdAlignPageNumberRight) | Out-Null
 
 	FindWordDocumentEnd
-	Write-Verbose "$(Get-Date):"
+	Write-Verbose "$(Get-Date -Format G):"
 	#end of Jeff Hicks 
 }
 
@@ -3916,7 +4021,7 @@ Function UpdateDocumentProperties
 	Param([string]$AbstractTitle, [string]$SubjectTitle)
 	#updated 8-Jun-2017 with additional cover page fields
 	#Update document properties
-	Write-Verbose "$(Get-Date): Set Cover Page Properties"
+	Write-Verbose "$(Get-Date -Format G): Set Cover Page Properties"
 	#8-Jun-2017 put these 4 items in alpha order
 	Set-DocumentProperty -Document $Script:Doc -DocProperty Author -Value $UserName
 	Set-DocumentProperty -Document $Script:Doc -DocProperty Company -Value $Script:CoName
@@ -3968,7 +4073,7 @@ Function UpdateDocumentProperties
 	[string]$abstract = (Get-Date -Format d).ToString()
 	$ab.Text = $abstract
 
-	Write-Verbose "$(Get-Date): Update the Table of Contents"
+	Write-Verbose "$(Get-Date -Format G): Update the Table of Contents"
 	#update the Table of Contents
 	$Script:Doc.TablesOfContents.item(1).Update()
 	$cp = $Null
@@ -5056,7 +5161,7 @@ Function CheckHTMLColor
 
 Function SetupHTML
 {
-	Write-Verbose "$(Get-Date): Setting up HTML"
+	Write-Verbose "$(Get-Date -Format G): Setting up HTML"
 	If(!$AddDateTime)
 	{
 		[string]$Script:HTMLFileName = "$($Script:pwdpath)\$($OutputFileName).html"
@@ -5608,7 +5713,7 @@ Function AbortScript
 	If($MSWord -or $PDF)
 	{
 		$Script:Word.quit()
-		Write-Verbose "$(Get-Date): System Cleanup"
+		Write-Verbose "$(Get-Date -Format G): System Cleanup"
 		[System.Runtime.Interopservices.Marshal]::ReleaseComObject($Script:Word) | Out-Null
 		If(Test-Path variable:global:word)
 		{
@@ -5617,25 +5722,27 @@ Function AbortScript
 	}
 	[gc]::collect() 
 	[gc]::WaitForPendingFinalizers()
-	Write-Verbose "$(Get-Date): Script has been aborted"
+	Write-Verbose "$(Get-Date -Format G): Script has been aborted"
 	$ErrorActionPreference = $SaveEAPreference
 	Exit
 }
 
 Function BuildMultiColumnTable
 {
-	Param([Array]$xArray, [String]$xType)
+	Param([Array]$xArray)
 	
 	#divide by 0 bug reported 9-Apr-2014 by Lee Dehmer 
 	#if security group name or OU name was longer than 60 characters it caused a divide by 0 error
 	
 	#added a second parameter to the Function so the verbose message would say whether 
 	#the Function is processing servers, security groups or OUs.
+	#V3.03, remove the second parameter as it was no longer needed or used
 	
 	If(-not ($xArray -is [Array]))
 	{
 		$xArray = (,$xArray)
 	}
+	
 	[int]$MaxLength = 0
 	[int]$TmpLength = 0
 	#remove 60 as a hard-coded value
@@ -5651,7 +5758,16 @@ Function BuildMultiColumnTable
 	}
 	$TableRange = $doc.Application.Selection.Range
 	#removed hard-coded value of 60 and replace with MaxTableWidth variable
-	[int]$Columns = [Math]::Floor($MaxTableWidth / $MaxLength)
+	#fix in 3.03 if $MaxLength was 0, prevent division by 0
+	If($MaxLength -eq 0)
+	{
+		[int]$Columns = 0
+	}
+	Else
+	{
+		[int]$Columns = [Math]::Floor($MaxTableWidth / $MaxLength)
+	}
+	
 	If($xArray.count -lt $Columns)
 	{
 		[int]$Rows = 1
@@ -5688,12 +5804,16 @@ Function BuildMultiColumnTable
 		{
 			$Table.Cell($xRow,$xCell).Range.Text = $xArray[$ArrayItem]
 			$ArrayItem++
+			If($ArrayItem -eq $xArray.Count) #fix in 3.03 to catch a weird array out of bounds error
+			{
+				Break
+			}
 		}
 		$xRow++
 	}
 	$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
 	$Table.AutoFitBehavior($wdAutoFitContent)
-
+	
 	FindWordDocumentEnd
 	$TableRange = $Null
 	$Table = $Null
@@ -5705,7 +5825,7 @@ Function UserIsaDomainAdmin
 	#Function adapted from sample code provided by Thomas Vuylsteke
 	$IsDA = $False
 	$name = $env:username
-	Write-Verbose "$(Get-Date): TokenGroups - Checking groups for $name"
+	Write-Verbose "$(Get-Date -Format G): `t`tTokenGroups - Checking groups for $name"
 
 	$root = [ADSI]""
 	$filter = "(sAMAccountName=$name)"
@@ -5738,7 +5858,7 @@ Function ElevatedSession
 
 	If($currentPrincipal.IsInRole( [Security.Principal.WindowsBuiltInRole]::Administrator ))
 	{
-		Write-Verbose "$(Get-Date): This is an elevated PowerShell session"
+		Write-Verbose "$(Get-Date -Format G): This is an elevated PowerShell session"
 		Return $True
 	}
 	Else
@@ -5879,7 +5999,7 @@ Function Get-ComputerCountByOS
 
 	$ADSearchBase = $DomainDistinguishedName
 
-	Write-Verbose "$(Get-Date): `t`tGathering computer misc data"
+	Write-Verbose "$(Get-Date -Format G): `t`tGathering computer misc data"
 
 	# Create an LDAP search for all computer objects
 	$ADFilter = '(objectCategory=computer)'
@@ -6510,84 +6630,84 @@ Function Get-ComputerCountByOS
 
 Function ShowScriptOptions
 {
-	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): AddDateTime     : $AddDateTime"
+	Write-Verbose "$(Get-Date -Format G): "
+	Write-Verbose "$(Get-Date -Format G): "
+	Write-Verbose "$(Get-Date -Format G): AddDateTime     : $AddDateTime"
 	If($MSWORD -or $PDF)
 	{
-		Write-Verbose "$(Get-Date): Company Name    : $Script:CoName"
+		Write-Verbose "$(Get-Date -Format G): Company Name    : $Script:CoName"
 	}
-	Write-Verbose "$(Get-Date): ComputerName    : $ComputerName"
+	Write-Verbose "$(Get-Date -Format G): ComputerName    : $ComputerName"
 	If($MSWORD -or $PDF)
 	{
-		Write-Verbose "$(Get-Date): Company Address : $CompanyAddress"
-		Write-Verbose "$(Get-Date): Company Email   : $CompanyEmail"
-		Write-Verbose "$(Get-Date): Company Fax     : $CompanyFax"
-		Write-Verbose "$(Get-Date): Company Phone   : $CompanyPhone"
-		Write-Verbose "$(Get-Date): Cover Page      : $CoverPage"
+		Write-Verbose "$(Get-Date -Format G): Company Address : $CompanyAddress"
+		Write-Verbose "$(Get-Date -Format G): Company Email   : $CompanyEmail"
+		Write-Verbose "$(Get-Date -Format G): Company Fax     : $CompanyFax"
+		Write-Verbose "$(Get-Date -Format G): Company Phone   : $CompanyPhone"
+		Write-Verbose "$(Get-Date -Format G): Cover Page      : $CoverPage"
 	}
-	Write-Verbose "$(Get-Date): DCDNSInfo       : $DCDNSInfo"
-	Write-Verbose "$(Get-Date): Dev             : $Dev"
+	Write-Verbose "$(Get-Date -Format G): DCDNSInfo       : $DCDNSInfo"
+	Write-Verbose "$(Get-Date -Format G): Dev             : $Dev"
 	If($Dev)
 	{
-		Write-Verbose "$(Get-Date): DevErrorFile    : $Script:DevErrorFile"
+		Write-Verbose "$(Get-Date -Format G): DevErrorFile    : $Script:DevErrorFile"
 	}
-	Write-Verbose "$(Get-Date): Domain Name     : $ADDomain"
-	Write-Verbose "$(Get-Date): Elevated        : $Script:Elevated"
+	Write-Verbose "$(Get-Date -Format G): Domain Name     : $ADDomain"
+	Write-Verbose "$(Get-Date -Format G): Elevated        : $Script:Elevated"
 	If($MSWord)
 	{
-		Write-Verbose "$(Get-Date): Word FileName   : $($Script:WordFileName)"
+		Write-Verbose "$(Get-Date -Format G): Word FileName   : $($Script:WordFileName)"
 	}
 	If($HTML)
 	{
-		Write-Verbose "$(Get-Date): HTML FileName   : $($Script:HTMLFileName)"
+		Write-Verbose "$(Get-Date -Format G): HTML FileName   : $($Script:HTMLFileName)"
 	} 
 	If($PDF)
 	{
-		Write-Verbose "$(Get-Date): PDF FileName    : $($Script:PDFFileName)"
+		Write-Verbose "$(Get-Date -Format G): PDF FileName    : $($Script:PDFFileName)"
 	}
 	If($Text)
 	{
-		Write-Verbose "$(Get-Date): Text FileName   : $($Script:TextFileName)"
+		Write-Verbose "$(Get-Date -Format G): Text FileName   : $($Script:TextFileName)"
 	}
-	Write-Verbose "$(Get-Date): Folder          : $Folder"
-	Write-Verbose "$(Get-Date): Forest Name     : $ADForest"
-	Write-Verbose "$(Get-Date): From            : $From"
-	Write-Verbose "$(Get-Date): GPOInheritance  : $GPOInheritance"
-	Write-Verbose "$(Get-Date): HW Inventory    : $Hardware"
-	Write-Verbose "$(Get-Date): IncludeUserInfo : $IncludeUserInfo"
-	Write-Verbose "$(Get-Date): Log             : $($Log)"
-	Write-Verbose "$(Get-Date): MaxDetail       : $MaxDetails"
-	Write-Verbose "$(Get-Date): Save As HTML    : $HTML"
-	Write-Verbose "$(Get-Date): Save As PDF     : $PDF"
-	Write-Verbose "$(Get-Date): Save As TEXT    : $TEXT"
-	Write-Verbose "$(Get-Date): Save As WORD    : $MSWORD"
-	Write-Verbose "$(Get-Date): ScriptInfo      : $ScriptInfo"
-	Write-Verbose "$(Get-Date): Section         : $Section"
-	Write-Verbose "$(Get-Date): Services        : $Services"
-	Write-Verbose "$(Get-Date): Smtp Port       : $SmtpPort"
-	Write-Verbose "$(Get-Date): Smtp Server     : $SmtpServer"
-	Write-Verbose "$(Get-Date): Title           : $Script:Title"
-	Write-Verbose "$(Get-Date): To              : $To"
-	Write-Verbose "$(Get-Date): Use SSL         : $UseSSL"
+	Write-Verbose "$(Get-Date -Format G): Folder          : $Folder"
+	Write-Verbose "$(Get-Date -Format G): Forest Name     : $ADForest"
+	Write-Verbose "$(Get-Date -Format G): From            : $From"
+	Write-Verbose "$(Get-Date -Format G): GPOInheritance  : $GPOInheritance"
+	Write-Verbose "$(Get-Date -Format G): HW Inventory    : $Hardware"
+	Write-Verbose "$(Get-Date -Format G): IncludeUserInfo : $IncludeUserInfo"
+	Write-Verbose "$(Get-Date -Format G): Log             : $($Log)"
+	Write-Verbose "$(Get-Date -Format G): MaxDetail       : $MaxDetails"
+	Write-Verbose "$(Get-Date -Format G): Save As HTML    : $HTML"
+	Write-Verbose "$(Get-Date -Format G): Save As PDF     : $PDF"
+	Write-Verbose "$(Get-Date -Format G): Save As TEXT    : $TEXT"
+	Write-Verbose "$(Get-Date -Format G): Save As WORD    : $MSWORD"
+	Write-Verbose "$(Get-Date -Format G): ScriptInfo      : $ScriptInfo"
+	Write-Verbose "$(Get-Date -Format G): Section         : $Section"
+	Write-Verbose "$(Get-Date -Format G): Services        : $Services"
+	Write-Verbose "$(Get-Date -Format G): Smtp Port       : $SmtpPort"
+	Write-Verbose "$(Get-Date -Format G): Smtp Server     : $SmtpServer"
+	Write-Verbose "$(Get-Date -Format G): Title           : $Script:Title"
+	Write-Verbose "$(Get-Date -Format G): To              : $To"
+	Write-Verbose "$(Get-Date -Format G): Use SSL         : $UseSSL"
 	If($MSWORD -or $PDF)
 	{
-		Write-Verbose "$(Get-Date): User Name       : $UserName"
+		Write-Verbose "$(Get-Date -Format G): User Name       : $UserName"
 	}
-	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): OS Detected     : $Script:RunningOS"
-	Write-Verbose "$(Get-Date): PoSH version    : $($Host.Version)"
-	Write-Verbose "$(Get-Date): PSCulture       : $PSCulture"
-	Write-Verbose "$(Get-Date): PSUICulture     : $PSUICulture"
+	Write-Verbose "$(Get-Date -Format G): "
+	Write-Verbose "$(Get-Date -Format G): OS Detected     : $Script:RunningOS"
+	Write-Verbose "$(Get-Date -Format G): PoSH version    : $($Host.Version)"
+	Write-Verbose "$(Get-Date -Format G): PSCulture       : $PSCulture"
+	Write-Verbose "$(Get-Date -Format G): PSUICulture     : $PSUICulture"
 	If($MSWORD -or $PDF)
 	{
-		Write-Verbose "$(Get-Date): Word language   : $Script:WordLanguageValue"
-		Write-Verbose "$(Get-Date): Word version    : $Script:WordProduct"
+		Write-Verbose "$(Get-Date -Format G): Word language   : $Script:WordLanguageValue"
+		Write-Verbose "$(Get-Date -Format G): Word version    : $Script:WordProduct"
 	}
-	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): Script start    : $Script:StartTime"
-	Write-Verbose "$(Get-Date): "
-	Write-Verbose "$(Get-Date): "
+	Write-Verbose "$(Get-Date -Format G): "
+	Write-Verbose "$(Get-Date -Format G): Script start    : $Script:StartTime"
+	Write-Verbose "$(Get-Date -Format G): "
+	Write-Verbose "$(Get-Date -Format G): "
 }
 
 Function SaveandCloseDocumentandShutdownWord
@@ -6597,7 +6717,7 @@ Function SaveandCloseDocumentandShutdownWord
 	$Script:Word.Options.CheckGrammarAsYouType = $Script:CurrentGrammarOption
 	$Script:Word.Options.CheckSpellingAsYouType = $Script:CurrentSpellingOption
 
-	Write-Verbose "$(Get-Date): Save and Close document and Shutdown Word"
+	Write-Verbose "$(Get-Date -Format G): Save and Close document and Shutdown Word"
 	If($Script:WordVersion -eq $wdWord2010)
 	{
 		#the $saveFormat below passes StrictMode 2
@@ -6605,18 +6725,18 @@ Function SaveandCloseDocumentandShutdownWord
 		#http://msdn.microsoft.com/en-us/library/microsoft.office.interop.word.wdsaveformat(v=office.14).aspx
 		If($PDF)
 		{
-			Write-Verbose "$(Get-Date): Saving as DOCX file first before saving to PDF"
+			Write-Verbose "$(Get-Date -Format G): Saving as DOCX file first before saving to PDF"
 		}
 		Else
 		{
-			Write-Verbose "$(Get-Date): Saving DOCX file"
+			Write-Verbose "$(Get-Date -Format G): Saving DOCX file"
 		}
-		Write-Verbose "$(Get-Date): Running $($Script:WordProduct) and detected operating system $($Script:RunningOS)"
+		Write-Verbose "$(Get-Date -Format G): Running $($Script:WordProduct) and detected operating system $($Script:RunningOS)"
 		$saveFormat = [Enum]::Parse([Microsoft.Office.Interop.Word.WdSaveFormat], "wdFormatDocumentDefault")
 		$Script:Doc.SaveAs([REF]$Script:WordFileName, [ref]$SaveFormat)
 		If($PDF)
 		{
-			Write-Verbose "$(Get-Date): Now saving as PDF"
+			Write-Verbose "$(Get-Date -Format G): Now saving as PDF"
 			$saveFormat = [Enum]::Parse([Microsoft.Office.Interop.Word.WdSaveFormat], "wdFormatPDF")
 			$Script:Doc.SaveAs([REF]$Script:PDFFileName, [ref]$saveFormat)
 		}
@@ -6625,25 +6745,25 @@ Function SaveandCloseDocumentandShutdownWord
 	{
 		If($PDF)
 		{
-			Write-Verbose "$(Get-Date): Saving as DOCX file first before saving to PDF"
+			Write-Verbose "$(Get-Date -Format G): Saving as DOCX file first before saving to PDF"
 		}
 		Else
 		{
-			Write-Verbose "$(Get-Date): Saving DOCX file"
+			Write-Verbose "$(Get-Date -Format G): Saving DOCX file"
 		}
-		Write-Verbose "$(Get-Date): Running $($Script:WordProduct) and detected operating system $($Script:RunningOS)"
+		Write-Verbose "$(Get-Date -Format G): Running $($Script:WordProduct) and detected operating system $($Script:RunningOS)"
 		$Script:Doc.SaveAs2([REF]$Script:WordFileName, [ref]$wdFormatDocumentDefault)
 		If($PDF)
 		{
-			Write-Verbose "$(Get-Date): Now saving as PDF"
+			Write-Verbose "$(Get-Date -Format G): Now saving as PDF"
 			$Script:Doc.SaveAs([REF]$Script:PDFFileName, [ref]$wdFormatPDF)
 		}
 	}
 
-	Write-Verbose "$(Get-Date): Closing Word"
+	Write-Verbose "$(Get-Date -Format G): Closing Word"
 	$Script:Doc.Close()
 	$Script:Word.Quit()
-	Write-Verbose "$(Get-Date): System Cleanup"
+	Write-Verbose "$(Get-Date -Format G): System Cleanup"
 	[System.Runtime.Interopservices.Marshal]::ReleaseComObject($Script:Word) | Out-Null
 	If(Test-Path variable:global:word)
 	{
@@ -6663,14 +6783,14 @@ Function SaveandCloseDocumentandShutdownWord
 	$wordprocess = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}).Id
 	If($null -ne $wordprocess -and $wordprocess -gt 0)
 	{
-		Write-Verbose "$(Get-Date): WinWord process is still running. Attempting to stop WinWord process # $($wordprocess)"
+		Write-Verbose "$(Get-Date -Format G): WinWord process is still running. Attempting to stop WinWord process # $($wordprocess)"
 		Stop-Process $wordprocess -EA 0
 	}
 }
 
 Function SetupText
 {
-	Write-Verbose "$(Get-Date): Setting up Text"
+	Write-Verbose "$(Get-Date -Format G): Setting up Text"
 
 	[System.Text.StringBuilder] $global:Output = New-Object System.Text.StringBuilder( 16384 )
 
@@ -6686,13 +6806,13 @@ Function SetupText
 
 Function SaveandCloseTextDocument
 {
-	Write-Verbose "$(Get-Date): Saving Text file"
+	Write-Verbose "$(Get-Date -Format G): Saving Text file"
 	Write-Output $global:Output.ToString() | Out-File $Script:TextFileName 4>$Null
 }
 
 Function SaveandCloseHTMLDocument
 {
-	Write-Verbose "$(Get-Date): Saving HTML file"
+	Write-Verbose "$(Get-Date -Format G): Saving HTML file"
 	Out-File -FilePath $Script:HTMLFileName -Append -InputObject "<p></p></body></html>" 4>$Null
 }
 
@@ -6724,7 +6844,7 @@ Function SetFilenames
 Function ProcessScriptSetup
 {
 	#If hardware inventory or services are requested, make sure user is running the script with Domain Admin rights
-	Write-Verbose "$(Get-Date): `tTesting to see if $env:username has Domain Admin rights"
+	Write-Verbose "$(Get-Date -Format G): Testing to see if $env:username has Domain Admin rights"
 	
 	$AmIReallyDA = UserIsaDomainAdmin
 	If($AmIReallyDA -eq $True)
@@ -6732,24 +6852,24 @@ Function ProcessScriptSetup
 		#user has Domain Admin rights
 		If($ADDomain -ne "")
 		{
-			Write-Verbose "$(Get-Date): $env:username has Domain Admin rights in the $ADDomain Domain"
+			Write-Verbose "$(Get-Date -Format G): `t$env:username has Domain Admin rights in the $ADDomain Domain"
 		}
 		Else
 		{
-			Write-Verbose "$(Get-Date): $env:username has Domain Admin rights in the $ADForest Forest"
+			Write-Verbose "$(Get-Date -Format G): `t$env:username has Domain Admin rights in the $ADForest Forest"
 		}
 		$Script:DARights = $True
 	}
 	Else
 	{
-		#user does nto have Domain Admin rights
+		#user does not have Domain Admin rights
 		If($ADDomain -ne "")
 		{
-			Write-Verbose "$(Get-Date): $env:username does not have Domain Admin rights in the $ADDomain Domain"
+			Write-Verbose "$(Get-Date -Format G): `t$env:username does not have Domain Admin rights in the $ADDomain Domain"
 		}
 		Else
 		{
-			Write-Verbose "$(Get-Date): $env:username does not have Domain Admin rights in the $ADForest Forest"
+			Write-Verbose "$(Get-Date -Format G): `t$env:username does not have Domain Admin rights in the $ADForest Forest"
 		}
 	}
 	
@@ -6757,18 +6877,19 @@ Function ProcessScriptSetup
 	
 	If($Hardware -or $Services -or $DCDNSInfo)
 	{
-		If($Hardware -and -not $Services)
+		If($Hardware)
 		{
-			Write-Verbose "$(Get-Date): Hardware inventory requested"
+			Write-Verbose "$(Get-Date -Format G): Hardware inventory requested"
 		}
-		If($Services -and -not $Hardware)
+
+		If($Services)
 		{
-			Write-Verbose "$(Get-Date): Services requested"
+			Write-Verbose "$(Get-Date -Format G): Services requested"
 		}
 		
 		If($DCDNSInfo)
 		{
-			Write-Verbose "$(Get-Date): Domain Controller DNS configuration information requested"
+			Write-Verbose "$(Get-Date -Format G): Domain Controller DNS configuration information requested"
 		}
 
 #The following write-host statements should NOT be indented in the code or it messes up how they look in the console when the script runs
@@ -6829,7 +6950,7 @@ please run the script from an elevated PowerShell session using an account with 
 	If($ComputerName -eq "localhost")
 	{
 		$Script:ComputerName = $env:ComputerName
-		Write-Verbose "$(Get-Date): Server name has been changed from localhost to $($ComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Server name has been changed from localhost to $($ComputerName)"
 	}
 	
 	#see if default value of $Env:USERDNSDOMAIN was used
@@ -6841,7 +6962,7 @@ please run the script from an elevated PowerShell session using an account with 
 		If($? -and $Null -ne $Results)
 		{
 			$Script:ComputerName = $Results
-			Write-Verbose "$(Get-Date): Server name has been changed from $Env:USERDNSDOMAIN to $ComputerName"
+			Write-Verbose "$(Get-Date -Format G): Server name has been changed from $Env:USERDNSDOMAIN to $ComputerName"
 		}
 		ElseIf(!$?) #changed for 2.16
 		{
@@ -6851,7 +6972,7 @@ please run the script from an elevated PowerShell session using an account with 
 			If($? -and $Null -ne $Results)
 			{
 				$Script:ComputerName = $Results
-				Write-Verbose "$(Get-Date): Server name has been changed from $Env:USERDNSDOMAIN to $ComputerName"
+				Write-Verbose "$(Get-Date -Format G): Server name has been changed from $Env:USERDNSDOMAIN to $ComputerName"
 			}
 		}
 	}
@@ -6867,7 +6988,7 @@ please run the script from an elevated PowerShell session using an account with 
 		If($? -and $Null -ne $Result)
 		{
 			$Script:ComputerName = $Result.HostName
-			Write-Verbose "$(Get-Date): Server name has been changed from $ip to $ComputerName"
+			Write-Verbose "$(Get-Date -Format G): Server name has been changed from $ip to $ComputerName"
 		}
 		Else
 		{
@@ -6883,11 +7004,12 @@ please run the script from an elevated PowerShell session using an account with 
 	{
 		#get server name
 		#first test to make sure the server is reachable
-		Write-Verbose "$(Get-Date): Testing to see if $ComputerName is online and reachable"
-		If(Test-Connection -ComputerName $ComputerName -quiet -EA 0)
+		Write-Verbose "$(Get-Date -Format G): Testing to see if $ComputerName is online and reachable"
+		#If(Test-Connection -ComputerName $ComputerName -quiet -EA 0)
+		If(Test-NetConnection -ComputerName $ComputerName -Port 88 -InformationLevel Quiet -EA 0) #port 88 is the KDC and is unique to DCs (thanks to Matthew Woolnough)
 		{
-			Write-Verbose "$(Get-Date): Server $ComputerName is online."
-			Write-Verbose "$(Get-Date): `tTest #1 to see if $ComputerName is a Domain Controller."
+			Write-Verbose "$(Get-Date -Format G): `tServer $ComputerName is online."
+			Write-Verbose "$(Get-Date -Format G): `tTest #1 to see if $ComputerName is a Domain Controller."
 			#the server may be online but is it really a domain controller?
 
 			#is the ComputerName in the current domain
@@ -6896,7 +7018,7 @@ please run the script from an elevated PowerShell session using an account with 
 			If(!$? -or $Null -eq $Results)
 			{
 				#try using the Forest name
-				Write-Verbose "$(Get-Date): `tTest #2 to see if $ComputerName is a Domain Controller."
+				Write-Verbose "$(Get-Date -Format G): `tTest #2 to see if $ComputerName is a Domain Controller."
 				$Results = Get-ADDomainController $ComputerName -Server $ADForest -EA 0
 				If(!$?)
 				{
@@ -6914,19 +7036,19 @@ please run the script from an elevated PowerShell session using an account with 
 				}
 				Else
 				{
-					Write-Verbose "$(Get-Date): `tTest #2 succeeded. $ComputerName is a Domain Controller."
+					Write-Verbose "$(Get-Date -Format G): `tTest #2 succeeded. $ComputerName is a Domain Controller."
 				}
 			}
 			Else
 			{
-				Write-Verbose "$(Get-Date): `tTest #1 succeeded. $ComputerName is a Domain Controller."
+				Write-Verbose "$(Get-Date -Format G): `tTest #1 succeeded. $ComputerName is a Domain Controller."
 			}
 			
 			$Results = $Null
 		}
 		Else
 		{
-			Write-Verbose "$(Get-Date): Computer $ComputerName is offline"
+			Write-Verbose "$(Get-Date -Format G): Computer $ComputerName is offline"
 			$ErrorActionPreference = $SaveEAPreference
 			Write-Error "
 			`n`n
@@ -6944,7 +7066,7 @@ please run the script from an elevated PowerShell session using an account with 
 	If($ADForest -ne $ADDomain)
 	{
 		#get forest information so output filename can be generated
-		Write-Verbose "$(Get-Date): Testing to see if $($ADForest) is a valid forest name"
+		Write-Verbose "$(Get-Date -Format G): Testing to see if $($ADForest) is a valid forest name"
 		If([String]::IsNullOrEmpty($ComputerName))
 		{
 			$Script:Forest = Get-ADForest -Identity $ADForest -EA 0
@@ -6986,7 +7108,7 @@ please run the script from an elevated PowerShell session using an account with 
 				Exit
 			}
 		}
-		Write-Verbose "$(Get-Date): $ADForest is a valid forest name"
+		Write-Verbose "$(Get-Date -Format G): `t$ADForest is a valid forest name"
 		[string]$Script:Title = "AD Inventory Report for the $ADForest Forest"
 		$Script:Domains       = $Script:Forest.Domains | Sort-Object 
 		$Script:ConfigNC      = (Get-ADRootDSE -Server $ADForest -EA 0).ConfigurationNamingContext
@@ -6994,6 +7116,7 @@ please run the script from an elevated PowerShell session using an account with 
 	
 	If($ADDomain -ne "")
 	{
+		Write-Verbose "$(Get-Date -Format G): Testing to see if $($ADDomain) is a valid domain name"
 		If([String]::IsNullOrEmpty($ComputerName))
 		{
 			$results = Get-ADDomain -Identity $ADDomain -EA 0
@@ -7035,14 +7158,14 @@ please run the script from an elevated PowerShell session using an account with 
 				Exit
 			}
 		}
-		Write-Verbose "$(Get-Date): $ADDomain is a valid domain name"
+		Write-Verbose "$(Get-Date -Format G): `t$ADDomain is a valid domain name"
 		$Script:Domains       = $results.DNSRoot
 		$Script:DomainDNSRoot = $results.DNSRoot
 		[string]$Script:Title = "AD Inventory Report for the $Script:Domains Domain"
 		
 		$tmp = $results.Forest
 		#get forest info 
-		Write-Verbose "$(Get-Date): Retrieving forest information"
+		Write-Verbose "$(Get-Date -Format G): Retrieving forest information"
 		If([String]::IsNullOrEmpty($ComputerName))
 		{
 			$Script:Forest = Get-ADForest -Identity $tmp -EA 0
@@ -7084,7 +7207,7 @@ please run the script from an elevated PowerShell session using an account with 
 				Exit
 			}
 		}
-		Write-Verbose "$(Get-Date): Found forest information for $tmp"
+		Write-Verbose "$(Get-Date -Format G): `tFound forest information for $tmp"
 		$Script:ConfigNC = (Get-ADRootDSE -Server $tmp -EA 0).ConfigurationNamingContext
 	}
 	
@@ -7100,7 +7223,7 @@ please run the script from an elevated PowerShell session using an account with 
 #region Forest information
 Function ProcessForestInformation
 {
-	Write-Verbose "$(Get-Date): Writing forest data"
+	Write-Verbose "$(Get-Date -Format G): Writing forest data"
 
 	If($MSWORD -or $PDF)
 	{
@@ -7345,7 +7468,6 @@ Function ProcessForestInformation
 		}
 		$tmp = $Null
 
-		Write-Verbose "$(Get-Date): `t`tCreate Forest Word table"
 		$Table = AddWordTable -Hashtable $ScriptInformation `
 		-Columns Data,Value `
 		-List `
@@ -7732,7 +7854,7 @@ Function ProcessAllDCsInTheForest
 			[String] $dn	## distinguishedName of a DC
 		)
 
-		#Write-Verbose "$(Get-Date): `t`t`t$dn"
+		#Write-Verbose "$(Get-Date -Format G): `t`t`t$dn"
 		$DCName  = $dn.SubString( 0, $dn.IndexOf( '.' ) )
 		$SrvName = $dn.SubString( $dn.IndexOf( '.' ) + 1 )
 		## SrvName is actually the domain default naming context, e.g.,
@@ -7780,7 +7902,7 @@ Function ProcessAllDCsInTheForest
 		Return $hash
 	} ## end Function GetBasicDCInfo
 
-	Write-Verbose "$(Get-Date): `tDomain controllers"
+	Write-Verbose "$(Get-Date -Format G): `tDomain controllers"
 
 	$txt = "Domain Controllers"
 	If($MSWORD -or $PDF)
@@ -7802,9 +7924,9 @@ Function ProcessAllDCsInTheForest
 	#2.16 change
 	$ADContext = New-Object System.DirectoryServices.ActiveDirectory.DirectoryContext("forest", $Script:Forest.Name)
 	$Forest2 = [system.directoryservices.activedirectory.Forest]::GetForest($ADContext)
-	Write-Verbose "$(Get-Date): `t`tBuild list of Domain controllers in the Forest"
+	Write-Verbose "$(Get-Date -Format G): `t`tBuild list of Domain controllers in the Forest"
 	$AllDCs = @( $Forest2.domains | ForEach-Object {$_.DomainControllers} | ForEach-Object {$_.Name} )
-	Write-Verbose "$(Get-Date): `t`tSort list of all Domain controllers"
+	Write-Verbose "$(Get-Date -Format G): `t`tSort list of all Domain controllers"
 	$AllDCs = @( $AllDCs | Sort-Object )
 	$ADContext = $Null
 	$Forest2 = $Null
@@ -7894,7 +8016,6 @@ Function ProcessAllDCsInTheForest
 
 	If($MSWord -or $PDF)
 	{
-		Write-Verbose "$(Get-Date): `t`tCreate Domain Controller in Forest Word table"
 		$Table = AddWordTable -Hashtable $WordTableRowHash `
 		-Columns DCName, GC, ReadOnly, ServerOS, ServerCore `
 		-Headers "Name", "Global Catalog", "Read-only", "Server OS", "Server Core" `
@@ -7943,7 +8064,7 @@ Function ProcessAllDCsInTheForest
 #region process CA information
 Function ProcessCAInformation
 {
-	Write-Verbose "$(Get-Date): `tCA Information"
+	Write-Verbose "$(Get-Date -Format G): `tCA Information"
 	
 	$txt = "Certificate Authority Information"
 	If($MSWORD -or $PDF)
@@ -7992,7 +8113,6 @@ Function ProcessCAInformation
 				[System.Collections.Hashtable[]] $ScriptInformation = @()
 				$ScriptInformation += @{ Data = "Common name"; Value = $obj.cn; }
 				$ScriptInformation += @{ Data = "Distinguished name"; Value = $obj.distinguishedName; }
-				Write-Verbose "$(Get-Date): `t`tCreate Certification Authority Root(s) Word table"
 				$Table = AddWordTable -Hashtable $ScriptInformation `
 				-Columns Data,Value `
 				-List `
@@ -8071,7 +8191,7 @@ Function ProcessCAInformation
 		If($HTML)
 		{
 			WriteHTMLLine 0 0 $txt ''
-			WriteHTMLLine 0 0 ' '
+			#WriteHTMLLine 0 0 ' '
 		}
 	}
 
@@ -8123,7 +8243,6 @@ Function ProcessCAInformation
 				[System.Collections.Hashtable[]] $ScriptInformation = @()
 				$ScriptInformation += @{ Data = "Common name"; Value = $obj.cn; }
 				$ScriptInformation += @{ Data = "Distinguished name"; Value = $obj.distinguishedName; }
-				Write-Verbose "$(Get-Date): `t`tCreate CA Authorities Word table"
 				$Table = AddWordTable -Hashtable $ScriptInformation `
 				-Columns Data,Value `
 				-List `
@@ -8205,7 +8324,7 @@ Function ProcessCAInformation
 		}
 	}
 	
-	#if you have enrollment authorities and no roots - that's a BIG error
+	#if you have enrollment authorities and no roots – that’s a BIG error
 	If($AllCnt -gt 0 -and $RootCnt -eq 0)
 	{
 		$txt = "Error: Certification Authority Issuers(s) (also known as Enrollment Agents) exist, but no Certification Authority Root(s) exist"
@@ -8231,7 +8350,7 @@ Function ProcessCAInformation
 #region process ad optional features
 Function ProcessADOptionalFeatures
 {
-	Write-Verbose "$(Get-Date): `tAD Optional Features"
+	Write-Verbose "$(Get-Date -Format G): `tAD Optional Features"
 	
 	$txt = "AD Optional Features"
 	If($MSWORD -or $PDF)
@@ -8286,7 +8405,6 @@ Function ProcessADOptionalFeatures
 						}
 					}
 				}
-				Write-Verbose "$(Get-Date): `t`tCreate AD Optional Features Word table"
 				$Table = AddWordTable -Hashtable $ScriptInformation `
 				-Columns Data,Value `
 				-List `
@@ -8450,7 +8568,7 @@ Function ProcessADSchemaItems
 		)
 	)
 
-	Write-Verbose "$(Get-Date): `tAD Schema Items"
+	Write-Verbose "$(Get-Date -Format G): `tAD Schema Items"
 	
 	$txt = "AD Schema Items"
 	$txt1 = "Just because a schema extension is Present does not mean it is in use."
@@ -8477,7 +8595,7 @@ Function ProcessADSchemaItems
 	$SchemaItems = New-Object System.Collections.ArrayList
 	ForEach( $item in $Name )
 	{
-		Write-Verbose "$(Get-Date): `t`tChecking for $item declared in schema"
+		Write-Verbose "$(Get-Date -Format G): `t`tChecking for $item declared in schema"
 
 		$objDN = 'LDAP://' + 'CN=' + $item + ',' + $schemaNC
 
@@ -8672,7 +8790,7 @@ Function GetSiteLinkOptionText
 
 Function ProcessSiteInformation
 {
-	Write-Verbose "$(Get-Date): Writing sites and services data"
+	Write-Verbose "$(Get-Date -Format G): Writing sites and services data"
 
 	If($MSWORD -or $PDF)
 	{
@@ -8699,7 +8817,7 @@ Function ProcessSiteInformation
 
 	If($? -and $Null -ne $Sites)
 	{
-		Write-Verbose "$(Get-Date): `tProcessing Inter-Site Transports"
+		Write-Verbose "$(Get-Date -Format G): `tProcessing Inter-Site Transports"
 		$AllSiteLinks = Get-ADObject -Searchbase $Script:ConfigNC -Server $ADForest `
 		-Filter 'objectClass -eq "siteLink"' -Property Description, Options, Cost, ReplInterval, SiteList, Schedule -EA 0 `
 		| Select-Object Name, Description, @{Name="SiteCount";Expression={$_.SiteList.Count}}, Cost, ReplInterval, `
@@ -8727,7 +8845,7 @@ Function ProcessSiteInformation
 		{
 			ForEach($SiteLink in $AllSiteLinks)
 			{
-				Write-Verbose "$(Get-Date): `t`tProcessing site link $($SiteLink.Name)"
+				Write-Verbose "$(Get-Date -Format G): `t`tProcessing site link $($SiteLink.Name)"
 				[System.Collections.Hashtable[]] $ScriptInformation = @()
 				$SiteLinkTypeDN = @()
 				$SiteLinkTypeDN = $SiteLink.DistinguishedName.Split(",")
@@ -8776,7 +8894,6 @@ Function ProcessSiteInformation
 					$ScriptInformation += @{ Data = "Options"; Value = $tmp; }
 					$ScriptInformation += @{ Data = "Type"; Value = $SiteLinkType; }
 
-					Write-Verbose "$(Get-Date): `t`t`tCreate Site Links Word table"
 					$Table = AddWordTable -Hashtable $ScriptInformation `
 					-Columns Data,Value `
 					-List `
@@ -8938,7 +9055,7 @@ Function ProcessSiteInformation
 		
 		ForEach($Site in $Sites)
 		{
-			Write-Verbose "$(Get-Date): `tProcessing site $($Site.Name)"
+			Write-Verbose "$(Get-Date -Format G): `tProcessing site $($Site.Name)"
 			If($MSWord -or $PDF)
 			{
 				WriteWordLine 2 0 "Site: " $Site.Name
@@ -8955,7 +9072,7 @@ Function ProcessSiteInformation
 				WriteHTMLLine 3 0 "Subnets"
 			}
 			
-			Write-Verbose "$(Get-Date): `t`tProcessing subnets"
+			Write-Verbose "$(Get-Date -Format G): `t`tProcessing subnets"
 			$subnetArray = New-Object -Type string[] -ArgumentList $Site.siteObjectBL.Count
 			$i = 0
 			$SitesiteObjectBL = $Site.siteObjectBL
@@ -8966,29 +9083,31 @@ Function ProcessSiteInformation
 				$i++
 			}
 			$subnetArray = @( $subnetArray | Sort-Object )
-			If($Null -eq $subnetArray)
+			#Fix in 3.03 to catch an empty array
+			If($Null -eq $subnetArray -or $subnetArray.Count -eq 0)
 			{
 				If($MSWord -or $PDF)
 				{
-					WriteWordLine 0 0 "<None>"
+					WriteWordLine 0 0 "No Subnets linked to this site"
 				}
 				If($Text)
 				{
-					Line 2 "<None>"
+					Line 2 "No Subnets linked to this site"
 					Line 0 ""
 				}
 				If($HTML)
 				{
-					WriteHTMLLine 0 0 "None"
+					WriteHTMLLine 0 0 "No Subnets linked to this site"
 				}
 			}
 			Else
 			{
+				Write-Verbose "$(Get-Date -Format G): `t`t`tSite $( $site.Name ) has $( $subnetArray.Count ) subnets"
 				If($MSWord -or $PDF)
 				{
-					BuildMultiColumnTable $subnetArray "Subnets"
+					BuildMultiColumnTable $subnetArray
 				}
-				If($text)
+				If($Text)
 				{
 					ForEach($xSubnet in $subnetArray)
 					{
@@ -8998,7 +9117,6 @@ Function ProcessSiteInformation
 				}
 				If($HTML)
 				{
-					Write-Verbose "$(Get-Date): `t`tSite $( $site.Name ) has $( $subnetArray.Count ) subnets"
 					$rowdata = New-Object System.Array[] $subnetArray.Count
 					$rowIndx = 0
 
@@ -9016,7 +9134,7 @@ Function ProcessSiteInformation
 				}
 			}
 			
-			Write-Verbose "$(Get-Date): `t`tProcessing servers"
+			Write-Verbose "$(Get-Date -Format G): `t`tProcessing servers"
 			If($MSWord -or $PDF)
 			{
 				WriteWordLine 3 0 "Servers"
@@ -9032,7 +9150,7 @@ Function ProcessSiteInformation
 			$siteName = $Site.Name
 			
 			#build array of connect objects
-			Write-Verbose "$(Get-Date): `t`t`tProcessing automatic connection objects"
+			Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing automatic connection objects"
 			$Connections = New-Object System.Collections.ArrayList
 			$ConnectionObjects = Get-ADObject -Filter 'objectClass -eq "nTDSConnection" -and options -bor 1' -Searchbase $Script:ConfigNC -Property DistinguishedName, fromServer -Server $ADForest -EA 0
 			
@@ -9061,7 +9179,7 @@ Function ProcessSiteInformation
 				}
 			}
 			
-			Write-Verbose "$(Get-Date): `t`t`tProcessing manual connection objects"
+			Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing manual connection objects"
 			$ConnectionObjects = $Null
 			$ConnectionObjects = Get-ADObject -Filter 'objectClass -eq "nTDSConnection" -and -not options -bor 1' -Searchbase $Script:ConfigNC -Property Name, DistinguishedName, fromServer -Server $ADForest -EA 0
 			
@@ -9192,7 +9310,7 @@ Function ProcessSiteInformation
 					If($HTML)
 					{
 						WriteHTMLLine 0 0 $SiteServer.DNSHostName
-						WriteHTMLLine 0 0 " "
+						#WriteHTMLLine 0 0 " "
 						#for each server list each connection object
 						If($Null -ne $Connections)
 						{
@@ -9326,7 +9444,7 @@ Function ProcessSiteInformation
 #region domains
 Function ProcessDomains
 {
-	Write-Verbose "$(Get-Date): Writing domain data"
+	Write-Verbose "$(Get-Date -Format G): Writing domain data"
 
 	If($MSWORD -or $PDF)
 	{
@@ -9385,14 +9503,16 @@ Function ProcessDomains
 	"15325" = "Exchange 2016 CU2";
 	"15326" = "Exchange 2016 CU3/CU4/CU5"; #added in 2.16
 	"15330" = "Exchange 2016 CU6"; #added in 2.16
-	"15332" = "Exchange 2016 CU7 through CU15"; #added in 2.16 and updated in 2.20, updated in 2.22, updated in 2.24
+	"15332" = "Exchange 2016 CU7 through CU18"; #added in 2.16 and updated in 2.20, updated in 2.22, updated in 2.24, updated in 3.02
+	"15333" = "Exchange 2016 CU19"; #added in 3.02
 	"17000" = "Exchange 2019 RTM/CU1"; #added in 2.22, updated in 2.24
-	"17001" = "Exchange 2019 CU2-CU4"; #added in 2.24
+	"17001" = "Exchange 2019 CU2-CU7"; #added in 2.24, updated in 3.02
+	"17002" = "Exchange 2019 CU8"; #added in 3.02
 	}
 
 	ForEach($Domain in $Script:Domains)
 	{
-		Write-Verbose "$(Get-Date): `tProcessing domain $($Domain)"
+		Write-Verbose "$(Get-Date -Format G): `tProcessing domain $($Domain)"
 
 		$DomainInfo = Get-ADDomain -Identity $Domain -EA 0
 
@@ -9521,8 +9641,19 @@ Function ProcessDomains
 			
 			If($Domain -eq $Script:ForestRootDomain)
 			{
-				$ExchangeSchemaInfo = Get-ADObject "cn=ms-exch-schema-version-pt,cn=Schema,cn=Configuration,$($DomainInfo.DistinguishedName)" `
-				-properties rangeupper -Server $Domain -EA 0
+				#try/catch and -LDAPFilter added in 3.03 to suppress the error 
+				#Get-ADObject : Directory object not found
+				#+ ... chemaInfo = Get-ADObject "cn=ms-exch-schema-version-pt,cn=Schema,cn=C ...				
+				try
+				{
+					$ExchangeSchemaInfo = Get-ADObject -LDAPFilter "cn=ms-exch-schema-version-pt,cn=Schema,cn=Configuration,$($DomainInfo.DistinguishedName)" `
+					-properties rangeupper -Server $Domain -EA 0
+				}
+				
+				catch
+				{
+					#do nothing but suppress the error message if Exchange is not installed in the domain
+				}
 
 				If($? -and $Null -ne $ExchangeSchemaInfo)
 				{
@@ -9606,6 +9737,7 @@ Function ProcessDomains
 				$ScriptInformation += @{ Data = "Distinguished name"; Value = $DomainInfo.DistinguishedName; }
 				$ScriptInformation += @{ Data = "DNS root"; Value = $DomainInfo.DNSRoot; }
 				$ScriptInformation += @{ Data = "Domain controllers container"; Value = $DomainInfo.DomainControllersContainer; }
+				$ScriptInformation += @{ Data = "Domain SID"; Value = $DomainInfo.DomainSID; }
 				If(![String]::IsNullOrEmpty($ExchangeSchemaInfo))
 				{
 					$ScriptInformation += @{ Data = "Exchange Schema"; Value = "($($ExchangeSchemaVersion)) - $($ExchangeSchemaVersionName)"; }
@@ -9768,6 +9900,7 @@ Function ProcessDomains
 				Line 1 "Distinguished name`t`t`t: " $DomainInfo.DistinguishedName
 				Line 1 "DNS root`t`t`t`t: " $DomainInfo.DNSRoot
 				Line 1 "Domain controllers container`t`t: " $DomainInfo.DomainControllersContainer
+				Line 1 "Domain SID`t`t`t`t: " $DomainInfo.DomainSID
 				If(![String]::IsNullOrEmpty($ExchangeSchemaInfo))
 				{
 					Line 1 "Exchange Schema`t`t`t`t: ($($ExchangeSchemaVersion)) - $($ExchangeSchemaVersionName)"
@@ -9916,6 +10049,7 @@ Function ProcessDomains
 				$rowdata += @(,('Distinguished name',$htmlsb,$DomainInfo.DistinguishedName,$htmlwhite))
 				$rowdata += @(,('DNS root',$htmlsb,$DomainInfo.DNSRoot,$htmlwhite))
 				$rowdata += @(,('Domain controllers container',$htmlsb,$DomainInfo.DomainControllersContainer,$htmlwhite))
+				$rowdata += @(,('Domain SID',$htmlsb,$DomainInfo.DomainSID,$htmlwhite))
 				If(![String]::IsNullOrEmpty($ExchangeSchemaInfo))
 				{
 					$rowdata += @(,('Exchange Schema',$htmlsb,"($($ExchangeSchemaVersion)) - $($ExchangeSchemaVersionName)",$htmlwhite))
@@ -10005,12 +10139,12 @@ Function ProcessDomains
 				
 				$columnWidths = @("250","300")
 				FormatHTMLTable -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "550"
-				WriteHTMLLine 0 0 ' '
+				#WriteHTMLLine 0 0 ' '
 
 				$rowData = $null
 			}
 
-			Write-Verbose "$(Get-Date): `t`tGetting domain trusts"
+			Write-Verbose "$(Get-Date -Format G): `t`tGetting domain trusts"
 			If($MSWord -or $PDF)
 			{
 				WriteWordLine 3 0 "Domain Trusts"
@@ -10196,7 +10330,7 @@ Function ProcessDomains
 				}
 			}
 			
-			Write-Verbose "$(Get-Date): `t`tProcessing domain controllers"
+			Write-Verbose "$(Get-Date -Format G): `t`tProcessing domain controllers"
 			$DomainControllers = $Null
 			$DomainControllers = Get-ADDomainController -Filter * -Server $DomainInfo.DNSRoot -EA 0 | Sort-Object Name
 			
@@ -10292,7 +10426,7 @@ Function ProcessDomains
 				}
 			}
 
-			Write-Verbose "$(Get-Date): `t`tProcessing Fine Grained Password Policies"
+			Write-Verbose "$(Get-Date -Format G): `t`tProcessing Fine Grained Password Policies"
 			
 			#are FGPP cmdlets available
 			If(Get-Command -Name "Get-ADFineGrainedPasswordPolicy" -ea 0)
@@ -10777,7 +10911,7 @@ Function ProcessDomains
 #region domain controllers
 Function ProcessDomainControllers
 {
-	Write-Verbose "$(Get-Date): Writing domain controller data"
+	Write-Verbose "$(Get-Date -Format G): Writing domain controller data"
 
 	If($MSWORD -or $PDF)
 	{
@@ -10798,7 +10932,7 @@ Function ProcessDomainControllers
 
 	ForEach($DC in $Script:AllDomainControllers)
 	{
-		Write-Verbose "$(Get-Date): `tProcessing domain controller $($DC.name)"
+		Write-Verbose "$(Get-Date -Format G): `tProcessing domain controller $($DC.name)"
 		$FSMORoles = $DC.OperationMasterRoles | Sort-Object 
 		$Partitions = $DC.Partitions | Sort-Object 
 		
@@ -11159,7 +11293,7 @@ Function ProcessDomainControllers
 			
 			$columnWidths = @("175","300")
 			FormatHTMLTable -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "475"
-			WriteHTMLLine 0 0 ' '
+			#WriteHTMLLine 0 0 ' '
 
 			$rowData = $null
 		}
@@ -11175,7 +11309,8 @@ Function ProcessDomainControllers
 		
 		If($Hardware -or $Services -or $DCDNSInfo)
 		{
-			If(Test-Connection -ComputerName $DC.HostName -quiet -EA 0)
+			#If(Test-Connection -ComputerName $DC.HostName -quiet -EA 0)
+			If(Test-NetConnection -ComputerName $ComputerName -Port 88 -InformationLevel Quiet -EA 0) #port 88 is the KDC and is unique to DCs (thanks to Matthew Woolnough)
 			{
 				If($Hardware)
 				{
@@ -11271,7 +11406,7 @@ Function OutputTimeServerRegistryKeys
 		[String] $DCName
 	)
 	
-	Write-Verbose "$(Get-Date): `tTimeServer Registry Keys"
+	Write-Verbose "$(Get-Date -Format G): `t`tTimeServer Registry Keys"
 	#HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W32Time\Config	AnnounceFlags
 	#HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W32Time\Config	MaxNegPhaseCorrection
 	#HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W32Time\Config	MaxPosPhaseCorrection
@@ -11301,7 +11436,7 @@ Function OutputTimeServerRegistryKeys
 		$NtpType = Get-RegistryValue "HKLM:\SYSTEM\CurrentControlSet\Services\W32Time\Parameters" "Type" $DCName
 		$SpecialPollInterval = Get-RegistryValue "HKLM:\SYSTEM\CurrentControlSet\Services\W32Time\TimeProviders\NtpClient" "SpecialPollInterval" $DCName
 		$VMICTimeProviderEnabled = Get-RegistryValue "HKLM:\SYSTEM\CurrentControlSet\Services\W32Time\TimeProviders\VMICTimeProvider" "Enabled" $DCName
-		$NTPSource = w32tm /query /computer:$DCName /source
+		$NTPSource = Invoke-Command -ComputerName $DCName {w32tm /query /computer:$DCName /source}
 	}
 
 	If( $VMICTimeProviderEnabled -eq 'n/a' )
@@ -11443,7 +11578,7 @@ Function OutputADFileLocations
 		[String] $DCName 
 	)
 	
-	Write-Verbose "$(Get-Date): `tAD Database, Logfile and SYSVOL locations"
+	Write-Verbose "$(Get-Date -Format G): `t`tAD Database, Logfile and SYSVOL locations"
 	#HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\NTDS\Parameters	'DSA Database file'
 	#HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\NTDS\Parameters	'Database log files path'
 	#HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters	SysVol
@@ -11453,12 +11588,44 @@ Function OutputADFileLocations
 	{
 		$DSADatabaseFile = ''
 		$DatabaseLogFilesPath = ''
-		$SysVol = ''
+		$Sysvol = ''
+		$SysvolState = 'Unknown'
 	}
 	Else
 	{
 		$DatabaseLogFilesPath = Get-RegistryValue "HKLM:\SYSTEM\CurrentControlSet\Services\NTDS\Parameters" "Database log files path" $DCName
-		$SysVol = Get-RegistryValue "HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters" "SysVol" $DCName
+		$Sysvol = Get-RegistryValue "HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters" "SysVol" $DCName
+
+		$Result = Get-WMIObject -ComputerName $DCName -Namespace "root/microsoftdfs" -Class "dfsrreplicatedfolderinfo" -Filter "ReplicatedFolderName = 'SYSVOL Share'" -EA 0 | Select-Object State
+
+		If($? -and $Null -ne $Result)
+		{
+			$SysvolState  = $Result.State
+
+			#https://docs.microsoft.com/en-us/troubleshoot/windows-server/networking/troubleshoot-missing-sysvol-and-netlogon-shares
+			#The state values can be any of:
+			#0 = Uninitialized
+			#1 = Initialized
+			#2 = Initial Sync
+			#3 = Auto Recovery
+			#4 = Normal
+			#5 = In Error
+
+			Switch($Result.State)
+			{
+				0		{$SysvolState  = "0 = Uninitialized"; Break}
+				1		{$SysvolState  = "1 = Initialized"; Break}
+				2		{$SysvolState  = "2 = Initial Sync"; Break}
+				3		{$SysvolState  = "3 = Auto Recovery"; Break}
+				4		{$SysvolState  = "4 = Normal"; Break}
+				5		{$SysvolState  = "5 = In Error"; Break}
+				Default {$SysvolState  = "Unable to determine the SYSVOL State: $($Result.State)"; Break}
+			}
+		}
+		Else
+		{
+			$SysvolState  = "Unable to determine the SYSVOL State: $($Result.State)"
+		}
 	}
 
 	If( $DSADatabaseFile -and $DSADatabaseFile.Length -gt 0 )
@@ -11481,11 +11648,18 @@ Function OutputADFileLocations
 	{
 		WriteWordLine 3 0 "AD Database, Logfile and SYSVOL Locations"
 		[System.Collections.Hashtable[]] $ScriptInformation = @()
+		$WordHighlightedCells = New-Object System.Collections.ArrayList
+		[int] $CurrentServiceIndex = 5
 		
 		$Scriptinformation += @{ Data = "HKLM:\SYSTEM\CurrentControlSet\Services\NTDS\Parameters\DSA Database file"; Value = $DSADatabaseFile; }
 		$Scriptinformation += @{ Data = "DSA Database file size "; Value = "$($DSADatabaseFileSize) GB"; }
 		$Scriptinformation += @{ Data = "HKLM:\SYSTEM\CurrentControlSet\Services\NTDS\Parameters\Database log files path"; Value = $DatabaseLogFilesPath; }
-		$Scriptinformation += @{ Data = "HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters\SysVol"; Value = $SysVol; }
+		$Scriptinformation += @{ Data = "HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters\SysVol"; Value = $Sysvol; }
+		$Scriptinformation += @{ Data = "SYSVOL State"; Value = $SysvolState; }
+		If($SysvolState -NotLike "4 = Normal")
+		{
+			$WordHighlightedCells.Add(@{ Row = $CurrentServiceIndex; Column = 2; }) > $Null
+		}
 		
 		$Table = AddWordTable -Hashtable $ScriptInformation `
 		-Columns Data,Value `
@@ -11495,6 +11669,10 @@ Function OutputADFileLocations
 
 		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 		SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15
+		If($WordHighlightedCells.Count -gt 0)
+		{
+			SetWordCellFormat -Coordinates $WordHighlightedCells -Table $Table -Bold -BackgroundColor $wdColorRed -Solid;
+		}
 
 		$Table.Columns.Item(1).Width = 350
 		$Table.Columns.Item(2).Width = 130
@@ -11514,6 +11692,14 @@ Function OutputADFileLocations
 		Line 2 "DSA Database file size`t`t`t: $($DSADatabaseFileSize) GB"
 		Line 2 "NTDS\Parameters\Database log files path`t: " $DatabaseLogFilesPath
 		Line 2 "Netlogon\Parameters\SysVol`t`t: " $SysVol
+		If($SysvolState -NotLike "4 = Normal")
+		{
+			Line 2 "SYSVOL State`t`t`t`t: " "***$($SysvolState)***"
+		}
+		Else
+		{
+			Line 2 "SYSVOL State`t`t`t`t: " $SysvolState
+		}
 		Line 0 ""
 	}
 	If($HTML)
@@ -11521,30 +11707,25 @@ Function OutputADFileLocations
 		WriteHTMLLine 3 0 'AD Database, Logfile and SYSVOL Locations'
 
 		#V3.00 pre-allocate rowdata
-		$rowdata = New-Object System.Array[] 3
+		$rowdata = New-Object System.Array[] 4
 
-		$rowdata[ 0 ] = @(
-			'DSA Database file size',  $htmlsb,
-			"$DSADatabaseFileSize GB", $htmlwhite
-		)
+		$columnHeaders = @('HKLM:\SYSTEM\CurrentControlSet\Services\NTDS\Parameters\DSA Database file',$htmlsb,$DSADatabaseFile,$htmlwhite)
+		$rowdata[ 0 ] = @('DSA Database file size',$htmlsb,"$DSADatabaseFileSize GB",$htmlwhite)
+		$rowdata[ 1 ] = @('HKLM:\SYSTEM\CurrentControlSet\Services\NTDS\Parameters\Database log files path',$htmlsb,$DatabaseLogFilesPath,$htmlwhite)
+		$rowdata[ 2 ] = @('HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters\SysVol',$htmlsb,$SysVol,$htmlwhite)
+		If($SysvolState -NotLike "4 = Normal")
+		{
+			$HTMLHighlightedCells = $htmlred
+		}
+		Else
+		{
+			$HTMLHighlightedCells = $htmlwhite
+		} 
+		$rowdata[ 3 ] = @('SYSVOL State',$htmlsb,$SysvolState,$HTMLHighlightedCells)
 
-		$rowdata[ 1 ] = @(
-			'HKLM:\SYSTEM\CurrentControlSet\Services\NTDS\Parameters\Database log files path', $htmlsb,
-			$DatabaseLogFilesPath,                                                             $htmlwhite
-		)
+		$columnWidths  = @( '500', '150' )
 
-		$rowdata[ 2 ] = @(
-			'HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters\SysVol', $htmlsb,
-			$SysVol,                                                              $htmlwhite
-		)
-
-		$columnWidths  = @( '600px', '150px' )
-		$columnHeaders = @(
-			'HKLM:\SYSTEM\CurrentControlSet\Services\NTDS\Parameters\DSA Database file', $htmlsb,
-			$DSADatabaseFile,                                                            $htmlwhite
-		)
-
-		FormatHTMLTable -rowarray $rowdata -columnArray $columnheaders -fixedWidth $columnWidths -tablewidth '750'
+		FormatHTMLTable -rowarray $rowdata -columnArray $columnheaders -fixedWidth $columnWidths -tablewidth '650'
 		WriteHTMLLine 0 0 ''
 
 		$rowData = $null
@@ -11558,7 +11739,7 @@ Function OutputEventLogInfo
 		[String] $DCName 
 	)
 	
-	Write-Verbose "$(Get-Date): `tEvent Log Information"
+	Write-Verbose "$(Get-Date -Format G): `t`tEvent Log Information"
 	$ELInfo = $null ## New-Object System.Collections.ArrayList ## FIXME - make this an array instead of arraylist
 	
 	#V3.00 - note that we are sorted here by name, don't need to sort again later.
@@ -11714,7 +11895,7 @@ Function OutputEventLogInfo
 #region organizational units
 Function ProcessOrganizationalUnits
 {
-	Write-Verbose "$(Get-Date): Writing OU data by Domain"
+	Write-Verbose "$(Get-Date -Format G): Writing OU data by Domain"
 	If($MSWORD -or $PDF)
 	{
 		$Script:selection.InsertNewPage()
@@ -11732,7 +11913,7 @@ Function ProcessOrganizationalUnits
 
 	ForEach($Domain in $Script:Domains)
 	{
-		Write-Verbose "$(Get-Date): `tProcessing domain $($Domain)"
+		Write-Verbose "$(Get-Date -Format G): `tProcessing domain $($Domain)"
 		
 		If(($MSWORD -or $PDF) -and !$First)
 		{
@@ -11830,8 +12011,8 @@ Function ProcessOrganizationalUnits
 		If($MSWORD -or $PDF)
 		{
 			$ItemsWordTable = New-Object System.Collections.ArrayList
-			$HighlightedCells = New-Object System.Collections.ArrayList
-			[int] $CurrentServiceIndex = 2;
+			$WordHighlightedCells = New-Object System.Collections.ArrayList
+			[int] $CurrentServiceIndex = 2
 		}
 		If($Text)
 		{
@@ -11863,7 +12044,7 @@ Function ProcessOrganizationalUnits
 		{
 			$OUCount++
 			$OUDisplayName = $OU.CanonicalName.SubString($OU.CanonicalName.IndexOf("/")+1)
-			Write-Verbose "$(Get-Date): `t`tProcessing OU $($OU.CanonicalName) - OU # $OUCount of $NumOUs"
+			Write-Verbose "$(Get-Date -Format G): `t`tProcessing OU $($OU.CanonicalName) - OU # $OUCount of $NumOUs"
 			
 			#get counts of users, computers and groups in the OU
 			
@@ -11914,7 +12095,7 @@ Function ProcessOrganizationalUnits
 				## Store "to highlight" cell references
 				If($Tmp -eq "No") 
 				{
-					$HighlightedCells.Add(@{ Row = $CurrentServiceIndex; Column = 3; }) > $Null
+					$WordHighlightedCells.Add(@{ Row = $CurrentServiceIndex; Column = 3; }) > $Null
 				}
 				$CurrentServiceIndex++;
 			}
@@ -11941,16 +12122,21 @@ Function ProcessOrganizationalUnits
 			}
 			If($HTML)
 			{
-				$Protected = 'No'
 				If( $OU.ProtectedFromAccidentalDeletion -eq $True )
 				{
 					$Protected = 'Yes'
+					$HTMLHighlightedCells = $htmlwhite
 				}
+				Else
+				{
+					$Protected = 'No'
+					$HTMLHighlightedCells = $htmlred
+				} 
 
 				$rowData[ $rowIndex ] = @(
 					$OUDisplayName,         $htmlwhite,
 					$OU.Created.ToString(), $htmlwhite,
-					$Protected,             $htmlwhite,
+					$Protected,             $HTMLHighlightedCells,
 					$UserCountStr,          $htmlwhite,
 					$ComputerCountStr,      $htmlwhite,
 					$GroupCountStr,         $htmlwhite
@@ -11973,10 +12159,11 @@ Function ProcessOrganizationalUnits
 			-AutoFit $wdAutoFitFixed;
 
 			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
-			## IB - Set the header row format after the SetWordTableAlternateRowColor Function as it will paint the header row!
 			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
-			## IB - Set the required highlighted cells
-			SetWordCellFormat -Coordinates $HighlightedCells -Table $Table -Bold -BackgroundColor $wdColorRed -Solid;
+			If($WordHighlightedCells.Count -gt 0)
+			{
+				SetWordCellFormat -Coordinates $WordHighlightedCells -Table $Table -Bold -BackgroundColor $wdColorRed -Solid;
+			}
 
 			$Table.Columns.Item(1).Width = 125
 			$Table.Columns.Item(2).Width = 100
@@ -12043,7 +12230,7 @@ Function ProcessGroupInformation
 {
 	## FIXME - v3.00 see optimizations applied to getDSUsers
 	
-	Write-Verbose "$(Get-Date): Writing group data"
+	Write-Verbose "$(Get-Date -Format G): Writing group data"
 
 	If($MSWORD -or $PDF)
 	{
@@ -12063,7 +12250,7 @@ Function ProcessGroupInformation
 
 	ForEach($Domain in $Script:Domains)
 	{
-		Write-Verbose "$(Get-Date): `tProcessing groups in domain $($Domain)"
+		Write-Verbose "$(Get-Date -Format G): `tProcessing groups in domain $($Domain)"
 		If(($MSWORD -or $PDF) -and !$First)
 		{
 			#put each domain, starting with the second, on a new page
@@ -12151,7 +12338,7 @@ Function ProcessGroupInformation
 		{
 			#get counts
 			
-			Write-Verbose "$(Get-Date): `t`tGetting counts"
+			Write-Verbose "$(Get-Date -Format G): `t`tGetting counts"
 			
 			[int]$SecurityCount = 0
 			[int]$DistributionCount = 0
@@ -12161,39 +12348,39 @@ Function ProcessGroupInformation
 			[int]$ContactsCount = 0
 			[int]$GroupsWithSIDHistory = 0
 			
-			Write-Verbose "$(Get-Date): `t`t`tSecurity Groups"
+			Write-Verbose "$(Get-Date -Format G): `t`t`tSecurity Groups"
 			$Results = @($groups | Where-Object {$_.groupcategory -eq "Security"})
 			
 			[int]$SecurityCount = $Results.Count
 			
-			Write-Verbose "$(Get-Date): `t`t`tDistribution Groups"
+			Write-Verbose "$(Get-Date -Format G): `t`t`tDistribution Groups"
 			$Results = @($groups | Where-Object {$_.groupcategory -eq "Distribution"})
 			
 			[int]$DistributionCount = $Results.Count
 
-			Write-Verbose "$(Get-Date): `t`t`tGlobal Groups"
+			Write-Verbose "$(Get-Date -Format G): `t`t`tGlobal Groups"
 			$Results = @($groups | Where-Object {$_.groupscope -eq "Global"})
 
 			[int]$GlobalCount = $Results.Count
 
-			Write-Verbose "$(Get-Date): `t`t`tUniversal Groups"
+			Write-Verbose "$(Get-Date -Format G): `t`t`tUniversal Groups"
 			$Results = @($groups | Where-Object {$_.groupscope -eq "Universal"})
 
 			[int]$UniversalCount = $Results.Count
 			
-			Write-Verbose "$(Get-Date): `t`t`tDomain Local Groups"
+			Write-Verbose "$(Get-Date -Format G): `t`t`tDomain Local Groups"
 			$Results = @($groups | Where-Object {$_.groupscope -eq "DomainLocal"})
 
 			[int]$DomainLocalCount = $Results.Count
 
-			Write-Verbose "$(Get-Date): `t`t`tGroups with SID History"
+			Write-Verbose "$(Get-Date -Format G): `t`t`tGroups with SID History"
 			$Results = $Null
 			$Results = @( Get-ADObject -LDAPFilter "(sIDHistory=*)" -Server $Domain -Property objectClass, sIDHistory -EA 0 )
 			$groups  = @( $Results | Where-Object {$_.objectClass -eq 'group'} )
 
 			[int]$GroupsWithSIDHistory = $groups.Count
 
-			Write-Verbose "$(Get-Date): `t`t`tContacts"
+			Write-Verbose "$(Get-Date -Format G): `t`t`tContacts"
 			$Results = $Null
 			$Results = @(Get-ADObject -LDAPFilter "objectClass=Contact" -Server $Domain -EA 0)
 
@@ -12208,7 +12395,7 @@ Function ProcessGroupInformation
 			[string]$GroupsWithSIDHistoryStr = "{0,7:N0}" -f $GroupsWithSIDHistory
 			[string]$ContactsCountStr = "{0,7:N0}" -f $ContactsCount
 			
-			Write-Verbose "$(Get-Date): `t`tBuild groups table"
+			Write-Verbose "$(Get-Date -Format G): `t`tBuild groups table"
 			If($MSWORD -or $PDF)
 			{
 				$TableRange = $Script:doc.Application.Selection.Range
@@ -12321,9 +12508,18 @@ Function ProcessGroupInformation
 				$SchemaAdminsSID = $Null
 			}
 			
-			Write-Verbose "$(Get-Date): `t`tListing domain admins"
+			Write-Verbose "$(Get-Date -Format G): `t`tListing domain admins"
 			$Admins = $Null
-			$Admins = @(Get-ADGroupMember -Identity $DomainAdminsSID -Server $Domain -EA 0)
+			
+			try
+			{
+				$Admins = @(Get-ADGroupMember -Identity $DomainAdminsSID -Server $Domain -EA 0)
+			}
+			
+			catch
+			{
+				#hide error
+			}
 			
 			If($? -and $Null -ne $Admins)
 			{
@@ -12336,7 +12532,7 @@ Function ProcessGroupInformation
 					WriteWordLine 3 0 "Privileged Groups"
 					WriteWordLine 4 0 "Domain Admins ($($AdminsCountStr) members):"
 					$TableRange = $Script:doc.Application.Selection.Range
-					[int]$Columns = 4
+					[int]$Columns = 5
 					[int]$Rows = $AdminsCount + 1
 					[int]$xRow = 1
 					$Table = $Script:doc.Tables.Add($TableRange, $Rows, $Columns)
@@ -12351,11 +12547,13 @@ Function ProcessGroupInformation
 					$Table.Cell($xRow,1).Range.Font.Bold = $True
 					$Table.Cell($xRow,1).Range.Text = "Name"
 					$Table.Cell($xRow,2).Range.Font.Bold = $True
-					$Table.Cell($xRow,2).Range.Text = "Password Last Changed"
+					$Table.Cell($xRow,2).Range.Text = "Domain"
 					$Table.Cell($xRow,3).Range.Font.Bold = $True
-					$Table.Cell($xRow,3).Range.Text = "Password Never Expires"
+					$Table.Cell($xRow,3).Range.Text = "Password Last Changed"
 					$Table.Cell($xRow,4).Range.Font.Bold = $True
-					$Table.Cell($xRow,4).Range.Text = "Account Enabled"
+					$Table.Cell($xRow,4).Range.Text = "Password Never Expires"
+					$Table.Cell($xRow,5).Range.Font.Bold = $True
+					$Table.Cell($xRow,5).Range.Text = "Account Enabled"
 				}
 				If($Text)
 				{
@@ -12383,7 +12581,7 @@ Function ProcessGroupInformation
 						$xRow++
 					}
 					
-					#V3.01 change to use same methos as EA & SA
+					#V3.01 change to use same method as EA & SA
 					$dn = $Admin.distinguishedName
 					$xServer = $dn.SubString( $dn.IndexOf( ',DC=' ) + 1 ).Replace( 'DC=', '' ).Replace( ',', '.' )
 
@@ -12513,12 +12711,39 @@ Function ProcessGroupInformation
 					
 					If($HTML)
 					{
+						If($PasswordLastSet -eq "No Date Set")
+						{
+							$HTMLHighlightedCells1 = $htmlred
+						}
+						Else
+						{
+							$HTMLHighlightedCells1 = $htmlwhite
+						}
+						
+						If($PasswordNeverExpires -eq "True")
+						{
+							$HTMLHighlightedCells2 = $htmlred
+						}
+						Else
+						{
+							$HTMLHighlightedCells2 = $htmlwhite
+						}
+						
+						If($Enabled -eq "False")
+						{
+							$HTMLHighlightedCells3 = $htmlred
+						}
+						Else
+						{
+							$HTMLHighlightedCells3 = $htmlwhite
+						}
+						
 						$rowdata[ $rowIndx ] = @(
 							$UserName,             $htmlwhite,
 							$Domain,               $htmlwhite,
-							$PasswordLastSet,      $htmlwhite,
-							$PasswordNeverExpires, $htmlwhite,
-							$Enabled,              $htmlwhite
+							$PasswordLastSet,      $HTMLHighlightedCells1,
+							$PasswordNeverExpires, $HTMLHighlightedCells2,
+							$Enabled,              $HTMLHighlightedCells3
 						)
 						$rowIndx++
 					}
@@ -12608,9 +12833,17 @@ Function ProcessGroupInformation
 
 			If($Domain -eq $Script:ForestRootDomain)
 			{
-				Write-Verbose "$(Get-Date): `t`tListing enterprise admins"
+				Write-Verbose "$(Get-Date -Format G): `t`tListing enterprise admins"
 			
-				$Admins = @(Get-ADGroupMember -Identity $EnterpriseAdminsSID -Server $Domain -EA 0)
+				try
+				{
+					$Admins = @(Get-ADGroupMember -Identity $EnterpriseAdminsSID -Server $Domain -EA 0)
+				}
+				
+				catch
+				{
+					#hide error
+				}
 				
 				If($? -and $Null -ne $Admins)
 				{
@@ -12799,12 +13032,39 @@ Function ProcessGroupInformation
 						
 						If($HTML)
 						{
+							If($PasswordLastSet -eq "No Date Set")
+							{
+								$HTMLHighlightedCells1 = $htmlred
+							}
+							Else
+							{
+								$HTMLHighlightedCells1 = $htmlwhite
+							}
+							
+							If($PasswordNeverExpires -eq "True")
+							{
+								$HTMLHighlightedCells2 = $htmlred
+							}
+							Else
+							{
+								$HTMLHighlightedCells2 = $htmlwhite
+							}
+							
+							If($Enabled -eq "False")
+							{
+								$HTMLHighlightedCells3 = $htmlred
+							}
+							Else
+							{
+								$HTMLHighlightedCells3 = $htmlwhite
+							}
+							
 							$rowdata[ $rowIndx ] = @(
 								$UserName,             $htmlwhite,
 								$Domain,               $htmlwhite,
-								$PasswordLastSet,      $htmlwhite,
-								$PasswordNeverExpires, $htmlwhite,
-								$Enabled,              $htmlwhite
+								$PasswordLastSet,      $HTMLHighlightedCells1,
+								$PasswordNeverExpires, $HTMLHighlightedCells2,
+								$Enabled,              $HTMLHighlightedCells3
 							)
 							$rowIndx++
 						}
@@ -12903,9 +13163,17 @@ Function ProcessGroupInformation
 			
 			If($Domain -eq $Script:ForestRootDomain)
 			{
-				Write-Verbose "$(Get-Date): `t`tListing schema admins"
+				Write-Verbose "$(Get-Date -Format G): `t`tListing schema admins"
 			
-				$Admins = @(Get-ADGroupMember -Identity $SchemaAdminsSID -Server $Domain -EA 0)
+				try
+				{
+					$Admins = @(Get-ADGroupMember -Identity $SchemaAdminsSID -Server $Domain -EA 0)
+				}
+				
+				catch
+				{
+					#hide error
+				}
 				
 				If($? -and $Null -ne $Admins)
 				{
@@ -13088,12 +13356,39 @@ Function ProcessGroupInformation
 						}
 						If($HTML)
 						{
+							If($PasswordLastSet -eq "No Date Set")
+							{
+								$HTMLHighlightedCells1 = $htmlred
+							}
+							Else
+							{
+								$HTMLHighlightedCells1 = $htmlwhite
+							}
+							
+							If($PasswordNeverExpires -eq "True")
+							{
+								$HTMLHighlightedCells2 = $htmlred
+							}
+							Else
+							{
+								$HTMLHighlightedCells2 = $htmlwhite
+							}
+							
+							If($Enabled -eq "False")
+							{
+								$HTMLHighlightedCells3 = $htmlred
+							}
+							Else
+							{
+								$HTMLHighlightedCells3 = $htmlwhite
+							}
+							
 							$rowdata[ $rowIndx ] = @(
 								$UserName,             $htmlwhite,
 								$Domain,               $htmlwhite,
-								$PasswordLastSet,      $htmlwhite,
-								$PasswordNeverExpires, $htmlwhite,
-								$Enabled,              $htmlwhite
+								$PasswordLastSet,      $HTMLHighlightedCells1,
+								$PasswordNeverExpires, $HTMLHighlightedCells2,
+								$Enabled,              $HTMLHighlightedCells3
 							)
 							$rowIndx++
 						}
@@ -13190,7 +13485,7 @@ Function ProcessGroupInformation
 				}
 			}
 
-			Write-Verbose "$(Get-Date): `t`tListing users with AdminCount=1"
+			Write-Verbose "$(Get-Date -Format G): `t`tListing users with AdminCount=1"
 			$AdminCounts = @(Get-ADUser -LDAPFilter "(admincount=1)"  -Server $Domain -EA 0)
 			
 			If($? -and $Null -ne $AdminCounts)
@@ -13337,11 +13632,38 @@ Function ProcessGroupInformation
 					}
 					If($HTML)
 					{
+						If($PasswordLastSet -eq "No Date Set")
+						{
+							$HTMLHighlightedCells1 = $htmlred
+						}
+						Else
+						{
+							$HTMLHighlightedCells1 = $htmlwhite
+						}
+						
+						If($PasswordNeverExpires -eq "True")
+						{
+							$HTMLHighlightedCells2 = $htmlred
+						}
+						Else
+						{
+							$HTMLHighlightedCells2 = $htmlwhite
+						}
+						
+						If($Enabled -eq "False")
+						{
+							$HTMLHighlightedCells3 = $htmlred
+						}
+						Else
+						{
+							$HTMLHighlightedCells3 = $htmlwhite
+						}
+						
 						$rowdata[ $rowIndx ] = @(
 							$UserName,             $htmlwhite,
-							$PasswordLastSet,      $htmlwhite,
-							$PasswordNeverExpires, $htmlwhite,
-							$Enabled,              $htmlwhite
+							$PasswordLastSet,      $HTMLHighlightedCells1,
+							$PasswordNeverExpires, $HTMLHighlightedCells2,
+							$Enabled,              $HTMLHighlightedCells3
 						)
 						$rowIndx++
 					}
@@ -13431,8 +13753,10 @@ Function ProcessGroupInformation
 				}
 			}
 			
-			Write-Verbose "$(Get-Date): `t`tListing groups with AdminCount=1"
-			$AdminCounts = @(Get-ADGroup -LDAPFilter "(admincount=1)" -Server $Domain -EA 0 | Select-Object Name)
+			Write-Verbose "$(Get-Date -Format G): `t`tListing groups with AdminCount=1"
+			#$AdminCounts = @(Get-ADGroup -LDAPFilter "(admincount=1)" -Server $Domain -EA 0 | Select-Object Name)
+			#Fix in 3.03 where the group name doesn’t match the samAccountName or the distinguishedName
+			$AdminCounts = @(Get-ADGroup -LDAPFilter "(admincount=1)" -Server $Domain -EA 0 | Select-Object Name, distinguishedName)
 			
 			If($? -and $Null -ne $AdminCounts)
 			{
@@ -13472,13 +13796,26 @@ Function ProcessGroupInformation
 				}
 				ForEach($Admin in $AdminCounts)
 				{
-					Write-Verbose "$(Get-Date): `t`t`t$($Admin.Name)"
+					Write-Verbose "$(Get-Date -Format G): `t`t`t$($Admin.Name)"
 					If($MSWord -or $PDF)
 					{
 						$xRow++
 					}
 					
-					[array]$Members = @(Get-ADGroupMember -Identity $Admin.Name -Server $Domain -EA 0 | Sort-Object Name)
+					#Fix in 3.03 where the group name doesn’t match the samAccountName or the distinguishedName
+					#[array]$Members = @(Get-ADGroupMember -Identity $Admin.Name -Server $Domain -EA 0 | Sort-Object Name)
+					
+					try
+					{
+						[array]$Members = @(Get-ADGroupMember -Identity $Admin.distinguishedName -Server $Domain -EA 0 | Sort-Object Name)
+						$GroupError = $False
+					}
+					
+					catch
+					{
+						#hide error from console
+						$GroupError = $True
+					}
 					
 					If($? -and $Null -ne $Members)
 					{
@@ -13494,42 +13831,59 @@ Function ProcessGroupInformation
 					If($MSWord -or $PDF)
 					{
 						$Table.Cell($xRow,1).Range.Text = "$($Admin.Name) ($($MembersCountStr) members)"
-						$MbrStr = ""
-						If($MembersCount -gt 0)
+						If($GroupError)
 						{
-							ForEach($Member in $Members)
+							$Table.Cell($xRow,2).Shading.BackgroundPatternColor = $wdColorRed
+							$Table.Cell($xRow,2).Range.Font.Bold  = $True
+							$Table.Cell($xRow,2).Range.Font.Color = $WDColorBlack
+							$Table.Cell($xRow,2).Range.Text       = "Unable to retrieve group members. Check for orphaned SIDs."
+						}
+						Else
+						{
+							$MbrStr = ""
+							If($MembersCount -gt 0)
 							{
-								$MbrStr += "$($Member.Name)`r"
+								ForEach($Member in $Members)
+								{
+									$MbrStr += "$($Member.Name)`r"
+								}
+								$Table.Cell($xRow,2).Range.Text = $MbrStr
 							}
-							$Table.Cell($xRow,2).Range.Text = $MbrStr
 						}
 					}
 					If($Text)
 					{
 						[string]$MembersCountStr = "{0:N0}" -f $MembersCount
 						Line 2 "Group Name`t: $($Admin.Name) ($($MembersCountStr) members)"
-						$MbrStr = ""
-						If($MembersCount -gt 0)
+						If($GroupError)
 						{
-							Line 2 "Members`t`t: " -NoNewLine
-							$cnt = 0
-							ForEach($Member in $Members)
-							{
-								$cnt++
-								
-								If($cnt -eq 1)
-								{
-									Line 0 $Member.Name
-								}
-								Else
-								{
-									Line 4 "  $($Member.Name)"
-								}
-							}
+							Line 2 "Members`t`t: ***Unable to retrieve group members. Check for orphaned SIDs.***"
 						}
 						Else
 						{
-							Line 2 "Members`t`t: None"
+							$MbrStr = ""
+							If($MembersCount -gt 0)
+							{
+								Line 2 "Members`t`t: " -NoNewLine
+								$cnt = 0
+								ForEach($Member in $Members)
+								{
+									$cnt++
+									
+									If($cnt -eq 1)
+									{
+										Line 0 $Member.Name
+									}
+									Else
+									{
+										Line 4 "  $($Member.Name)"
+									}
+								}
+							}
+							Else
+							{
+								Line 2 "Members`t`t: None"
+							}
 						}
 						Line 0 ""
 					}
@@ -13537,24 +13891,35 @@ Function ProcessGroupInformation
 					{
 						[string]$MembersCountStr = "{0:N0}" -f $MembersCount
 						$GroupName = "$($Admin.Name) ($($MembersCountStr) members)"
-						If($MembersCount -gt 0)
+						If($GroupError)
 						{
-							$first = $GroupName
-							ForEach($Member in $Members)
-							{
-								$rowdata += @(, (
-									$first,       $htmlwhite,
-									$Member.Name, $htmlwhite
-								) )
-								$first = ''
-							}
+							$MbrStr = "Unable to retrieve group members. Check for orphaned SIDs."
+							$rowdata += @(, (
+								$GroupName, $htmlwhite,
+								$MbrStr, $htmlred
+							) )
 						}
 						Else
 						{
-							$rowdata += @(, (
-								$GroupName, $htmlwhite,
-								'empty',  $htmlwhite
-							) )
+							If($MembersCount -gt 0)
+							{
+								$first = $GroupName
+								ForEach($Member in $Members)
+								{
+									$rowdata += @(, (
+										$first,       $htmlwhite,
+										$Member.Name, $htmlwhite
+									) )
+									$first = ''
+								}
+							}
+							Else
+							{
+								$rowdata += @(, (
+									$GroupName, $htmlwhite,
+									'empty',  $htmlwhite
+								) )
+							}
 						}
 					}
 				}
@@ -13646,7 +14011,7 @@ Function ProcessGroupInformation
 #region GPOs by domain
 Function ProcessGPOsByDomain
 {
-	Write-Verbose "$(Get-Date): Writing domain group policy data"
+	Write-Verbose "$(Get-Date -Format G): Writing domain group policy data"
 
 	If($MSWORD -or $PDF)
 	{
@@ -13665,7 +14030,7 @@ Function ProcessGPOsByDomain
 
 	ForEach($Domain in $Script:Domains)
 	{
-		Write-Verbose "$(Get-Date): `tProcessing group policies for domain $($Domain)"
+		Write-Verbose "$(Get-Date -Format G): `tProcessing group policies for domain $($Domain)"
 
 		$DomainInfo = Get-ADDomain -Identity $Domain -EA 0 
 
@@ -13736,7 +14101,7 @@ Function ProcessGPOsByDomain
 			WriteHTMLLine 3 0 "Linked Group Policy Objects" 
 		}
 
-		Write-Verbose "$(Get-Date): `t`tGetting linked GPOs"
+		Write-Verbose "$(Get-Date -Format G): `t`tGetting linked GPOs"
 
 		$LinkedGPOs = @($DomainInfo.LinkedGroupPolicyObjects | Sort-Object)
 		If($Null -eq $LinkedGpos)
@@ -13854,7 +14219,7 @@ Function ProcessGPOsByDomain
 #region group policies by organizational units
 Function ProcessgGPOsByOUOld
 {
-	Write-Verbose "$(Get-Date): Writing Group Policy data by Domain by OU"
+	Write-Verbose "$(Get-Date -Format G): Writing Group Policy data by Domain by OU"
 	If($MSWORD -or $PDF)
 	{
 		$Script:selection.InsertNewPage()
@@ -13872,7 +14237,7 @@ Function ProcessgGPOsByOUOld
 
 	ForEach($Domain in $Script:Domains)
 	{
-		Write-Verbose "$(Get-Date): `tProcessing domain $($Domain)"
+		Write-Verbose "$(Get-Date -Format G): `tProcessing domain $($Domain)"
 		If(($MSWORD -or $PDF) -and !$First)
 		{
 			#put each domain, starting with the second, on a new page
@@ -13921,7 +14286,7 @@ Function ProcessgGPOsByOUOld
 		}
 		
 		#V3.00
-		Write-Verbose "$(Get-Date): `tSearching for all OUs in domain $($Domain)"
+		Write-Verbose "$(Get-Date -Format G): `tSearching for all OUs in domain $($Domain)"
 
 		## FIXME - we get "all OUs for the domain" three times in this script - that needs to be fixed.
 		## [Webster] not really. ProcessGPOsByOUNew and ProcessGPOsByOUOld are separate Functions and never used in the same script run
@@ -13961,11 +14326,14 @@ Function ProcessgGPOsByOUOld
 		[int]$NumOUs = $OUs.Count
 		[int]$OUCount = 0
 
+		#V3.03
+		Write-Verbose "$(Get-Date -Format G): `tThere are $NumOUs OUs in domain $($Domain)"
+
 		ForEach($OU in $OUs)
 		{
 			$OUCount++
 			$OUDisplayName = $OU.CanonicalName.SubString($OU.CanonicalName.IndexOf("/")+1)
-			Write-Verbose "$(Get-Date): `t`tProcessing OU $($OU.CanonicalName) - OU # $OUCount of $NumOUs"
+			Write-Verbose "$(Get-Date -Format G): `t`tProcessing OU $($OU.CanonicalName) - OU # $OUCount of $NumOUs"
 			
 			#V3.00 FIXME MAYBE???? LinkedGroupPolicyObjects
 			#get data for the individual OU
@@ -14012,7 +14380,7 @@ Function ProcessgGPOsByOUOld
 				Continue
 			}
 	
-			Write-Verbose "$(Get-Date): `t`t`tGetting linked GPOs"
+			Write-Verbose "$(Get-Date -Format G): `t`t`tGetting linked GPOs"
 			[array]$LinkedGPOs = $OUInfo.LinkedGroupPolicyObjects
 			If($LinkedGpos.Count -eq 0)
 			{
@@ -14134,7 +14502,7 @@ Function ProcessgGPOsByOUOld
 
 Function ProcessgGPOsByOUNew
 {
-	Write-Verbose "$(Get-Date): Writing Group Policy data by Domain by OU"
+	Write-Verbose "$(Get-Date -Format G): Writing Group Policy data by Domain by OU"
 	If($MSWORD -or $PDF)
 	{
 		$Script:selection.InsertNewPage()
@@ -14152,7 +14520,7 @@ Function ProcessgGPOsByOUNew
 
 	ForEach($Domain in $Script:Domains)
 	{
-		Write-Verbose "$(Get-Date): `tProcessing domain $($Domain)"
+		Write-Verbose "$(Get-Date -Format G): `tProcessing domain $($Domain)"
 		If(($MSWORD -or $PDF) -and !$First)
 		{
 			#put each domain, starting with the second, on a new page
@@ -14201,7 +14569,7 @@ Function ProcessgGPOsByOUNew
 		}
 
 		#V3.00
-		Write-Verbose "$(Get-Date): `tSearching for all OUs in domain $($Domain)"
+		Write-Verbose "$(Get-Date -Format G): `tSearching for all OUs in domain $($Domain)"
 
 		#get all OUs for the domain
 		$OUs = @(Get-ADOrganizationalUnit -Filter * -Server $Domain `
@@ -14252,14 +14620,14 @@ Function ProcessgGPOsByOUNew
 		[int]$OUCount = 0
 
 		#V3.00
-		Write-Verbose "$(Get-Date): `tThere are $NumOUs OUs in domain $($Domain)"
+		Write-Verbose "$(Get-Date -Format G): `tThere are $NumOUs OUs in domain $($Domain)"
 
 		ForEach($OU in $OUs)
 		{
 			$OUCount++
 			$OUDisplayName = $OU.CanonicalName.SubString($OU.CanonicalName.IndexOf("/")+1)
-			Write-Verbose "$(Get-Date): `t`tProcessing OU $($OU.CanonicalName) - OU # $OUCount of $NumOUs"
-			Write-Verbose "$(Get-Date): `t`t`tGetting linked and inherited GPOs"
+			Write-Verbose "$(Get-Date -Format G): `t`tProcessing OU $($OU.CanonicalName) - OU # $OUCount of $NumOUs"
+			Write-Verbose "$(Get-Date -Format G): `t`t`tGetting linked and inherited GPOs"
 
 			#change for 2.16
 			#work around invalid property DisplayName when the gpolinks and inheritedgpolinks collections are empty
@@ -14483,6 +14851,8 @@ Function getDSUsers
     )
 
 	[Int64] $script:MaxPasswordAge = $null
+
+
 	[Object] $domainADSI = $null
 
 	Function GetMaximumPasswordAge
@@ -14506,14 +14876,31 @@ Function getDSUsers
 		### Using ConvertLargeIntegerToInt64 takes the COM object and converts 
 		### it into a native .Net type.
 
-		[Int64] $script:MaxPasswordAge = $domainADSI.ConvertLargeIntegerToInt64( $domainADSI.maxPwdAge.Value )
+		#[Int64] $script:MaxPasswordAge = $domainADSI.ConvertLargeIntegerToInt64( $domainADSI.maxPwdAge.Value )
 
 		### Convert to days
 		### 	there are 86,400 seconds per day (24 * 60 * 60)
-		### 	there are 10,000,000 nanoseconds per second
+		### there are 10,000,00 100 nanosecond units per second
+		### https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-filetime
+
+		#Update for 3.03 from MBS
 
 		[Int64] $script:MaxPasswordAge = ( -$MaxPasswordAge / ( 86400 * 10000000 ) )
+		
+		If( $script:MaxPasswordAge -eq [Int64]::MinValue )
+		{
+			### there is no defined maximum password age group policy
+			$script:MaxPasswordAge = -1
+		}
+		Else
+		{
+			### Convert to days
+			###     there are 86,400 seconds per day (24 * 60 * 60)
+			###     there are 10,000,000 100 nanosecond units per second
+			### https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-filetime
 
+			[Int64] $script:MaxPasswordAge = ( -$MaxPasswordAge / ( 86400 * 10000000 ) )
+		}
 		Return $MaxPasswordAge
 	}
 
@@ -14539,7 +14926,7 @@ Function getDSUsers
 	$null         = GetMaximumPasswordAge
 	$now          = Get-Date
 
-    Write-Verbose "$(Get-Date): `t`tGathering user misc data"
+    Write-Verbose "$(Get-Date -Format G): `t`tGathering user misc data #1"
 
     ## see MBS Get-myUserInfo.ps1 for the full list
     $ADS_UF_ACCOUNTDISABLE                          = 2        ### 0x2
@@ -14610,20 +14997,20 @@ Function getDSUsers
 
     If( $ctUsers -eq 0 )
     {
-        Write-Verbose "$(Get-Date): `t`tNo users found, exiting"
+        Write-Verbose "$(Get-Date -Format G): `t`tNo users found, exiting"
 
         Return
     }
 
     If( $ctUsers -gt 50000 )
     {
-        Write-Verbose "$(Get-Date): `t`t`t******************************************************************************************************"
-        Write-Verbose "$(Get-Date): `t`t`tThere are $ctUsers user accounts to process. Building user lists will take a long time. Be patient."
-        Write-Verbose "$(Get-Date): `t`t`t******************************************************************************************************"
+        Write-Verbose "$(Get-Date -Format G): `t`t`t******************************************************************************************************"
+        Write-Verbose "$(Get-Date -Format G): `t`t`tThere are $ctUsers user accounts to process. Building user lists will take a long time. Be patient."
+        Write-Verbose "$(Get-Date -Format G): `t`t`t******************************************************************************************************"
     }
     Else
     {
-        Write-Verbose "$(Get-Date): Processing $ctUsers user objects in the $domain Domain..."        
+        Write-Verbose "$(Get-Date -Format G): Processing $ctUsers user objects in the $domain Domain..."        
     }
     
     $ctUsersDisabled              = 0
@@ -14638,6 +15025,7 @@ Function getDSUsers
     $ctHomeDrive                  = 0
     $ctPrimaryGroup               = 0
     $ctRDSHomeDrive               = 0
+	$ctOrphanedFSPs               = 0
 
     $ctActiveUsers                = 0
     $ctActivePasswordExpired      = 0
@@ -14659,6 +15047,7 @@ Function getDSUsers
     $listHomeDrive            = New-Object System.Collections.Generic.List[PsCustomObject]
     $listPrimaryGroup         = New-Object System.Collections.Generic.List[PsCustomObject]
     $listRDSHomeDrive         = New-Object System.Collections.Generic.List[PsCustomObject]
+    $listOrphanedFSPs         = New-Object System.Collections.Generic.List[PsCustomObject]
 
 ##$global:colResults = $colresults
 
@@ -14669,7 +15058,7 @@ Function getDSUsers
         $ctIndex++
         If( ( $ctIndex % 5000 ) -eq 0 )
         {
-            Write-Verbose "$(Get-Date): about to process user $ctIndex of $ctUsers"
+            Write-Verbose "$(Get-Date -Format G): about to process user $ctIndex of $ctUsers"
         }
 
         $distinguishedname  = If( $null -ne ( $obj = $objResult.Properties[ 'distinguishedname' ] ) -and $obj.Count -gt 0 ) 
@@ -14744,7 +15133,7 @@ Function getDSUsers
 			{
 				$passwordExpired = $true
 			}
-			Else
+			ElseIf( $script:MaxPasswordAge -ge 0 )
 			{
 				$pls = If( $null -ne ( $obj = $objResult.Properties[ 'pwdlastset' ] ) -and $obj.Count -gt 0 ) 
 					{ $obj.Item( 0 ) } Else { $null }
@@ -14923,32 +15312,68 @@ Function getDSUsers
         }
     }
 
-    Write-Verbose "$(Get-Date): `t`tGetDSUsers main processing done"
+    Write-Verbose "$(Get-Date -Format G): `t`tGetDSUsers main processing done"
+	
+	#FSP added in 3.03
+    Write-Verbose "$(Get-Date -Format G): `t`tProcessing Orphaned Foreign Security Principals"
+	
+	#https://powershell.org/forums/topic/foreign-security-principals/
+
+	# Get a list of FSPs
+	$results = Get-ADObject -Filter { objectClass -eq "foreignSecurityPrincipal" } -Properties memberof | Sort-Object Name
+	ForEach($result in $results)
+	{
+		
+		$TranslatedName = $null
+		try 
+		{
+			$TranslatedName = ([System.Security.Principal.SecurityIdentifier] $result.Name).Translate([System.Security.Principal.NTAccount])
+		}
+		catch 
+		{
+			$TranslatedName = "Orphaned"
+			
+			#only need the orphans
+			$FSPGroups = ""
+			ForEach($Group in $Result.MemberOf)
+			{
+				$FSPGroups += $Group
+			}
+			$obj = [PSCustomObject] @{
+				Name           = $Result.Name
+				TranslatedName = $TranslatedName
+				Groups         = $FSPGroups
+			}
+			$listOrphanedFSPs.Add($obj) > $Null
+		}
+	}
+
+	$ctOrphanedFSPs = $listOrphanedFSPs.Count
 
     <#
-	Write-Verbose "$(Get-Date): ctUsers                $ctUsers"
-    Write-Verbose "$(Get-Date): ctUsersDisabled        $ctUsersDisabled"
-    Write-Verbose "$(Get-Date): ctUsersUnknown         $ctUsersUnknown"
-    Write-Verbose "$(Get-Date): ctUsersLockedOut       $ctUsersLockedOut"
-    Write-Verbose "$(Get-Date): ctPasswordExpired      $ctPasswordExpired"
-    Write-Verbose "$(Get-Date): ctPasswordNeverExpires $ctPasswordNeverExpires"
-    Write-Verbose "$(Get-Date): ctPasswordNotRequired  $ctPasswordNotRequired"
-    Write-Verbose "$(Get-Date): ctCannotChangePassword $ctCannotChangePassword"
-    Write-Verbose "$(Get-Date): ctNolastLogonTimestamp $ctNolastLogonTimestamp"
-    Write-Verbose "$(Get-Date): ctHasSIDHistory        $ctHasSIDHistory"
-    Write-Verbose "$(Get-Date): ctHomeDrive            $ctHomeDrive"
-    Write-Verbose "$(Get-Date): ctPrimaryGroup         $ctPrimaryGroup"
-    Write-Verbose "$(Get-Date): ctRDSHomeDrive         $ctRDSHomeDrive"
+	Write-Verbose "$(Get-Date -Format G): ctUsers                $ctUsers"
+    Write-Verbose "$(Get-Date -Format G): ctUsersDisabled        $ctUsersDisabled"
+    Write-Verbose "$(Get-Date -Format G): ctUsersUnknown         $ctUsersUnknown"
+    Write-Verbose "$(Get-Date -Format G): ctUsersLockedOut       $ctUsersLockedOut"
+    Write-Verbose "$(Get-Date -Format G): ctPasswordExpired      $ctPasswordExpired"
+    Write-Verbose "$(Get-Date -Format G): ctPasswordNeverExpires $ctPasswordNeverExpires"
+    Write-Verbose "$(Get-Date -Format G): ctPasswordNotRequired  $ctPasswordNotRequired"
+    Write-Verbose "$(Get-Date -Format G): ctCannotChangePassword $ctCannotChangePassword"
+    Write-Verbose "$(Get-Date -Format G): ctNolastLogonTimestamp $ctNolastLogonTimestamp"
+    Write-Verbose "$(Get-Date -Format G): ctHasSIDHistory        $ctHasSIDHistory"
+    Write-Verbose "$(Get-Date -Format G): ctHomeDrive            $ctHomeDrive"
+    Write-Verbose "$(Get-Date -Format G): ctPrimaryGroup         $ctPrimaryGroup"
+    Write-Verbose "$(Get-Date -Format G): ctRDSHomeDrive         $ctRDSHomeDrive"
 
-    Write-Verbose "$(Get-Date): ctActiveUsers                $ctActiveUsers"
-    Write-Verbose "$(Get-Date): ctActivePasswordExpired      $ctActivePasswordExpired"
-    Write-Verbose "$(Get-Date): ctActivePasswordNeverExpires $ctActivePasswordNeverExpires"
-    Write-Verbose "$(Get-Date): ctActivePasswordNotRequired  $ctActivePasswordNotRequired"
-    Write-Verbose "$(Get-Date): ctActiveCannotChangePassword $ctActiveCannotChangePassword"
-    Write-Verbose "$(Get-Date): ctActiveNolastLogonTimestamp $ctActiveNolastLogonTimestamp"
+    Write-Verbose "$(Get-Date -Format G): ctActiveUsers                $ctActiveUsers"
+    Write-Verbose "$(Get-Date -Format G): ctActivePasswordExpired      $ctActivePasswordExpired"
+    Write-Verbose "$(Get-Date -Format G): ctActivePasswordNeverExpires $ctActivePasswordNeverExpires"
+    Write-Verbose "$(Get-Date -Format G): ctActivePasswordNotRequired  $ctActivePasswordNotRequired"
+    Write-Verbose "$(Get-Date -Format G): ctActiveCannotChangePassword $ctActiveCannotChangePassword"
+    Write-Verbose "$(Get-Date -Format G): ctActiveNolastLogonTimestamp $ctActiveNolastLogonTimestamp"
 
-    Write-Verbose "$(Get-Date): `t`tGetDSUsers end"
-    Write-Verbose "$(Get-Date): `t`tFormat numbers into strings"
+    Write-Verbose "$(Get-Date -Format G): `t`tGetDSUsers end"
+    Write-Verbose "$(Get-Date -Format G): `t`tFormat numbers into strings"
 	#>
 
     ## I pre-format the numbers because all 3 of the output formats were doing
@@ -14972,6 +15397,7 @@ Function getDSUsers
     [String] $strHomeDrive                  = $fs -f $ctHomeDrive
     [String] $strPrimaryGroup               = $fs -f $ctPrimaryGroup
     [String] $strRDSHomeDrive               = $fs -f $ctRDSHomeDrive
+    [String] $strOrphanedFSPs               = $fs -f $ctOrphanedFSPs
 
     [String] $strActiveUsers                = $fs -f $ctActiveUsers
     [String] $strActivePasswordExpired      = $fs -f $ctActivePasswordExpired
@@ -15009,19 +15435,20 @@ Function getDSUsers
     If( $Text )
     {
         lx 0 'All Users'
-        lx 1 'Total Users                 ' $strUsers
-        lx 1 'Who are unknown*            ' $strUsersUnknown         ', ' $pctUsersUnknown
-        lx 1 'Who are disabled            ' $strUsersDisabled        ', ' $pctUsersDisabled
-        lx 1 'Who are locked out          ' $strUsersLockedOut       ', ' $pctUsersLockedOut
-        lx 1 'With password expired       ' $strPasswordExpired      ', ' $pctPasswordExpired
-        lx 1 'With password never expires ' $strPasswordNeverExpires ', ' $pctPasswordNeverExpires
-        lx 1 'With password not required  ' $strPasswordNotRequired  ', ' $pctPasswordNotRequired
-        lx 1 'Who cannot change password  ' $strCannotChangePassword ', ' $pctCannotChangePassword
-        lx 1 'Who have never logged on    ' $strNolastLogonTimestamp ', ' $pctNolastLogonTimestamp
-        lx 1 'Who have SID history        ' $strHasSIDHistory        ', ' $pctHasSIDHistory
-        lx 1 'Who have a homedrive        ' $strHomeDrive            ', ' $pctHomeDrive
-        lx 1 'Who have a primary group    ' $strPrimaryGroup         ', ' $pctPrimaryGroup
-        lx 1 'Who have a RDS homedrive    ' $strRDSHomeDrive         ', ' $pctRDSHomeDrive
+        lx 1 'Total Users                             ' $strUsers
+        lx 1 'Who are unknown*                        ' $strUsersUnknown         ', ' $pctUsersUnknown
+        lx 1 'Who are disabled                        ' $strUsersDisabled        ', ' $pctUsersDisabled
+        lx 1 'Who are locked out                      ' $strUsersLockedOut       ', ' $pctUsersLockedOut
+        lx 1 'With password expired                   ' $strPasswordExpired      ', ' $pctPasswordExpired
+        lx 1 'With password never expires             ' $strPasswordNeverExpires ', ' $pctPasswordNeverExpires
+        lx 1 'With password not required              ' $strPasswordNotRequired  ', ' $pctPasswordNotRequired
+        lx 1 'Who cannot change password              ' $strCannotChangePassword ', ' $pctCannotChangePassword
+        lx 1 'Who have never logged on                ' $strNolastLogonTimestamp ', ' $pctNolastLogonTimestamp
+        lx 1 'Who have SID history                    ' $strHasSIDHistory        ', ' $pctHasSIDHistory
+        lx 1 'Who have a homedrive                    ' $strHomeDrive            ', ' $pctHomeDrive
+        lx 1 'Who have a primary group                ' $strPrimaryGroup         ', ' $pctPrimaryGroup
+        lx 1 'Who have a RDS homedrive                ' $strRDSHomeDrive         ', ' $pctRDSHomeDrive
+        lx 1 'Orphaned Foreign Security Principals    ' $strOrphanedFSPs         ', ' " N/A"
         lx 0
         lx 1 '* Unknown users are user accounts with no UserAccountControl property.'
         lx 1 '  This should not occur.'
@@ -15044,7 +15471,7 @@ Function getDSUsers
     }
 	If($HTML)
 	{
-		Write-Verbose "$(Get-Date): `t`tBuild table for All Users"
+		Write-Verbose "$(Get-Date -Format G): `t`tBuild table for All Users"
 		WriteHTMLLine 3 0 'All Users'
 		#V3.00 pre-allocate rowdata
 		## $rowdata = @()
@@ -15122,6 +15549,12 @@ Function getDSUsers
 			$pctRDSHomeDrive,           $htmlwhite
 		)
 
+		$rowdata[ 11 ] = @(
+			'Orphaned Foreign Security Principals', $htmlsb,
+			 $strOrphanedFSPs,           $htmlwhite,
+			"N/A",           $htmlwhite
+		)
+
 		$columnWidths = @( '300px', '75px', '125px' )
 		$columnHeaders = @(
 			'Total Users', $htmlsb,
@@ -15142,7 +15575,7 @@ Function getDSUsers
 			WriteHTMLLine 0 0 "* This may be a permissions issue if this is a Trusted Forest." -options $htmlBold
 		}
 		
-		Write-Verbose "$(Get-Date): `t`tBuild table for Active Users"
+		Write-Verbose "$(Get-Date -Format G): `t`tBuild table for Active Users"
 		WriteHTMLLine 3 0 "Active Users"
 
 		#V3.00 pre-allocate rowdata
@@ -15197,7 +15630,7 @@ Function getDSUsers
 	}
 	If($MSWORD -or $PDF)
 	{
-		Write-Verbose "$(Get-Date): `t`tBuild table for All Users"
+		Write-Verbose "$(Get-Date -Format G): `t`tBuild table for All Users"
 		WriteWordLine 3 0 'All Users'
 		$TableRange   = $Script:doc.Application.Selection.Range
 		[int]$Columns = 3
@@ -15310,6 +15743,14 @@ Function getDSUsers
 		$Table.Cell(13,3).Range.ParagraphFormat.Alignment = $wdAlignParagraphRight
 		$Table.Cell(13,3).Range.Text = $pctRDSHomeDrive
 
+		$Table.Cell(14,1).Shading.BackgroundPatternColor = $wdColorGray15
+		$Table.Cell(14,1).Range.Font.Bold = $True
+		$Table.Cell(14,1).Range.Text = "Orphaned Foreign Security Principals"
+		$Table.Cell(14,2).Range.ParagraphFormat.Alignment = $wdAlignParagraphRight
+		$Table.Cell(14,2).Range.Text = $strOrphanedFSPs
+		$Table.Cell(14,3).Range.ParagraphFormat.Alignment = $wdAlignParagraphRight
+		$Table.Cell(14,3).Range.Text = "N/A"
+
 		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
 		$Table.AutoFitBehavior($wdAutoFitContent)
 
@@ -15331,7 +15772,7 @@ Function getDSUsers
 			WriteWordLine 0 0 "* This may be a permissions issue if this is a Trusted Forest." "" $Null 8 $False $True
 		}
 		
-		Write-Verbose "$(Get-Date): `t`tBuild table for Active Users"
+		Write-Verbose "$(Get-Date -Format G): `t`tBuild table for Active Users"
 		WriteWordLine 3 0 "Active Users"
 		$TableRange   = $Script:doc.Application.Selection.Range
 		[int]$Columns = 3
@@ -15461,6 +15902,11 @@ Function getDSUsers
 			OutputRDSHDUserInfo $listRDSHomeDrive 'All users with RDS HomeDrive set in ADUC'
 		}
 
+		If($ctOrphanedFSPs -gt 0)
+		{
+			OutputFSPUserInfo $listOrphanedFSPs 'Orphaned Foreign Security Principals'
+		}
+
 	}
 
 	$script:MaxPasswordAge = $null
@@ -15468,12 +15914,12 @@ Function getDSUsers
     #$script_end = Get-Date
     #$script_delta = $script_end - $script_begin
 	#$elapsed = 'Elapsed: ' + $script_delta.Hours.ToString() + '.' + $script_delta.Minutes.ToString() + '.' + $script_delta.Seconds.ToString()
-	#Write-Verbose "$(Get-Date):`tEnd GetDSusers TrustedDomain $TrustedDomain, Elapsed $elapsed"
+	#Write-Verbose "$(Get-Date -Format G):`tEnd GetDSusers TrustedDomain $TrustedDomain, Elapsed $elapsed"
 }
 
 Function ProcessMiscDataByDomain
 {
-	Write-Verbose "$(Get-Date): Writing miscellaneous data by domain"
+	Write-Verbose "$(Get-Date -Format G): Writing miscellaneous data by domain"
 
 	If($MSWORD -or $PDF)
 	{
@@ -15493,7 +15939,7 @@ Function ProcessMiscDataByDomain
 
 	ForEach($Domain in $Script:Domains)
 	{
-		Write-Verbose "$(Get-Date): `tProcessing misc data for domain $($Domain)"
+		Write-Verbose "$(Get-Date -Format G): `tProcessing misc data for domain $($Domain)"
 
 		$DomainInfo = Get-ADDomain -Identity $Domain -EA 0 
 
@@ -15561,7 +16007,7 @@ Function ProcessMiscDataByDomain
 			WriteHTMLLine 2 0 "///&nbsp;&nbsp;$($txt)&nbsp;&nbsp;\\\"
 		}
 
-		Write-Verbose "$(Get-Date): `t`tGathering user misc data"
+		Write-Verbose "$(Get-Date -Format G): `t`tGathering user misc data #2"
 		
 		getDSUsers $Domain
 
@@ -15581,7 +16027,7 @@ Function OutputUserInfo
 		[String] $title
 	)
 	
-	Write-Verbose "$(Get-Date): `t`t`t`tOutput $($title)"
+	Write-Verbose "$(Get-Date -Format G): `t`t`t`tOutput $($title)"
 	$Users = $Users | Sort-Object samAccountName
 	
 	If($MSWORD -or $PDF)
@@ -15680,7 +16126,7 @@ Function OutputHDUserInfo
 		[string] $title
 	)
 	
-	Write-Verbose "$(Get-Date): `t`t`t`tOutput $($title)"
+	Write-Verbose "$(Get-Date -Format G): `t`t`t`tOutput $($title)"
 	$Users = $Users | Sort-Object samAccountName
 	
 	If($MSWORD -or $PDF)
@@ -15799,7 +16245,7 @@ Function OutputPGUserInfo
 		[string] $title
 	)
 	
-	Write-Verbose "$(Get-Date): `t`t`t`tOutput $($title)"
+	Write-Verbose "$(Get-Date -Format G): `t`t`t`tOutput $($title)"
 	$Users = $Users | Sort-Object samAccountName
 	
 	If($MSWORD -or $PDF)
@@ -15903,7 +16349,7 @@ Function OutputRDSHDUserInfo
 		[string] $title
 	)
 
-	Write-Verbose "$(Get-Date): `t`t`t`tOutput $($title)"
+	Write-Verbose "$(Get-Date -Format G): `t`t`t`tOutput $($title)"
 	$Users = $Users | Sort-Object samAccountName
 	
 	If( $Users -and $Users.Length -gt 0 )
@@ -16012,6 +16458,105 @@ Function OutputRDSHDUserInfo
 		$rowdata = $null
 	}
 } ## end Function OutputRDSHDUserInfo
+
+Function OutputFSPUserInfo
+{
+	#new for 3.03
+	Param
+	(
+		[Object[]] $Users, 
+		[string] $title
+	)
+
+	Write-Verbose "$(Get-Date -Format G): `t`t`t`tOutput $($title)"
+	$Users = $Users | Sort-Object Name
+	
+	If( $Users -and $Users.Length -gt 0 )
+	{
+		$arrayLength = $Users.Length
+	}
+	Else
+	{
+		$arrayLength = 0
+	}
+
+	If($MSWORD -or $PDF)
+	{
+		[System.Collections.Hashtable[]] $UsersWordTable = @()
+
+		WriteWordLine 4 0 ( $title + ' (' + $arrayLength.ToString() + ')' )
+
+		ForEach($User in $Users)
+		{
+			$WordTableRowHash = @{
+				Name   = $User.Name; 
+				Groups = $User.Groups
+			}
+
+			## Add the hash to the array
+			$UsersWordTable += $WordTableRowHash
+		}
+		
+		## Add the table to the document, using the hashtable
+		$Table = AddWordTable -Hashtable $UsersWordTable `
+		-Columns Name, Groups `
+		-Headers "Name", "Groups" `
+		-Format $wdTableGrid `
+		-AutoFit $wdAutoFitFixed;
+
+		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
+		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+		$Table.Columns.Item(1).Width = 250;
+		$Table.Columns.Item(2).Width = 250;
+
+		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
+
+		FindWordDocumentEnd
+		$Table = $Null
+		WriteWordLine 0 0 ""
+	}
+	If($Text)
+	{
+		Line 0 ( $title + ' (' + $arrayLength.ToString() + ')' )
+		Line 0 ""
+
+		ForEach($User in $Users)
+		{
+			Line 1 "Name`t: " $User.Name
+			Line 1 "Groups`t: " $User.Groups
+			Line 0 ""
+		}
+	}
+	If($HTML)
+	{
+		#V3.00 pre-allocate rowdata
+		## $rowdata = @()
+		WriteHTMLLine 4 0 ( $title + ' (' + $arrayLength.ToString() + ')' )
+		$rowdata  = New-Object System.Array[] $arrayLength
+		$rowIndex = 0
+		
+		ForEach($User in $Users)
+		{
+			$rowdata[ $rowIndex ] = @(
+				$User.Name,$htmlwhite,
+				$User.Groups,$htmlwhite
+			)
+			$rowIndex++
+		}
+
+		$columnWidths  = @( '400', '300')
+		$columnHeaders = @(
+			'Name',   $htmlsb,
+			'Groups', $htmlsb
+		)
+
+		FormatHTMLTable -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth '700'
+		WriteHTMLLine 0 0 ''
+
+		$rowdata = $null
+	}
+} ## end Function OutputFPSUserInfo
 #endregion
 
 #region DCDNSInfo
@@ -16053,8 +16598,8 @@ Function ProcessDCDNSInfo
 		Return
 	}
 	## Domain Controller DNS IP Configuration
-	Write-Verbose "$(Get-Date): Create Domain Controller DNS IP Configuration"
-	Write-Verbose "$(Get-Date): `tAdd Domain Controller DNS IP Configuration table to doc"
+	Write-Verbose "$(Get-Date -Format G): Create Domain Controller DNS IP Configuration"
+	Write-Verbose "$(Get-Date -Format G): `tAdd Domain Controller DNS IP Configuration table to doc"
 	
 	## sort by site then by DC
 	$xDCDNSIPInfo = @( $Script:DCDNSIPInfo | Sort-Object DCSite, DCName )
@@ -16177,8 +16722,8 @@ Function ProcessDCDNSInfo
 		$columnHeaders = $null
 	}
 
-	Write-Verbose "$(Get-Date): Finished Create Domain Controller DNS IP Configuration"
-	Write-Verbose "$(Get-Date): "
+	Write-Verbose "$(Get-Date -Format G): Finished Create Domain Controller DNS IP Configuration"
+	Write-Verbose "$(Get-Date -Format G): "
 } ## end Function ProcessDCDNSInfo
 #endregion
 
@@ -16222,8 +16767,8 @@ Function ProcessTimeServerInfo
 		Return
 	}
 	
-	Write-Verbose "$(Get-Date): Create Domain Controller Time Server Configuration"
-	Write-Verbose "$(Get-Date): `tAdd Domain Controller Time Server Configuration table to doc"
+	Write-Verbose "$(Get-Date -Format G): Create Domain Controller Time Server Configuration"
+	Write-Verbose "$(Get-Date -Format G): `tAdd Domain Controller Time Server Configuration table to doc"
 	
 	#sort by DC
 	$xTimeServerInfo = $Script:TimeServerInfo | Sort-Object DCName
@@ -16282,14 +16827,14 @@ Function ProcessTimeServerInfo
 		ForEach( $Item in $xTimeServerInfo )
 		{
 			Line 1 "DC Name`t`t`t: "            $Item.DCName
-			Line 1 "Time source`t`t: "          $Item.TimeSource
-			Line 1 "Announce flags`t`t: "       $Item.AnnounceFlags
-			Line 1 "Max Neg Phase Correction: " $Item.MaxNegPhaseCorrection
-			Line 1 "Max Pos Phase Correction: " $Item.MaxPosPhaseCorrection
-			Line 1 "NTP Server`t`t: "           $Item.NtpServer
-			Line 1 "Type`t`t`t: "               $Item.NtpType
-			Line 1 "Special Poll Interval`t: "  $Item.SpecialPollInterval
-			Line 1 "VMIC Time Provider`t: "     $Item.VMICTimeProvider
+			Line 2 "Time source`t`t: "          $Item.TimeSource
+			Line 2 "Announce flags`t`t: "       $Item.AnnounceFlags
+			Line 2 "Max Neg Phase Correction: " $Item.MaxNegPhaseCorrection
+			Line 2 "Max Pos Phase Correction: " $Item.MaxPosPhaseCorrection
+			Line 2 "NTP Server`t`t: "           $Item.NtpServer
+			Line 2 "Type`t`t`t: "               $Item.NtpType
+			Line 2 "Special Poll Interval`t: "  $Item.SpecialPollInterval
+			Line 2 "VMIC Time Provider`t: "     $Item.VMICTimeProvider
 			Line 0 ''
 		}
 	}
@@ -16343,8 +16888,8 @@ Function ProcessTimeServerInfo
 		WriteHTMLLine 0 0 ''
 	}
 
-	Write-Verbose "$(Get-Date): Finished Create Domain Controller Time Server Configuration"
-	Write-Verbose "$(Get-Date): "
+	Write-Verbose "$(Get-Date -Format G): Finished Create Domain Controller Time Server Configuration"
+	Write-Verbose "$(Get-Date -Format G): "
 }
 #endregion
 
@@ -16388,8 +16933,8 @@ Function ProcessEventLogInfo
 		Return
 	}
 	
-	Write-Verbose "$(Get-Date): Create Domain Controller Event Log Data"
-	Write-Verbose "$(Get-Date): `tAdd Domain Controller Event Log Data table to doc"
+	Write-Verbose "$(Get-Date -Format G): Create Domain Controller Event Log Data"
+	Write-Verbose "$(Get-Date -Format G): `tAdd Domain Controller Event Log Data table to doc"
 	
 	#sort by DC and then event log name
 	$xEventLogInfo = @($Script:DCEventLogInfo | Sort-Object EventLogName, DCName)
@@ -16480,8 +17025,8 @@ Function ProcessEventLogInfo
 		WriteHTMLLine 0 0 ''
 	}
 
-	Write-Verbose "$(Get-Date): Finished Create Domain Controller Event Log Data"
-	Write-Verbose "$(Get-Date): "
+	Write-Verbose "$(Get-Date -Format G): Finished Create Domain Controller Event Log Data"
+	Write-Verbose "$(Get-Date -Format G): "
 }
 #endregion
 
@@ -16507,7 +17052,7 @@ Function ProcessDocumentOutput
 	{
 		If(Test-Path "$($Script:WordFileName)")
 		{
-			Write-Verbose "$(Get-Date): $($Script:WordFileName) is ready for use"
+			Write-Verbose "$(Get-Date -Format G): $($Script:WordFileName) is ready for use"
 			$GotFile = $True
 		}
 		Else
@@ -16520,7 +17065,7 @@ Function ProcessDocumentOutput
 	{
 		If(Test-Path "$($Script:PDFFileName)")
 		{
-			Write-Verbose "$(Get-Date): $($Script:PDFFileName) is ready for use"
+			Write-Verbose "$(Get-Date -Format G): $($Script:PDFFileName) is ready for use"
 			$GotFile = $True
 		}
 		Else
@@ -16533,7 +17078,7 @@ Function ProcessDocumentOutput
 	{
 		If(Test-Path "$($Script:TextFileName)")
 		{
-			Write-Verbose "$(Get-Date): $($Script:TextFileName) is ready for use"
+			Write-Verbose "$(Get-Date -Format G): $($Script:TextFileName) is ready for use"
 			$GotFile = $True
 		}
 		Else
@@ -16546,7 +17091,7 @@ Function ProcessDocumentOutput
 	{
 		If(Test-Path "$($Script:HTMLFileName)")
 		{
-			Write-Verbose "$(Get-Date): $($Script:HTMLFileName) is ready for use"
+			Write-Verbose "$(Get-Date -Format G): $($Script:HTMLFileName) is ready for use"
 			$GotFile = $True
 		}
 		Else
@@ -16591,11 +17136,11 @@ Function ProcessScriptStart
 #region script end
 Function ProcessScriptEnd
 {
-	Write-Verbose "$(Get-Date): Script has completed"
-	Write-Verbose "$(Get-Date): "
+	Write-Verbose "$(Get-Date -Format G): Script has completed"
+	Write-Verbose "$(Get-Date -Format G): "
 
-	Write-Verbose "$(Get-Date): Script started: $($Script:StartTime)"
-	Write-Verbose "$(Get-Date): Script ended: $(Get-Date)"
+	Write-Verbose "$(Get-Date -Format G): Script started: $($Script:StartTime)"
+	Write-Verbose "$(Get-Date -Format G): Script ended: $(Get-Date)"
 	$runtime = $(Get-Date) - $Script:StartTime
 	$Str = [string]::format("{0} days, {1} hours, {2} minutes, {3}.{4} seconds",
 		$runtime.Days,
@@ -16603,7 +17148,7 @@ Function ProcessScriptEnd
 		$runtime.Minutes,
 		$runtime.Seconds,
 		$runtime.Milliseconds)
-	Write-Verbose "$(Get-Date): Elapsed time: $($Str)"
+	Write-Verbose "$(Get-Date -Format G): Elapsed time: $($Str)"
 
 	If($Dev)
 	{
@@ -16705,15 +17250,15 @@ Function ProcessScriptEnd
 			try 
 			{
 				Stop-Transcript | Out-Null
-				Write-Verbose "$(Get-Date): $Script:LogPath is ready for use"
+				Write-Verbose "$(Get-Date -Format G): $Script:LogPath is ready for use"
 			} 
 			catch 
 			{
-				Write-Verbose "$(Get-Date): Transcript/log stop failed"
+				Write-Verbose "$(Get-Date -Format G): Transcript/log stop failed"
 			}
 		}
 	}
-	$ErrorActionPreference = $SaveEAPreference
+	#$ErrorActionPreference = $SaveEAPreference
 }
 #endregion
 
@@ -16726,9 +17271,9 @@ Function ProcessGCCollect
 		[String] $tag
 	)
 
-	#Write-Verbose "$(Get-Date): Begin [GC]::Collect, tag = '$tag'"
+	#Write-Verbose "$(Get-Date -Format G): Begin [GC]::Collect, tag = '$tag'"
 	[System.GC]::Collect()
-	#Write-Verbose "$(Get-Date): End [GC]::Collect"
+	#Write-Verbose "$(Get-Date -Format G): End [GC]::Collect"
 }
 #endregion
 
@@ -16820,7 +17365,7 @@ If(($Section -eq "All" -or $Section -eq "Domains"))
 #endregion
 
 #region finish script
-Write-Verbose "$(Get-Date): Finishing up document"
+Write-Verbose "$(Get-Date -Format G): Finishing up document"
 #end of document processing
 
 If(($MSWORD -or $PDF) -and ($Script:CoverPagesExist))

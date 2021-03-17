@@ -1151,18 +1151,18 @@ Function SetWordHashTable
 	[string]$toc = $(
 		Switch ($CultureCode)
 		{
-			'ca-'	{ 'Taula automÃƒÂ¡tica 2'; Break }
+			'ca-'	{ 'Taula automática 2'; Break }
 			'da-'	{ 'Automatisk tabel 2'; Break }
 			'de-'	{ 'Automatische Tabelle 2'; Break }
 			'en-'	{ 'Automatic Table 2'; Break }
-			'es-'	{ 'Tabla automÃƒÂ¡tica 2'; Break }
+			'es-'	{ 'Tabla automática 2'; Break }
 			'fi-'	{ 'Automaattinen taulukko 2'; Break }
-			'fr-'	{ 'Table automatiqueÃ‚Â 2'; Break } #changed 13-feb-2017 david roquier and samuel legrand
+			'fr-'	{ 'Table automatique 2'; Break } #changed 13-feb-2017 david roquier and samuel legrand
 			'nb-'	{ 'Automatisk tabell 2'; Break }
 			'nl-'	{ 'Automatische inhoudsopgave 2'; Break }
-			'pt-'	{ 'SumÃƒÂ¡rio AutomÃƒÂ¡tico 2'; Break }
-			# fix in 2.23 thanks to Johan Kallio 'sv-'	{ 'Automatisk innehÃƒÂ¥llsfÃƒÂ¶rteckning2'; Break }
-			'sv-'	{ 'Automatisk innehÃƒÂ¥llsfÃƒÂ¶rteckn2'; Break }
+			'pt-'	{ 'Sumário Automático 2'; Break }
+			# fix in 2.23 thanks to Johan Kallio 'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
+			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
 		}
 	)
 
@@ -1234,78 +1234,78 @@ Function ValidateCoverPage
 	Switch ($CultureCode)
 	{
 		'ca-'	{
-				If($xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
-					"Integral", "IÃ³ (clar)", "IÃ³ (fosc)", "LÃ­nia lateral",
-					"Moviment", "QuadrÃ­cula", "Retrospectiu", "Sector (clar)",
-					"Sector (fosc)", "SemÃ for", "VisualitzaciÃ³ principal", "Whisp")
-				}
-				ElseIf($xWordVersion -eq $wdWord2013)
-				{
-					$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
-					"Integral", "IÃ³ (clar)", "IÃ³ (fosc)", "LÃ­nia lateral",
-					"Moviment", "QuadrÃ­cula", "Retrospectiu", "Sector (clar)",
-					"Sector (fosc)", "SemÃ for", "VisualitzaciÃ³", "Whisp")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Alfabet", "Anual", "Austin", "Conservador",
-					"Contrast", "Cubicles", "DiplomÃ tic", "ExposiciÃ³",
-					"LÃ­nia lateral", "Mod", "Mosiac", "Moviment", "Paper de diari",
-					"Perspectiva", "Piles", "QuadrÃ­cula", "Sobri",
-					"Transcendir", "Trencaclosques")
-				}
-			}
+            If($xWordVersion -eq $wdWord2016)
+            {
+                $xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
+                "Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
+                "Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
+                "Sector (fosc)", "Semàfor", "Visualització principal", "Whisp")
+            }
+            ElseIf($xWordVersion -eq $wdWord2013)
+            {
+                $xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
+                "Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
+                "Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
+                "Sector (fosc)", "Semàfor", "Visualització", "Whisp")
+            }
+            ElseIf($xWordVersion -eq $wdWord2010)
+            {
+                $xArray = ("Alfabet", "Anual", "Austin", "Conservador",
+                "Contrast", "Cubicles", "Diplomàtic", "Exposició",
+                "Línia lateral", "Mod", "Mosiac", "Moviment", "Paper de diari",
+                "Perspectiva", "Piles", "Quadrícula", "Sobri",
+                "Transcendir", "Trencaclosques")
+            }
+        }
 
-		'da-'	{
-				If($xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "BevÃ¦gElse", "Brusen", "Facet", "Filigran", 
-					"Gitter", "Integral", "Ion (lys)", "Ion (mÃ¸rk)", 
-					"Retro", "Semafor", "Sidelinje", "Stribet", 
-					"Udsnit (lys)", "Udsnit (mÃ¸rk)", "Visningsmaster")
-				}
-				ElseIf($xWordVersion -eq $wdWord2013)
-				{
-					$xArray = ("BevÃ¦gElse", "Brusen", "Ion (lys)", "Filigran",
-					"Retro", "Semafor", "Visningsmaster", "Integral",
-					"Facet", "Gitter", "Stribet", "Sidelinje", "Udsnit (lys)",
-					"Udsnit (mÃ¸rk)", "Ion (mÃ¸rk)", "Austin")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("BevÃ¦gElse", "Moderat", "Perspektiv", "Firkanter",
-					"Overskrid", "Alfabet", "Kontrast", "Stakke", "Fliser", "GÃ¥de",
-					"Gitter", "Austin", "Eksponering", "Sidelinje", "Enkel",
-					"NÃ¥lestribet", "Ã…rlig", "Avispapir", "Tradionel")
-				}
-			}
+    'da-'	{
+            If($xWordVersion -eq $wdWord2016)
+            {
+                $xArray = ("Austin", "BevægElse", "Brusen", "Facet", "Filigran", 
+                "Gitter", "Integral", "Ion (lys)", "Ion (mørk)", 
+                "Retro", "Semafor", "Sidelinje", "Stribet", 
+                "Udsnit (lys)", "Udsnit (mørk)", "Visningsmaster")
+            }
+            ElseIf($xWordVersion -eq $wdWord2013)
+            {
+                $xArray = ("BevægElse", "Brusen", "Ion (lys)", "Filigran",
+                "Retro", "Semafor", "Visningsmaster", "Integral",
+                "Facet", "Gitter", "Stribet", "Sidelinje", "Udsnit (lys)",
+                "Udsnit (mørk)", "Ion (mørk)", "Austin")
+            }
+            ElseIf($xWordVersion -eq $wdWord2010)
+            {
+                $xArray = ("BevægElse", "Moderat", "Perspektiv", "Firkanter",
+                "Overskrid", "Alfabet", "Kontrast", "Stakke", "Fliser", "Gåde",
+                "Gitter", "Austin", "Eksponering", "Sidelinje", "Enkel",
+                "Nålestribet", "Årlig", "Avispapir", "Tradionel")
+            }
+        }
 
-		'de-'	{
-				If($xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "Bewegung", "Facette", "Filigran", 
-					"GebÃ¤ndert", "Integral", "Ion (dunkel)", "Ion (hell)", 
-					"Pfiff", "Randlinie", "Raster", "RÃ¼ckblick", 
-					"Segment (dunkel)", "Segment (hell)", "Semaphor", 
-					"ViewMaster")
-				}
-				ElseIf($xWordVersion -eq $wdWord2013)
-				{
-					$xArray = ("Semaphor", "Segment (hell)", "Ion (hell)",
-					"Raster", "Ion (dunkel)", "Filigran", "RÃ¼ckblick", "Pfiff",
-					"ViewMaster", "Segment (dunkel)", "Verbunden", "Bewegung",
-					"Randlinie", "Austin", "Integral", "Facette")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Alphabet", "Austin", "Bewegung", "Durchscheinend",
-					"Herausgestellt", "JÃ¤hrlich", "Kacheln", "Kontrast", "Kubistisch",
-					"Modern", "Nadelstreifen", "Perspektive", "Puzzle", "Randlinie",
-					"Raster", "Schlicht", "Stapel", "Traditionell", "Zeitungspapier")
-				}
-			}
+    'de-'	{
+            If($xWordVersion -eq $wdWord2016)
+            {
+                $xArray = ("Austin", "Bewegung", "Facette", "Filigran", 
+                "Gebändert", "Integral", "Ion (dunkel)", "Ion (hell)", 
+                "Pfiff", "Randlinie", "Raster", "Rückblick", 
+                "Segment (dunkel)", "Segment (hell)", "Semaphor", 
+                "ViewMaster")
+            }
+            ElseIf($xWordVersion -eq $wdWord2013)
+            {
+                $xArray = ("Semaphor", "Segment (hell)", "Ion (hell)",
+                "Raster", "Ion (dunkel)", "Filigran", "Rückblick", "Pfiff",
+                "ViewMaster", "Segment (dunkel)", "Verbunden", "Bewegung",
+                "Randlinie", "Austin", "Integral", "Facette")
+            }
+            ElseIf($xWordVersion -eq $wdWord2010)
+            {
+                $xArray = ("Alphabet", "Austin", "Bewegung", "Durchscheinend",
+                "Herausgestellt", "Jährlich", "Kacheln", "Kontrast", "Kubistisch",
+                "Modern", "Nadelstreifen", "Perspektive", "Puzzle", "Randlinie",
+                "Raster", "Schlicht", "Stapel", "Traditionell", "Zeitungspapier")
+            }
+        }
 
 		'en-'	{
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
@@ -1323,26 +1323,26 @@ Function ValidateCoverPage
 				}
 			}
 
-		'es-'	{
+            'es-'	{
 				If($xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("Austin", "Con bandas", "Cortar (oscuro)", "CuadrÃ­cula", 
+					$xArray = ("Austin", "Con bandas", "Cortar (oscuro)", "Cuadrícula", 
 					"Whisp", "Faceta", "Filigrana", "Integral", "Ion (claro)", 
-					"Ion (oscuro)", "LÃ­nea lateral", "Movimiento", "Retrospectiva", 
-					"SemÃ¡foro", "Slice (luz)", "Vista principal", "Whisp")
+					"Ion (oscuro)", "Línea lateral", "Movimiento", "Retrospectiva", 
+					"Semáforo", "Slice (luz)", "Vista principal", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Whisp", "Vista principal", "Filigrana", "Austin",
-					"Slice (luz)", "Faceta", "SemÃ¡foro", "Retrospectiva", "CuadrÃ­cula",
-					"Movimiento", "Cortar (oscuro)", "LÃ­nea lateral", "Ion (oscuro)",
+					"Slice (luz)", "Faceta", "Semáforo", "Retrospectiva", "Cuadrícula",
+					"Movimiento", "Cortar (oscuro)", "Línea lateral", "Ion (oscuro)",
 					"Ion (claro)", "Integral", "Con bandas")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
 					$xArray = ("Alfabeto", "Anual", "Austero", "Austin", "Conservador",
-					"Contraste", "CuadrÃ­cula", "CubÃ­culos", "ExposiciÃ³n", "LÃ­nea lateral",
-					"Moderno", "Mosaicos", "Movimiento", "Papel periÃ³dico",
+					"Contraste", "Cuadrícula", "Cubículos", "Exposición", "Línea lateral",
+					"Moderno", "Mosaicos", "Movimiento", "Papel periódico",
 					"Perspectiva", "Pilas", "Puzzle", "Rayas", "Sobrepasar")
 				}
 			}
@@ -1352,14 +1352,14 @@ Function ValidateCoverPage
 				{
 					$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
 					"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
-					"Sektori (vaalea)", "VaihtuvavÃ¤rinen", "ViewMaster", "Austin",
+					"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
 					"Kuiskaus", "Liike", "Ruudukko", "Sivussa")
 				}
 				ElseIf($xWordVersion -eq $wdWord2013)
 				{
 					$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
 					"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
-					"Sektori (vaalea)", "VaihtuvavÃ¤rinen", "ViewMaster", "Austin",
+					"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
 					"Kiehkura", "Liike", "Ruudukko", "Sivussa")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
@@ -1374,17 +1374,17 @@ Function ValidateCoverPage
 		'fr-'	{
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("Ã€ bandes", "Austin", "Facette", "Filigrane", 
-					"Guide", "IntÃ©grale", "Ion (clair)", "Ion (foncÃ©)", 
-					"Lignes latÃ©rales", "Quadrillage", "RÃ©trospective", "Secteur (clair)", 
-					"Secteur (foncÃ©)", "SÃ©maphore", "ViewMaster", "Whisp")
+					$xArray = ("À bandes", "Austin", "Facette", "Filigrane", 
+					"Guide", "Intégrale", "Ion (clair)", "Ion (foncé)", 
+					"Lignes latérales", "Quadrillage", "Rétrospective", "Secteur (clair)", 
+					"Secteur (foncé)", "Sémaphore", "ViewMaster", "Whisp")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("Alphabet", "Annuel", "AustÃ¨re", "Austin", 
-					"Blocs empilÃ©s", "Classique", "Contraste", "Emplacements de bureau", 
-					"Exposition", "Guide", "Ligne latÃ©rale", "Moderne", 
-					"MosaÃ¯ques", "Mots croisÃ©s", "Papier journal", "Perspective",
+					$xArray = ("Alphabet", "Annuel", "Austère", "Austin", 
+					"Blocs empilés", "Classique", "Contraste", "Emplacements de bureau", 
+					"Exposition", "Guide", "Ligne latérale", "Moderne", 
+					"Mosaïques", "Mots croisés", "Papier journal", "Perspective",
 					"Quadrillage", "Rayures fines", "Transcendant")
 				}
 			}
@@ -1393,13 +1393,13 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "BevegElse", "Dempet", "Fasett", "Filigran",
-					"Integral", "Ion (lys)", "Ion (mÃ¸rk)", "Retrospekt", "Rutenett",
-					"Sektor (lys)", "Sektor (mÃ¸rk)", "Semafor", "Sidelinje", "Stripet",
+					"Integral", "Ion (lys)", "Ion (mørk)", "Retrospekt", "Rutenett",
+					"Sektor (lys)", "Sektor (mørk)", "Semafor", "Sidelinje", "Stripet",
 					"ViewMaster")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("Alfabet", "Ã…rlig", "Avistrykk", "Austin", "Avlukker",
+					$xArray = ("Alfabet", "Årlig", "Avistrykk", "Austin", "Avlukker",
 					"BevegElse", "Engasjement", "Enkel", "Fliser", "Konservativ",
 					"Kontrast", "Mod", "Perspektiv", "Puslespill", "Rutenett", "Sidelinje",
 					"Smale striper", "Stabler", "Transcenderende")
@@ -1427,17 +1427,17 @@ Function ValidateCoverPage
 		'pt-'	{
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
-					$xArray = ("AnimaÃ§Ã£o", "Austin", "Em Tiras", "ExibiÃ§Ã£o Mestra",
+					$xArray = ("Animação", "Austin", "Em Tiras", "Exibição Mestra",
 					"Faceta", "Fatia (Clara)", "Fatia (Escura)", "Filete", "Filigrana", 
-					"Grade", "Integral", "Ãon (Claro)", "Ãon (Escuro)", "Linha Lateral",
-					"Retrospectiva", "SemÃ¡foro")
+					"Grade", "Integral", "Íon (Claro)", "Íon (Escuro)", "Linha Lateral",
+					"Retrospectiva", "Semáforo")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("Alfabeto", "AnimaÃ§Ã£o", "Anual", "Austero", "Austin", "Baias",
-					"Conservador", "Contraste", "ExposiÃ§Ã£o", "Grade", "Ladrilhos",
+					$xArray = ("Alfabeto", "Animação", "Anual", "Austero", "Austin", "Baias",
+					"Conservador", "Contraste", "Exposição", "Grade", "Ladrilhos",
 					"Linha Lateral", "Listras", "Mod", "Papel Jornal", "Perspectiva", "Pilhas",
-					"Quebra-cabeÃ§a", "Transcend")
+					"Quebra-cabeça", "Transcend")
 				}
 			}
 
@@ -1445,15 +1445,15 @@ Function ValidateCoverPage
 				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 				{
 					$xArray = ("Austin", "Band", "Fasett", "Filigran", "Integrerad", "Jon (ljust)",
-					"Jon (mÃ¶rkt)", "Knippe", "RutnÃ¤t", "RÃ¶rElse", "Sektor (ljus)", "Sektor (mÃ¶rk)",
-					"Semafor", "Sidlinje", "VisaHuvudsida", "Ã…terblick")
+					"Jon (mörkt)", "Knippe", "Rutnät", "RörElse", "Sektor (ljus)", "Sektor (mörk)",
+					"Semafor", "Sidlinje", "VisaHuvudsida", "Återblick")
 				}
 				ElseIf($xWordVersion -eq $wdWord2010)
 				{
-					$xArray = ("AlfabetmÃ¶nster", "Austin", "Enkelt", "Exponering", "Konservativt",
-					"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "RutnÃ¤t",
-					"RÃ¶rElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Ã…rligt",
-					"Ã-vergÃ¥ende")
+					$xArray = ("Alfabetmönster", "Austin", "Enkelt", "Exponering", "Konservativt",
+					"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "Rutnät",
+					"RörElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Årligt",
+					"Övergående")
 				}
 			}
 
@@ -1696,7 +1696,7 @@ Function SetupWord
 			'ca-'	{
 					If($CoverPage -eq "Sideline")
 					{
-						$CoverPage = "LÃƒÂ­nia lateral"
+						$CoverPage = "Línia lateral"
 						$CPChanged = $True
 					}
 				}
@@ -1720,7 +1720,7 @@ Function SetupWord
 			'es-'	{
 					If($CoverPage -eq "Sideline")
 					{
-						$CoverPage = "LÃƒÂ­nea lateral"
+						$CoverPage = "Línea lateral"
 						$CPChanged = $True
 					}
 				}
@@ -1738,12 +1738,12 @@ Function SetupWord
 					{
 						If($Script:WordVersion -eq $wdWord2013 -or $Script:WordVersion -eq $wdWord2016)
 						{
-							$CoverPage = "Lignes latÃƒÂ©rales"
+							$CoverPage = "Lignes latérales"
 							$CPChanged = $True
 						}
 						Else
 						{
-							$CoverPage = "Ligne latÃƒÂ©rale"
+							$CoverPage = "Ligne latérale"
 							$CPChanged = $True
 						}
 					}

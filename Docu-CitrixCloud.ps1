@@ -25,6 +25,15 @@
 	
 	This script supports only Citrix Cloud, not the on-premises CVAD products.
 	
+		If you are running XA/XD 7.0 through 7.7, please use: 
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+
+	If you are running XA/XD 7.8 through CVAD 2006, please use:
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+
+	If you are running CVAD 2006 and later, please use:
+	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+
 	To prevent multiple Citrix Cloud authentication prompts, follow the instructions in 
 	the Authentication section of the ReadMe file to create a profile named Default.
 	
@@ -282,8 +291,8 @@
 .PARAMETER AddDateTime
 	Adds a date timestamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be ReportName_2020-06-01_1800.docx (or.pdf).
+	June 1, 2021 at 6PM is 2021-06-01_1800.
+	Output filename will be ReportName_2021-06-01_1800.docx (or.pdf).
 	This parameter is disabled by default.
 	This parameter has an alias of ADT.
 .PARAMETER CSV
@@ -1110,9 +1119,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: Docu-CitrixCloud.ps1
-	VERSION: 1.10
+	VERSION: 1.12
 	AUTHOR: Carl Webster
-	LASTEDIT: December 5, 2020
+	LASTEDIT: January 30, 2021
 #>
 
 #endregion
@@ -1845,15 +1854,26 @@ $Script:CustomerID = $CCCreds.CustomerID
 If(!$?)
 {
 	Write-Error "
-	`n
+	`n`n
 	Get-XDAuthentication failed.
-	`n
+	`n`n
 	For more information, see the Authentication section in the ReadMe file at 
-	`n
+	`n`n
 	https://carlwebster.sharefile.com/d-sb4e144f9ecc48e7b
-	`n
+	`n`n
+	This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
+	`n`n
+	If you are running XA/XD 7.0 through 7.7, please use: 
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+	`n`n
+	If you are running XA/XD 7.8 through CVAD 2006, please use:
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+	`n`n
+	If you are running CVAD 2006 and later, please use:
+	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+	`n`n
 	Script cannot continue.
-	`n
+	`n`n
 	"
 	Exit
 }
@@ -2116,228 +2136,228 @@ Function ValidateCoverPage
 	Switch ($CultureCode)
 	{
 		'ca-'	{
-				If($xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
-					"Integral", "IÃ³ (clar)", "IÃ³ (fosc)", "LÃ­nia lateral",
-					"Moviment", "QuadrÃ­cula", "Retrospectiu", "Sector (clar)",
-					"Sector (fosc)", "SemÃ for", "VisualitzaciÃ³ principal", "Whisp")
-				}
-				ElseIf($xWordVersion -eq $wdWord2013)
-				{
-					$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
-					"Integral", "IÃ³ (clar)", "IÃ³ (fosc)", "LÃ­nia lateral",
-					"Moviment", "QuadrÃ­cula", "Retrospectiu", "Sector (clar)",
-					"Sector (fosc)", "SemÃ for", "VisualitzaciÃ³", "Whisp")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Alfabet", "Anual", "Austin", "Conservador",
-					"Contrast", "Cubicles", "DiplomÃ tic", "ExposiciÃ³",
-					"LÃ­nia lateral", "Mod", "Mosiac", "Moviment", "Paper de diari",
-					"Perspectiva", "Piles", "QuadrÃ­cula", "Sobri",
-					"Transcendir", "Trencaclosques")
-				}
+			If($xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
+				"Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
+				"Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
+				"Sector (fosc)", "Semàfor", "Visualització principal", "Whisp")
 			}
+			ElseIf($xWordVersion -eq $wdWord2013)
+			{
+				$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
+				"Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
+				"Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
+				"Sector (fosc)", "Semàfor", "Visualització", "Whisp")
+			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Alfabet", "Anual", "Austin", "Conservador",
+				"Contrast", "Cubicles", "Diplomàtic", "Exposició",
+				"Línia lateral", "Mod", "Mosiac", "Moviment", "Paper de diari",
+				"Perspectiva", "Piles", "Quadrícula", "Sobri",
+				"Transcendir", "Trencaclosques")
+			}
+		}
 
-		'da-'	{
-				If($xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "BevÃ¦gElse", "Brusen", "Facet", "Filigran", 
-					"Gitter", "Integral", "Ion (lys)", "Ion (mÃ¸rk)", 
-					"Retro", "Semafor", "Sidelinje", "Stribet", 
-					"Udsnit (lys)", "Udsnit (mÃ¸rk)", "Visningsmaster")
-				}
-				ElseIf($xWordVersion -eq $wdWord2013)
-				{
-					$xArray = ("BevÃ¦gElse", "Brusen", "Ion (lys)", "Filigran",
-					"Retro", "Semafor", "Visningsmaster", "Integral",
-					"Facet", "Gitter", "Stribet", "Sidelinje", "Udsnit (lys)",
-					"Udsnit (mÃ¸rk)", "Ion (mÃ¸rk)", "Austin")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("BevÃ¦gElse", "Moderat", "Perspektiv", "Firkanter",
-					"Overskrid", "Alfabet", "Kontrast", "Stakke", "Fliser", "GÃ¥de",
-					"Gitter", "Austin", "Eksponering", "Sidelinje", "Enkel",
-					"NÃ¥lestribet", "Ã…rlig", "Avispapir", "Tradionel")
-				}
+	'da-'	{
+			If($xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Austin", "BevægElse", "Brusen", "Facet", "Filigran", 
+				"Gitter", "Integral", "Ion (lys)", "Ion (mørk)", 
+				"Retro", "Semafor", "Sidelinje", "Stribet", 
+				"Udsnit (lys)", "Udsnit (mørk)", "Visningsmaster")
 			}
+			ElseIf($xWordVersion -eq $wdWord2013)
+			{
+				$xArray = ("BevægElse", "Brusen", "Ion (lys)", "Filigran",
+				"Retro", "Semafor", "Visningsmaster", "Integral",
+				"Facet", "Gitter", "Stribet", "Sidelinje", "Udsnit (lys)",
+				"Udsnit (mørk)", "Ion (mørk)", "Austin")
+			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("BevægElse", "Moderat", "Perspektiv", "Firkanter",
+				"Overskrid", "Alfabet", "Kontrast", "Stakke", "Fliser", "Gåde",
+				"Gitter", "Austin", "Eksponering", "Sidelinje", "Enkel",
+				"Nålestribet", "Årlig", "Avispapir", "Tradionel")
+			}
+		}
 
-		'de-'	{
-				If($xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "Bewegung", "Facette", "Filigran", 
-					"GebÃ¤ndert", "Integral", "Ion (dunkel)", "Ion (hell)", 
-					"Pfiff", "Randlinie", "Raster", "RÃ¼ckblick", 
-					"Segment (dunkel)", "Segment (hell)", "Semaphor", 
-					"ViewMaster")
-				}
-				ElseIf($xWordVersion -eq $wdWord2013)
-				{
-					$xArray = ("Semaphor", "Segment (hell)", "Ion (hell)",
-					"Raster", "Ion (dunkel)", "Filigran", "RÃ¼ckblick", "Pfiff",
-					"ViewMaster", "Segment (dunkel)", "Verbunden", "Bewegung",
-					"Randlinie", "Austin", "Integral", "Facette")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Alphabet", "Austin", "Bewegung", "Durchscheinend",
-					"Herausgestellt", "JÃ¤hrlich", "Kacheln", "Kontrast", "Kubistisch",
-					"Modern", "Nadelstreifen", "Perspektive", "Puzzle", "Randlinie",
-					"Raster", "Schlicht", "Stapel", "Traditionell", "Zeitungspapier")
-				}
+	'de-'	{
+			If($xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Austin", "Bewegung", "Facette", "Filigran", 
+				"Gebändert", "Integral", "Ion (dunkel)", "Ion (hell)", 
+				"Pfiff", "Randlinie", "Raster", "Rückblick", 
+				"Segment (dunkel)", "Segment (hell)", "Semaphor", 
+				"ViewMaster")
 			}
+			ElseIf($xWordVersion -eq $wdWord2013)
+			{
+				$xArray = ("Semaphor", "Segment (hell)", "Ion (hell)",
+				"Raster", "Ion (dunkel)", "Filigran", "Rückblick", "Pfiff",
+				"ViewMaster", "Segment (dunkel)", "Verbunden", "Bewegung",
+				"Randlinie", "Austin", "Integral", "Facette")
+			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Alphabet", "Austin", "Bewegung", "Durchscheinend",
+				"Herausgestellt", "Jährlich", "Kacheln", "Kontrast", "Kubistisch",
+				"Modern", "Nadelstreifen", "Perspektive", "Puzzle", "Randlinie",
+				"Raster", "Schlicht", "Stapel", "Traditionell", "Zeitungspapier")
+			}
+		}
 
-		'en-'	{
-				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "Banded", "Facet", "Filigree", "Grid",
-					"Integral", "Ion (Dark)", "Ion (Light)", "Motion", "Retrospect",
-					"Semaphore", "Sideline", "Slice (Dark)", "Slice (Light)", "ViewMaster",
-					"Whisp")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Alphabet", "Annual", "Austere", "Austin", "Conservative",
-					"Contrast", "Cubicles", "Exposure", "Grid", "Mod", "Motion", "Newsprint",
-					"Perspective", "Pinstripes", "Puzzle", "Sideline", "Stacks", "Tiles", "Transcend")
-				}
+	'en-'	{
+			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Austin", "Banded", "Facet", "Filigree", "Grid",
+				"Integral", "Ion (Dark)", "Ion (Light)", "Motion", "Retrospect",
+				"Semaphore", "Sideline", "Slice (Dark)", "Slice (Light)", "ViewMaster",
+				"Whisp")
 			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Alphabet", "Annual", "Austere", "Austin", "Conservative",
+				"Contrast", "Cubicles", "Exposure", "Grid", "Mod", "Motion", "Newsprint",
+				"Perspective", "Pinstripes", "Puzzle", "Sideline", "Stacks", "Tiles", "Transcend")
+			}
+		}
 
-		'es-'	{
-				If($xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "Con bandas", "Cortar (oscuro)", "CuadrÃ­cula", 
-					"Whisp", "Faceta", "Filigrana", "Integral", "Ion (claro)", 
-					"Ion (oscuro)", "LÃ­nea lateral", "Movimiento", "Retrospectiva", 
-					"SemÃ¡foro", "Slice (luz)", "Vista principal", "Whisp")
-				}
-				ElseIf($xWordVersion -eq $wdWord2013)
-				{
-					$xArray = ("Whisp", "Vista principal", "Filigrana", "Austin",
-					"Slice (luz)", "Faceta", "SemÃ¡foro", "Retrospectiva", "CuadrÃ­cula",
-					"Movimiento", "Cortar (oscuro)", "LÃ­nea lateral", "Ion (oscuro)",
-					"Ion (claro)", "Integral", "Con bandas")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Alfabeto", "Anual", "Austero", "Austin", "Conservador",
-					"Contraste", "CuadrÃ­cula", "CubÃ­culos", "ExposiciÃ³n", "LÃ­nea lateral",
-					"Moderno", "Mosaicos", "Movimiento", "Papel periÃ³dico",
-					"Perspectiva", "Pilas", "Puzzle", "Rayas", "Sobrepasar")
-				}
+	'es-'	{
+			If($xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Austin", "Con bandas", "Cortar (oscuro)", "Cuadrícula", 
+				"Whisp", "Faceta", "Filigrana", "Integral", "Ion (claro)", 
+				"Ion (oscuro)", "Línea lateral", "Movimiento", "Retrospectiva", 
+				"Semáforo", "Slice (luz)", "Vista principal", "Whisp")
 			}
+			ElseIf($xWordVersion -eq $wdWord2013)
+			{
+				$xArray = ("Whisp", "Vista principal", "Filigrana", "Austin",
+				"Slice (luz)", "Faceta", "Semáforo", "Retrospectiva", "Cuadrícula",
+				"Movimiento", "Cortar (oscuro)", "Línea lateral", "Ion (oscuro)",
+				"Ion (claro)", "Integral", "Con bandas")
+			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Alfabeto", "Anual", "Austero", "Austin", "Conservador",
+				"Contraste", "Cuadrícula", "Cubículos", "Exposición", "Línea lateral",
+				"Moderno", "Mosaicos", "Movimiento", "Papel periódico",
+				"Perspectiva", "Pilas", "Puzzle", "Rayas", "Sobrepasar")
+			}
+		}
 
-		'fi-'	{
-				If($xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
-					"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
-					"Sektori (vaalea)", "VaihtuvavÃ¤rinen", "ViewMaster", "Austin",
-					"Kuiskaus", "Liike", "Ruudukko", "Sivussa")
-				}
-				ElseIf($xWordVersion -eq $wdWord2013)
-				{
-					$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
-					"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
-					"Sektori (vaalea)", "VaihtuvavÃ¤rinen", "ViewMaster", "Austin",
-					"Kiehkura", "Liike", "Ruudukko", "Sivussa")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Aakkoset", "Askeettinen", "Austin", "Kontrasti",
-					"Laatikot", "Liike", "Liituraita", "Mod", "Osittain peitossa",
-					"Palapeli", "Perinteinen", "Perspektiivi", "Pinot", "Ruudukko",
-					"Ruudut", "Sanomalehtipaperi", "Sivussa", "Vuotuinen", "Ylitys")
-				}
+	'fi-'	{
+			If($xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
+				"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
+				"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
+				"Kuiskaus", "Liike", "Ruudukko", "Sivussa")
 			}
+			ElseIf($xWordVersion -eq $wdWord2013)
+			{
+				$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
+				"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
+				"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
+				"Kiehkura", "Liike", "Ruudukko", "Sivussa")
+			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Aakkoset", "Askeettinen", "Austin", "Kontrasti",
+				"Laatikot", "Liike", "Liituraita", "Mod", "Osittain peitossa",
+				"Palapeli", "Perinteinen", "Perspektiivi", "Pinot", "Ruudukko",
+				"Ruudut", "Sanomalehtipaperi", "Sivussa", "Vuotuinen", "Ylitys")
+			}
+		}
 
-		'fr-'	{
-				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Ã€ bandes", "Austin", "Facette", "Filigrane", 
-					"Guide", "IntÃ©grale", "Ion (clair)", "Ion (foncÃ©)", 
-					"Lignes latÃ©rales", "Quadrillage", "RÃ©trospective", "Secteur (clair)", 
-					"Secteur (foncÃ©)", "SÃ©maphore", "ViewMaster", "Whisp")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Alphabet", "Annuel", "AustÃ¨re", "Austin", 
-					"Blocs empilÃ©s", "Classique", "Contraste", "Emplacements de bureau", 
-					"Exposition", "Guide", "Ligne latÃ©rale", "Moderne", 
-					"MosaÃ¯ques", "Mots croisÃ©s", "Papier journal", "Perspective",
-					"Quadrillage", "Rayures fines", "Transcendant")
-				}
+	'fr-'	{
+			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("À bandes", "Austin", "Facette", "Filigrane", 
+				"Guide", "Intégrale", "Ion (clair)", "Ion (foncé)", 
+				"Lignes latérales", "Quadrillage", "Rétrospective", "Secteur (clair)", 
+				"Secteur (foncé)", "Sémaphore", "ViewMaster", "Whisp")
 			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Alphabet", "Annuel", "Austère", "Austin", 
+				"Blocs empilés", "Classique", "Contraste", "Emplacements de bureau", 
+				"Exposition", "Guide", "Ligne latérale", "Moderne", 
+				"Mosaïques", "Mots croisés", "Papier journal", "Perspective",
+				"Quadrillage", "Rayures fines", "Transcendant")
+			}
+		}
 
-		'nb-'	{
-				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "BevegElse", "Dempet", "Fasett", "Filigran",
-					"Integral", "Ion (lys)", "Ion (mÃ¸rk)", "Retrospekt", "Rutenett",
-					"Sektor (lys)", "Sektor (mÃ¸rk)", "Semafor", "Sidelinje", "Stripet",
-					"ViewMaster")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Alfabet", "Ã…rlig", "Avistrykk", "Austin", "Avlukker",
-					"BevegElse", "Engasjement", "Enkel", "Fliser", "Konservativ",
-					"Kontrast", "Mod", "Perspektiv", "Puslespill", "Rutenett", "Sidelinje",
-					"Smale striper", "Stabler", "Transcenderende")
-				}
+	'nb-'	{
+			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Austin", "BevegElse", "Dempet", "Fasett", "Filigran",
+				"Integral", "Ion (lys)", "Ion (mørk)", "Retrospekt", "Rutenett",
+				"Sektor (lys)", "Sektor (mørk)", "Semafor", "Sidelinje", "Stripet",
+				"ViewMaster")
 			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Alfabet", "Årlig", "Avistrykk", "Austin", "Avlukker",
+				"BevegElse", "Engasjement", "Enkel", "Fliser", "Konservativ",
+				"Kontrast", "Mod", "Perspektiv", "Puslespill", "Rutenett", "Sidelinje",
+				"Smale striper", "Stabler", "Transcenderende")
+			}
+		}
 
-		'nl-'	{
-				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "Beweging", "Facet", "Filigraan", "Gestreept",
-					"Integraal", "Ion (donker)", "Ion (licht)", "Raster",
-					"Segment (Light)", "Semafoor", "Slice (donker)", "Spriet",
-					"Terugblik", "Terzijde", "ViewMaster")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Aantrekkelijk", "Alfabet", "Austin", "Bescheiden",
-					"Beweging", "Blikvanger", "Contrast", "Eenvoudig", "Jaarlijks",
-					"Krantenpapier", "Krijtstreep", "Kubussen", "Mod", "Perspectief",
-					"Puzzel", "Raster", "Stapels",
-					"Tegels", "Terzijde")
-				}
+	'nl-'	{
+			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Austin", "Beweging", "Facet", "Filigraan", "Gestreept",
+				"Integraal", "Ion (donker)", "Ion (licht)", "Raster",
+				"Segment (Light)", "Semafoor", "Slice (donker)", "Spriet",
+				"Terugblik", "Terzijde", "ViewMaster")
 			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Aantrekkelijk", "Alfabet", "Austin", "Bescheiden",
+				"Beweging", "Blikvanger", "Contrast", "Eenvoudig", "Jaarlijks",
+				"Krantenpapier", "Krijtstreep", "Kubussen", "Mod", "Perspectief",
+				"Puzzel", "Raster", "Stapels",
+				"Tegels", "Terzijde")
+			}
+		}
 
-		'pt-'	{
-				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("AnimaÃ§Ã£o", "Austin", "Em Tiras", "ExibiÃ§Ã£o Mestra",
-					"Faceta", "Fatia (Clara)", "Fatia (Escura)", "Filete", "Filigrana", 
-					"Grade", "Integral", "Ãon (Claro)", "Ãon (Escuro)", "Linha Lateral",
-					"Retrospectiva", "SemÃ¡foro")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("Alfabeto", "AnimaÃ§Ã£o", "Anual", "Austero", "Austin", "Baias",
-					"Conservador", "Contraste", "ExposiÃ§Ã£o", "Grade", "Ladrilhos",
-					"Linha Lateral", "Listras", "Mod", "Papel Jornal", "Perspectiva", "Pilhas",
-					"Quebra-cabeÃ§a", "Transcend")
-				}
+	'pt-'	{
+			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Animação", "Austin", "Em Tiras", "Exibição Mestra",
+				"Faceta", "Fatia (Clara)", "Fatia (Escura)", "Filete", "Filigrana", 
+				"Grade", "Integral", "Íon (Claro)", "Íon (Escuro)", "Linha Lateral",
+				"Retrospectiva", "Semáforo")
 			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Alfabeto", "Animação", "Anual", "Austero", "Austin", "Baias",
+				"Conservador", "Contraste", "Exposição", "Grade", "Ladrilhos",
+				"Linha Lateral", "Listras", "Mod", "Papel Jornal", "Perspectiva", "Pilhas",
+				"Quebra-cabeça", "Transcend")
+			}
+		}
 
-		'sv-'	{
-				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ("Austin", "Band", "Fasett", "Filigran", "Integrerad", "Jon (ljust)",
-					"Jon (mÃ¶rkt)", "Knippe", "RutnÃ¤t", "RÃ¶rElse", "Sektor (ljus)", "Sektor (mÃ¶rk)",
-					"Semafor", "Sidlinje", "VisaHuvudsida", "Ã…terblick")
-				}
-				ElseIf($xWordVersion -eq $wdWord2010)
-				{
-					$xArray = ("AlfabetmÃ¶nster", "Austin", "Enkelt", "Exponering", "Konservativt",
-					"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "RutnÃ¤t",
-					"RÃ¶rElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Ã…rligt",
-					"Ã-vergÃ¥ende")
-				}
+	'sv-'	{
+			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+			{
+				$xArray = ("Austin", "Band", "Fasett", "Filigran", "Integrerad", "Jon (ljust)",
+				"Jon (mörkt)", "Knippe", "Rutnät", "RörElse", "Sektor (ljus)", "Sektor (mörk)",
+				"Semafor", "Sidlinje", "VisaHuvudsida", "Återblick")
 			}
+			ElseIf($xWordVersion -eq $wdWord2010)
+			{
+				$xArray = ("Alfabetmönster", "Austin", "Enkelt", "Exponering", "Konservativt",
+				"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "Rutnät",
+				"RörElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Årligt",
+				"Övergående")
+			}
+		}
 
 		Default	{
 					If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
@@ -4170,7 +4190,19 @@ Function Check-NeededPSSnapins
 			Else
 			{
 				#Snapin is registered, but not loaded, loading it now:
-				Add-PSSnapin -Name $snapin -EA 0 *>$Null
+				Write-Host "Loading Windows PowerShell snap-in: $snapin"
+				Add-PSSnapin -Name $snapin -EA 0
+
+				If(!($?))
+				{
+					Write-Error "
+	`n`n
+	Error loading snapin: $($error[0].Exception.Message)
+	`n`n
+	Script cannot continue.
+	`n`n"
+					Return $false
+				}
 			}
 		}
 	}
@@ -4178,7 +4210,9 @@ Function Check-NeededPSSnapins
 	If($FoundMissingSnapin)
 	{
 		Write-Warning "Missing Windows PowerShell snap-ins Detected:"
-		$missingSnapins | ForEach-Object {Write-Warning "($_)"}
+		Write-Host ""
+		$missingSnapins | ForEach-Object {Write-Host "`tMissing Snapin: ($_)"}
+		Write-Host ""
 		Return $False
 	}
 	Else
@@ -6123,8 +6157,6 @@ Function OutputMachines
 			}
 			ElseIf($Catalog.ProvisioningType -eq "Manual" -and $Catalog.IsRemotePC -eq $True)
 			{
-				$rowdata += @(,('Description',($global:htmlsb),$Catalog.Description,$htmlwhite))
-
 				If($RemotePCAccounts -is [array])
 				{
 					ForEach($RemotePCAccount in $RemotePCAccounts)
@@ -6217,7 +6249,6 @@ Function OutputMachines
 			}
 			ElseIf($Catalog.ProvisioningType -eq "Manual" -and $Catalog.IsRemotePC -ne $True)
 			{
-				$rowdata += @(,('Description',($global:htmlsb),$Catalog.Description,$htmlwhite))
 				$rowdata += @(,('Machine Type',($global:htmlsb),$xCatalogType,$htmlwhite))
 				$rowdata += @(,('No. of machines',($global:htmlsb),$NumberOfMachines.ToString(),$htmlwhite))
 				$rowdata += @(,('Allocated machines',($global:htmlsb),$Catalog.UsedCount.ToString(),$htmlwhite))
@@ -13347,13 +13378,13 @@ Function ProcessPolicies
 		{
 			#thanks to the Citrix Engineering Team for helping me solve processing Citrix AD based Policies
 			Write-Verbose "$(Get-Date -Format G): "
-			Write-Verbose "$(Get-Date -Format G): `tSee if there are any Citrix AD based policies to process"
+			Write-Verbose "$(Get-Date -Format G): `tSee if there are any Citrix AD-based policies to process"
 			$CtxGPOArray = @()
 			$CtxGPOArray = GetCtxGPOsInAD
 			If($CtxGPOArray -is [Array] -and $CtxGPOArray.Count -gt 0)
 			{
 				Write-Verbose "$(Get-Date -Format G): "
-				Write-Verbose "$(Get-Date -Format G): `tThere are $($CtxGPOArray.Count) Citrix AD based policies to process"
+				Write-Verbose "$(Get-Date -Format G): `tThere are $($CtxGPOArray.Count) Citrix AD-based policies to process"
 				Write-Verbose "$(Get-Date -Format G): "
 
 				[array]$CtxGPOArray = $CtxGPOArray | Sort-Object -unique
@@ -27972,11 +28003,11 @@ Function OutputHosting
 		ConnectionType DisplayName                                      PluginFactoryName           UsesCloudInfrastructure
 		-------------- -----------                                      -----------------           -----------------------
 				   AWS Amazon EC2                                       AWSMachineManagerFactory                       True
-				 SCVMM MicrosoftÂ® System Center Virtual Machine Manager MicrosoftPSFactory                            False
-			   VCenter VMware vSphereÂ®                                  VmwareFactory                                 False
-			 XenServer Citrix HypervisorÂ®                               XenFactory                                    False
+				 SCVMM Microsoft® System Center Virtual Machine Manager MicrosoftPSFactory                            False
+			   VCenter VMware vSphere®                                  VmwareFactory                                 False
+			 XenServer Citrix Hypervisor®                               XenFactory                                    False
 				Custom Google Cloud Platform                            GcpPluginFactory                              False
-				Custom MicrosoftÂ® Azureâ„¢                                AzureRmFactory                                False
+				Custom Microsoft® Azure™                                AzureRmFactory                                False
 				Custom Nutanix AHV                                      AcropolisFactory                              False
 				Custom Remote PC Wake on LAN                            VdaWOLMachineManagerFactory                   False
 	#>
@@ -30123,9 +30154,18 @@ Function ProcessScriptSetup
 		Write-Host "Script will abort. You can try again after installing the required SDK from https://download.apps.cloud.com/CitrixPoshSdk.exe" -ForegroundColor Red
 
 		Write-Error "
-	`n
-	CVADS Remote Powershell SDK is not available
-	`n
+		`n`r
+		CVADS Remote Powershell SDK is not available
+		`n`n
+		If you are running XA/XD 7.0 through 7.7, please use: 
+		https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+		`n`n
+		If you are running XA/XD 7.8 through CVAD 2006, please use: 
+		https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+		`n`n
+		If you are running CVAD 2006 and later, please use:
+		https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+		`n`n
 	Script will now close.
 	`n
 		"
@@ -30138,14 +30178,23 @@ Function ProcessScriptSetup
 		#We're missing Citrix Snapins that we need
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Error "
-	`n
-	Missing Citrix PowerShell Snap-ins Detected. 
-	`n
-	Install the Citrix Group Policy Management Console from the CVAD 2006 or later installation media. 
-	Note: This is required by the StoreFront and Citrix Policy cmdlets and functions.
-	x:\x64\Citrix Policy\CitrixGroupPolicyManagement_x64.msi
-	Installing this console installs the required Citrix.Common.GroupPolicy PowerShell snapin.
-	`n
+		`n`n
+		Missing Citrix PowerShell Snap-ins Detected. 
+		`n`n
+		Install the Citrix Group Policy Management Console from the CVAD 2006 or later installation media. 
+		Note: This is required by the StoreFront and Citrix Policy cmdlets and functions.
+		x:\x64\Citrix Policy\CitrixGroupPolicyManagement_x64.msi
+		Installing this console installs the required Citrix.Common.GroupPolicy PowerShell snapin.
+		`n`n
+		If you are running XA/XD 7.0 through 7.7, please use: 
+		https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+		`n`n
+		If you are running XA/XD 7.8 through CVAD 2006, please use: 
+		https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+		`n`n
+		If you are running CVAD 2006 and later, please use:
+		https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+		`n`n
 	Script will now close.
 	`n
 		"
