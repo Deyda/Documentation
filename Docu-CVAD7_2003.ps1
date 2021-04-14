@@ -478,7 +478,7 @@
 	Specifies the username for the To email address.
 	If SmtpServer is used, this is a required parameter.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1
 	
 	Uses all default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -491,7 +491,7 @@
 	Administrator for the User Name.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -AdminAddress DDC01
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -AdminAddress DDC01
 	
 	Uses all default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -504,7 +504,7 @@
 	Administrator for the User Name.
 	DDC01 for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -PDF
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -PDF
 	
 	Uses all default values and saves the document as a PDF file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -517,15 +517,15 @@
 	Administrator for the User Name.
 	The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -TEXT
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -TEXT
 
 	Uses all default values and saves the document as a formatted text file.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -HTML
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -HTML
 
 	Uses all default values and saves the document as an HTML file.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -MachineCatalogs
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -MachineCatalogs
 	
 	Creates a report with full details for all machines in all Machine Catalogs.
 	Uses all Default values.
@@ -538,7 +538,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -DeliveryGroups
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -DeliveryGroups
 	
 	Creates a report with full details for all desktops in all Desktop (Delivery) Groups.
 	Uses all Default values.
@@ -551,7 +551,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -DeliveryGroupsUtilization
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -DeliveryGroupsUtilization
 	
 	Creates a report with utilization details for all Desktop (Delivery) Groups.
 	Uses all Default values.
@@ -564,7 +564,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -DeliveryGroups -MachineCatalogs
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -DeliveryGroups -MachineCatalogs
 	
 	Creates a report with full details for all machines in all Machine Catalogs and 
 	all desktops in all Delivery Groups.
@@ -578,7 +578,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -Applications
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -Applications
 	
 	Creates a report with full details for all applications.
 	Uses all Default values.
@@ -591,7 +591,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -Policies
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -Policies
 	
 	Creates a report with full details for Policies.
 	Uses all Default values.
@@ -604,7 +604,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -NoPolicies
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -NoPolicies
 	
 	Creates a report with no Policy information.
 	Uses all Default values.
@@ -617,7 +617,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -NoADPolicies
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -NoADPolicies
 	
 	Creates a report with no Citrix AD-based Policy information.
 	Uses all Default values.
@@ -630,7 +630,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -Policies -NoADPolicies
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -Policies -NoADPolicies
 	
 	Creates a report with full details on Site policies created in Studio but 
 	no Citrix AD-based Policy information.
@@ -645,7 +645,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -Administrators
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -Administrators
 	
 	Creates a report with full details on Administrator Scopes and Roles.
 	
@@ -659,7 +659,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -Logging -StartDate 01/01/2021 -EndDate 
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -Logging -StartDate 01/01/2021 -EndDate 
 	01/31/2021	
 	
 	Creates a report with Configuration Logging details for the dates 01/01/2021 through 
@@ -675,7 +675,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -Logging -StartDate "06/01/2021 10:00:00" 
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -Logging -StartDate "06/01/2021 10:00:00" 
 	-EndDate "06/01/2021 14:00:00"	
 	
 	Creates a report with Configuration Logging details for the time range 
@@ -693,7 +693,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -Hosting
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -Hosting
 	
 	Creates a report with full details for Hosts, Host Connections, and Resources.
 	Uses all Default values.
@@ -706,7 +706,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -StoreFront
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -StoreFront
 	
 	Creates a report with full details for StoreFront.
 	Uses all Default values.
@@ -719,7 +719,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -MachineCatalogs -DeliveryGroups -Applications 
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -MachineCatalogs -DeliveryGroups -Applications 
 	-Policies -Hosting -StoreFront	
 	
 	Creates a report with full details for all:
@@ -740,7 +740,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -MC -DG -Apps -Policies -Hosting
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -MC -DG -Apps -Policies -Hosting
 	
 	Creates a report with full details for all:
 		Machines in all Machine Catalogs
@@ -759,7 +759,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript .\XD7_Inventory_V2.ps1 -CompanyName "Carl Webster Consulting" 
+	PS C:\PSScript .\Docu-CVAD7_2003.ps1 -CompanyName "Carl Webster Consulting" 
 	-CoverPage "Mod" -UserName "Carl Webster" -AdminAddress DDC01
 	
 	Uses:
@@ -768,7 +768,7 @@
 		Carl Webster for the User Name.
 		Controller named DDC01 for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript .\XD7_Inventory_V2.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
+	PS C:\PSScript .\Docu-CVAD7_2003.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
 	-UN "Carl Webster"
 	
 	Uses:
@@ -777,7 +777,7 @@
 		Carl Webster for the User Name (alias UN).
 		The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript .\XD7_Inventory_V2.ps1 -CompanyName "Sherlock Holmes Consulting" 
+	PS C:\PSScript .\Docu-CVAD7_2003.ps1 -CompanyName "Sherlock Holmes Consulting" 
 	-CoverPage Exposure -UserName "Dr. Watson" -CompanyAddress "221B Baker Street, London, 
 	England" -CompanyFax "+44 1753 276600" -CompanyPhone "+44 1753 276200"
 	
@@ -789,7 +789,7 @@
 		+44 1753 276600 for the Company Fax.
 		+44 1753 276200 for the Company Phone.
 .EXAMPLE
-	PS C:\PSScript .\XD7_Inventory_V2.ps1 -CompanyName "Sherlock Holmes Consulting" 
+	PS C:\PSScript .\Docu-CVAD7_2003.ps1 -CompanyName "Sherlock Holmes Consulting" 
 	-CoverPage Facet -UserName "Dr. Watson" -CompanyEmail SuperSleuth@SherlockHolmes.com
 
 	Uses:
@@ -798,7 +798,7 @@
 		Dr. Watson for the User Name.
 		SuperSleuth@SherlockHolmes.com for the Company Email.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -AddDateTime
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -AddDateTime
 	
 	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -815,7 +815,7 @@
 	June 1, 2021 at 6PM is 2021-06-01_1800.
 	Output filename will be XD7SiteName_2021-06-01_1800.docx
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -PDF -AddDateTime
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -PDF -AddDateTime
 	
 	Uses all Default values and saves the document as a PDF file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -832,7 +832,7 @@
 	June 1, 2021 at 6PM is 2021-06-01_1800.
 	Output filename will be XD7SiteName_2021-06-01_1800.pdf
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -Hardware
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -Hardware
 	
 	Uses all default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -844,7 +844,7 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -Folder \\FileServer\ShareName
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -Folder \\FileServer\ShareName
 	
 	Uses all default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -858,7 +858,7 @@
 	
 	Output file is saved in the path \\FileServer\ShareName
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -Section Policies
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -Section Policies
 	
 	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -871,7 +871,7 @@
 	Administrator for the User Name.
 	Processes only the Policies section of the report.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -Section Groups -DG
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -Section Groups -DG
 	
 	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -884,7 +884,7 @@
 	Administrator for the User Name.
 	Processes only the Delivery Groups section of the report with Delivery Group details.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -Section Groups
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -Section Groups
 	
 	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -897,7 +897,7 @@
 	Administrator for the User Name.
 	Processes only the Delivery Groups section of the report with no Delivery Group details.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -BrokerRegistryKeys
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -BrokerRegistryKeys
 	
 	*****Requires the script runs elevated*****
 
@@ -912,7 +912,7 @@
 	Administrator for the User Name.
 	Adds the information on over 300 Broker registry keys to the Controllers section.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -VDARegistryKeys
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -VDARegistryKeys
 	
 	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -926,7 +926,7 @@
 	Adds the information on VDA registry keys to Appendix A.
 	Forces the MachineCatalogs parameter to $True
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -MaxDetails
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -MaxDetails
 	
 	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -959,7 +959,7 @@
 	*****Requires the script runs elevated*****
 		
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -Dev -ScriptInfo -Log
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -Dev -ScriptInfo -Log
 	
 	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
@@ -980,13 +980,13 @@
 	Creates a text file for transcript logging named 
 	XDV2DocScriptTranscript_yyyy-MM-dd_HHmm.txt.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -CSV
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -CSV
 	
 	Uses all Default values.
 	LocalHost for AdminAddress.
 	Creates a CSV file for each Appendix.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -SmtpServer mail.domain.tld -From 
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -SmtpServer mail.domain.tld -From 
 	XDAdmin@domain.tld -To ITGroup@domain.tld	
 
 	The script uses the email server mail.domain.tld, sending from XDAdmin@domain.tld and 
@@ -997,7 +997,7 @@
 	If the current user's credentials are not valid to send email, the script prompts 
 	the user to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -SmtpServer mailrelay.domain.tld -From 
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -SmtpServer mailrelay.domain.tld -From 
 	Anonymous@domain.tld -To ITGroup@domain.tld	
 
 	***SENDING UNAUTHENTICATED EMAIL***
@@ -1021,7 +1021,7 @@
 	The script generates an anonymous, secure password for anonymous@domain.tld 
 	account.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -SmtpServer 
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -SmtpServer 
 	labaddomain-com.mail.protection.outlook.com -UseSSL -From 
 	SomeEmailAddress@labaddomain.com -To ITGroupDL@labaddomain.com	
 
@@ -1038,7 +1038,7 @@
 
 	The script uses the default SMTP port 25 and SSL.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -SmtpServer smtp.office365.com -SmtpPort 587 
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -SmtpServer smtp.office365.com -SmtpPort 587 
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
 	The script uses the email server smtp.office365.com on port 587 using SSL, sending from 
@@ -1047,7 +1047,7 @@
 	If the current user's credentials are not valid to send an email, the script prompts 
 	the user to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\XD7_Inventory_V2.ps1 -SmtpServer smtp.gmail.com -SmtpPort 587 
+	PS C:\PSScript > .\Docu-CVAD7_2003.ps1 -SmtpServer smtp.gmail.com -SmtpPort 587 
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
 	*** NOTE ***
@@ -1066,7 +1066,7 @@
 	No objects are output from this script. 
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
-	NAME: XD7_Inventory_V2.ps1
+	NAME: Docu-CVAD7_2003.ps1
 	VERSION: 2.42
 	AUTHOR: Carl Webster
 	LASTEDIT: April 12, 2021
