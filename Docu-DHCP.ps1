@@ -2841,16 +2841,6 @@ Function ValidateCoverPage
 				}
 			}
 
-		'zh-'	{
-				If($xWordVersion -eq $wdWord2010 -or $xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ('奥斯汀', '边线型', '花丝', '怀旧', '积分',
-					'离子(浅色)', '离子(深色)', '母版型', '平面', '切片(浅色)',
-					'切片(深色)', '丝状', '网格', '镶边', '信号灯',
-					'运动型')
-				}
-			}
-
 		Default	{
 					If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 					{
