@@ -17,7 +17,7 @@
 	You do NOT have to run this script on a Controller. This script was developed and run 
 	from a Windows 10 VM.
 	
-	You can run this script remotely using the –AdminAddress (AA) parameter.
+	You can run this script remotely using the -AdminAddress (AA) parameter.
 	
 	This script supports versions of XenApp/XenDesktop starting with 7.8 through CVAD 2006.
 	
@@ -4741,7 +4741,7 @@ Function CheckWordPrereq
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
 	#Find out if winword runsning in our session
-	[bool]$wordrunning = $null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$wordrunning = $null -ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
 		$ErrorActionPreference = $SaveEAPreference
@@ -6616,7 +6616,7 @@ Function CheckExcelPrereq
 	#Find out if excel runsning in our session
 	#[bool]$excelrunning = ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}) -ne $Null
 	#fix by MBS in V2.20
-	[bool]$excelrunning = $null –ne ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$excelrunning = $null -ne ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	
 	If($excelrunning)
 	{
@@ -41003,7 +41003,7 @@ Script cannot continue
 	If($null -ne $SQLLocation)
 	{
 		$asm = [System.Reflection.Assembly]::LoadFrom($SQLLocation)
-		If( $null –eq $asm )
+		If( $null -eq $asm )
 		{
 			Write-Warning "
 			`n`n
