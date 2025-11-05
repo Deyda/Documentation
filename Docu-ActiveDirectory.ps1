@@ -1,17 +1,17 @@
-﻿#Requires -Version 3.0
+#Requires -Version 3.0
 #requires -Module ActiveDirectory
 #requires -Module GroupPolicy
 #This File is in Unicode format.  Do not edit in an ASCII editor. Notepad++ UTF-8-BOM
 
 <#
 .SYNOPSIS
-	Creates a complete inventory of a Microsoft Active Directory Forest.
+	Creates a complete inventory of a Microsoft Active Directory Forest or Domain.
 .DESCRIPTION
-	Creates a complete inventory of a Microsoft Active Directory Forest using Microsoft 
-	PowerShell, Word, plain text, or HTML.
+	Creates a complete inventory of a Microsoft Active Directory Forest or Domain using 
+	Microsoft PowerShell, Word, plain text, or HTML.
 	
 	Creates a Word or PDF document, text, or HTML file named after the Active Directory 
-	Forest.
+	Forest or Domain.
 	
 	Version 3.0 changes the default output report from Word to HTML.
 	
@@ -148,12 +148,28 @@
 	Adds a date timestamp to the end of the file name.
 	
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2021 at 6PM is 2021-06-01_1800.
+	June 1, 2022 at 6PM is 2022-06-01_1800.
 	
-	Output filename will be ReportName_2021-06-01_1800.docx (or .pdf).
+	Output filename will be ReportName_2022-06-01_1800.docx (or .pdf).
 	
 	This parameter is disabled by default.
 	This parameter has an alias of ADT.
+.PARAMETER CompanyName
+	Company Name to use for the Word Cover Page or the Forest Information section for 
+	HTML and Text.
+	
+	Default value for Word output is contained in 
+	HKCU:\Software\Microsoft\Office\Common\UserInfo\CompanyName or
+	HKCU:\Software\Microsoft\Office\Common\UserInfo\Company, whichever is populated 
+	on the computer running the script.
+
+	This parameter has an alias of CN.
+
+	For Word output, if either registry key does not exist and this parameter is not 
+	specified, the report does not contain a Company Name on the cover page.
+	
+	For HTML and Text output, the Forest Information section does not contain the Company 
+	Name if this parameter is not specified.
 .PARAMETER Dev
 	Clears errors at the beginning of the script.
 	Outputs all errors to a text file at the end of the script.
@@ -172,6 +188,26 @@
 	
 	This parameter is disabled by default.
 	This parameter has an alias of SI.
+.PARAMETER ReportFooter
+	Outputs a footer section at the end of the report.
+
+	This parameter has an alias of RF.
+	
+	Report Footer
+		Report information:
+			Created with: <Script Name> - Release Date: <Script Release Date>
+			Script version: <Script Version>
+			Started on <Date Time in Local Format>
+			Elapsed time: nn days, nn hours, nn minutes, nn.nn seconds
+			Ran from domain <Domain Name> by user <Username>
+			Ran from the folder <Folder Name>
+
+	Script Name and Script Release date are script-specific variables.
+	Start Date Time in Local Format is a script variable.
+	Elapsed time is a calculated value.
+	Domain Name is $env:USERDNSDOMAIN.
+	Username is $env:USERNAME.
+	Folder Name is a script variable.
 .PARAMETER DCDNSInfo 
 	Use WMI to gather, for each domain controller, the IP Address, and each DNS server 
 	configured.
@@ -214,7 +250,8 @@
 		All users with Homedrive set in ADUC
 		All users whose Primary Group is not Domain Users
 		All users with RDS HomeDrive set in ADUC
-		All Names in the ForeignSecurityPrincipals container that are orphan SIDs
+		All Names in the ForeignSecurityPrincipals container that are orphan SIDs 
+		(Root domain only)
 	
 	The Text output option is limited to the first 25 characters of the SamAccountName
 	and the first 116 characters of the DistinguishedName.
@@ -239,14 +276,17 @@
 	Multiple sections are separated by a comma. -Section forest, domains
 .PARAMETER Services
 	Gather information on all services running on domain controllers.
-	Servers that are configured to automatically start but are not running will be 
+	
+	Services that are configured to automatically start but are not running will be 
 	colored in red.
-	Used on Domain Controllers only.
+	
 	This parameter requires the script be run from an elevated PowerShell session
 	using an account with permission to retrieve service information (i.e. Domain 
 	Admin).
+	
 	Selecting this parameter will add to both the time it takes to run the script and 
 	size of the report.
+	
 	This parameter is disabled by default.
 .PARAMETER MSWord
 	SaveAs DOCX file
@@ -295,16 +335,6 @@
 	
 	This parameter is only valid with the MSWORD and PDF output parameters.
 	This parameter has an alias of CF.
-.PARAMETER CompanyName
-	Company Name to use for the Cover Page.  
-	Default value is contained in 
-	HKCU:\Software\Microsoft\Office\Common\UserInfo\CompanyName or
-	HKCU:\Software\Microsoft\Office\Common\UserInfo\Company, whichever is populated 
-	on the computer running the script.
-	This parameter has an alias of CN.
-	If either registry key does not exist and this parameter is not specified, the report 
-	will not contain a Company Name on the cover page.
-	This parameter is only valid with the MSWORD and PDF output parameters.
 .PARAMETER CompanyPhone
 	Company Phone to use for the Cover Page if the Cover Page has the Phone field.  
 	
@@ -394,7 +424,7 @@
 	ADForest defaults to the value of $Env:USERDNSDOMAIN.
 
 	ComputerName defaults to the value of $Env:USERDNSDOMAIN, then the script queries for 
-	a domain controller that is also a global catalog server and will use that as the 
+	a domain controller that is also a global catalog server and uses that as the 
 	value for ComputerName.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -MSWord
@@ -425,8 +455,7 @@
 	a domain controller that is also a global catalog server and uses that as the value 
 	for ComputerName.
 .EXAMPLE
-	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -ADDomain 
-	child.company.tld
+	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -ADDomain child.company.tld
 	
 	Creates an HTML report.
 	
@@ -522,8 +551,8 @@
 	
 	Creates an HTML report.
 	
-	Will use all default values and add additional information for the services running on 
-	each domain controller.
+	Will use all default values and add additional information for the services running 
+	on each domain controller.
 
 	ADForest defaults to the value of $Env:USERDNSDOMAIN.
 
@@ -626,8 +655,8 @@
 
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2021 at 6PM is 2021-06-01_1800.
-	The output filename is company.tld_2021-06-01_1800.docx.
+	June 1, 2022 at 6PM is 2022-06-01_1800.
+	The output filename is company.tld_2022-06-01_1800.docx.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -PDF -ADForest corp.carlwebster.com 
 	-AddDateTime
@@ -650,8 +679,8 @@
 
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2021 at 6PM is 2021-06-01_1800.
-	The output filename is corp.carlwebster.com_2021-06-01_1800.PDF
+	June 1, 2022 at 6PM is 2022-06-01_1800.
+	The output filename is corp.carlwebster.com_2022-06-01_1800.PDF
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -ADForest corp.carlwebster.com -Folder 
 	\\FileServer\ShareName
@@ -700,6 +729,19 @@
 		Services        = True
 		
 		Section         = "All"
+.EXAMPLE
+	PS C:\PSScript >.\Docu-ActiveDirectory.ps1 -Dev -ScriptInfo -Log
+	
+	Creates a default report.
+	
+	Creates a text file named ADDSInventoryScriptErrors_yyyyMMddTHHmmssffff.txt that 
+	contains up to the last 250 errors reported by the script.
+	
+	Creates a text file named ADDSInventoryScriptInfo_yyyy-MM-dd_HHmm.txt that 
+	contains all the script parameters and other basic information.
+	
+	Creates a text file for transcript logging named 
+	ADDSDocScriptTranscript_yyyyMMddTHHmmssffff.txt.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-ActiveDirectory.ps1 -SmtpServer mail.domain.tld -From 
 	ADAdmin@domain.tld -To ITGroup@domain.tld	
@@ -781,9 +823,9 @@
 	No objects are output from this script.  This script creates a Word or PDF document.
 .NOTES
 	NAME: Docu-ActiveDirectory.ps1
-	VERSION: 3.03
+	VERSION: 3.20
 	AUTHOR: Carl Webster and Michael B. Smith
-	LASTEDIT: February 20, 2021
+	LASTEDIT: July 31, 2025
 #>
 
 
@@ -816,6 +858,11 @@ Param(
 	[Switch]$AddDateTime=$False,
 	
 	[parameter(Mandatory=$False)] 
+	[Alias("CN")]
+	[ValidateNotNullOrEmpty()]
+	[string]$CompanyName="",
+    
+	[parameter(Mandatory=$False)] 
 	[Switch]$Dev=$False,
 	
 	[parameter(Mandatory=$False)] 
@@ -827,6 +874,10 @@ Param(
 	[parameter(Mandatory=$False)] 
 	[Alias("SI")]
 	[Switch]$ScriptInfo=$False,
+
+	[parameter(Mandatory=$False)] 
+	[Alias("RF")]
+	[Switch]$ReportFooter=$False,
 
 	[parameter(Mandatory=$False)] 
 	[Switch]$DCDNSInfo=$False, 
@@ -869,11 +920,6 @@ Param(
 	[Alias("CF")]
 	[ValidateNotNullOrEmpty()]
 	[string]$CompanyFax="",
-    
-	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
-	[Alias("CN")]
-	[ValidateNotNullOrEmpty()]
-	[string]$CompanyName="",
     
 	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
 	[Alias("CPh")]
@@ -924,6 +970,168 @@ Param(
 #Version 1.0 released to the community on May 31, 2014
 #
 #Version 2.0 is based on version 1.20
+#
+#Version 3.20 31-Jul-2025, update done by Michael B. Smith
+#	An RODC may not have a dnsHostName attribute. In that case, store the Name attribute instead
+#	Correct configNC coercion (the prior way worked, but was the difficult way to do it)
+#	Machine Account Quota was not retrieved for all AD domains, only for the forest root. Fixed. Reported by zjorz.
+#	Speeded up the function Line
+#	Speeded up the function WriteWordLine
+#	Updated ForestMode and DomainMode to include Windows Server 2025 (Webster)
+#	Updated Schema Version Table for Windows Server 2025 and Exchange 2019 CU10-CU15/SE (Webster)
+#	When a DC is offline, say in the error that TCP port 88 was checked
+#
+#Version 3.11 27-May-2022
+#	Fixed bug in Function getDSUsers with MaxPasswordAge reported by Danny de Kooker
+#	Moved the following section headings so that the error/warning/notice messages had a section heading
+#		Domain Controllers
+#		Fine-grained password policies
+#
+#Version 3.10 23-Apr-2022
+#	Added Windows Server 2022 to AD Schema version 88
+#	Fixed some text output alignment
+#	In Function OutputNicItem, fixed several issues with DHCP data
+#	Replaced all Get-WmiObject with Get-CimInstance
+#	Some general code cleanup
+#	Updated schema numbers for Exchange CUs
+#		"15334" = "Exchange 2016 CU21-CU23"
+#		"17003" = "Exchange 2019 CU10-CU12"
+#
+#Version 3.09 7-Feb-2022
+#	Added to Domain Information the data for ms-DS-MachineAccountQuota
+#	Changed the date format for the transcript and error log files from yyyy-MM-dd_HHmm format to the FileDateTime format
+#		The format is yyyyMMddTHHmmssffff (case-sensitive, using a 4-digit year, 2-digit month, 2-digit day, 
+#		the letter T as a time separator, 2-digit hour, 2-digit minute, 2-digit second, and 4-digit millisecond). 
+#		For example: 20221225T0840107271.
+#	Fixed the German Table of Contents (Thanks to Rene Bigler)
+#		From 
+#			'de-'	{ 'Automatische Tabelle 2'; Break }
+#		To
+#			'de-'	{ 'Automatisches Verzeichnis 2'; Break }
+#	In Function AbortScript, added stopping the transcript log if the log was enabled and started
+#	Replaced most script Exit calls with AbortScript to stop the transcript log if the log was enabled and started
+#	Updated the help text
+#	Updated the ReadMe file
+#
+#Version 3.08 24-Nov-2021
+#	In Function AbortScript, add test for the winword process and terminate it if it is running
+#	In Functions AbortScript and SaveandCloseDocumentandShutdownWord, add code from Guy Leech to test for the "Id" property before using it
+#	In Function ProcessDomainControllers, added "Computer Object DN" to the output
+#		If the DN doesn't contain "OU=Domain Controllers", highlight the Word/HTML output in red and add "***" to the text output
+#	Updated Functions ShowScriptOptions and ProcessScriptEnd to add $ReportFooter
+#	Updated schema numbers for Exchange CUs
+#		"15334" = "Exchange 2016 CU21-CU22"
+#		"17003" = "Exchange 2019 CU10-CU11"
+#	Updated the help text
+#	Updated the ReadMe file
+#
+#Version 3.07 11-Sep-2021
+#	Added array error checking for non-empty arrays before attempting to create the Word table for most Word tables
+#	Added Function OutputReportFooter
+#	Added Parameter ReportFooter
+#		Outputs a footer section at the end of the report.
+#		Report Footer
+#			Report information:
+#				Created with: <Script Name> - Release Date: <Script Release Date>
+#				Script version: <Script Version>
+#				Started on <Date Time in Local Format>
+#				Elapsed time: nn days, nn hours, nn minutes, nn.nn seconds
+#				Ran from domain <Domain Name> by user <Username>
+#				Ran from the folder <Folder Name>
+#	Updated Function OutputADFileLocations to better report on the SYSVOL state. Code supplied by Michael B. Smith.
+#	Updated Function ProcessgGPOsByOUOld to allow Word table output to handle GPOs that somehow PowerShell thinks are arrays
+#	Updated Functions SaveandCloseTextDocument and SaveandCloseHTMLDocument to add a "Report Complete" line
+#	Updated the help text
+#	Updated the ReadMe file
+#	
+#Version 3.06 27-Jul-2021
+#	Add new Function ProcessOUsForBlockedInheritance to add a report section for OUs with GPO Block Inheritance set
+#	Add new Function ProcessSYSVOLStateInfo to show the SYSVOL state for each DC as an Appendix
+#	Added by MBS, HTML codes for AlignLeft and AlignRight
+#		Update Function AddHTMLTable
+#		Update Function FormatHTMLTable
+#		Update Function Get-ComputerCountByOS
+#		Update Function getDSUsers
+#		Update Function OutputEventLogInfo
+#		Update Function ProcessEventLogInfo
+#		Update Function ProcessGroupInformation
+#		Update Function ProcessOrganizationalUnits
+#		Update Function ProcessSYSVOLStateInfo
+#		Update Function WriteHTMLLine
+#	In Function ProcessAllDCsInTheForest, change the way all domain controllers in the forest are retrieved
+#		The previous method did not always find RODC appliances
+#		Use new method given by MBS
+#	The following fixes were requested by Jorge de Almeida Pinto
+#		In Function Get-RegistryValue, removed the Write-Verbose message on error as it confused people
+#		In Function OutputADFileLocations, check only for null to catch appliances (Riverbed) with no registry
+#		In Function OutputEventLogInfo, add Try/Catch to Get-EventLog to catch appliances (Riverbed) with no event logs
+#		In Function OutputTimeServerRegistryKeys, check only for null to catch appliances (Riverbed) with no registry
+#		When processing DCs, add testing to see if the DC is online before processing registry keys
+#			Add an error message to console and output file
+#		When testing a DC to see if it was online, I used the wrong variable name
+#	In Function ProcessScriptEnd, always output Company Name
+#	In Function ShowScriptOptions, always output Company Name
+#
+#Version 3.05 7-Jul-2021
+#	Add fixes provided by Jorge de Almeida Pinto 
+#		Fixed the way the $Script:AllDomainControllers array is built
+#		Fixed getting Fine-grained Password policies to work in a multiple domain/child domain forest
+#	Change the CompanyName parameter so that HTML and Text output can use it. (requested by Michael B. Smith)
+#		.PARAMETER CompanyName
+#			Company Name to use for the Word Cover Page or the Forest Information section for 
+#			HTML and Text.
+#	
+#			Default value for Word output is contained in 
+#			HKCU:\Software\Microsoft\Office\Common\UserInfo\CompanyName or
+#			HKCU:\Software\Microsoft\Office\Common\UserInfo\Company, whichever is populated 
+#			on the computer running the script.
+#
+#			This parameter has an alias of CN.
+#
+#			For Word output, if either registry key does not exist and this parameter is not 
+#			specified, the report will not contain a Company Name on the cover page.
+#	
+#			For HTML and Text output, the Forest Information section will not contain the Company 
+#			Name if this parameter is not specified.
+#	For both HTML and Text output, at the end of the report add a "Report Complete" line (requested by Michael B. Smith)
+#	For Privileged Groups, add a column for SamAccountName (requested by Michael B. Smith)
+#	For the forest section, if a company name is entered, added the company name to the section title (requested by Michael B. Smith)
+#	For the section Computer Operating Systems, fix the HTML tables to have slightly wider columns (requested by Michael B. Smith)
+#	For Users with AdminCount=1, add columns for SamAccountName and Domain (requested by Michael B. Smith)
+#	Renamed items in the list of AD Schema Items (requested by Michael B. Smith)
+#		RAS Server -> NPS/RAS Server
+#		LAPS -> On-premises LAPS
+#		SCCM -> MECM/SCCM
+#		Lync/Skype for Business -> On-premises Lync/Skype for Business
+#		Exchange -> On-premises Exchange
+#	Update schema numbers for Exchange CUs
+#		"15333" = "Exchange 2016 CU19/CU20"
+#		"15334" = "Exchange 2016 CU21"
+#		"17002" = "Exchange 2019 CU8/CU9"
+#		"17003" = "Exchange 2019 CU10"
+#	Updated the help text
+#	Updated the ReadMe file
+
+#Version 3.04 24-Mar-2021
+#	Change the wording for schema extensions from "Just because a schema extension is Present does not mean it is in use."
+#		To "Just because a schema extension is Present does not mean that the product is in use."
+#	Only process and output Foreign Security Principal data for the Root Domain
+#	Only process the Appendix Domain Controller DNS Info if -DCDNSInfo is true. No need for an empty table and Appendix otherwise
+#	Removed a few warnings from the console output that were not warnings
+#	The following fixes are for running the script in a Forest with multiple domains
+#		When creating the array that contains all domain controllers, don't sort after each domain as sorting changed the Type of the arraylist after the first domain was processed
+#			This caused the three Appendixes to only contain the data for the DCs in the first domain
+#		When outputting domain controllers, sort the DCs by domain name and DC name
+#			Put the DCs in domain name order, don't put every DC in the Root domain
+#			Change the header to reflect the actual domain name
+#		When retrieving Inherited GPOs, add the Domain name to the cmdlet
+#		When running in a child or tree domain, only the domain entered was used when calculating the number of domains in the forest
+#			That is now fixed
+#		When running in a child or tree domain and using -ADForest, compare the root domain's name to the name entered for -ADForest
+#			If they are not the same, abort the script and state to rerun the script with -ADDomain and not -ADForest
+#	Updated the help text
+#	Updated the ReadMe file
+
 #
 #Version 3.03 22-Feb-2021
 #	Added a Try/Catch and -LDAPFilter when checking for the Exchange schema attributes to suppress the error if Exchange is not installed
@@ -1067,18 +1275,74 @@ Param(
 #	You can now select multiple output formats. This required extensive code changes.
 #
 
+Function AbortScript
+{
+	If($MSWord -or $PDF)
+	{
+		Write-Verbose "$(Get-Date -Format G): System Cleanup"
+		If(Test-Path variable:global:word)
+		{
+			$Script:Word.quit()
+			[System.Runtime.Interopservices.Marshal]::ReleaseComObject($Script:Word) | Out-Null
+			Remove-Variable -Name word -Scope Global 4>$Null
+		}
+	}
+	[gc]::collect() 
+	[gc]::WaitForPendingFinalizers()
+
+	If($MSWord -or $PDF)
+	{
+		#is the winword Process still running? kill it
+
+		#find out our session (usually "1" except on TS/RDC or Citrix)
+		$SessionID = (Get-Process -PID $PID).SessionId
+
+		#Find out if winword running in our session
+		$wordprocess = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}) | Select-Object -Property Id 
+		If( $wordprocess -and $wordprocess.Id -gt 0)
+		{
+			Write-Verbose "$(Get-Date -Format G): WinWord Process is still running. Attempting to stop WinWord Process # $($wordprocess.Id)"
+			Stop-Process $wordprocess.Id -EA 0
+		}
+	}
+	
+	Write-Verbose "$(Get-Date -Format G): Script has been aborted"
+	#stop transcript logging
+	If($Log -eq $True) 
+	{
+		If($Script:StartLog -eq $True) 
+		{
+			try 
+			{
+				Stop-Transcript | Out-Null
+				Write-Verbose "$(Get-Date -Format G): $Script:LogPath is ready for use"
+			} 
+			catch 
+			{
+				Write-Verbose "$(Get-Date -Format G): Transcript/log stop failed"
+			}
+		}
+	}
+	$ErrorActionPreference = $SaveEAPreference
+	Exit
+}
 
 Set-StrictMode -Version Latest
 
 #force on
-$PSDefaultParameterValues = @{"*:Verbose"=$True}
-$SaveEAPreference = $ErrorActionPreference
-$ErrorActionPreference = 'SilentlyContinue'
-$global:emailCredentials = $Null
+$PSDefaultParameterValues   = @{"*:Verbose"=$True}
+$SaveEAPreference           = $ErrorActionPreference
+$ErrorActionPreference      = 'SilentlyContinue'
+$global:emailCredentials    = $Null
 
 ## v3.00
 $script:ExtraSpecialVerbose = $false
-$script:MyVersion           = '3.03'
+
+#Report footer stuff
+$script:MyVersion           = '3.20'
+$Script:ScriptName          = "Docu-ActiveDirectory.ps1"
+$tmpdate                    = [datetime] "06/17/2024"
+$Script:ReleaseDate         = $tmpdate.ToUniversalTime().ToShortDateString()
 
 Function wv
 {
@@ -1147,7 +1411,7 @@ If($Folder -ne "")
 			`n`n
 	Script cannot continue.
 			`n`n"
-			Exit
+			AbortScript
 		}
 	}
 	Else
@@ -1160,7 +1424,7 @@ If($Folder -ne "")
 	Script cannot continue.
 		`n`n
 		"
-		Exit
+		AbortScript
 	}
 }
 
@@ -1182,7 +1446,7 @@ If($Script:pwdpath.EndsWith("\"))
 If($Log) 
 {
 	#start transcript logging
-	$Script:LogPath = "$Script:pwdpath\ADDSDocScriptTranscript_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+	$Script:LogPath = "$Script:pwdpath\ADDSDocScriptTranscript_$(Get-Date -f FileDateTime).txt"
 	
 	try 
 	{
@@ -1200,7 +1464,7 @@ If($Log)
 If($Dev)
 {
 	$Error.Clear()
-	$Script:DevErrorFile = "$Script:pwdpath\ADInventoryScriptErrors_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+	$Script:DevErrorFile = "$Script:pwdpath\ADInventoryScriptErrors_$(Get-Date -f FileDateTime).txt"
 }
 
 If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($From) -and [String]::IsNullOrEmpty($To))
@@ -1213,7 +1477,7 @@ If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($From) -an
 	`t`t
 	Script cannot Continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($From) -and ![String]::IsNullOrEmpty($To))
 {
@@ -1225,7 +1489,7 @@ If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($From) -an
 	`t`t
 	Script cannot Continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($To) -and ![String]::IsNullOrEmpty($From))
 {
@@ -1237,7 +1501,7 @@ If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($To) -and 
 	`t`t
 	Script cannot Continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 If(![String]::IsNullOrEmpty($From) -and ![String]::IsNullOrEmpty($To) -and [String]::IsNullOrEmpty($SmtpServer))
 {
@@ -1249,7 +1513,7 @@ If(![String]::IsNullOrEmpty($From) -and ![String]::IsNullOrEmpty($To) -and [Stri
 	`t`t
 	Script cannot Continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 If(![String]::IsNullOrEmpty($From) -and [String]::IsNullOrEmpty($SmtpServer))
 {
@@ -1261,7 +1525,7 @@ If(![String]::IsNullOrEmpty($From) -and [String]::IsNullOrEmpty($SmtpServer))
 	`t`t
 	Script cannot Continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 If(![String]::IsNullOrEmpty($To) -and [String]::IsNullOrEmpty($SmtpServer))
 {
@@ -1273,22 +1537,23 @@ If(![String]::IsNullOrEmpty($To) -and [String]::IsNullOrEmpty($SmtpServer))
 	`t`t
 	Script cannot Continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 
-$Script:DCDNSIPInfo = New-Object System.Collections.ArrayList
+$Script:DCDNSIPInfo    = New-Object System.Collections.ArrayList
 $Script:DCEventLogInfo = New-Object System.Collections.ArrayList
 $Script:TimeServerInfo = New-Object System.Collections.ArrayList
-$Script:DARights = $False
-$Script:Elevated = $False
+$Script:DCSYSVOLState  = New-Object System.Collections.ArrayList
+$Script:DARights       = $False
+$Script:Elevated       = $False
 
 #region initialize variables for word html and text
-[string]$Script:RunningOS = (Get-WmiObject -class Win32_OperatingSystem -EA 0).Caption
+[string]$Script:RunningOS = (Get-CIMInstance -ClassName Win32_OperatingSystem -EA 0 -Verbose:$False).Caption
+$Script:CoName = $CompanyName #3.05 move so this is available for HTML and Text output also
 
 If($MSWord -or $PDF)
 {
 	#try and fix the issue with the $CompanyName variable
-	$Script:CoName = $CompanyName
 	Write-Verbose "$(Get-Date -Format G): CoName is $($Script:CoName)"
 	
 	#the following values were attained from 
@@ -1299,11 +1564,11 @@ If($MSWord -or $PDF)
 	[int]$wdSeekPrimaryFooter = 4
 	[int]$wdStory = 6
 	[int]$wdColorBlack = 0
-	[int]$wdColorGray05 = 15987699 
+	#[int]$wdColorGray05 = 15987699 
 	[int]$wdColorGray15 = 14277081
 	[int]$wdColorRed = 255
 	[int]$wdColorWhite = 16777215
-	[int]$wdColorYellow = 65535 #added in ADDS script V2.22
+	#[int]$wdColorYellow = 65535 #added in ADDS script V2.22
 	[int]$wdWord2007 = 12
 	[int]$wdWord2010 = 14
 	[int]$wdWord2013 = 15
@@ -1317,24 +1582,24 @@ If($MSWord -or $PDF)
 	[int]$wdAlignParagraphRight = 2
 	#http://msdn.microsoft.com/en-us/library/office/ff193345%28v=office.15%29.aspx
 	[int]$wdCellAlignVerticalTop = 0
-	[int]$wdCellAlignVerticalCenter = 1
-	[int]$wdCellAlignVerticalBottom = 2
+	#[int]$wdCellAlignVerticalCenter = 1
+	#[int]$wdCellAlignVerticalBottom = 2
 	#http://msdn.microsoft.com/en-us/library/office/ff844856%28v=office.15%29.aspx
 	[int]$wdAutoFitFixed = 0
 	[int]$wdAutoFitContent = 1
-	[int]$wdAutoFitWindow = 2
+	#[int]$wdAutoFitWindow = 2
 	#http://msdn.microsoft.com/en-us/library/office/ff821928%28v=office.15%29.aspx
 	[int]$wdAdjustNone = 0
 	[int]$wdAdjustProportional = 1
-	[int]$wdAdjustFirstColumn = 2
-	[int]$wdAdjustSameWidth = 3
+	#[int]$wdAdjustFirstColumn = 2
+	#[int]$wdAdjustSameWidth = 3
 
 	[int]$PointsPerTabStop = 36
 	[int]$Indent0TabStops = 0 * $PointsPerTabStop
-	[int]$Indent1TabStops = 1 * $PointsPerTabStop
-	[int]$Indent2TabStops = 2 * $PointsPerTabStop
-	[int]$Indent3TabStops = 3 * $PointsPerTabStop
-	[int]$Indent4TabStops = 4 * $PointsPerTabStop
+	#[int]$Indent1TabStops = 1 * $PointsPerTabStop
+	#[int]$Indent2TabStops = 2 * $PointsPerTabStop
+	#[int]$Indent3TabStops = 3 * $PointsPerTabStop
+	#[int]$Indent4TabStops = 4 * $PointsPerTabStop
 
 	#http://www.thedoctools.com/index.php?show=wt_style_names_english_danish_german_french
 	[int]$wdStyleHeading1 = -2
@@ -1348,7 +1613,7 @@ If($MSWord -or $PDF)
 	[int]$wdLineStyleSingle = 1
 
 	[int]$wdHeadingFormatTrue = -1
-	[int]$wdHeadingFormatFalse = 0 
+	#[int]$wdHeadingFormatFalse = 0 
 }
 
 If($HTML)
@@ -1376,23 +1641,25 @@ If($HTML)
 
     $global:htmlbold        = 1 4>$Null
     $global:htmlitalics     = 2 4>$Null
-    $global:htmlred         = 4 4>$Null
-    $global:htmlcyan        = 8 4>$Null
-    $global:htmlblue        = 16 4>$Null
-    $global:htmldarkblue    = 32 4>$Null
-    $global:htmllightblue   = 64 4>$Null
-    $global:htmlpurple      = 128 4>$Null
-    $global:htmlyellow      = 256 4>$Null
-    $global:htmllime        = 512 4>$Null
-    $global:htmlmagenta     = 1024 4>$Null
-    $global:htmlwhite       = 2048 4>$Null
-    $global:htmlsilver      = 4096 4>$Null
-    $global:htmlgray        = 8192 4>$Null
-    $global:htmlolive       = 16384 4>$Null
-    $global:htmlorange      = 32768 4>$Null
-    $global:htmlmaroon      = 65536 4>$Null
-    $global:htmlgreen       = 131072 4>$Null
-	$global:htmlblack       = 262144 4>$Null
+	$global:htmlAlignLeft   = 4 4>$Null	#3.06 added by MBS
+	$global:htmlAlignRight  = 8 4>$Null	#3.06 added by MBS
+    $global:htmlred         = 16 4>$Null
+    $global:htmlcyan        = 32 4>$Null
+    $global:htmlblue        = 64 4>$Null
+    $global:htmldarkblue    = 128 4>$Null
+    $global:htmllightblue   = 256 4>$Null
+    $global:htmlpurple      = 512 4>$Null
+    $global:htmlyellow      = 1024 4>$Null
+    $global:htmllime        = 2048 4>$Null
+    $global:htmlmagenta     = 4096 4>$Null
+    $global:htmlwhite       = 8192 4>$Null
+    $global:htmlsilver      = 16384 4>$Null
+    $global:htmlgray        = 32768 4>$Null
+    $global:htmlolive       = 65536 4>$Null
+    $global:htmlorange      = 131072 4>$Null
+    $global:htmlmaroon      = 262144 4>$Null
+    $global:htmlgreen       = 524288 4>$Null
+	$global:htmlblack       = 1048576 4>$Null
 
 	$global:htmlsb          = ( $htmlsilver -bor $htmlBold ) ## point optimization
 
@@ -1543,7 +1810,6 @@ $Script:Title is attached.
 }
 #endregion
 
-#region code for hardware data
 Function GetComputerWMIInfo
 {
 	Param([string]$RemoteComputerName)
@@ -1556,6 +1822,7 @@ Function GetComputerWMIInfo
 	# modified 1-May-2014 to work in trusted AD Forests and using different domain admin credentials	
 	# modified 17-Aug-2016 to fix a few issues with Text and HTML output
 	# modified 29-Apr-2018 to change from Arrays to New-Object System.Collections.ArrayList
+	# modified 11-Mar-2022 changed from using Get-WmiObject to Get-CimInstance
 
 	#Get Computer info
 	Write-Verbose "$(Get-Date -Format G): `t`tProcessing WMI Computer information"
@@ -1578,7 +1845,14 @@ Function GetComputerWMIInfo
 	
 	Try
 	{
-		$Results = Get-WmiObject -computername $RemoteComputerName win32_computersystem
+		If($RemoteComputerName -eq $env:computername)
+		{
+			$Results = Get-CimInstance -ClassName win32_computersystem -Verbose:$False
+		}
+		Else
+		{
+			$Results = Get-CimInstance -computername $RemoteComputerName -ClassName win32_computersystem -Verbose:$False
+		}
 	}
 	
 	Catch
@@ -1592,7 +1866,14 @@ Function GetComputerWMIInfo
 		@{N="TotalPhysicalRam"; E={[math]::round(($_.TotalPhysicalMemory / 1GB),0)}}, `
 		NumberOfProcessors, NumberOfLogicalProcessors
 		$Results = $Null
-		[string]$ComputerOS = (Get-WmiObject -class Win32_OperatingSystem -computername $RemoteComputerName -EA 0).Caption
+		If($RemoteComputerName -eq $env:computername)
+		{
+			[string]$ComputerOS = (Get-CimInstance -ClassName Win32_OperatingSystem -EA 0 -Verbose:$False).Caption
+		}
+		Else
+		{
+			[string]$ComputerOS = (Get-CimInstance -ClassName Win32_OperatingSystem -CimSession $RemoteComputerName -EA 0 -Verbose:$False).Caption
+		}
 
 		ForEach($Item in $ComputerItems)
 		{
@@ -1601,29 +1882,20 @@ Function GetComputerWMIInfo
 	}
 	ElseIf(!$?)
 	{
-		Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_computersystem failed for $($RemoteComputerName)"
-		Write-Warning "Get-WmiObject win32_computersystem failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-CimInstance win32_computersystem failed for $($RemoteComputerName)"
+		Write-Warning "Get-CimInstance win32_computersystem failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
-			WriteWordLine 0 2 "Get-WmiObject win32_computersystem failed for $($RemoteComputerName)" "" $Null 0 $False $True
-			WriteWordLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" "" $Null 0 $False $True
-			WriteWordLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" "" $Null 0 $False $True
-			WriteWordLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." "" $Null 0 $False $True
+			WriteWordLine 0 2 "Get-CimInstance win32_computersystem failed for $($RemoteComputerName)" "" $Null 0 $False $True
 		}
 		If($Text)
 		{
-			Line 2 "Get-WmiObject win32_computersystem failed for $($RemoteComputerName)"
-			Line 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository"
-			Line 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may"
-			Line 2 "need to rerun the script with Domain Admin credentials from the trusted Forest."
-			Line 2 ""
+			Line 3 "Get-CimInstance win32_computersystem failed for $($RemoteComputerName)"
+			Line 3 ""
 		}
 		If($HTML)
 		{
-			WriteHTMLLine 0 2 "Get-WmiObject win32_computersystem failed for $($RemoteComputerName)" -option $htmlBold
-			WriteHTMLLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" -option $htmlBold
-			WriteHTMLLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" -Option $htmlBold
-			WriteHTMLLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." -Option $htmlBold
+			WriteHTMLLine 0 2 "Get-CimInstance win32_computersystem failed for $($RemoteComputerName)" -option $htmlBold
 		}
 	}
 	Else
@@ -1635,7 +1907,7 @@ Function GetComputerWMIInfo
 		}
 		If($Text)
 		{
-			Line 2 "No results Returned for Computer information"
+			Line 3 "No results Returned for Computer information"
 		}
 		If($HTML)
 		{
@@ -1661,7 +1933,14 @@ Function GetComputerWMIInfo
 
 	Try
 	{
-		$Results = Get-WmiObject -computername $RemoteComputerName Win32_LogicalDisk
+		If($RemoteComputerName -eq $env:computername)
+		{
+			$Results = Get-CimInstance -ClassName Win32_LogicalDisk -Verbose:$False
+		}
+		Else
+		{
+			$Results = Get-CimInstance -CimSession $RemoteComputerName -ClassName Win32_LogicalDisk -Verbose:$False
+		}
 	}
 	
 	Catch
@@ -1685,28 +1964,19 @@ Function GetComputerWMIInfo
 	}
 	ElseIf(!$?)
 	{
-		Write-Verbose "$(Get-Date -Format G): Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)"
-		Write-Warning "Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-CimInstance Win32_LogicalDisk failed for $($RemoteComputerName)"
+		Write-Warning "Get-CimInstance Win32_LogicalDisk failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
-			WriteWordLine 0 2 "Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)" "" $Null 0 $False $True
-			WriteWordLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" "" $Null 0 $False $True
-			WriteWordLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" "" $Null 0 $False $True
-			WriteWordLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." "" $Null 0 $False $True
+			WriteWordLine 0 2 "Get-CimInstance Win32_LogicalDisk failed for $($RemoteComputerName)" "" $Null 0 $False $True
 		}
 		If($Text)
 		{
-			Line 2 "Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)"
-			Line 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository"
-			Line 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may"
-			Line 2 "need to rerun the script with Domain Admin credentials from the trusted Forest."
+			Line 2 "Get-CimInstance Win32_LogicalDisk failed for $($RemoteComputerName)"
 		}
 		If($HTML)
 		{
-			WriteHTMLLine 0 2 "Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)" -Option $htmlBold
-			WriteHTMLLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" -Option $htmlBold
-			WriteHTMLLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" -Option $htmlBold
-			WriteHTMLLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." -Option $htmlBold
+			WriteHTMLLine 0 2 "Get-CimInstance Win32_LogicalDisk failed for $($RemoteComputerName)" -Option $htmlBold
 		}
 	}
 	Else
@@ -1744,7 +2014,14 @@ Function GetComputerWMIInfo
 
 	Try
 	{
-		$Results = Get-WmiObject -computername $RemoteComputerName win32_Processor
+		If($RemoteComputerName -eq $env:computername)
+		{
+			$Results = Get-CimInstance -ClassName win32_Processor -Verbose:$False
+		}
+		Else
+		{
+			$Results = Get-CimInstance -computername $RemoteComputerName -ClassName win32_Processor -Verbose:$False
+		}
 	}
 	
 	Catch
@@ -1764,28 +2041,19 @@ Function GetComputerWMIInfo
 	}
 	ElseIf(!$?)
 	{
-		Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_Processor failed for $($RemoteComputerName)"
-		Write-Warning "Get-WmiObject win32_Processor failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-CimInstance win32_Processor failed for $($RemoteComputerName)"
+		Write-Warning "Get-CimInstance win32_Processor failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
-			WriteWordLine 0 2 "Get-WmiObject win32_Processor failed for $($RemoteComputerName)" "" $Null 0 $False $True
-			WriteWordLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" "" $Null 0 $False $True
-			WriteWordLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" "" $Null 0 $False $True
-			WriteWordLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." "" $Null 0 $False $True
+			WriteWordLine 0 2 "Get-CimInstance win32_Processor failed for $($RemoteComputerName)" "" $Null 0 $False $True
 		}
 		If($Text)
 		{
-			Line 2 "Get-WmiObject win32_Processor failed for $($RemoteComputerName)"
-			Line 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository"
-			Line 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may"
-			Line 2 "need to rerun the script with Domain Admin credentials from the trusted Forest."
+			Line 2 "Get-CimInstance win32_Processor failed for $($RemoteComputerName)"
 		}
 		If($HTML)
 		{
-			WriteHTMLLine 0 2 "Get-WmiObject win32_Processor failed for $($RemoteComputerName)" -Option $htmlBold
-			WriteHTMLLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" -Option $htmlBold
-			WriteHTMLLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" -Option $htmlBold
-			WriteHTMLLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." -Option $htmlBold
+			WriteHTMLLine 0 2 "Get-CimInstance win32_Processor failed for $($RemoteComputerName)" -Option $htmlBold
 		}
 	}
 	Else
@@ -1825,7 +2093,14 @@ Function GetComputerWMIInfo
 	
 	Try
 	{
-		$Results = Get-WmiObject -computername $RemoteComputerName win32_networkadapterconfiguration
+		If($RemoteComputerName -eq $env:computername)
+		{
+			$Results = Get-CimInstance -ClassName win32_networkadapterconfiguration -Verbose:$False
+		}
+		Else
+		{
+			$Results = Get-CimInstance -computername $RemoteComputerName -ClassName win32_networkadapterconfiguration -Verbose:$False
+		}
 	}
 	
 	Catch
@@ -1844,7 +2119,7 @@ Function GetComputerWMIInfo
 		} 
 		Else 
 		{ 
-			$GotNics = !($Nics.__PROPERTY_COUNT -eq 0) 
+			$GotNics = $True
 		} 
 	
 		If($GotNics)
@@ -1853,7 +2128,14 @@ Function GetComputerWMIInfo
 			{
 				Try
 				{
-					$ThisNic = Get-WmiObject -computername $RemoteComputerName win32_networkadapter | Where-Object {$_.index -eq $nic.index}
+					If($RemoteComputerName -eq $env:computername)
+					{
+						$ThisNic = Get-CimInstance -ClassName win32_networkadapter -Verbose:$False | Where-Object {$_.index -eq $nic.index}
+					}
+					Else
+					{
+						$ThisNic = Get-CimInstance -computername $RemoteComputerName -ClassName win32_networkadapter -Verbose:$False | Where-Object {$_.index -eq $nic.index}
+					}
 				}
 				
 				Catch 
@@ -1868,31 +2150,19 @@ Function GetComputerWMIInfo
 				ElseIf(!$?)
 				{
 					Write-Warning "$(Get-Date): Error retrieving NIC information"
-					Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
-					Write-Warning "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
+					Write-Verbose "$(Get-Date -Format G): Get-CimInstance win32_networkadapterconfiguration failed for $($RemoteComputerName)"
+					Write-Warning "Get-CimInstance win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 					If($MSWORD -or $PDF)
 					{
 						WriteWordLine 0 2 "Error retrieving NIC information" "" $Null 0 $False $True
-						WriteWordLine 0 2 "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)" "" $Null 0 $False $True
-						WriteWordLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" "" $Null 0 $False $True
-						WriteWordLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" "" $Null 0 $False $True
-						WriteWordLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." "" $Null 0 $False $True
 					}
 					If($Text)
 					{
 						Line 2 "Error retrieving NIC information"
-						Line 2 "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
-						Line 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository"
-						Line 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may"
-						Line 2 "need to rerun the script with Domain Admin credentials from the trusted Forest."
 					}
 					If($HTML)
 					{
 						WriteHTMLLine 0 2 "Error retrieving NIC information" -Option $htmlBold
-						WriteHTMLLine 0 2 "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)" -Option $htmlBold
-						WriteHTMLLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" -Option $htmlBold
-						WriteHTMLLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" -Option $htmlBold
-						WriteHTMLLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." -Option $htmlBold
 					}
 				}
 				Else
@@ -1917,31 +2187,19 @@ Function GetComputerWMIInfo
 	ElseIf(!$?)
 	{
 		Write-Warning "$(Get-Date): Error retrieving NIC configuration information"
-		Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
-		Write-Warning "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-CimInstance win32_networkadapterconfiguration failed for $($RemoteComputerName)"
+		Write-Warning "Get-CimInstance win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "Error retrieving NIC configuration information" "" $Null 0 $False $True
-			WriteWordLine 0 2 "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)" "" $Null 0 $False $True
-			WriteWordLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" "" $Null 0 $False $True
-			WriteWordLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" "" $Null 0 $False $True
-			WriteWordLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." "" $Null 0 $False $True
 		}
 		If($Text)
 		{
 			Line 2 "Error retrieving NIC configuration information"
-			Line 2 "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
-			Line 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository"
-			Line 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may"
-			Line 2 "need to rerun the script with Domain Admin credentials from the trusted Forest."
 		}
 		If($HTML)
 		{
 			WriteHTMLLine 0 2 "Error retrieving NIC configuration information" -Option $htmlBold
-			WriteHTMLLine 0 2 "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)" -Option $htmlBold
-			WriteHTMLLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" -Option $htmlBold
-			WriteHTMLLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" -Option $htmlBold
-			WriteHTMLLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." -Option $htmlBold
 		}
 	}
 	Else
@@ -1985,9 +2243,18 @@ Function OutputComputerItem
 	try 
 	{
 
-		$PowerPlan = (Get-WmiObject -ComputerName $RemoteComputerName -Class Win32_PowerPlan -Namespace "root\cimv2\power" |
-			Where-Object {$_.IsActive -eq $true} |
-			Select-Object @{Name = "PowerPlan"; Expression = {$_.ElementName}}).PowerPlan
+		If($RemoteComputerName -eq $env:computername)
+		{
+			$PowerPlan = (Get-CimInstance -ClassName Win32_PowerPlan -Namespace "root\cimv2\power" -Verbose:$False |
+				Where-Object {$_.IsActive -eq $true} |
+				Select-Object @{Name = "PowerPlan"; Expression = {$_.ElementName}}).PowerPlan
+		}
+		Else
+		{
+			$PowerPlan = (Get-CimInstance -CimSession $RemoteComputerName -ClassName Win32_PowerPlan -Namespace "root\cimv2\power" -Verbose:$False |
+				Where-Object {$_.IsActive -eq $true} |
+				Select-Object @{Name = "PowerPlan"; Expression = {$_.ElementName}}).PowerPlan
+		}
 	}
 
 	catch 
@@ -2042,19 +2309,18 @@ Function OutputComputerItem
 	If($HTML)
 	{
 		$rowdata = @()
-		$columnHeaders = @("Manufacturer",($htmlsilver -bor $htmlBold),$Item.manufacturer,$htmlwhite)
-		$rowdata += @(,('Model',($htmlsilver -bor $htmlBold),$Item.model,$htmlwhite))
-		$rowdata += @(,('Domain',($htmlsilver -bor $htmlBold),$Item.domain,$htmlwhite))
-		$rowdata += @(,('Operating System',($htmlsilver -bor $htmlBold),$OS,$htmlwhite))
-		$rowdata += @(,('Power Plan',($htmlsilver -bor $htmlBold),$PowerPlan,$htmlwhite))
-		$rowdata += @(,('Total Ram',($htmlsilver -bor $htmlBold),"$($Item.totalphysicalram) GB",$htmlwhite))
-		$rowdata += @(,('Physical Processors (sockets)',($htmlsilver -bor $htmlBold),$Item.NumberOfProcessors,$htmlwhite))
-		$rowdata += @(,('Logical Processors (cores w/HT)',($htmlsilver -bor $htmlBold),$Item.NumberOfLogicalProcessors,$htmlwhite))
+		$columnHeaders = @("Manufacturer",($global:htmlsb),$Item.manufacturer,$htmlwhite)
+		$rowdata += @(,('Model',($global:htmlsb),$Item.model,$htmlwhite))
+		$rowdata += @(,('Domain',($global:htmlsb),$Item.domain,$htmlwhite))
+		$rowdata += @(,('Operating System',($global:htmlsb),$OS,$htmlwhite))
+		$rowdata += @(,('Power Plan',($global:htmlsb),$PowerPlan,$htmlwhite))
+		$rowdata += @(,('Total Ram',($global:htmlsb),"$($Item.totalphysicalram) GB",$htmlwhite))
+		$rowdata += @(,('Physical Processors (sockets)',($global:htmlsb),$Item.NumberOfProcessors,$htmlwhite))
+		$rowdata += @(,('Logical Processors (cores w/HT)',($global:htmlsb),$Item.NumberOfLogicalProcessors,$htmlwhite))
 
 		$msg = ""
 		$columnWidths = @("150px","200px")
 		FormatHTMLTable $msg -rowarray $rowdata -columnArray $columnheaders -fixedWidth $columnWidths -tablewidth "350"
-		#WriteHTMLLine 0 0 " "
 	}
 }
 
@@ -2065,13 +2331,13 @@ Function OutputDriveItem
 	$xDriveType = ""
 	Switch ($drive.drivetype)
 	{
-		0	{$xDriveType = "Unknown"; Break}
-		1	{$xDriveType = "No Root Directory"; Break}
-		2	{$xDriveType = "Removable Disk"; Break}
-		3	{$xDriveType = "Local Disk"; Break}
-		4	{$xDriveType = "Network Drive"; Break}
-		5	{$xDriveType = "Compact Disc"; Break}
-		6	{$xDriveType = "RAM Disk"; Break}
+		0		{$xDriveType = "Unknown"; Break}
+		1		{$xDriveType = "No Root Directory"; Break}
+		2		{$xDriveType = "Removable Disk"; Break}
+		3		{$xDriveType = "Local Disk"; Break}
+		4		{$xDriveType = "Network Drive"; Break}
+		5		{$xDriveType = "Compact Disc"; Break}
+		6		{$xDriveType = "RAM Disk"; Break}
 		Default {$xDriveType = "Unknown"; Break}
 	}
 	
@@ -2159,32 +2425,32 @@ Function OutputDriveItem
 	If($HTML)
 	{
 		$rowdata = @()
-		$columnHeaders = @("Caption",($htmlsilver -bor $htmlBold),$Drive.caption,$htmlwhite)
-		$rowdata += @(,('Size',($htmlsilver -bor $htmlBold),"$($drive.drivesize) GB",$htmlwhite))
+		$columnHeaders = @("Caption",($global:htmlsb),$Drive.caption,$htmlwhite)
+		$rowdata += @(,('Size',($global:htmlsb),"$($drive.drivesize) GB",$htmlwhite))
 
 		If(![String]::IsNullOrEmpty($drive.filesystem))
 		{
-			$rowdata += @(,('File System',($htmlsilver -bor $htmlBold),$Drive.filesystem,$htmlwhite))
+			$rowdata += @(,('File System',($global:htmlsb),$Drive.filesystem,$htmlwhite))
 		}
-		$rowdata += @(,('Free Space',($htmlsilver -bor $htmlBold),"$($drive.drivefreespace) GB",$htmlwhite))
+		$rowdata += @(,('Free Space',($global:htmlsb),"$($drive.drivefreespace) GB",$htmlwhite))
 		If(![String]::IsNullOrEmpty($drive.volumename))
 		{
-			$rowdata += @(,('Volume Name',($htmlsilver -bor $htmlBold),$Drive.volumename,$htmlwhite))
+			$rowdata += @(,('Volume Name',($global:htmlsb),$Drive.volumename,$htmlwhite))
 		}
 		If(![String]::IsNullOrEmpty($drive.volumedirty))
 		{
-			$rowdata += @(,('Volume is Dirty',($htmlsilver -bor $htmlBold),$xVolumeDirty,$htmlwhite))
+			$rowdata += @(,('Volume is Dirty',($global:htmlsb),$xVolumeDirty,$htmlwhite))
 		}
 		If(![String]::IsNullOrEmpty($drive.volumeserialnumber))
 		{
-			$rowdata += @(,('Volume Serial Number',($htmlsilver -bor $htmlBold),$Drive.volumeserialnumber,$htmlwhite))
+			$rowdata += @(,('Volume Serial Number',($global:htmlsb),$Drive.volumeserialnumber,$htmlwhite))
 		}
-		$rowdata += @(,('Drive Type',($htmlsilver -bor $htmlBold),$xDriveType,$htmlwhite))
+		$rowdata += @(,('Drive Type',($global:htmlsb),$xDriveType,$htmlwhite))
 
 		$msg = ""
 		$columnWidths = @("150px","200px")
 		FormatHTMLTable $msg -rowarray $rowdata -columnArray $columnheaders -fixedWidth $columnWidths -tablewidth "350"
-		#WriteHTMLLine 0 0 " "
+		WriteHTMLLine 0 0 " "
 	}
 }
 
@@ -2195,23 +2461,23 @@ Function OutputProcessorItem
 	$xAvailability = ""
 	Switch ($processor.availability)
 	{
-		1	{$xAvailability = "Other"; Break}
-		2	{$xAvailability = "Unknown"; Break}
-		3	{$xAvailability = "Running or Full Power"; Break}
-		4	{$xAvailability = "Warning"; Break}
-		5	{$xAvailability = "In Test"; Break}
-		6	{$xAvailability = "Not Applicable"; Break}
-		7	{$xAvailability = "Power Off"; Break}
-		8	{$xAvailability = "Off Line"; Break}
-		9	{$xAvailability = "Off Duty"; Break}
-		10	{$xAvailability = "Degraded"; Break}
-		11	{$xAvailability = "Not Installed"; Break}
-		12	{$xAvailability = "Install Error"; Break}
-		13	{$xAvailability = "Power Save - Unknown"; Break}
-		14	{$xAvailability = "Power Save - Low Power Mode"; Break}
-		15	{$xAvailability = "Power Save - Standby"; Break}
-		16	{$xAvailability = "Power Cycle"; Break}
-		17	{$xAvailability = "Power Save - Warning"; Break}
+		1		{$xAvailability = "Other"; Break}
+		2		{$xAvailability = "Unknown"; Break}
+		3		{$xAvailability = "Running or Full Power"; Break}
+		4		{$xAvailability = "Warning"; Break}
+		5		{$xAvailability = "In Test"; Break}
+		6		{$xAvailability = "Not Applicable"; Break}
+		7		{$xAvailability = "Power Off"; Break}
+		8		{$xAvailability = "Off Line"; Break}
+		9		{$xAvailability = "Off Duty"; Break}
+		10		{$xAvailability = "Degraded"; Break}
+		11		{$xAvailability = "Not Installed"; Break}
+		12		{$xAvailability = "Install Error"; Break}
+		13		{$xAvailability = "Power Save - Unknown"; Break}
+		14		{$xAvailability = "Power Save - Low Power Mode"; Break}
+		15		{$xAvailability = "Power Save - Standby"; Break}
+		16		{$xAvailability = "Power Cycle"; Break}
+		17		{$xAvailability = "Power Save - Warning"; Break}
 		Default	{$xAvailability = "Unknown"; Break}
 	}
 
@@ -2284,32 +2550,32 @@ Function OutputProcessorItem
 	If($HTML)
 	{
 		$rowdata = @()
-		$columnHeaders = @("Name",($htmlsilver -bor $htmlBold),$Processor.name,$htmlwhite)
-		$rowdata += @(,('Description',($htmlsilver -bor $htmlBold),$Processor.description,$htmlwhite))
+		$columnHeaders = @("Name",($global:htmlsb),$Processor.name,$htmlwhite)
+		$rowdata += @(,('Description',($global:htmlsb),$Processor.description,$htmlwhite))
 
-		$rowdata += @(,('Max Clock Speed',($htmlsilver -bor $htmlBold),"$($processor.maxclockspeed) MHz",$htmlwhite))
+		$rowdata += @(,('Max Clock Speed',($global:htmlsb),"$($processor.maxclockspeed) MHz",$htmlwhite))
 		If($processor.l2cachesize -gt 0)
 		{
-			$rowdata += @(,('L2 Cache Size',($htmlsilver -bor $htmlBold),"$($processor.l2cachesize) KB",$htmlwhite))
+			$rowdata += @(,('L2 Cache Size',($global:htmlsb),"$($processor.l2cachesize) KB",$htmlwhite))
 		}
 		If($processor.l3cachesize -gt 0)
 		{
-			$rowdata += @(,('L3 Cache Size',($htmlsilver -bor $htmlBold),"$($processor.l3cachesize) KB",$htmlwhite))
+			$rowdata += @(,('L3 Cache Size',($global:htmlsb),"$($processor.l3cachesize) KB",$htmlwhite))
 		}
 		If($processor.numberofcores -gt 0)
 		{
-			$rowdata += @(,('Number of Cores',($htmlsilver -bor $htmlBold),$Processor.numberofcores,$htmlwhite))
+			$rowdata += @(,('Number of Cores',($global:htmlsb),$Processor.numberofcores,$htmlwhite))
 		}
 		If($processor.numberoflogicalprocessors -gt 0)
 		{
-			$rowdata += @(,('Number of Logical Processors (cores w/HT)',($htmlsilver -bor $htmlBold),$Processor.numberoflogicalprocessors,$htmlwhite))
+			$rowdata += @(,('Number of Logical Processors (cores w/HT)',($global:htmlsb),$Processor.numberoflogicalprocessors,$htmlwhite))
 		}
-		$rowdata += @(,('Availability',($htmlsilver -bor $htmlBold),$xAvailability,$htmlwhite))
+		$rowdata += @(,('Availability',($global:htmlsb),$xAvailability,$htmlwhite))
 
 		$msg = ""
 		$columnWidths = @("150px","200px")
 		FormatHTMLTable $msg -rowarray $rowdata -columnArray $columnheaders -fixedWidth $columnWidths -tablewidth "350"
-		#WriteHTMLLine 0 0 " "
+		WriteHTMLLine 0 0 " "
 	}
 }
 
@@ -2317,7 +2583,16 @@ Function OutputNicItem
 {
 	Param([object]$Nic, [object]$ThisNic, [string]$RemoteComputerName)
 	
-	$powerMgmt = Get-WmiObject -computername $RemoteComputerName MSPower_DeviceEnable -Namespace root\wmi | Where-Object{$_.InstanceName -match [regex]::Escape($ThisNic.PNPDeviceID)}
+	If($RemoteComputerName -eq $env:computername)
+	{
+		$powerMgmt = Get-CimInstance -ClassName MSPower_DeviceEnable -Namespace "root\wmi" -Verbose:$False |
+			Where-Object{$_.InstanceName -match [regex]::Escape($ThisNic.PNPDeviceID)}
+	}
+	Else
+	{
+		$powerMgmt = Get-CimInstance -CimSession $RemoteComputerName -ClassName MSPower_DeviceEnable -Namespace "root\wmi" -Verbose:$False |
+			Where-Object{$_.InstanceName -match [regex]::Escape($ThisNic.PNPDeviceID)}
+	}
 
 	If($? -and $Null -ne $powerMgmt)
 	{
@@ -2325,7 +2600,7 @@ Function OutputNicItem
 		{
 			$PowerSaving = "Enabled"
 		}
-		Else
+		Else	
 		{
 			$PowerSaving = "Disabled"
 		}
@@ -2363,7 +2638,14 @@ Function OutputNicItem
 	Try
 	{
 		#https://ios.developreference.com/article/10085450/How+do+I+enable+VRSS+(Virtual+Receive+Side+Scaling)+for+a+Windows+VM+without+relying+on+Enable-NetAdapterRSS%3F
-		$RSSEnabled = (Get-WmiObject -ComputerName $RemoteComputerName MSFT_NetAdapterRssSettingData -Namespace "root\StandardCimV2" -ea 0).Enabled
+		If($RemoteComputerName -eq $env:computername)
+		{
+			$RSSEnabled = (Get-CimInstance -ClassName MSFT_NetAdapterRssSettingData -Namespace "root\StandardCimV2" -ea 0 -Verbose:$False).Enabled
+		}
+		Else
+		{
+			$RSSEnabled = (Get-CimInstance -CimSession $RemoteComputerName -ClassName MSFT_NetAdapterRssSettingData -Namespace "root\StandardCimV2" -ea 0 -Verbose:$False).Enabled
+		}
 
 		If($RSSEnabled)
 		{
@@ -2377,7 +2659,7 @@ Function OutputNicItem
 	
 	Catch
 	{
-		$RSSEnabled = "Not available on $Script:RunningOS"
+		$RSSEnabled = "Unable to determine for $RemoteComputerName"
 	}
 
 	$xIPAddress = New-Object System.Collections.ArrayList
@@ -2425,9 +2707,9 @@ Function OutputNicItem
 	$xTcpipNetbiosOptions = ""
 	Switch ($nic.TcpipNetbiosOptions)
 	{
-		0	{$xTcpipNetbiosOptions = "Use NetBIOS setting from DHCP Server"; Break}
-		1	{$xTcpipNetbiosOptions = "Enable NetBIOS"; Break}
-		2	{$xTcpipNetbiosOptions = "Disable NetBIOS"; Break}
+		0		{$xTcpipNetbiosOptions = "Use NetBIOS setting from DHCP Server"; Break}
+		1		{$xTcpipNetbiosOptions = "Enable NetBIOS"; Break}
+		2		{$xTcpipNetbiosOptions = "Disable NetBIOS"; Break}
 		Default	{$xTcpipNetbiosOptions = "Unknown"; Break}
 	}
 	
@@ -2441,6 +2723,20 @@ Function OutputNicItem
 		$xwinsenablelmhostslookup = "No"
 	}
 
+	If($nic.dhcpenabled)
+	{
+		$DHCPLeaseObtainedDate = $nic.dhcpleaseobtained.ToLocalTime()
+		If($nic.DHCPLeaseExpires -lt $nic.DHCPLeaseObtained)
+		{
+			#Could be an Azure DHCP Lease
+			$DHCPLeaseExpiresDate = (Get-Date).AddSeconds([UInt32]::MaxValue).ToLocalTime()
+		}
+		Else
+		{
+			$DHCPLeaseExpiresDate = $nic.DHCPLeaseExpires.ToLocalTime()
+		}
+	}
+		
 	If($MSWORD -or $PDF)
 	{
 		$NicInformation = New-Object System.Collections.ArrayList
@@ -2482,12 +2778,14 @@ Function OutputNicItem
 		}
 		If($nic.dhcpenabled)
 		{
-			$DHCPLeaseObtainedDate = $nic.ConvertToDateTime($nic.dhcpleaseobtained)
-			$DHCPLeaseExpiresDate = $nic.ConvertToDateTime($nic.dhcpleaseexpires)
-			$NicInformation.Add(@{ Data = "DHCP Enabled"; Value = $Nic.dhcpenabled; }) > $Null
+			$NicInformation.Add(@{ Data = "DHCP Enabled"; Value = $Nic.dhcpenabled.ToString(); }) > $Null
 			$NicInformation.Add(@{ Data = "DHCP Lease Obtained"; Value = $dhcpleaseobtaineddate; }) > $Null
 			$NicInformation.Add(@{ Data = "DHCP Lease Expires"; Value = $dhcpleaseexpiresdate; }) > $Null
 			$NicInformation.Add(@{ Data = "DHCP Server"; Value = $Nic.dhcpserver; }) > $Null
+		}
+		Else
+		{
+			$NicInformation.Add(@{ Data = "DHCP Enabled"; Value = $Nic.dhcpenabled.ToString(); }) > $Null
 		}
 		If(![String]::IsNullOrEmpty($nic.dnsdomain))
 		{
@@ -2597,12 +2895,14 @@ Function OutputNicItem
 		}
 		If($nic.dhcpenabled)
 		{
-			$DHCPLeaseObtainedDate = $nic.ConvertToDateTime($nic.dhcpleaseobtained)
-			$DHCPLeaseExpiresDate = $nic.ConvertToDateTime($nic.dhcpleaseexpires)
-			Line 2 "DHCP Enabled`t`t: " $nic.dhcpenabled
+			Line 2 "DHCP Enabled`t`t: " $nic.dhcpenabled.ToString()
 			Line 2 "DHCP Lease Obtained`t: " $dhcpleaseobtaineddate
 			Line 2 "DHCP Lease Expires`t: " $dhcpleaseexpiresdate
-			Line 2 "DHCP Server`t`t:" $nic.dhcpserver
+			Line 2 "DHCP Server`t`t: " $nic.dhcpserver
+		}
+		Else
+		{
+			Line 2 "DHCP Enabled`t`t: " $nic.dhcpenabled.ToString()
 		}
 		If(![String]::IsNullOrEmpty($nic.dnsdomain))
 		{
@@ -2661,104 +2961,106 @@ Function OutputNicItem
 	If($HTML)
 	{
 		$rowdata = @()
-		$columnHeaders = @("Name",($htmlsilver -bor $htmlBold),$ThisNic.Name,$htmlwhite)
+		$columnHeaders = @("Name",($global:htmlsb),$ThisNic.Name,$htmlwhite)
 		If($ThisNic.Name -ne $nic.description)
 		{
-			$rowdata += @(,('Description',($htmlsilver -bor $htmlBold),$Nic.description,$htmlwhite))
+			$rowdata += @(,('Description',($global:htmlsb),$Nic.description,$htmlwhite))
 		}
-		$rowdata += @(,('Connection ID',($htmlsilver -bor $htmlBold),$ThisNic.NetConnectionID,$htmlwhite))
+		$rowdata += @(,('Connection ID',($global:htmlsb),$ThisNic.NetConnectionID,$htmlwhite))
 		If(validObject $Nic Manufacturer)
 		{
-			$rowdata += @(,('Manufacturer',($htmlsilver -bor $htmlBold),$Nic.manufacturer,$htmlwhite))
+			$rowdata += @(,('Manufacturer',($global:htmlsb),$Nic.manufacturer,$htmlwhite))
 		}
-		$rowdata += @(,('Availability',($htmlsilver -bor $htmlBold),$xAvailability,$htmlwhite))
-		$rowdata += @(,('Allow the computer to turn off this device to save power',($htmlsilver -bor $htmlBold),$PowerSaving,$htmlwhite))
-		$rowdata += @(,('Physical Address',($htmlsilver -bor $htmlBold),$Nic.macaddress,$htmlwhite))
-		$rowdata += @(,('Receive Side Scaling',($htmlsilver -bor $htmlbold),$RSSEnabled,$htmlwhite))
-		$rowdata += @(,('IP Address',($htmlsilver -bor $htmlBold),$xIPAddress[0],$htmlwhite))
+		$rowdata += @(,('Availability',($global:htmlsb),$xAvailability,$htmlwhite))
+		$rowdata += @(,('Allow the computer to turn off this device to save power',($global:htmlsb),$PowerSaving,$htmlwhite))
+		$rowdata += @(,('Physical Address',($global:htmlsb),$Nic.macaddress,$htmlwhite))
+		$rowdata += @(,('Receive Side Scaling',($global:htmlsb),$RSSEnabled,$htmlwhite))
+		$rowdata += @(,('IP Address',($global:htmlsb),$xIPAddress[0],$htmlwhite))
 		$cnt = -1
 		ForEach($tmp in $xIPAddress)
 		{
 			$cnt++
 			If($cnt -gt 0)
 			{
-				$rowdata += @(,('IP Address',($htmlsilver -bor $htmlBold),$tmp,$htmlwhite))
+				$rowdata += @(,('IP Address',($global:htmlsb),$tmp,$htmlwhite))
 			}
 		}
-		$rowdata += @(,('Default Gateway',($htmlsilver -bor $htmlBold),$Nic.Defaultipgateway[0],$htmlwhite))
-		$rowdata += @(,('Subnet Mask',($htmlsilver -bor $htmlBold),$xIPSubnet[0],$htmlwhite))
+		$rowdata += @(,('Default Gateway',($global:htmlsb),$Nic.Defaultipgateway[0],$htmlwhite))
+		$rowdata += @(,('Subnet Mask',($global:htmlsb),$xIPSubnet[0],$htmlwhite))
 		$cnt = -1
 		ForEach($tmp in $xIPSubnet)
 		{
 			$cnt++
 			If($cnt -gt 0)
 			{
-				$rowdata += @(,('Subnet Mask',($htmlsilver -bor $htmlBold),$tmp,$htmlwhite))
+				$rowdata += @(,('Subnet Mask',($global:htmlsb),$tmp,$htmlwhite))
 			}
 		}
 		If($nic.dhcpenabled)
 		{
-			$DHCPLeaseObtainedDate = $nic.ConvertToDateTime($nic.dhcpleaseobtained)
-			$DHCPLeaseExpiresDate = $nic.ConvertToDateTime($nic.dhcpleaseexpires)
-			$rowdata += @(,('DHCP Enabled',($htmlsilver -bor $htmlBold),$Nic.dhcpenabled,$htmlwhite))
-			$rowdata += @(,('DHCP Lease Obtained',($htmlsilver -bor $htmlBold),$dhcpleaseobtaineddate,$htmlwhite))
-			$rowdata += @(,('DHCP Lease Expires',($htmlsilver -bor $htmlBold),$dhcpleaseexpiresdate,$htmlwhite))
-			$rowdata += @(,('DHCP Server',($htmlsilver -bor $htmlBold),$Nic.dhcpserver,$htmlwhite))
+			$rowdata += @(,('DHCP Enabled',($global:htmlsb),$Nic.dhcpenabled.ToString(),$htmlwhite))
+			$rowdata += @(,('DHCP Lease Obtained',($global:htmlsb),$dhcpleaseobtaineddate,$htmlwhite))
+			$rowdata += @(,('DHCP Lease Expires',($global:htmlsb),$dhcpleaseexpiresdate,$htmlwhite))
+			$rowdata += @(,('DHCP Server',($global:htmlsb),$Nic.dhcpserver,$htmlwhite))
+		}
+		Else
+		{
+			$rowdata += @(,('DHCP Enabled',($global:htmlsb),$Nic.dhcpenabled.ToString(),$htmlwhite))
 		}
 		If(![String]::IsNullOrEmpty($nic.dnsdomain))
 		{
-			$rowdata += @(,('DNS Domain',($htmlsilver -bor $htmlBold),$Nic.dnsdomain,$htmlwhite))
+			$rowdata += @(,('DNS Domain',($global:htmlsb),$Nic.dnsdomain,$htmlwhite))
 		}
 		If($Null -ne $nic.dnsdomainsuffixsearchorder -and $nic.dnsdomainsuffixsearchorder.length -gt 0)
 		{
-			$rowdata += @(,('DNS Search Suffixes',($htmlsilver -bor $htmlBold),$xnicdnsdomainsuffixsearchorder[0],$htmlwhite))
+			$rowdata += @(,('DNS Search Suffixes',($global:htmlsb),$xnicdnsdomainsuffixsearchorder[0],$htmlwhite))
 			$cnt = -1
 			ForEach($tmp in $xnicdnsdomainsuffixsearchorder)
 			{
 				$cnt++
 				If($cnt -gt 0)
 				{
-					$rowdata += @(,('',($htmlsilver -bor $htmlBold),$tmp,$htmlwhite))
+					$rowdata += @(,('',($global:htmlsb),$tmp,$htmlwhite))
 				}
 			}
 		}
-		$rowdata += @(,('DNS WINS Enabled',($htmlsilver -bor $htmlBold),$xdnsenabledforwinsresolution,$htmlwhite))
+		$rowdata += @(,('DNS WINS Enabled',($global:htmlsb),$xdnsenabledforwinsresolution,$htmlwhite))
 		If($Null -ne $nic.dnsserversearchorder -and $nic.dnsserversearchorder.length -gt 0)
 		{
-			$rowdata += @(,('DNS Servers',($htmlsilver -bor $htmlBold),$xnicdnsserversearchorder[0],$htmlwhite))
+			$rowdata += @(,('DNS Servers',($global:htmlsb),$xnicdnsserversearchorder[0],$htmlwhite))
 			$cnt = -1
 			ForEach($tmp in $xnicdnsserversearchorder)
 			{
 				$cnt++
 				If($cnt -gt 0)
 				{
-					$rowdata += @(,('',($htmlsilver -bor $htmlBold),$tmp,$htmlwhite))
+					$rowdata += @(,('',($global:htmlsb),$tmp,$htmlwhite))
 				}
 			}
 		}
-		$rowdata += @(,('NetBIOS Setting',($htmlsilver -bor $htmlBold),$xTcpipNetbiosOptions,$htmlwhite))
-		$rowdata += @(,('WINS: Enabled LMHosts',($htmlsilver -bor $htmlBold),$xwinsenablelmhostslookup,$htmlwhite))
+		$rowdata += @(,('NetBIOS Setting',($global:htmlsb),$xTcpipNetbiosOptions,$htmlwhite))
+		$rowdata += @(,('WINS: Enabled LMHosts',($global:htmlsb),$xwinsenablelmhostslookup,$htmlwhite))
 		If(![String]::IsNullOrEmpty($nic.winshostlookupfile))
 		{
-			$rowdata += @(,('Host Lookup File',($htmlsilver -bor $htmlBold),$Nic.winshostlookupfile,$htmlwhite))
+			$rowdata += @(,('Host Lookup File',($global:htmlsb),$Nic.winshostlookupfile,$htmlwhite))
 		}
 		If(![String]::IsNullOrEmpty($nic.winsprimaryserver))
 		{
-			$rowdata += @(,('Primary Server',($htmlsilver -bor $htmlBold),$Nic.winsprimaryserver,$htmlwhite))
+			$rowdata += @(,('Primary Server',($global:htmlsb),$Nic.winsprimaryserver,$htmlwhite))
 		}
 		If(![String]::IsNullOrEmpty($nic.winssecondaryserver))
 		{
-			$rowdata += @(,('Secondary Server',($htmlsilver -bor $htmlBold),$Nic.winssecondaryserver,$htmlwhite))
+			$rowdata += @(,('Secondary Server',($global:htmlsb),$Nic.winssecondaryserver,$htmlwhite))
 		}
 		If(![String]::IsNullOrEmpty($nic.winsscopeid))
 		{
-			$rowdata += @(,('Scope ID',($htmlsilver -bor $htmlBold),$Nic.winsscopeid,$htmlwhite))
+			$rowdata += @(,('Scope ID',($global:htmlsb),$Nic.winsscopeid,$htmlwhite))
 		}
 
 		$msg = ""
 		$columnWidths = @("150px","200px")
 		FormatHTMLTable $msg -rowarray $rowdata -columnArray $columnheaders -fixedWidth $columnWidths -tablewidth "350"
-		#WriteHTMLLine 0 0 " "
+		WriteHTMLLine 0 0 " "
 	}
 }
 #endregion
@@ -2791,7 +3093,15 @@ Function GetComputerServices
 		## "Get-WMIObject Win32_Service -Filter" calls were the major delays in the script.
 		## If we need to retrieve the StartUp type might as well just use WMI.
 		
-		$Services = @(Get-WMIObject Win32_Service -ComputerName $RemoteComputerName | Sort-Object DisplayName)
+		#$Services = @(Get-WMIObject Win32_Service -ComputerName $RemoteComputerName | Sort-Object DisplayName)
+		If($RemoteComputerName -eq $env:computername)
+		{
+			$Services = @(Get-CIMInstance Win32_Service -EA 0 -Verbose:$False | Sort-Object DisplayName)
+		}
+		Else
+		{
+			$Services = @(Get-CIMInstance Win32_Service -CIMSession $RemoteComputerName -EA 0 -Verbose:$False | Sort-Object DisplayName)
+		}
 	}
 	
 	Catch
@@ -2865,7 +3175,7 @@ Function GetComputerServices
 				If(($Service.DisplayName).Length -lt ($MaxDisplayNameLength))
 				{
 					[int]$NumOfSpaces = (($MaxDisplayNameLength) - ($Service.DisplayName.Length)) + 2 #+2 to allow for column spacing
-					$tmp1 = ($($Service.DisplayName) + (' ' * $NumOfSPaces))
+					$tmp1 = ($($Service.DisplayName) + (' ' * $NumOfSpaces))
 					Line 1 $tmp1 -NoNewLine
 				}
 				Else
@@ -2881,6 +3191,7 @@ Function GetComputerServices
 					Line 1 "$($Service.State) " -NoNewLine
 				}
 				Line 1 $Service.StartMode
+				
 			}
 			If($HTML)
 			{
@@ -2901,23 +3212,26 @@ Function GetComputerServices
 
 		If($MSWord -or $PDF)
 		{
-			$Table = AddWordTable -Hashtable $ServicesWordTable `
-			-Columns DisplayName, Status, StartMode `
-			-Headers "Display Name", "Status", "Startup Type" `
-			-Format $wdTableGrid `
-			-AutoFit $wdAutoFitContent;
-
-			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
-			If($WordHighlightedCells.Count -gt 0)
+			If($ServicesWordTable.Count -gt 0)	#3.07
 			{
-				SetWordCellFormat -Coordinates $WordHighlightedCells -Table $Table -Bold -BackgroundColor $wdColorRed -Solid;
+				$Table = AddWordTable -Hashtable $ServicesWordTable `
+				-Columns DisplayName, Status, StartMode `
+				-Headers "Display Name", "Status", "Startup Type" `
+				-Format $wdTableGrid `
+				-AutoFit $wdAutoFitContent;
+
+				SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+				If($WordHighlightedCells.Count -gt 0)
+				{
+					SetWordCellFormat -Coordinates $WordHighlightedCells -Table $Table -Bold -BackgroundColor $wdColorRed -Solid;
+				}
+
+				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+				FindWordDocumentEnd
+				$Table = $Null
+				WriteWordLine 0 0 ""
 			}
-
-			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
-
-			FindWordDocumentEnd
-			$Table = $Null
-			WriteWordLine 0 0 ""
 		}
 		If($Text)
 		{
@@ -2984,7 +3298,15 @@ Function BuildDCDNSIPConfigTable
 	
 	Try
 	{
-		$Results = Get-WmiObject -computername $RemoteComputerName win32_networkadapterconfiguration
+		#$Results = Get-WmiObject -computername $RemoteComputerName win32_networkadapterconfiguration
+		If($RemoteComputerName -eq $env:computername)
+		{
+			$Results = Get-CimInstance -ClassName win32_networkadapterconfiguration -Verbose:$False
+		}
+		Else
+		{
+			$Results = Get-CimInstance -computername $RemoteComputerName -ClassName win32_networkadapterconfiguration -Verbose:$False
+		}
 	}
 	
 	Catch
@@ -3003,7 +3325,7 @@ Function BuildDCDNSIPConfigTable
 		} 
 		Else 
 		{ 
-			$GotNics = !($Nics.__PROPERTY_COUNT -eq 0) 
+			$GotNics = $True
 		} 
 	
 		If($GotNics)
@@ -3012,7 +3334,15 @@ Function BuildDCDNSIPConfigTable
 			{
 				Try
 				{
-					$ThisNic = Get-WmiObject -computername $RemoteComputerName win32_networkadapter | Where-Object {$_.index -eq $nic.index}
+					#$ThisNic = Get-WmiObject -computername $RemoteComputerName win32_networkadapter | Where-Object {$_.index -eq $nic.index}
+					If($RemoteComputerName -eq $env:computername)
+					{
+						$ThisNic = Get-CimInstance -ClassName win32_networkadapter -Verbose:$False | Where-Object {$_.index -eq $nic.index}
+					}
+					Else
+					{
+						$ThisNic = Get-CimInstance -computername $RemoteComputerName -ClassName win32_networkadapter -Verbose:$False | Where-Object {$_.index -eq $nic.index}
+					}
 				}
 				Catch 
 				{
@@ -3142,6 +3472,8 @@ Function SetWordHashTable
 		{
 			'ca-'	{ 'Taula automática 2'; Break }
 			'da-'	{ 'Automatisk tabel 2'; Break }
+			#'de-'	{ 'Automatische Tabelle 2'; Break }
+			'de-'	{ 'Automatisches Verzeichnis 2'; Break } #changed 6-feb-2022 rene bigler
 			'de-'	{ 'Automatische Tabelle 2'; Break }
 			'en-'	{ 'Automatic Table 2'; Break }
 			'es-'	{ 'Tabla automática 2'; Break }
@@ -3448,6 +3780,16 @@ Function ValidateCoverPage
 				}
 			}
 
+		'zh-'	{
+				If($xWordVersion -eq $wdWord2010 -or $xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+				{
+					$xArray = ('奥斯汀', '边线型', '花丝', '怀旧', '积分',
+					'离子(浅色)', '离子(深色)', '母版型', '平面', '切片(浅色)',
+					'切片(深色)', '丝状', '网格', '镶边', '信号灯',
+					'运动型')
+				}
+			}
+
 		Default	{
 					If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 					{
@@ -3486,12 +3828,12 @@ Function CheckWordPrereq
 		If(($MSWord -eq $False) -and ($PDF -eq $True))
 		{
 			Write-Host "`n`n`t`tThis script uses Microsoft Word's SaveAs PDF function, please install Microsoft Word`n`n"
-			Exit
+			AbortScript
 		}
 		Else
 		{
 			Write-Host "`n`n`t`tThis script directly outputs to Microsoft Word, please install Microsoft Word`n`n"
-			Exit
+			AbortScript
 		}
 	}
 
@@ -3499,12 +3841,12 @@ Function CheckWordPrereq
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
 	#Find out if winword is running in our session
-	[bool]$wordrunning = $null -ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$wordrunning = $null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Host "`n`n`tPlease close all instances of Microsoft Word before running this report.`n`n"
-		Exit
+		AbortScript
 	}
 }
 
@@ -3601,20 +3943,19 @@ Function SetupWord
 	# Setup word for output
 	Write-Verbose "$(Get-Date -Format G): Create Word comObject."
 	$Script:Word = New-Object -comobject "Word.Application" -EA 0 4>$Null
-	
+
+#Do not indent the following write-error lines. Doing so will mess up the console formatting of the error message.
 	If(!$? -or $Null -eq $Script:Word)
 	{
 		Write-Warning "The Word object could not be created. You may need to repair your Word installation."
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Error "
 		`n`n
-		`t`t
-		The Word object could not be created. You may need to repair your Word installation.
+	The Word object could not be created. You may need to repair your Word installation.
 		`n`n
-		`t`t
-		Script cannot Continue.
+	Script cannot Continue.
 		`n`n"
-		Exit
+		AbortScript
 	}
 
 	Write-Verbose "$(Get-Date -Format G): Determine Word language value"
@@ -3632,11 +3973,9 @@ Function SetupWord
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Error "
 		`n`n
-		`t`t
-		Unable to determine the Word language value. You may need to repair your Word installation.
+	Unable to determine the Word language value. You may need to repair your Word installation.
 		`n`n
-		`t`t
-		Script cannot Continue.
+	Script cannot Continue.
 		`n`n
 		"
 		AbortScript
@@ -3665,8 +4004,7 @@ Function SetupWord
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Error "
 		`n`n
-		`t`t
-		Microsoft Word 2007 is no longer supported.`n`n`t`tScript will end.
+	Microsoft Word 2007 is no longer supported.`n`n`t`tScript will end.
 		`n`n
 		"
 		AbortScript
@@ -3675,24 +4013,23 @@ Function SetupWord
 	{
 		Write-Error "
 		`n`n
-		`t`t
-		The Word Version is 0. You should run a full online repair of your Office installation.
+	The Word Version is 0. You should run a full online repair of your Office installation.
 		`n`n
-		`t`t
-		Script cannot Continue.
+	Script cannot Continue.
 		`n`n
 		"
-		Exit
+		AbortScript
 	}
 	Else
 	{
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Error "
 		`n`n
-		`t`t
-		You are running an untested or unsupported version of Microsoft Word.
+	You are running an untested or unsupported version of Microsoft Word.
 		`n`n
-		`t`tScript will end.`n`n`t`tPlease send info on your version of Word to webster@carlwebster.com
+	Script will end.
+		`n`n
+	Please send info on your version of Word to webster@carlwebster.com
 		`n`n
 		"
 		AbortScript
@@ -3710,7 +4047,7 @@ Function SetupWord
 		Company Name is blank so Cover Page will not show a Company Name.
 		Check HKCU:\Software\Microsoft\Office\Common\UserInfo for Company or CompanyName value.
 		You may want to use the -CompanyName parameter if you need a Company Name on the cover page.
-			" -Foreground White
+			" -ForegroundColor White
 			$Script:CoName = $TmpName
 		}
 		Else
@@ -3845,11 +4182,9 @@ Function SetupWord
 		Write-Verbose "$(Get-Date -Format G): Culture code $($Script:WordCultureCode)"
 		Write-Error "
 		`n`n
-		`t`t
-		For $($Script:WordProduct), $($CoverPage) is not a valid Cover Page option.
+	For $($Script:WordProduct), $($CoverPage) is not a valid Cover Page option.
 		`n`n
-		`t`t
-		Script cannot Continue.
+	Script cannot Continue.
 		`n`n
 		"
 		AbortScript
@@ -3873,7 +4208,7 @@ Function SetupWord
 
 	$BuildingBlocksCollection | 
 	ForEach-Object {
-		If ($_.BuildingBlockEntries.Item($CoverPage).Name -eq $CoverPage) 
+		If($_.BuildingBlockEntries.Item($CoverPage).Name -eq $CoverPage) 
 		{
 			$BuildingBlocks = $_
 		}
@@ -3902,8 +4237,8 @@ Function SetupWord
 	If(!$Script:CoverPagesExist)
 	{
 		Write-Verbose "$(Get-Date -Format G): Cover Pages are not installed or the Cover Page $($CoverPage) does not exist."
-		Write-Host "Cover Pages are not installed or the Cover Page $($CoverPage) does not exist." -Foreground White
-		Write-Host "This report will not have a Cover Page." -Foreground White
+		Write-Host "Cover Pages are not installed or the Cover Page $($CoverPage) does not exist." -ForegroundColor White
+		Write-Host "This report will not have a Cover Page." -ForegroundColor White
 	}
 
 	Write-Verbose "$(Get-Date -Format G): Create empty word doc"
@@ -3936,7 +4271,7 @@ Function SetupWord
 	}
 
 	#set Default tab stops to 1/2 inch (this line is not from Jeff Hicks)
-	#36 = .50"
+	#36 =.50"
 	$Script:Word.ActiveDocument.DefaultTabStop = 36
 
 	#Disable Spell and Grammar Check to resolve issue and improve performance (from Pat Coughlin)
@@ -3961,8 +4296,8 @@ Function SetupWord
 		If($Null -eq $toc)
 		{
 			Write-Verbose "$(Get-Date -Format G): "
-			Write-Host "Table of Content - $($Script:MyHash.Word_TableOfContents) could not be retrieved." -Foreground White
-			Write-Host "This report will not have a Table of Contents." -Foreground White
+			Write-Host "Table of Content - $($Script:MyHash.Word_TableOfContents) could not be retrieved." -ForegroundColor White
+			Write-Host "This report will not have a Table of Contents." -ForegroundColor White
 		}
 		Else
 		{
@@ -3971,8 +4306,8 @@ Function SetupWord
 	}
 	Else
 	{
-		Write-Host "Table of Contents are not installed." -Foreground White
-		Write-Host "Table of Contents are not installed so this report will not have a Table of Contents." -Foreground White
+		Write-Host "Table of Contents are not installed." -ForegroundColor White
+		Write-Host "Table of Contents are not installed so this report will not have a Table of Contents." -ForegroundColor White
 	}
 
 	#set the footer
@@ -3984,7 +4319,7 @@ Function SetupWord
 	$Script:Doc.ActiveWindow.ActivePane.view.SeekView = $wdSeekPrimaryFooter
 	#get the footer and format font
 	$footers = $Script:Doc.Sections.Last.Footers
-	ForEach ($footer in $footers) 
+	ForEach($footer in $footers) 
 	{
 		If($footer.exists) 
 		{
@@ -4002,7 +4337,6 @@ Function SetupWord
 	$Script:Selection.HeaderFooter.PageNumbers.Add($wdAlignPageNumberRight) | Out-Null
 
 	FindWordDocumentEnd
-	Write-Verbose "$(Get-Date -Format G):"
 	#end of Jeff Hicks 
 }
 
@@ -4133,8 +4467,9 @@ Function Get-RegistryValue
 	}
 	catch
 	{
-		$e = $error[ 0 ]
-		wv "Could not open registry on computer $ComputerName ($e)"
+		#$e = $error[ 0 ]
+		#3.06, remove the verbose message as it confised some people
+		#wv "Could not open registry on computer $ComputerName ($e)"
 	}
 
 	$val = $null
@@ -4163,6 +4498,7 @@ Function line
 #created March 2011
 #updated March 2014
 # updated March 2019 to use StringBuilder (about 100 times more efficient than simple strings)
+# updated June 2024
 {
 	Param
 	(
@@ -4173,13 +4509,15 @@ Function line
 		[Switch] $nonewline
 	)
 
+	$null = $global:Output.Append( "`t" * $tabs )
+	<#
 	while( $tabs -gt 0 )
 	{
 		#V3.00 - Switch to using a StringBuilder for $global:Output
 		$null = $global:Output.Append( "`t" )
 		$tabs--
 	}
-
+	#>
 	If( $nonewline )
 	{
 		#V3.00 - Switch to using a StringBuilder for $global:Output
@@ -4254,10 +4592,13 @@ Function WriteWordLine
 	}
 	
 	#build # of tabs
+<#	2024-06-17
 	While($tabs -gt 0)
 	{ 
 		$output += "`t"; $tabs--; 
 	}
+#>
+	$output += "`t" * $tabs
  
 	If(![String]::IsNullOrEmpty($fontName)) 
 	{
@@ -4449,9 +4790,20 @@ Function WriteHTMLLine
 	Else
 	{
 		## #V3.00
-		[Bool] $ital = $options -band $htmlitalics
-		[Bool] $bold = $options -band $htmlBold
-		## $color = $global:htmlColor[ $options -band 0xffffc ]
+		[Bool] $ital  = $options -band $htmlitalics
+		[Bool] $bold  = $options -band $htmlBold
+		[Bool] $left  = $options -band $htmlAlignLeft
+		[Bool] $right = $options -band $htmlAlignRight
+		## $color = $global:htmlColor[ $options -band 0xfffff0 ]
+
+		if( $left )
+		{
+			$HTMLBody += " align=left"
+		}
+		elseif( $right )
+		{
+			$HTMLBody += " align=right"
+		}
 
 		## ## build the HTML output string
 ##		$HTMLBody = ''
@@ -4462,15 +4814,27 @@ Function WriteHTMLLine
 
 		Switch( $style )
 		{
-			1 { $HTMLOpen = '<h1>'; $HTMLClose = '</h1>'; Break }
-			2 { $HTMLOpen = '<h2>'; $HTMLClose = '</h2>'; Break }
-			3 { $HTMLOpen = '<h3>'; $HTMLClose = '</h3>'; Break }
-			4 { $HTMLOpen = '<h4>'; $HTMLClose = '</h4>'; Break }
+			1 { $HTMLOpen = '<h1'; $HTMLClose = '</h1>'; Break }
+			2 { $HTMLOpen = '<h2'; $HTMLClose = '</h2>'; Break }
+			3 { $HTMLOpen = '<h3'; $HTMLClose = '</h3>'; Break }
+			4 { $HTMLOpen = '<h4'; $HTMLClose = '</h4>'; Break }
 			Default { $HTMLOpen = ''; $HTMLClose = ''; Break }
 		}
 
 		## $HTMLBody += $HTMLOpen
 		$null = $sb.Append( $HTMLOpen )
+		if( $HTMLOpen.Length -gt 0 )
+		{
+			if( $left )
+			{
+				$null = $sb.Append( ' align=left' )
+			}
+			elseif( $right )
+			{
+				$null = $sb.Append( ' align=right' )
+			}
+			$null = $sb.Append( '>' )
+		}
 
 		## If($HTMLClose -eq '')
 		## {
@@ -4657,9 +5021,12 @@ Function AddHTMLTable
 			$text   = If( $item ) { $item.ToString() } Else { '' }
 			$format = If( ( $columnIndex + 1 ) -lt $subRowLength ) { $subRow[ $columnIndex + 1 ] } Else { 0 }
 			## item, text, and format ALWAYS have values, even if empty values
-			$color  = $global:htmlColor[ $format -band 0xffffc ]
-			[Bool] $bold = $format -band $htmlBold
-			[Bool] $ital = $format -band $htmlitalics
+			$color  = $global:htmlColor[ $format -band 0xfffff0 ]
+			[Bool] $bold  = $format -band $htmlBold
+			[Bool] $ital  = $format -band $htmlitalics
+			[Bool] $left  = $format -band $htmlAlignLeft
+			[Bool] $right = $format -band $htmlAlignRight		
+
 <#			
 			If( $ExtraSpecialVerbose )
 			{
@@ -4671,14 +5038,23 @@ Function AddHTMLTable
 
 			If( $fwLength -eq 0 )
 			{
-				$null = $sb.Append( "<td style=""background-color:$( $color )""><font face='$( $fontName )' size='$( $fontSize )'>" )
+				$null = $sb.Append( "<td style=""background-color:$( $color )""" )
 				##$htmlbody += "<td style=""background-color:$( $color )""><font face='$( $fontName )' size='$( $fontSize )'>"
 			}
 			Else
 			{
-				$null = $sb.Append( "<td style=""width:$( $fixedInfo[ $columnIndex / 2 ] ); background-color:$( $color )""><font face='$( $fontName )' size='$( $fontSize )'>" )
+				$null = $sb.Append( "<td style=""width:$( $fixedInfo[ $columnIndex / 2 ] ); background-color:$( $color )""" )
 				##$htmlbody += "<td style=""width:$( $fixedInfo[ $columnIndex / 2 ] ); background-color:$( $color )""><font face='$( $fontName )' size='$( $fontSize )'>"
 			}
+			if( $left )
+			{
+				$null = $sb.Append( ' align=left' )
+			}
+			elseif( $right )
+			{
+				$null = $sb.Append( ' align=right' )
+			}
+			$null = $sb.Append( "><font face='$($fontName)' size='$($fontSize)'>" )
 
 			##If( $bold ) { $htmlbody += '<b>' }
 			##If( $ital ) { $htmlbody += '<i>' }
@@ -4972,18 +5348,30 @@ Function FormatHTMLTable
 		{
 			#V3.00
 			$val = $columnArray[ $columnIndex + 1 ]
-			$tmp = $global:htmlColor[ $val -band 0xffffc ]
-			[Bool] $bold = $val -band $htmlBold
-			[Bool] $ital = $val -band $htmlitalics
+			$tmp = $global:htmlColor[ $val -band 0xfffff0 ]
+			[Bool] $bold  = $val -band $htmlBold
+			[Bool] $ital  = $val -band $htmlitalics
+			[Bool] $left  = $val -band $htmlAlignLeft
+			[Bool] $right = $val -band $htmlAlignRight		
 
 			If( $fwSize -eq 0 )
 			{
-				$HTMLBody += "<td style=""background-color:$($tmp)""><font face='$($fontName)' size='$($fontSize)'>"
+				$HTMLBody += "<td style=""background-color:$($tmp)"""
 			}
 			Else
 			{
-				$HTMLBody += "<td style=""width:$($fixedWidth[$columnIndex / 2]); background-color:$($tmp)""><font face='$($fontName)' size='$($fontSize)'>"
+				$HTMLBody += "<td style=""width:$($fixedWidth[$columnIndex / 2]); background-color:$($tmp)"""
 			}
+			if( $left )
+			{
+				$HTMLBody += " align=left"
+			}
+			elseif( $right )
+			{
+				$HTMLBody += " align=right"
+			}
+
+			$HTMLBody += "><font face='$($fontName)' size='$($fontSize)'>"
 
 			If( $bold ) { $HTMLBody += '<b>' }
 			If( $ital ) { $HTMLBody += '<i>' }
@@ -5696,25 +6084,6 @@ Function validObject( [object] $object, [string] $topLevel )
 		}
 	}
 	Return $False
-}
-
-Function AbortScript
-{
-	If($MSWord -or $PDF)
-	{
-		$Script:Word.quit()
-		Write-Verbose "$(Get-Date -Format G): System Cleanup"
-		[System.Runtime.Interopservices.Marshal]::ReleaseComObject($Script:Word) | Out-Null
-		If(Test-Path variable:global:word)
-		{
-			Remove-Variable -Name word -Scope Global
-		}
-	}
-	[gc]::collect() 
-	[gc]::WaitForPendingFinalizers()
-	Write-Verbose "$(Get-Date -Format G): Script has been aborted"
-	$ErrorActionPreference = $SaveEAPreference
-	Exit
 }
 
 Function BuildMultiColumnTable
@@ -6471,13 +6840,13 @@ Function Get-ComputerCountByOS
 					$Item.Disabled_Stale.ToString(), $htmlwhite
 				)
 				
-				$columnWidths  = @( '100px', '200px' )
+				$columnWidths  = @( '150px', '250px' )
 				$columnHeaders = @(
 					'Operating System', $htmlsb,
 					$Item.OperatingSystem, $htmlwhite
 				)
 
-				FormatHTMLTable -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth '300'
+				FormatHTMLTable -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth '400'
 				WriteHTMLLine 0 0 ''
 
 				$rowdata = $null
@@ -6535,38 +6904,38 @@ Function Get-ComputerCountByOS
 
 			$rowdata[ 0 ] = @(
 				'Total Stale Computer Objects (count)', $htmlsb,
-				$TotalStaleObjects.ToString(), $htmlwhite
+				$TotalStaleObjects.ToString(), ( $htmlwhite -bor $global:htmlAlignRight ) #3.06 add alignright
 			)
 			$rowdata[ 1 ] = @(
 				'Total Stale Computer Objects (percent)',$htmlsb,
-				$percent, $htmlwhite
+				$percent, ( $htmlwhite -bor $global:htmlAlignRight ) #3.06 add alignright
 			)
 			$rowdata[ 2 ] = @(
 				'Total Enabled Computer Objects', $htmlsb,
-				$TotalEnabledObjects.ToString(), $htmlwhite
+				$TotalEnabledObjects.ToString(), ( $htmlwhite -bor $global:htmlAlignRight ) #3.06 add alignright
 			)
 			$rowdata[ 3 ] = @(
 				'Total Enabled Stale Computer Objects', $htmlsb,
-				$TotalEnabledStaleObjects.ToString(), $htmlwhite
+				$TotalEnabledStaleObjects.ToString(), ( $htmlwhite -bor $global:htmlAlignRight ) #3.06 add alignright
 			)
 			$rowdata[ 4 ] = @(
 				'Total Active Computer Objects', $htmlsb,
-				$( $TotalEnabledObjects - $TotalEnabledStaleObjects ), $htmlwhite
+				$( $TotalEnabledObjects - $TotalEnabledStaleObjects ), ( $htmlwhite -bor $global:htmlAlignRight ) #3.06 add alignright
 			)
 			$rowdata[ 5 ] = @(
 				'Total Disabled Computer Objects', $htmlsb,
-				$TotalDisabledObjects.ToString(), $htmlwhite
+				$TotalDisabledObjects.ToString(), ( $htmlwhite -bor $global:htmlAlignRight ) #3.06 add alignright
 			)
 			$rowdata[ 6 ] = @(
 				'Total Disabled Stale Computer Objects', $htmlsb,
-				$TotalDisabledStaleObjects.ToString(), $htmlwhite
+				$TotalDisabledStaleObjects.ToString(), ( $htmlwhite -bor $global:htmlAlignRight ) #3.06 add alignright
 			)
 
 			$msg           = "A breakdown of the $ComputerCount Computer Objects in the $domain Domain"
 			$columnWidths  = @( '400px', '50px' )
 			$columnHeaders = @(
 				'Total Computer Objects',  $htmlsb,
-				$ComputerCount.ToString(), $htmlwhite
+				$ComputerCount.ToString(), ( $htmlwhite -bor $global:htmlAlignRight ) #3.06 add alignright
 			)
 
 			FormatHTMLTable -tableHeader $msg `
@@ -6623,11 +6992,8 @@ Function ShowScriptOptions
 	Write-Verbose "$(Get-Date -Format G): "
 	Write-Verbose "$(Get-Date -Format G): "
 	Write-Verbose "$(Get-Date -Format G): AddDateTime     : $AddDateTime"
-	If($MSWORD -or $PDF)
-	{
-		Write-Verbose "$(Get-Date -Format G): Company Name    : $Script:CoName"
-	}
-	Write-Verbose "$(Get-Date -Format G): ComputerName    : $ComputerName"
+	Write-Verbose "$(Get-Date -Format G): Company Name    : $Script:CoName"
+	Write-Verbose "$(Get-Date -Format G): ComputerName    : $ComputerName"	#3.06 always output
 	If($MSWORD -or $PDF)
 	{
 		Write-Verbose "$(Get-Date -Format G): Company Address : $CompanyAddress"
@@ -6668,6 +7034,7 @@ Function ShowScriptOptions
 	Write-Verbose "$(Get-Date -Format G): IncludeUserInfo : $IncludeUserInfo"
 	Write-Verbose "$(Get-Date -Format G): Log             : $($Log)"
 	Write-Verbose "$(Get-Date -Format G): MaxDetail       : $MaxDetails"
+	Write-Verbose "$(Get-Date -Format G): Report Footer   : $ReportFooter"
 	Write-Verbose "$(Get-Date -Format G): Save As HTML    : $HTML"
 	Write-Verbose "$(Get-Date -Format G): Save As PDF     : $PDF"
 	Write-Verbose "$(Get-Date -Format G): Save As TEXT    : $TEXT"
@@ -6711,7 +7078,7 @@ Function SaveandCloseDocumentandShutdownWord
 	If($Script:WordVersion -eq $wdWord2010)
 	{
 		#the $saveFormat below passes StrictMode 2
-		#I found this at the following link
+		#I found this at the following two links
 		#http://msdn.microsoft.com/en-us/library/microsoft.office.interop.word.wdsaveformat(v=office.14).aspx
 		If($PDF)
 		{
@@ -6763,18 +7130,17 @@ Function SaveandCloseDocumentandShutdownWord
 	[gc]::collect() 
 	[gc]::WaitForPendingFinalizers()
 	
-	#is the winword process still running? kill it
+	#is the winword Process still running? kill it
 
 	#find out our session (usually "1" except on TS/RDC or Citrix)
 	$SessionID = (Get-Process -PID $PID).SessionId
 
-	#Find out if winword is running in our session
-	$wordprocess = $Null
-	$wordprocess = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}).Id
-	If($null -ne $wordprocess -and $wordprocess -gt 0)
+	#Find out if winword running in our session
+	$wordprocess = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}) | Select-Object -Property Id 
+	If( $wordprocess -and $wordprocess.Id -gt 0)
 	{
-		Write-Verbose "$(Get-Date -Format G): WinWord process is still running. Attempting to stop WinWord process # $($wordprocess)"
-		Stop-Process $wordprocess -EA 0
+		Write-Verbose "$(Get-Date -Format G): WinWord Process is still running. Attempting to stop WinWord Process # $($wordprocess.Id)"
+		Stop-Process $wordprocess.Id -EA 0
 	}
 }
 
@@ -6797,12 +7163,16 @@ Function SetupText
 Function SaveandCloseTextDocument
 {
 	Write-Verbose "$(Get-Date -Format G): Saving Text file"
+	Line 0 ""
+	Line 0 "Report Complete"
 	Write-Output $global:Output.ToString() | Out-File $Script:TextFileName 4>$Null
 }
 
 Function SaveandCloseHTMLDocument
 {
 	Write-Verbose "$(Get-Date -Format G): Saving HTML file"
+	WriteHTMLLine 0 0 ""
+	WriteHTMLLine 0 0 "Report Complete"
 	Out-File -FilePath $Script:HTMLFileName -Append -InputObject "<p></p></body></html>" 4>$Null
 }
 
@@ -6994,7 +7364,7 @@ please run the script from an elevated PowerShell session using an account with 
 	{
 		#get server name
 		#first test to make sure the server is reachable
-		Write-Verbose "$(Get-Date -Format G): Testing to see if $ComputerName is online and reachable"
+		Write-Verbose "$(Get-Date -Format G): Testing to see if $ComputerName is online and reachable on TCP port 88"
 		#If(Test-Connection -ComputerName $ComputerName -quiet -EA 0)
 		If(Test-NetConnection -ComputerName $ComputerName -Port 88 -InformationLevel Quiet -EA 0) #port 88 is the KDC and is unique to DCs (thanks to Matthew Woolnough)
 		{
@@ -7002,14 +7372,16 @@ please run the script from an elevated PowerShell session using an account with 
 			Write-Verbose "$(Get-Date -Format G): `tTest #1 to see if $ComputerName is a Domain Controller."
 			#the server may be online but is it really a domain controller?
 
-			#is the ComputerName in the current domain
-			$Results = Get-ADDomainController $ComputerName -EA 0
+			#is the ComputerName in the specified forest or domain
+			$Results = Get-ADDomainController -Server $ComputerName -EA 0
 			
 			If(!$? -or $Null -eq $Results)
 			{
 				#try using the Forest name
 				Write-Verbose "$(Get-Date -Format G): `tTest #2 to see if $ComputerName is a Domain Controller."
-				$Results = Get-ADDomainController $ComputerName -Server $ADForest -EA 0
+				
+				$Results = Get-ADDomainController -Server $ComputerName -Domain $ADForest -EA 0
+				
 				If(!$?)
 				{
 					$ErrorActionPreference = $SaveEAPreference
@@ -7022,7 +7394,7 @@ please run the script from an elevated PowerShell session using an account with 
 					Script cannot Continue.
 					`n`n
 					"
-					Exit
+					AbortScript
 				}
 				Else
 				{
@@ -7038,18 +7410,18 @@ please run the script from an elevated PowerShell session using an account with 
 		}
 		Else
 		{
-			Write-Verbose "$(Get-Date -Format G): Computer $ComputerName is offline"
+			Write-Verbose "$(Get-Date -Format G): Computer $ComputerName is offline (TCP port 88)"
 			$ErrorActionPreference = $SaveEAPreference
 			Write-Error "
 			`n`n
 			`t`t
-			Computer $ComputerName is offline.
+			Computer $ComputerName is offline (TCP port 88).
 			`n`n
 			`t`t
 			Script cannot Continue.
 			`n`n
 			"
-			Exit
+			AbortScript
 		}
 	}
 
@@ -7073,7 +7445,7 @@ please run the script from an elevated PowerShell session using an account with 
 				Script cannot Continue.
 				`n`n
 				"
-				Exit
+				AbortScript
 			}
 		}
 		Else
@@ -7095,13 +7467,32 @@ please run the script from an elevated PowerShell session using an account with 
 				Is $ComputerName running Active Directory Web Services?
 				`n`n
 				"
-				Exit
+				AbortScript
 			}
 		}
-		Write-Verbose "$(Get-Date -Format G): `t$ADForest is a valid forest name"
-		[string]$Script:Title = "AD Inventory Report for the $ADForest Forest"
-		$Script:Domains       = $Script:Forest.Domains | Sort-Object 
-		$Script:ConfigNC      = (Get-ADRootDSE -Server $ADForest -EA 0).ConfigurationNamingContext
+		
+		#3.04 Make sure $Forest.Name matches the name passsed to -ADForest
+		If($ADForest -eq $Script:Forest.Name)
+		{
+			Write-Verbose "$(Get-Date -Format G): `t$ADForest is a valid forest name"
+			[string]$Script:Title = "AD Inventory Report for the $ADForest Forest"
+			$Script:Domains       = $Script:Forest.Domains | Sort-Object 
+			$Script:ConfigNC      = (Get-ADRootDSE -Server $ADForest -EA 0).ConfigurationNamingContext
+		}
+		Else
+		{
+			$ErrorActionPreference = $SaveEAPreference
+			Write-Error "
+		`n`n
+		$ADForest is not the name of the Forest's Root Domain of $($Script:Forest.Name).
+		`n`n
+		Run the script using -ADDomain instead of -ADForest
+		`n`n
+		Script cannot Continue.
+		`n`n
+			"
+			AbortScript
+		}
 	}
 	
 	If($ADDomain -ne "")
@@ -7123,7 +7514,7 @@ please run the script from an elevated PowerShell session using an account with 
 				Script cannot Continue.
 				`n`n
 				"
-				Exit
+				AbortScript
 			}
 		}
 		Else
@@ -7145,7 +7536,7 @@ please run the script from an elevated PowerShell session using an account with 
 				Is $ComputerName running Active Directory Web Services?
 				`n`n
 				"
-				Exit
+				AbortScript
 			}
 		}
 		Write-Verbose "$(Get-Date -Format G): `t$ADDomain is a valid domain name"
@@ -7172,7 +7563,7 @@ please run the script from an elevated PowerShell session using an account with 
 				Script cannot Continue.
 				`n`n
 				"
-				Exit
+				AbortScript
 			}
 		}
 		Else
@@ -7194,7 +7585,7 @@ please run the script from an elevated PowerShell session using an account with 
 				Is $ComputerName running Active Directory Web Services?
 				`n`n
 				"
-				Exit
+				AbortScript
 			}
 		}
 		Write-Verbose "$(Get-Date -Format G): `tFound forest information for $tmp"
@@ -7214,6 +7605,16 @@ please run the script from an elevated PowerShell session using an account with 
 Function ProcessForestInformation
 {
 	Write-Verbose "$(Get-Date -Format G): Writing forest data"
+	ProcessScriptStart
+	
+	If(![String]::IsNullOrEmpty($Script:CoName))
+	{
+		$txt = "Forest Information for $Script:CoName"
+	}
+	Else
+	{
+		$txt = "Forest Information"
+	}
 
 	If($MSWORD -or $PDF)
 	{
@@ -7222,23 +7623,24 @@ Function ProcessForestInformation
 	}
 	If($Text)
 	{
-		Line 0 "///  Forest Information  \\\"
+		Line 0 "///  $txt  \\\"
 	}
 	If($HTML)
 	{
-		WriteHTMLLine 1 0 "///&nbsp;&nbsp;Forest Information&nbsp;&nbsp;\\\"
+		WriteHTMLLine 1 0 "///&nbsp;&nbsp;$txt&nbsp;&nbsp;\\\"
 	}
 
 	Switch ($Script:Forest.ForestMode)
 	{
-		"0"	{$ForestMode = "Windows 2000"; Break}
-		"1" {$ForestMode = "Windows Server 2003 interim"; Break}
-		"2" {$ForestMode = "Windows Server 2003"; Break}
-		"3" {$ForestMode = "Windows Server 2008"; Break}
-		"4" {$ForestMode = "Windows Server 2008 R2"; Break}
-		"5" {$ForestMode = "Windows Server 2012"; Break}
-		"6" {$ForestMode = "Windows Server 2012 R2"; Break}
-		"7" {$ForestMode = "Windows Server 2016"; Break}	#added V2.20
+		"0"		{$ForestMode = "Windows 2000"; Break}
+		"1" 	{$ForestMode = "Windows Server 2003 interim"; Break}
+		"2" 	{$ForestMode = "Windows Server 2003"; Break}
+		"3" 	{$ForestMode = "Windows Server 2008"; Break}
+		"4" 	{$ForestMode = "Windows Server 2008 R2"; Break}
+		"5" 	{$ForestMode = "Windows Server 2012"; Break}
+		"6" 	{$ForestMode = "Windows Server 2012 R2"; Break}
+		"7" 	{$ForestMode = "Windows Server 2016"; Break} #added V2.20
+		"10"	{$ForestMode = "Windows Server 2025"; Break} #added V3.20
 		"Windows2000Forest"        {$ForestMode = "Windows 2000"; Break}
 		"Windows2003InterimForest" {$ForestMode = "Windows Server 2003 interim"; Break}
 		"Windows2003Forest"        {$ForestMode = "Windows Server 2003"; Break}
@@ -7248,6 +7650,7 @@ Function ProcessForestInformation
 		"Windows2012R2Forest"      {$ForestMode = "Windows Server 2012 R2"; Break}
 		"WindowsThresholdForest"   {$ForestMode = "Windows Server 2016 TP4"; Break}
 		"Windows2016Forest"		   {$ForestMode = "Windows Server 2016"; Break}
+		"Windows2025Forest"		   {$ForestMode = "Windows Server 2025"; Break} #added V3.20
 		"UnknownForest"            {$ForestMode = "Unknown Forest Mode"; Break}
 		Default                    {$ForestMode = "Unable to determine Forest Mode: $($Script:Forest.ForestMode)"; Break}
 	}
@@ -7656,7 +8059,7 @@ Function ProcessForestInformation
 			$( valMax $AppPartitions         ) +
 			$( valMax $CrossForestReferences ) +
 			1 +
-			$( valMax $script:Domains        ) +
+			$( valMax $tmpDomains2           ) + #V3.04 changed from $Script:domains to $tmpDomains2. We want all domains in the forest
 			3 +
 			$( valMax $Sites                 ) +
 			$( valMax $SPNSuffixes           ) +
@@ -7912,6 +8315,8 @@ Function ProcessAllDCsInTheForest
 	#http://msdn.microsoft.com/en-us/library/vstudio/system.directoryservices.activedirectory.forest.getforest%28v=vs.90%29
 	#$ADContext = New-Object System.DirectoryServices.ActiveDirectory.DirectoryContext("forest", $ADForest) 
 	#2.16 change
+	
+	<# 3.06 change
 	$ADContext = New-Object System.DirectoryServices.ActiveDirectory.DirectoryContext("forest", $Script:Forest.Name)
 	$Forest2 = [system.directoryservices.activedirectory.Forest]::GetForest($ADContext)
 	Write-Verbose "$(Get-Date -Format G): `t`tBuild list of Domain controllers in the Forest"
@@ -7920,6 +8325,54 @@ Function ProcessAllDCsInTheForest
 	$AllDCs = @( $AllDCs | Sort-Object )
 	$ADContext = $Null
 	$Forest2 = $Null
+	#>
+	
+	#new code added in 3.06 from MBS
+	$Domains = $Script:Forest.domains
+	$AllDCs = New-Object System.Collections.ArrayList
+	
+	ForEach($Domain in $Domains)
+	{
+		$sourceEntry        = New-Object System.Directoryservices.DirectoryEntry( "LDAP://$Domain" )
+		$source             = New-Object System.Directoryservices.DirectorySearcher( $sourceEntry )
+		$source.SearchScope = 'Subtree'
+		$source.PageSize    = 1000
+
+		$domainController = '805306369'
+		$serverTrust      = ( 0x0080000 ).ToString()  # SERVER_TRUST_ACCOUNT
+		$trustDelegate    = ( 0x0002000 ).ToString()  # TRUSTED_FOR_DELEGATION
+		$partialSecrets   = ( 0x4000000 ).ToString()  # PARTIAL_SECRETS_ACCOUNT (RODC)
+		$bitMask          = $serverTrust -bor $trustDelegate
+
+		#$groupDC   = 516
+		#$groupRODC = 521
+
+		$source.Filter  = "(&(sAMAccountType=$domainController)(|(userAccountControl:1.2.840.113556.1.4.803:=$bitMask)(userAccountControl:1.2.840.113556.1.4.803:=$partialSecrets)))"
+
+		$Results = $source.FindAll()
+
+		ForEach($Result in $Results)
+		{
+			#V3.20 - RODC may, or may not, have dnshostname attribute
+			$hn = $Result.Properties.Item( 'dnshostname' )
+			if( [String]::IsNullOrEmpty( $hn ) )
+			{
+				$hn = $Result.Properties.Item( 'name' )
+			}
+			$null = $AllDCs.Add( $hn )
+		}
+
+		If( $Results )
+		{
+			$Results.Dispose() 
+		}
+		
+		$source.Dispose()
+		$sourceEntry.Dispose()
+	}
+
+	$AllDCs = @( $AllDCs | Sort-Object )
+	#end of new 3.06 code
 
 	If($Null -eq $AllDCs)
 	{
@@ -7948,7 +8401,17 @@ Function ProcessAllDCsInTheForest
 		}
 		If($Text)
 		{
-			[int]$MaxDCNameLength = ($AllDCs | Measure-Object -Maximum -Property Length).Maximum
+			# no longer works after 3.06 changes [int]$MaxDCNameLength = ($AllDCs | Measure-Object -Maximum -Property Length).Maximum
+			#use this loop instead
+			[int]$MaxDCNameLength = 0
+
+			ForEach($item in $AllDCs)
+			{
+				If($item.Length -gt $MaxDCNameLength)
+				{
+					$MaxDCNameLength = $item.Length
+				}
+			}
 			
 			If($MaxDCNameLength -gt 4) #4 is length of "Name"
 			{
@@ -8006,26 +8469,29 @@ Function ProcessAllDCsInTheForest
 
 	If($MSWord -or $PDF)
 	{
-		$Table = AddWordTable -Hashtable $WordTableRowHash `
-		-Columns DCName, GC, ReadOnly, ServerOS, ServerCore `
-		-Headers "Name", "Global Catalog", "Read-only", "Server OS", "Server Core" `
-		-Format $wdTableGrid `
-		-AutoFit $wdAutoFitFixed
+		If($WordTableRowHash.Count -gt 0)	#3.07
+		{
+			$Table = AddWordTable -Hashtable $WordTableRowHash `
+			-Columns DCName, GC, ReadOnly, ServerOS, ServerCore `
+			-Headers "Name", "Global Catalog", "Read-only", "Server OS", "Server Core" `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed
 
-		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
-		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15
+			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
+			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15
 
-		$Table.Columns.Item(1).Width = 150
-		$Table.Columns.Item(2).Width = 50
-		$Table.Columns.Item(3).Width = 50
-		$Table.Columns.Item(4).Width = 130
-		$Table.Columns.Item(5).Width = 45
+			$Table.Columns.Item(1).Width = 150
+			$Table.Columns.Item(2).Width = 50
+			$Table.Columns.Item(3).Width = 50
+			$Table.Columns.Item(4).Width = 130
+			$Table.Columns.Item(5).Width = 45
 
-		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
 
-		FindWordDocumentEnd
-		$Table = $Null
-		WriteWordLine 0 0 ""
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ""
+		}
 	}
 	If($Text)
 	{
@@ -8086,7 +8552,8 @@ Function ProcessCAInformation
 
 	$rootDSE = [ADSI]'LDAP://RootDSE'
 
-	$configNC = $rootDSE.Properties[ 'configurationNamingContext' ].Value -as [String]
+	#V3.20
+	$configNC = $rootDSE.Properties[ 'configurationNamingContext' ].Item( 0 )
 
 	$rootCA  = 'CN=Certification Authorities,CN=Public Key Services,CN=Services,' + $configNC
 	$rootObj = [ADSI]( 'LDAP://' + $rootCA )
@@ -8167,7 +8634,7 @@ Function ProcessCAInformation
 	If($RootCnt -eq 0 -or $Null -eq $rootObj)
 	{
 		$txt = "No Certification Authority Root(s) were retrieved"
-		Write-Warning $txt
+		#Write-Warning $txt
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 0 $txt "" $Null 0 $False $True
@@ -8296,7 +8763,7 @@ Function ProcessCAInformation
 	ElseIf(([string]::isnullorempty($allObj.psbase.children)) -and ([string]::isnullorempty($rootObj.psbase.children)))
 	{
 		$txt = "No Certification Authority Issuer(s) were retrieved"
-		Write-Warning $txt
+		#Write-Warning $txt
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 0 $txt '' $Null 0 $False $True
@@ -8314,7 +8781,7 @@ Function ProcessCAInformation
 		}
 	}
 	
-	#if you have enrollment authorities and no roots - that’s a BIG error
+	#if you have enrollment authorities and no roots – that’s a BIG error
 	If($AllCnt -gt 0 -and $RootCnt -eq 0)
 	{
 		$txt = "Error: Certification Authority Issuers(s) (also known as Enrollment Agents) exist, but no Certification Authority Root(s) exist"
@@ -8499,7 +8966,7 @@ Function ProcessADOptionalFeatures
 	ElseIf($? -and $Null -eq $ADOptionalFeatures)
 	{
 		$txt = "No AD Optional Features were retrieved"
-		Write-Warning $txt
+		#Write-Warning $txt
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 0 $txt "" $Null 0 $False $True
@@ -8561,7 +9028,7 @@ Function ProcessADSchemaItems
 	Write-Verbose "$(Get-Date -Format G): `tAD Schema Items"
 	
 	$txt = "AD Schema Items"
-	$txt1 = "Just because a schema extension is Present does not mean it is in use."
+	$txt1 = "Just because a schema extension is Present does not mean that the product is in use." #V3.04 change wording
 	If($MSWORD -or $PDF)
 	{
 		WriteWordLine 3 0 $txt
@@ -8597,14 +9064,14 @@ Function ProcessADSchemaItems
 		Switch ($item)
 		{
 			'User-Account-Control'			{$tmp = "Flags that control the behavior of a user account";Break}
-			'msNPAllowDialin'				{$tmp = "RAS Server";Break}
-			'ms-Mcs-AdmPwd'					{$tmp = "LAPS";Break}
-			'ms-Mcs-AdmPwdExpirationTime'	{$tmp = "LAPS";Break}
-			'ms-SMS-Assignment-Site-Code'	{$tmp = "SCCM";Break}
-			'ms-SMS-Capabilities'			{$tmp = "SCCM";Break}
-			'ms-RTC-SIP-PoolAddress'		{$tmp = "Lync/Skype for Business";Break} #V3.00
-			'ms-RTC-SIP-DomainName'			{$tmp = "Lync/Skype for Business";Break} #V3.00
-			'ms-exch-schema-version-pt' 	{$tmp = "Exchange";Break}
+			'msNPAllowDialin'				{$tmp = "NPS/RAS Server";Break} #renamed in 3.05
+			'ms-Mcs-AdmPwd'					{$tmp = "On-premises LAPS";Break} #renamed in 3.05
+			'ms-Mcs-AdmPwdExpirationTime'	{$tmp = "On-premises LAPS";Break} #renamed in 3.05
+			'ms-SMS-Assignment-Site-Code'	{$tmp = "MECM/SCCM";Break} #renamed in 3.05
+			'ms-SMS-Capabilities'			{$tmp = "MECM/SCCM";Break} #renamed in 3.05
+			'ms-RTC-SIP-PoolAddress'		{$tmp = "On-premises Lync/Skype for Business";Break} #V3.00 #renamed in 3.05
+			'ms-RTC-SIP-DomainName'			{$tmp = "On-premises Lync/Skype for Business";Break} #V3.00 #renamed in 3.05
+			'ms-exch-schema-version-pt' 	{$tmp = "On-premises Exchange";Break} #renamed in 3.05
 			Default							{$tmp = "Unknown";Break}
 		}
 		
@@ -8671,24 +9138,27 @@ Function ProcessADSchemaItems
 	If($MSWORD -or $PDF)
 	{
 		## Add the table to the document, using the hashtable
-		$Table = AddWordTable -Hashtable $ItemsWordTable `
-		-Columns ItemName, ItemState, ItemDesc `
-		-Headers "Schema item name", "Present", "Used for" `
-		-Format $wdTableGrid `
-		-AutoFit $wdAutoFitFixed;
+		If($ItemsWordTable.Count -gt 0)	#3.07
+		{
+			$Table = AddWordTable -Hashtable $ItemsWordTable `
+			-Columns ItemName, ItemState, ItemDesc `
+			-Headers "Schema item name", "Present", "Used for" `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
 
-		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
-		## IB - Set the header row format after the SetWordTableAlternateRowColor Function as it will paint the header row!
-		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
+			## IB - Set the header row format after the SetWordTableAlternateRowColor Function as it will paint the header row!
+			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-		$Table.Columns.Item(1).Width = 150
-		$Table.Columns.Item(2).Width = 75
-		$Table.Columns.Item(3).Width = 200
+			$Table.Columns.Item(1).Width = 150
+			$Table.Columns.Item(2).Width = 75
+			$Table.Columns.Item(3).Width = 200
 
-		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
-		FindWordDocumentEnd
-		$Table = $Null
+			FindWordDocumentEnd
+			$Table = $Null
+		}
 	}
 	If($Text)
 	{
@@ -8874,7 +9344,7 @@ Function ProcessSiteInformation
 					}
 					Else
 					{
-						$ScriptInformation += @{ Data = "Sites in Link"; Value = <None>; }
+						$ScriptInformation += @{ Data = "Sites in Link"; Value = "<None>"; }
 					}
 					$ScriptInformation += @{ Data = "Cost"; Value = $SiteLink.Cost.ToString(); }
 					$ScriptInformation += @{ Data = "Replication Interval"; Value = $SiteLink.ReplInterval.ToString(); }
@@ -9243,24 +9713,28 @@ Function ProcessSiteInformation
 									FromSite = $Result.FromServerSite
 									}
 								}
-								$Table = AddWordTable -Hashtable $WordTableRowHash `
-								-Columns ConnectionName, FromServer, FromSite `
-								-Headers "Name", "From Server", "From Site" `
-								-Format $wdTableGrid `
-								-AutoFit $wdAutoFitFixed;
+								
+								If($WordTableRowHash.Count -gt 0)	#3.07
+								{
+									$Table = AddWordTable -Hashtable $WordTableRowHash `
+									-Columns ConnectionName, FromServer, FromSite `
+									-Headers "Name", "From Server", "From Site" `
+									-Format $wdTableGrid `
+									-AutoFit $wdAutoFitFixed;
 
-								SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+									SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-								$Table.Columns.Item(1).Width = 200;
-								$Table.Columns.Item(2).Width = 100;
-								$Table.Columns.Item(3).Width = 100;
+									$Table.Columns.Item(1).Width = 200;
+									$Table.Columns.Item(2).Width = 100;
+									$Table.Columns.Item(3).Width = 100;
 
-								#indent the entire table 1 tab stop
-								$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
+									#indent the entire table 1 tab stop
+									$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
 
-								FindWordDocumentEnd
-								$Table = $Null
-								WriteWordLine 0 0 ""
+									FindWordDocumentEnd
+									$Table = $Null
+									WriteWordLine 0 0 ""
+								}
 							}
 						}
 						Else
@@ -9468,7 +9942,8 @@ Function ProcessDomains
 	"69" = "Windows Server 2012 R2";
 	"72" = "Windows Server 2016 TP4";
 	"87" = "Windows Server 2016";
-	"88" = "Windows Server 2019";	#added V2.20, updated in 2.22
+	"88" = "Windows Server 2019/2022";	#added V2.20, updated in 2.22, updated in 3.10
+	"91" = "Windows Server 2025"; #added V3.20
 	"4397" = "Exchange 2000 RTM"; 
 	"4406" = "Exchange 2000 SP3";
 	"6870" = "Exchange 2003 RTM, SP1, SP2"; 
@@ -9494,10 +9969,12 @@ Function ProcessDomains
 	"15326" = "Exchange 2016 CU3/CU4/CU5"; #added in 2.16
 	"15330" = "Exchange 2016 CU6"; #added in 2.16
 	"15332" = "Exchange 2016 CU7 through CU18"; #added in 2.16 and updated in 2.20, updated in 2.22, updated in 2.24, updated in 3.02
-	"15333" = "Exchange 2016 CU19"; #added in 3.02
+	"15333" = "Exchange 2016 CU19/CU20"; #added in 3.02, updated in 3.05
+	"15334" = "Exchange 2016 CU21-CU23"; #added in 3.05, updated in 3.08, updated in 3.10
 	"17000" = "Exchange 2019 RTM/CU1"; #added in 2.22, updated in 2.24
 	"17001" = "Exchange 2019 CU2-CU7"; #added in 2.24, updated in 3.02
-	"17002" = "Exchange 2019 CU8"; #added in 3.02
+	"17002" = "Exchange 2019 CU8/CU9"; #added in 3.02, updated in 3.05
+	"17003" = "Exchange 2019 CU10-CU15/SE"; #added in 3.05, updated in 3.08, updated in 3.10, updated in 3.20
 	}
 
 	ForEach($Domain in $Script:Domains)
@@ -9587,14 +10064,15 @@ Function ProcessDomains
 
 			Switch ($DomainInfo.DomainMode)
 			{
-				"0"	{$DomainMode = "Windows 2000"; Break}
-				"1" {$DomainMode = "Windows Server 2003 mixed"; Break}
-				"2" {$DomainMode = "Windows Server 2003"; Break}
-				"3" {$DomainMode = "Windows Server 2008"; Break}
-				"4" {$DomainMode = "Windows Server 2008 R2"; Break}
-				"5" {$DomainMode = "Windows Server 2012"; Break}
-				"6" {$DomainMode = "Windows Server 2012 R2"; Break}
-				"7" {$DomainMode = "Windows Server 2016"; Break}	#added V2.20
+				"0"		{$DomainMode = "Windows 2000"; Break}
+				"1" 	{$DomainMode = "Windows Server 2003 mixed"; Break}
+				"2" 	{$DomainMode = "Windows Server 2003"; Break}
+				"3" 	{$DomainMode = "Windows Server 2008"; Break}
+				"4" 	{$DomainMode = "Windows Server 2008 R2"; Break}
+				"5" 	{$DomainMode = "Windows Server 2012"; Break}
+				"6" 	{$DomainMode = "Windows Server 2012 R2"; Break}
+				"7" 	{$DomainMode = "Windows Server 2016"; Break} #added V2.20
+				"10"	{$DomainMode = "Windows Server 2016"; Break} #added V3.20
 				"Windows2000Domain"   		{$DomainMode = "Windows 2000"; Break}
 				"Windows2003Mixed"    		{$DomainMode = "Windows Server 2003 mixed"; Break}
 				"Windows2003Domain"   		{$DomainMode = "Windows Server 2003"; Break}
@@ -9604,6 +10082,7 @@ Function ProcessDomains
 				"Windows2012R2Domain" 		{$DomainMode = "Windows Server 2012 R2"; Break}
 				"WindowsThresholdDomain"	{$DomainMode = "Windows Server 2016 TP"; Break}
 				"Windows2016Domain"			{$DomainMode = "Windows Server 2016"; Break}
+				"Windows2025Domain"			{$DomainMode = "Windows Server 2025"; Break} #added in V3.20
 				"UnknownDomain"       		{$DomainMode = "Unknown Domain Mode"; Break}
 				Default               		{$DomainMode = "Unable to determine Domain Mode: $($DomainInfo.DomainMode)"; Break}
 			}
@@ -9669,6 +10148,23 @@ Function ProcessDomains
 			{
 				$LastLogonReplicationInterval = $DomainInfo.LastLogonReplicationInterval.ToString()
 			}
+			
+			#added in 3.09
+			#https://www.jorgebernhardt.com/how-to-change-attribute-ms-ds-machineaccountquota/
+			$tmpMachineAccountQuota = Get-ADObject -Identity $DomainInfo.DistinguishedName `
+				-Server $Domain `
+				-Properties ms-DS-MachineAccountQuota -EA 0
+			
+			If($? -and $Null -ne $tmpMachineAccountQuota)
+			{
+				$MachineAccountQuota = $tmpMachineAccountQuota.'ms-DS-MachineAccountQuota'.ToString()
+			}
+			Else
+			{
+				$MachineAccountQuota = "Unable to retrieve"
+			}
+			$tmpMachineAccountQuota = $Null
+			#end add
 			
 			If($MSWORD -or $PDF)
 			{
@@ -9736,6 +10232,7 @@ Function ProcessDomains
 				$ScriptInformation += @{ Data = "Infrastructure master"; Value = $DomainInfo.InfrastructureMaster; }
 				$ScriptInformation += @{ Data = "Last logon replication interval"; Value = $LastLogonReplicationInterval; }
 				$ScriptInformation += @{ Data = "Lost and Found container"; Value = $DomainInfo.LostAndFoundContainer; }
+				$ScriptInformation += @{ Data = "Machine account quota"; Value = $MachineAccountQuota; }
 				If(![String]::IsNullOrEmpty($DomainInfo.ManagedBy))
 				{
 					$ScriptInformation += @{ Data = "Managed by"; Value = $DomainInfo.ManagedBy; }
@@ -9899,6 +10396,7 @@ Function ProcessDomains
 				Line 1 "Infrastructure master`t`t`t: " $DomainInfo.InfrastructureMaster
 				Line 1 "Last logon replication interval`t`t: " $LastLogonReplicationInterval
 				Line 1 "Lost and Found container`t`t: " $DomainInfo.LostAndFoundContainer
+				Line 1 "Machine account quota`t`t`t: " $MachineAccountQuota
 				If(![String]::IsNullOrEmpty($DomainInfo.ManagedBy))
 				{
 					Line 1 "Managed by`t`t`t`t: " $DomainInfo.ManagedBy
@@ -10048,6 +10546,7 @@ Function ProcessDomains
 				$rowdata += @(,('Infrastructure master',$htmlsb,$DomainInfo.InfrastructureMaster,$htmlwhite))
 				$rowdata += @(,("Last logon replication interval",$htmlsb,$LastLogonReplicationInterval,$htmlwhite))
 				$rowdata += @(,('Lost and Found container',$htmlsb,$DomainInfo.LostAndFoundContainer,$htmlwhite))
+				$rowdata += @(,("Machine account quota",$htmlsb,$MachineAccountQuota,$htmlwhite))
 				If(![String]::IsNullOrEmpty($DomainInfo.ManagedBy))
 				{
 					$rowdata += @(,('Managed by',$htmlsb,$DomainInfo.ManagedBy,$htmlwhite))
@@ -10321,18 +10820,32 @@ Function ProcessDomains
 			}
 			
 			Write-Verbose "$(Get-Date -Format G): `t`tProcessing domain controllers"
+			#3.11 move the headings out so the error or notice hss a section heading
+			If($MSWord -or $PDF)
+			{
+				WriteWordLine 3 0 "Domain Controllers"
+			}
+			If($Text)
+			{
+				Line 0 "Domain Controllers: "
+			}
+			If($HTML)
+			{
+				WriteHTMLLine 3 0 "Domain Controllers"
+			}
+
 			$DomainControllers = $Null
 			$DomainControllers = Get-ADDomainController -Filter * -Server $DomainInfo.DNSRoot -EA 0 | Sort-Object Name
 			
 			If($? -and $Null -ne $DomainControllers)
 			{
-				$Script:AllDomainControllers.Add($DomainControllers) > $Null
-				$Script:AllDomainControllers = $Script:AllDomainControllers | Sort-Object Name -Unique #remove duplicates now that this can be done three times
+				$DomainControllers | ForEach-Object{$Script:AllDomainControllers.Add($_) | Out-Null} #3.05 fix by Jorge de Almeida Pinto
+				#$Script:AllDomainControllers.Add($DomainControllers) > $Null # <= JORGE: HERE THE COLLETION OF OBJECTS IS ADDED AS ONE OBJECT!
+				#$Script:AllDomainControllers = $Script:AllDomainControllers | Sort-Object Name -Unique #remove duplicates now that this can be done three times
 
 				If($MSWord -or $PDF)
 				{
 					[System.Collections.Hashtable[]] $WordTable = @();
-					WriteWordLine 3 0 "Domain Controllers"
 					ForEach($DomainController in $DomainControllers)
 					{
 						$WordTableRowHash = @{
@@ -10340,25 +10853,28 @@ Function ProcessDomains
 						}
 						$WordTable += $WordTableRowHash;
 					}
+					
 					#set column widths
-					$Table = AddWordTable -Hashtable $WordTable `
-					-Columns  DCName `
-					-Headers "Name" `
-					-Format $wdTableGrid `
-					-AutoFit $wdAutoFitFixed;
+					If($WordTable.Count -gt 0)	#3.07
+					{
+						$Table = AddWordTable -Hashtable $WordTable `
+						-Columns  DCName `
+						-Headers "Name" `
+						-Format $wdTableGrid `
+						-AutoFit $wdAutoFitFixed;
 
-					SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+						SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-					$Table.Columns.Item(1).Width = 105;
-					$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+						$Table.Columns.Item(1).Width = 105;
+						$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
-					FindWordDocumentEnd
-					$Table = $Null
-					WriteWordLine 0 0 ""
+						FindWordDocumentEnd
+						$Table = $Null
+						WriteWordLine 0 0 ""
+					}
 				}
 				If($Text)
 				{
-					Line 0 "Domain Controllers: "
 					ForEach($DomainController in $DomainControllers)
 					{
 						Line 1 $DomainController.Name
@@ -10368,7 +10884,6 @@ Function ProcessDomains
 				If($HTML)
 				{
 					$rowdata = @()
-					WriteHTMLLine 3 0 "Domain Controllers"
 					ForEach($DomainController in $DomainControllers)
 					{
 						$rowdata += @(,($DomainController.Name,$htmlwhite))
@@ -10421,24 +10936,25 @@ Function ProcessDomains
 			#are FGPP cmdlets available
 			If(Get-Command -Name "Get-ADFineGrainedPasswordPolicy" -ea 0)
 			{
+				#3.11 move the headings out so the error or notice hss a section heading
+				If($MSWord -or $PDF)
+				{
+					WriteWordLine 3 0 "Fine Grained Password Policies"
+				}
+				If($Text)
+				{
+					Line 0 "Fine Grained Password Policies"
+				}
+				If($HTML)
+				{
+					WriteHTMLLine 3 0 "Fine Grained Password Policies"
+				}
+				
 				$FGPPs = $Null
 				$FGPPs = Get-ADFineGrainedPasswordPolicy -Searchbase $DomainInfo.DistinguishedName -Filter * -Properties * -Server $DomainInfo.DNSRoot -EA 0 | Sort-Object Precedence, ObjectGUID
 				
 				If($? -and $Null -ne $FGPPs)
 				{
-					If($MSWord -or $PDF)
-					{
-						WriteWordLine 3 0 "Fine Grained Password Policies"
-					}
-					If($Text)
-					{
-						Line 0 "Fine Grained Password Policies"
-					}
-					If($HTML)
-					{
-						WriteHTMLLine 3 0 "Fine Grained Password Policies"
-					}
-					
 					ForEach($FGPP in $FGPPs)
 					{
 						If($MSWord -or $PDF)
@@ -10538,7 +11054,8 @@ Function ProcessDomains
 							
 							$ScriptInformation += @{ Data = "Description"; Value = $FGPP.Description; }
 							
-							$results = Get-ADFineGrainedPasswordPolicySubject -Identity $FGPP.Name -EA 0 | Sort-Object Name
+							#$results = Get-ADFineGrainedPasswordPolicySubject -Identity $FGPP.Name -EA 0 | Sort-Object Name
+							$results = Get-ADFineGrainedPasswordPolicySubject -Identity $FGPP.Name -Server $DomainInfo.DNSRoot -EA 0 | Sort-Object Name #3.05 fix by Jorge de Almeida Pinto
 							
 							If($? -and $Null -ne $results)
 							{
@@ -10680,7 +11197,8 @@ Function ProcessDomains
 							
 							Line 1 "Description`t`t`t`t`t`t`t: " $FGPP.Description
 							
-							$results = Get-ADFineGrainedPasswordPolicySubject -Identity $FGPP.Name -EA 0 | Sort-Object Name
+							#$results = Get-ADFineGrainedPasswordPolicySubject -Identity $FGPP.Name -EA 0 | Sort-Object Name
+							$results = Get-ADFineGrainedPasswordPolicySubject -Identity $FGPP.Name -Server $DomainInfo.DNSRoot -EA 0 | Sort-Object Name #3.05 fix by Jorge de Almeida Pinto
 							
 							If($? -and $Null -ne $results)
 							{
@@ -10801,7 +11319,8 @@ Function ProcessDomains
 							
 							$rowdata += @(,("Description",$htmlsb,$FGPP.Description,$htmlwhite))
 							
-							$results = Get-ADFineGrainedPasswordPolicySubject -Identity $FGPP.Name -EA 0 | Sort-Object Name
+							#$results = Get-ADFineGrainedPasswordPolicySubject -Identity $FGPP.Name -EA 0 | Sort-Object Name
+							$results = Get-ADFineGrainedPasswordPolicySubject -Identity $FGPP.Name -Server $DomainInfo.DNSRoot -EA 0 | Sort-Object Name #3.05 fix by Jorge de Almeida Pinto
 							
 							If($? -and $Null -ne $results)
 							{
@@ -10903,25 +11422,47 @@ Function ProcessDomainControllers
 {
 	Write-Verbose "$(Get-Date -Format G): Writing domain controller data"
 
-	If($MSWORD -or $PDF)
-	{
-		$Script:selection.InsertNewPage()
-		WriteWordLine 1 0 "Domain Controllers in $($Script:ForestName)"
-	}
-	If($Text)
-	{
-		Line 0 "///  Domain Controllers in $($Script:ForestName)  \\\"
-	}
-	If($HTML)
-	{
-		WriteHTMLLine 1 0 "///&nbsp;&nbsp;Domain Controllers in $($Script:ForestName)&nbsp;&nbsp;\\\"
-	}
+	#If($MSWORD -or $PDF)
+	#{
+	#	$Script:selection.InsertNewPage()
+	#	WriteWordLine 1 0 "Domain Controllers in $($Script:ForestName)"
+	#}
+	#If($Text)
+	#{
+	#	Line 0 "///  Domain Controllers in $($Script:ForestName)  \\\"
+	#}
+	#If($HTML)
+	#{
+	#	WriteHTMLLine 1 0 "///&nbsp;&nbsp;Domain Controllers in $($Script:ForestName)&nbsp;&nbsp;\\\"
+	#}
 
-	$Script:AllDomainControllers = $Script:AllDomainControllers | Sort-Object Name
+	#$Script:AllDomainControllers = $Script:AllDomainControllers | Sort-Object Name
+	$Script:AllDomainControllers = $Script:AllDomainControllers | Sort-Object Domain,Name #changed in 3.04
 	$First = $True
+	$SaveDomain = "" #added in 3.04
 
 	ForEach($DC in $Script:AllDomainControllers)
 	{
+		#3.04
+		#process DCs by domain. Don't put every DC in the root domain
+		$DomainName = $DC.Domain
+		If($SaveDomain -ne $DomainName)
+		{
+			If($MSWORD -or $PDF)
+			{
+				$Script:selection.InsertNewPage()
+				WriteWordLine 1 0 "Domain Controllers in $($DomainName)"
+			}
+			If($Text)
+			{
+				Line 0 "///  Domain Controllers in $($DomainName)  \\\"
+			}
+			If($HTML)
+			{
+				WriteHTMLLine 1 0 "///&nbsp;&nbsp;Domain Controllers in $($DomainName)&nbsp;&nbsp;\\\"
+			}
+			$First = $True
+		}
 		Write-Verbose "$(Get-Date -Format G): `tProcessing domain controller $($DC.name)"
 		$FSMORoles = $DC.OperationMasterRoles | Sort-Object 
 		$Partitions = $DC.Partitions | Sort-Object 
@@ -10936,6 +11477,13 @@ Function ProcessDomainControllers
 		{
 			WriteWordLine 2 0 $DC.Name
 			[System.Collections.Hashtable[]] $ScriptInformation = @()
+			$WordHighlightedCells = New-Object System.Collections.ArrayList
+			[int] $CurrentServiceIndex = 1
+			$ScriptInformation += @{ Data = "Computer Object DN"; Value = $DC.ComputerObjectDN; }
+			If($DC.ComputerObjectDN -NotLike "*OU=Domain Controllers*")
+			{
+				$WordHighlightedCells.Add(@{ Row = $CurrentServiceIndex; Column = 2; }) > $Null
+			}
 			$ScriptInformation += @{ Data = "Default partition"; Value = $DC.DefaultPartition; }
 			$ScriptInformation += @{ Data = "Domain"; Value = $DC.domain; }
 			If($DC.Enabled -eq $True)
@@ -11050,6 +11598,10 @@ Function ProcessDomainControllers
 			-AutoFit $wdAutoFitFixed;
 
 			SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+			If($WordHighlightedCells.Count -gt 0)
+			{
+				SetWordCellFormat -Coordinates $WordHighlightedCells -Table $Table -Bold -BackgroundColor $wdColorRed -Solid;
+			}
 
 			$Table.Columns.Item(1).Width = 140;
 			$Table.Columns.Item(2).Width = 300;
@@ -11063,6 +11615,14 @@ Function ProcessDomainControllers
 		If($Text)
 		{
 			Line 0 "///  DC: $($DC.Name)  \\\"
+			If($DC.ComputerObjectDN -NotLike "*OU=Domain Controllers*")
+			{
+				Line 1 "Computer Object DN`t`t: ***$($DC.ComputerObjectDN)***"
+			}
+			Else
+			{
+				Line 1 "Computer Object DN`t`t: " $DC.ComputerObjectDN
+			}
 			Line 1 "Default partition`t`t: " $DC.DefaultPartition
 			Line 1 "Domain`t`t`t`t: " $DC.domain
 			If($DC.Enabled -eq $True)
@@ -11175,7 +11735,16 @@ Function ProcessDomainControllers
 		{
 			WriteHTMLLine 2 0 "///&nbsp;&nbsp;$($DC.Name)&nbsp;&nbsp;\\\"
 			$rowdata = @()
-			$columnHeaders = @("Default partition",$htmlsb,$DC.DefaultPartition,$htmlwhite)
+			If($DC.ComputerObjectDN -NotLike "*OU=Domain Controllers*")
+			{
+				$HTMLHighlightedCells = $htmlred
+			}
+			Else
+			{
+				$HTMLHighlightedCells = $htmlwhite
+			} 
+			$columnHeaders = @("Computer Object DN",$htmlsb,$DC.DefaultPartition,$HTMLHighlightedCells)
+			$rowdata += @(,("Default partition",$htmlsb,$DC.DefaultPartition,$htmlwhite))
 			$rowdata += @(,('Domain',$htmlsb,$DC.domain,$htmlwhite))
 			If($DC.Enabled -eq $True)
 			{
@@ -11290,17 +11859,39 @@ Function ProcessDomainControllers
 		
 		If($Script:DARights -and $Script:Elevated)
 		{
-			OutputTimeServerRegistryKeys $DC.HostName
+			#3.06, add testing to see if the DC is online
+			If(Test-NetConnection -ComputerName $DC.HostName -Port 88 -InformationLevel Quiet -EA 0) #port 88 is the KDC and is unique to DCs (thanks to Matthew Woolnough)
+			{
+				OutputTimeServerRegistryKeys $DC.HostName
 		
-			OutputADFileLocations $DC.HostName
+				OutputADFileLocations $DC.HostName
 			
-			OutputEventLogInfo $DC.HostName
+				OutputEventLogInfo $DC.HostName
+			}
+			Else
+			{
+				$txt = "$(Get-Date): `t`t$($DC.Name) is offline or unreachable.  Time Server, AD File Locations, and Event Log data is skipped."
+				Write-Verbose $txt
+				If($MSWORD -or $PDF)
+				{
+					WriteWordLine 0 0 $txt
+				}
+				If($Text)
+				{
+					Line 0 $txt
+				}
+				If($HTML)
+				{
+					WriteHTMLLine 0 0 $txt
+				}
+			}
 		}
 		
 		If($Hardware -or $Services -or $DCDNSInfo)
 		{
 			#If(Test-Connection -ComputerName $DC.HostName -quiet -EA 0)
-			If(Test-NetConnection -ComputerName $ComputerName -Port 88 -InformationLevel Quiet -EA 0) #port 88 is the KDC and is unique to DCs (thanks to Matthew Woolnough)
+			#3.06, change from $ComputerName to $DC.HostName
+			If(Test-NetConnection -ComputerName $DC.HostName -Port 88 -InformationLevel Quiet -EA 0) #port 88 is the KDC and is unique to DCs (thanks to Matthew Woolnough)
 			{
 				If($Hardware)
 				{
@@ -11385,6 +11976,7 @@ Function ProcessDomainControllers
 			}
 		}
 		$First = $False
+		$SaveDomain = $DomainName
 	}
 	$Script:AllDomainControllers = $Null
 } ## end Function ProcessDomainControllers
@@ -11406,9 +11998,11 @@ Function OutputTimeServerRegistryKeys
 	#HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W32Time\TimeProviders\VMICTimeProvider Enabled
 	
 	$AnnounceFlags = Get-RegistryValue "HKLM:\SYSTEM\CurrentControlSet\Services\W32Time\Config" "AnnounceFlags" $DCName
-	If( $null -eq $AnnounceFlags -and $error.Count -gt 0 -and $error[ 0 ].Exception.HResult -eq -2146233087 )
+	#If( $null -eq $AnnounceFlags -and $error.Count -gt 0 -and $error[ 0 ].Exception.HResult -eq -2146233087 )
+	#3.06 check only for null to catch appliances (Riverbed) with no registry
+	If( $null -eq $AnnounceFlags )
 	{
-		## DCName can't be contacted
+		## DCName can't be contacted or DCName is an appliance with no registry
 		$AnnounceFlags = 'n/a'
 		$MaxNegPhaseCorrection = 'n/a'
 		$MaxPosPhaseCorrection = 'n/a'
@@ -11574,7 +12168,9 @@ Function OutputADFileLocations
 	#HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters	SysVol
 	
 	$DSADatabaseFile = Get-RegistryValue "HKLM:\SYSTEM\CurrentControlSet\Services\NTDS\Parameters" "DSA Database file" $DCName
-	If( $null -eq $DSADatabaseFile -and $error.Count -gt 0 -and $error[ 0 ].Exception.HResult -eq -2146233087 )
+	#If( $null -eq $DSADatabaseFile -and $error.Count -gt 0 -and $error[ 0 ].Exception.HResult -eq -2146233087 )
+	#3.06 check only for null to catch appliances (Riverbed) with no registry
+	If( $null -eq $DSADatabaseFile )
 	{
 		$DSADatabaseFile = ''
 		$DatabaseLogFilesPath = ''
@@ -11586,8 +12182,18 @@ Function OutputADFileLocations
 		$DatabaseLogFilesPath = Get-RegistryValue "HKLM:\SYSTEM\CurrentControlSet\Services\NTDS\Parameters" "Database log files path" $DCName
 		$Sysvol = Get-RegistryValue "HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters" "SysVol" $DCName
 
-		$Result = Get-WMIObject -ComputerName $DCName -Namespace "root/microsoftdfs" -Class "dfsrreplicatedfolderinfo" -Filter "ReplicatedFolderName = 'SYSVOL Share'" -EA 0 | Select-Object State
+		#$Result = Get-WMIObject -ComputerName $DCName -Namespace "root/microsoftdfs" -Class "dfsrreplicatedfolderinfo" -Filter "ReplicatedFolderName = 'SYSVOL Share'" -EA 0 | Select-Object State
+		If($DCName -eq $env:computername)
+		{
+			$Result = Get-CIMInstance -Namespace "root/microsoftdfs" -Class "dfsrreplicatedfolderinfo" -Filter "ReplicatedFolderName = 'SYSVOL Share'" -EA 0 -Verbose:$False | Select-Object State
+		}
+		Else
+		{
+			$Result = Get-CIMInstance -CIMSession $DCName -Namespace "root/microsoftdfs" -Class "dfsrreplicatedfolderinfo" -Filter "ReplicatedFolderName = 'SYSVOL Share'" -EA 0 -Verbose:$False | Select-Object State
+		}
 
+		#original code before 3.07 change
+		<#
 		If($? -and $Null -ne $Result)
 		{
 			$SysvolState  = $Result.State
@@ -11614,9 +12220,84 @@ Function OutputADFileLocations
 		}
 		Else
 		{
-			$SysvolState  = "Unable to determine the SYSVOL State: $($Result.State)"
+			#$SysvolState  = "Unable to determine the SYSVOL State: $($Result.State)"
+			$SysvolState  = "Unable to determine the SYSVOL State" #changed in 3.06, if $Result is null or an error happened, there is no State property
+		}
+		#>
+		#end of original code before change
+		
+		If($?)
+		{
+			If($Null -ne $Result)
+			{
+				$SysvolState  = $Result.State
+
+				#https://docs.microsoft.com/en-us/troubleshoot/windows-server/networking/troubleshoot-missing-sysvol-and-netlogon-shares
+				#The state values can be any of:
+				#0 = Uninitialized
+				#1 = Initialized
+				#2 = Initial Sync
+				#3 = Auto Recovery
+				#4 = Normal
+				#5 = In Error
+
+				Switch($Result.State)
+				{
+					0		{$SysvolState  = "0 = Uninitialized"; Break}
+					1		{$SysvolState  = "1 = Initialized"; Break}
+					2		{$SysvolState  = "2 = Initial Sync"; Break}
+					3		{$SysvolState  = "3 = Auto Recovery"; Break}
+					4		{$SysvolState  = "4 = Normal"; Break}
+					5		{$SysvolState  = "5 = In Error"; Break}
+					Default {$SysvolState  = "Unable to determine the SYSVOL State: $($Result.State)"; Break}
+				}
+			}
+			Else
+			{
+				#Code supplied by Michael B. Smith
+				If( Get-Command Get-SmbShare )
+				{
+					$Result = Get-SmbShare SYSVOL
+					If( $? -and $null -ne $Result )
+					{	
+						$SysVolState = $Result.ShareState
+					}
+					Else
+					{
+						$SysvolState  = "Unable to determine the SYSVOL State (SMB)"
+					}
+				}
+				Else
+				{
+					$Result = net.exe SHARE SYSVOL
+					If( 0 -eq $LASTEXITCODE )
+					{
+						$SysVolState = 'Online'
+					}
+					ElseIf ( 2 -eq $LASTEXITCODE )
+					{
+						$SysVolState = 'No such share'
+					}
+					Else
+					{
+						$SysVolState ="Unable to determine the SYSVOL State (net.exe) $LASTEXITCODE"
+					}
+				}
+				#end of MBS code
+			}
+		}
+		Else
+		{
+			$SysvolState  = "Unable to determine the SYSVOL State" #changed in 3.06, if $Result is null or an error happened, there is no State property
 		}
 	}
+
+	$obj = [PSCustomObject] @{
+		DCName = $DCName
+		SYSVOLState = $SysvolState
+	}
+
+	$null = $Script:DCSYSVOLState.Add( $obj )
 
 	If( $DSADatabaseFile -and $DSADatabaseFile.Length -gt 0 )
 	{
@@ -11733,7 +12414,17 @@ Function OutputEventLogInfo
 	$ELInfo = $null ## New-Object System.Collections.ArrayList ## FIXME - make this an array instead of arraylist
 	
 	#V3.00 - note that we are sorted here by name, don't need to sort again later.
-	$EventLogs = Get-EventLog -List -ComputerName $DCName -EA 0 | Select-Object MaximumKilobytes, Log | Sort-Object Log 
+	#3.06 add try/catch
+	
+	try
+	{
+		$EventLogs = Get-EventLog -List -ComputerName $DCName -EA 0 | Select-Object MaximumKilobytes, Log | Sort-Object Log 
+	}
+	
+	catch
+	{
+		$EventLogs = $Null
+	}
 	
 	If($? -and $Null -ne $EventLogs)
 	{
@@ -11832,7 +12523,7 @@ Function OutputEventLogInfo
 		{
 			$rowdata[ $rowIndx ] = @(
 				$Item.EventLogName, $htmlwhite,
-				$Item.EventLogSize, $htmlwhite
+				$Item.EventLogSize, ( $htmlwhite -bor $global:htmlAlignRight ) #3.06 add alignright
 			)
 			$rowIndx++
 		}
@@ -11883,6 +12574,35 @@ Function OutputEventLogInfo
 #endregion
 
 #region organizational units
+
+$Script:OUs = @{}
+
+function GetOU
+{
+	Param
+	(
+		[String] $Domain
+	)
+
+	## caches the OUs in $Domain
+
+	if( $Script:OUs.Contains( $Domain ) )
+	{
+		$results = $Script:OUs[ $Domain ]
+	}
+	else
+	{
+		$results = @( Get-ADOrganizationalUnit -Filter * -Server $Domain -EA 0 `
+			-Properties CanonicalName, DistinguishedName, Name, Created, ProtectedFromAccidentalDeletion |
+			Select-Object CanonicalName, DistinguishedName, Name, Created, ProtectedFromAccidentalDeletion |
+			Sort-Object CanonicalName )
+
+		$Script:OUs[ $Domain ] = $results
+	}
+
+	return $results
+}
+
 Function ProcessOrganizationalUnits
 {
 	Write-Verbose "$(Get-Date -Format G): Writing OU data by Domain"
@@ -11948,11 +12668,9 @@ Function ProcessOrganizationalUnits
 		
 		#get all OUs for the domain
 		#V3.00 - see optimizations applied to getDSUsers
-		$OUs = @(Get-ADOrganizationalUnit -Filter * -Server $Domain `
-		-Properties CanonicalName, DistinguishedName, Name, Created, ProtectedFromAccidentalDeletion -EA 0 | `
-		Select-Object CanonicalName, DistinguishedName, Name, Created, ProtectedFromAccidentalDeletion | `
-		Sort-Object CanonicalName)
-		
+		#V3.20 - use cached result
+		$OUs = GetOU $Domain
+
 		#V3.00 - simplify-logic - FIXME
 		If( !$? )
 		{
@@ -12127,9 +12845,9 @@ Function ProcessOrganizationalUnits
 					$OUDisplayName,         $htmlwhite,
 					$OU.Created.ToString(), $htmlwhite,
 					$Protected,             $HTMLHighlightedCells,
-					$UserCountStr,          $htmlwhite,
-					$ComputerCountStr,      $htmlwhite,
-					$GroupCountStr,         $htmlwhite
+					$UserCountStr,          ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
+					$ComputerCountStr,      ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
+					$GroupCountStr,         ( $htmlwhite -bor $global:htmlAlignRight ) #3.06 add alignright
 				)
 				$rowIndex++
 			}
@@ -12142,41 +12860,44 @@ Function ProcessOrganizationalUnits
 		If($MSWord -or $PDF)
 		{
 			## Add the table to the document, using the hashtable
-			$Table = AddWordTable -Hashtable $ItemsWordTable `
-			-Columns OUName, OUCreated, OUProtected, OUNumUsers, OUNumComputers, OUNumGroups `
-			-Headers "Name", "Created", "Protected", "# Users", "# Computers", "# Groups" `
-			-Format $wdTableGrid `
-			-AutoFit $wdAutoFitFixed;
-
-			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
-			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
-			If($WordHighlightedCells.Count -gt 0)
+			If($ItemsWordTable.Count -gt 0)	#3.07
 			{
-				SetWordCellFormat -Coordinates $WordHighlightedCells -Table $Table -Bold -BackgroundColor $wdColorRed -Solid;
-			}
+				$Table = AddWordTable -Hashtable $ItemsWordTable `
+				-Columns OUName, OUCreated, OUProtected, OUNumUsers, OUNumComputers, OUNumGroups `
+				-Headers "Name", "Created", "Protected", "# Users", "# Computers", "# Groups" `
+				-Format $wdTableGrid `
+				-AutoFit $wdAutoFitFixed;
 
-			$Table.Columns.Item(1).Width = 125
-			$Table.Columns.Item(2).Width = 100
-			$Table.Columns.Item(3).Width = 55
-			$Table.Columns.Item(4).Width = 55
-			$Table.Columns.Item(5).Width = 70
-			$Table.Columns.Item(6).Width = 55
+				SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
+				SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+				If($WordHighlightedCells.Count -gt 0)
+				{
+					SetWordCellFormat -Coordinates $WordHighlightedCells -Table $Table -Bold -BackgroundColor $wdColorRed -Solid;
+				}
 
-			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+				$Table.Columns.Item(1).Width = 125
+				$Table.Columns.Item(2).Width = 100
+				$Table.Columns.Item(3).Width = 55
+				$Table.Columns.Item(4).Width = 55
+				$Table.Columns.Item(5).Width = 70
+				$Table.Columns.Item(6).Width = 55
 
-			FindWordDocumentEnd
-			$Table = $Null
-			WriteWordLine 0 0 ""
-			$Table = $Null
-			$Results = $Null
-			$UserCountStr = $Null
-			$ComputerCountStr = $Null
-			$GroupCountStr = $Null
+				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
-			#added in V2.22
-			If($UnprotectedOUs -gt 0)
-			{
-				WriteWordLine 0 0 "There are $($UnprotectedOUs) unprotected OUs out of $($NumOUs) OUs"
+				FindWordDocumentEnd
+				$Table = $Null
+				WriteWordLine 0 0 ""
+				$Table = $Null
+				$Results = $Null
+				$UserCountStr = $Null
+				$ComputerCountStr = $Null
+				$GroupCountStr = $Null
+
+				#added in V2.22
+				If($UnprotectedOUs -gt 0)
+				{
+					WriteWordLine 0 0 "There are $($UnprotectedOUs) unprotected OUs out of $($NumOUs) OUs"
+				}
 			}
 		}
 		If($Text)
@@ -12282,6 +13003,7 @@ Function ProcessGroupInformation
 
 		#get all Groups for the domain
 		$Groups = $Null
+		
 		$Groups = Get-ADGroup -Filter * -Server $Domain -Properties Name, GroupCategory, GroupType -EA 0 | Sort-Object Name
 
 		If( !$? )
@@ -12462,17 +13184,17 @@ Function ProcessGroupInformation
 			}
 			If($HTML)
 			{
-				$columnHeaders = @("Total Groups",$htmlsb,$TotalCountStr,$htmlwhite)
+				$columnHeaders = @("Total Groups",$htmlsb,$TotalCountStr,( $htmlwhite -bor $global:htmlAlignRight )) #3.06 add alignright
 
 				$rowdata = New-Object System.Array[] 7
 				$i = 0
-				$rowdata[ $i++ ] = @("     Security Groups",$htmlsb,$SecurityCountStr,$htmlwhite)
-				$rowdata[ $i++ ] = @("          Domain Local",$htmlsb,$DomainLocalCountStr,$htmlwhite)
-				$rowdata[ $i++ ] = @("          Global",$htmlsb,$GlobalCountStr,$htmlwhite)
-				$rowdata[ $i++ ] = @("          Universal",$htmlsb,$UniversalCountStr,$htmlwhite)
-				$rowdata[ $i++ ] = @("     Distribution Groups",$htmlsb,$DistributionCountStr,$htmlwhite)
-				$rowdata[ $i++ ] = @("Groups with SID History",$htmlsb,$GroupsWithSIDHistoryStr,$htmlwhite)
-				$rowdata[ $i++ ] = @("Contacts",$htmlsb,$ContactsCountStr,$htmlwhite)
+				$rowdata[ $i++ ] = @("     Security Groups",$htmlsb,$SecurityCountStr,( $htmlwhite -bor $global:htmlAlignRight )) #3.06 add alignright
+				$rowdata[ $i++ ] = @("          Domain Local",$htmlsb,$DomainLocalCountStr,( $htmlwhite -bor $global:htmlAlignRight )) #3.06 add alignright
+				$rowdata[ $i++ ] = @("          Global",$htmlsb,$GlobalCountStr,( $htmlwhite -bor $global:htmlAlignRight )) #3.06 add alignright
+				$rowdata[ $i++ ] = @("          Universal",$htmlsb,$UniversalCountStr,( $htmlwhite -bor $global:htmlAlignRight )) #3.06 add alignright
+				$rowdata[ $i++ ] = @("     Distribution Groups",$htmlsb,$DistributionCountStr,( $htmlwhite -bor $global:htmlAlignRight )) #3.06 add alignright
+				$rowdata[ $i++ ] = @("Groups with SID History",$htmlsb,$GroupsWithSIDHistoryStr,( $htmlwhite -bor $global:htmlAlignRight )) #3.06 add alignright
+				$rowdata[ $i++ ] = @("Contacts",$htmlsb,$ContactsCountStr,( $htmlwhite -bor $global:htmlAlignRight )) #3.06 add alignright
 
 				$columnWidths = @("250","75")
 				FormatHTMLTable -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "325"
@@ -12522,7 +13244,7 @@ Function ProcessGroupInformation
 					WriteWordLine 3 0 "Privileged Groups"
 					WriteWordLine 4 0 "Domain Admins ($($AdminsCountStr) members):"
 					$TableRange = $Script:doc.Application.Selection.Range
-					[int]$Columns = 5
+					[int]$Columns = 6
 					[int]$Rows = $AdminsCount + 1
 					[int]$xRow = 1
 					$Table = $Script:doc.Tables.Add($TableRange, $Rows, $Columns)
@@ -12537,22 +13259,25 @@ Function ProcessGroupInformation
 					$Table.Cell($xRow,1).Range.Font.Bold = $True
 					$Table.Cell($xRow,1).Range.Text = "Name"
 					$Table.Cell($xRow,2).Range.Font.Bold = $True
-					$Table.Cell($xRow,2).Range.Text = "Domain"
+					$Table.Cell($xRow,2).Range.Text = "SamAccountName"
 					$Table.Cell($xRow,3).Range.Font.Bold = $True
-					$Table.Cell($xRow,3).Range.Text = "Password Last Changed"
+					$Table.Cell($xRow,3).Range.Text = "Domain"
 					$Table.Cell($xRow,4).Range.Font.Bold = $True
-					$Table.Cell($xRow,4).Range.Text = "Password Never Expires"
+					$Table.Cell($xRow,4).Range.Text = "Password Last Changed"
 					$Table.Cell($xRow,5).Range.Font.Bold = $True
-					$Table.Cell($xRow,5).Range.Text = "Account Enabled"
+					$Table.Cell($xRow,5).Range.Text = "Password Never Expires"
+					$Table.Cell($xRow,6).Range.Font.Bold = $True
+					$Table.Cell($xRow,6).Range.Text = "Account Enabled"
 				}
 				If($Text)
 				{
 					Line 0 "Privileged Groups"
 					Line 1 "Domain Admins ($AdminsCountStr members):"
-					Line 2 "                                                                              Password   Password          "
-					Line 2 "                                                                              Last       Never      Account"
-					Line 2 "Name                                                Domain                    Changed    Expires    Enabled"
-					Line 2 "==========================================================================================================="
+					Line 2 "                                                                                                     Password    Password          "
+					Line 2 "                                                                                                     Last        Never       Account"
+					Line 2 "Name                                                SamAccountName        Domain                     Changed     Expires     Enabled"
+					Line 2 "===================================================================================================================================="
+					#       12345678901234567890123456789012345678901234567890SS12345678901234567890SS1234567890123456789012345SS1234567890SS1234567890SS12345
 				}
 				If($HTML)
 				{
@@ -12596,32 +13321,33 @@ Function ProcessGroupInformation
 							If($MSWord -or $PDF)
 							{
 								$Table.Cell($xRow,1).Range.Text = $User.Name
-								$Table.Cell($xRow,2).Range.Text = $xServer
+								$Table.Cell($xRow,2).Range.Text = $User.SamAccountName
+								$Table.Cell($xRow,3).Range.Text = $xServer
 								If($Null -eq $User.PasswordLastSet)
-								{
-									$Table.Cell($xRow,3).Shading.BackgroundPatternColor = $wdColorRed
-									$Table.Cell($xRow,3).Range.Font.Bold  = $True
-									$Table.Cell($xRow,3).Range.Font.Color = $WDColorBlack
-									$Table.Cell($xRow,3).Range.Text = "No Date Set"
-								}
-								Else
-								{
-									$Table.Cell($xRow,3).Range.Text = (Get-Date $User.PasswordLastSet -f d)
-								}
-								If($User.PasswordNeverExpires -eq $True)
 								{
 									$Table.Cell($xRow,4).Shading.BackgroundPatternColor = $wdColorRed
 									$Table.Cell($xRow,4).Range.Font.Bold  = $True
 									$Table.Cell($xRow,4).Range.Font.Color = $WDColorBlack
+									$Table.Cell($xRow,4).Range.Text = "No Date Set"
 								}
-								$Table.Cell($xRow,4).Range.Text = $User.PasswordNeverExpires.ToString()
-								If($User.Enabled -eq $False)
+								Else
+								{
+									$Table.Cell($xRow,4).Range.Text = (Get-Date $User.PasswordLastSet -f d)
+								}
+								If($User.PasswordNeverExpires -eq $True)
 								{
 									$Table.Cell($xRow,5).Shading.BackgroundPatternColor = $wdColorRed
 									$Table.Cell($xRow,5).Range.Font.Bold  = $True
 									$Table.Cell($xRow,5).Range.Font.Color = $WDColorBlack
 								}
-								$Table.Cell($xRow,5).Range.Text = $User.Enabled.ToString()
+								$Table.Cell($xRow,5).Range.Text = $User.PasswordNeverExpires.ToString()
+								If($User.Enabled -eq $False)
+								{
+									$Table.Cell($xRow,6).Shading.BackgroundPatternColor = $wdColorRed
+									$Table.Cell($xRow,6).Range.Font.Bold  = $True
+									$Table.Cell($xRow,6).Range.Font.Color = $WDColorBlack
+								}
+								$Table.Cell($xRow,6).Range.Text = $User.Enabled.ToString()
 							}
 							If($Text)
 							{
@@ -12633,11 +13359,12 @@ Function ProcessGroupInformation
 								{
 									$PasswordLastSet = (Get-Date $User.PasswordLastSet -f d)
 								}
-								Line 2 ( "{0,-50}  {1,-25} {2,-10} {3,-10} {4,-5}" -f $User.Name,$xServer,$PasswordLastSet,$User.PasswordNeverExpires.ToString(),$User.Enabled.ToString())
+								Line 2 ( "{0,-50}  {1,-20}  {2,-25}  {3,-10}  {4,-10}  {5,-5}" -f $User.Name,$User.SamAccountName,$xServer,$PasswordLastSet,$User.PasswordNeverExpires.ToString(),$User.Enabled.ToString())
 							}
 							If($HTML)
 							{
 								$UserName = $User.Name
+								$UserSamAccountName = $User.SamAccountName
 								$Domain = $xServer
 								If($Null -eq $User.PasswordLastSet)
 								{
@@ -12656,18 +13383,20 @@ Function ProcessGroupInformation
 							If($MSWord -or $PDF)
 							{
 								$Table.Cell($xRow,1).Range.Text = "$($User.Name) (group)"
-								$Table.Cell($xRow,2).Range.Text = $xServer
-								$Table.Cell($xRow,3).Range.Text = "N/A"
+								$Table.Cell($xRow,2).Range.Text = "$($User.SamAccountName)"
+								$Table.Cell($xRow,3).Range.Text = $xServer
 								$Table.Cell($xRow,4).Range.Text = "N/A"
 								$Table.Cell($xRow,5).Range.Text = "N/A"
+								$Table.Cell($xRow,6).Range.Text = "N/A"
 							}
 							If($Text)
 							{
-								Line 2 ( "{0,-43} (group) {1,-25} {2,-10} {3,-10} {4,-5}" -f $User.Name,$xServer,"N/A","N/A","N/A")
+								Line 2 ( "{0,-43} (group) {1,-20}  {2,-25}  {3,-10}  {4,-10}  {5,-5}" -f $User.Name,$User.SamAccountName,$xServer,"N/A","N/A","N/A")
 							}
 							If($HTML)
 							{
 								$UserName = "$($User.Name) (group)"
+								$UserSamAccountName = "$($User.SamAccountName)"
 								$Domain = $xServer
 								$PasswordLastSet = "N/A"
 								$PasswordNeverExpires = "N/A"
@@ -12680,18 +13409,20 @@ Function ProcessGroupInformation
 						If($MSWord -or $PDF)
 						{
 							$Table.Cell($xRow,1).Range.Text = $Admin.SID.Value
-							$Table.Cell($xRow,2).Range.Text = $xServer
-							$Table.Cell($xRow,3).Range.Text = "Unknown"
+							$Table.Cell($xRow,2).Range.Text = "Unknown"
+							$Table.Cell($xRow,3).Range.Text = $xServer
 							$Table.Cell($xRow,4).Range.Text = "Unknown"
 							$Table.Cell($xRow,5).Range.Text = "Unknown"
+							$Table.Cell($xRow,6).Range.Text = "Unknown"
 						}
 						If($Text)
 						{
-							Line 2 ( "{0,-50} {1,-25} {2,-10} {3,-10} {4,-5}" -f $Admin.SID.Value,$xServer,"Unknown","Unknown","Unknown")
+							Line 2 ( "{0,-50}  {1,-20}  {2,-25}  {3,-10}  {4,-10}  {5,-5}" -f $Admin.SID.Value,"Unknown",$xServer,"Unknown","Unknown","Unknown")
 						}
 						If($HTML)
 						{
 							$UserName = $Admin.SID.Value
+							$UserSamAccountName = "Unknown"
 							$Domain = $xServer
 							$PasswordLastSet = "Unknown"
 							$PasswordNeverExpires = "Unknown"
@@ -12730,6 +13461,7 @@ Function ProcessGroupInformation
 						
 						$rowdata[ $rowIndx ] = @(
 							$UserName,             $htmlwhite,
+							$UserSamAccountName,   $htmlwhite,
 							$Domain,               $htmlwhite,
 							$PasswordLastSet,      $HTMLHighlightedCells1,
 							$PasswordNeverExpires, $HTMLHighlightedCells2,
@@ -12748,11 +13480,12 @@ Function ProcessGroupInformation
 					{
 						Switch ($xcol.Index)
 						{
-						  1 {$xcol.width = 100; Break}
-						  2 {$xcol.width = 108; Break}
-						  3 {$xcol.width = 66; Break}
-						  4 {$xcol.width = 56; Break}
-						  5 {$xcol.width = 56; Break}
+							1 {$xcol.width = 100; Break}
+							2 {$xcol.width = 100; Break}
+							3 {$xcol.width = 108; Break}
+							4 {$xcol.width = 66; Break}
+							5 {$xcol.width = 56; Break}
+							6 {$xcol.width = 56; Break}
 						}
 					}
 
@@ -12773,16 +13506,17 @@ Function ProcessGroupInformation
 				}
 				If($HTML)
 				{
-					$columnWidths  = @( '100px', '108px', '66px', '56px', '56px' )
+					$columnWidths  = @( '125px', '125px', '135px', '70px', '60px', '60px' )
 					$columnHeaders = @(
 						'Name',                   $htmlsb,
+						'SamAccountName',         $htmlsb,
 						'Domain',                 $htmlsb,
 						'Password Last Changed',  $htmlsb,
 						'Password Never Expires', $htmlsb,
 						'Account Enabled',        $htmlsb
 					)
 
-					FormatHTMLTable -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth '386'
+					FormatHTMLTable -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth '575'
 					WriteHTMLLine 0 0 ''
 
 					$rowData = $null
@@ -12824,6 +13558,7 @@ Function ProcessGroupInformation
 			If($Domain -eq $Script:ForestRootDomain)
 			{
 				Write-Verbose "$(Get-Date -Format G): `t`tListing enterprise admins"
+				$Admins = $Null
 			
 				try
 				{
@@ -12845,13 +13580,13 @@ Function ProcessGroupInformation
 					{
 						WriteWordLine 4 0 "Enterprise Admins ($($AdminsCountStr) members):"
 						$TableRange = $Script:doc.Application.Selection.Range
-						[int]$Columns = 5
+						[int]$Columns = 6
 						[int]$Rows = $AdminsCount + 1
 						[int]$xRow = 1
 						$Table = $Script:doc.Tables.Add($TableRange, $Rows, $Columns)
 						$Table.AutoFitBehavior($wdAutoFitFixed)
 						$Table.Style = $Script:MyHash.Word_TableGrid
-			
+				
 						$Table.rows.first.headingformat = $wdHeadingFormatTrue
 						$Table.Borders.InsideLineStyle = $wdLineStyleSingle
 						$Table.Borders.OutsideLineStyle = $wdLineStyleSingle
@@ -12860,21 +13595,24 @@ Function ProcessGroupInformation
 						$Table.Cell($xRow,1).Range.Font.Bold = $True
 						$Table.Cell($xRow,1).Range.Text = "Name"
 						$Table.Cell($xRow,2).Range.Font.Bold = $True
-						$Table.Cell($xRow,2).Range.Text = "Domain"
+						$Table.Cell($xRow,2).Range.Text = "SamAccountName"
 						$Table.Cell($xRow,3).Range.Font.Bold = $True
-						$Table.Cell($xRow,3).Range.Text = "Password Last Changed"
+						$Table.Cell($xRow,3).Range.Text = "Domain"
 						$Table.Cell($xRow,4).Range.Font.Bold = $True
-						$Table.Cell($xRow,4).Range.Text = "Password Never Expires"
+						$Table.Cell($xRow,4).Range.Text = "Password Last Changed"
 						$Table.Cell($xRow,5).Range.Font.Bold = $True
-						$Table.Cell($xRow,5).Range.Text = "Account Enabled"
+						$Table.Cell($xRow,5).Range.Text = "Password Never Expires"
+						$Table.Cell($xRow,6).Range.Font.Bold = $True
+						$Table.Cell($xRow,6).Range.Text = "Account Enabled"
 					}
 					If($Text)
 					{
 						Line 1 "Enterprise Admins ($AdminsCountStr members):"
-						Line 2 "                                                                              Password   Password          "
-						Line 2 "                                                                              Last       Never      Account"
-						Line 2 "Name                                                Domain                    Changed    Expires    Enabled"
-						Line 2 "==========================================================================================================="
+						Line 2 "                                                                                                     Password    Password          "
+						Line 2 "                                                                                                     Last        Never       Account"
+						Line 2 "Name                                                SamAccountName        Domain                     Changed     Expires     Enabled"
+						Line 2 "===================================================================================================================================="
+						#       12345678901234567890123456789012345678901234567890SS12345678901234567890SS1234567890123456789012345SS1234567890SS1234567890SS12345
 					}
 					If($HTML)
 					{
@@ -12917,32 +13655,33 @@ Function ProcessGroupInformation
 								If($MSWord -or $PDF)
 								{
 									$Table.Cell($xRow,1).Range.Text = $User.Name
-									$Table.Cell($xRow,2).Range.Text = $xServer
+									$Table.Cell($xRow,2).Range.Text = $User.SamAccountName
+									$Table.Cell($xRow,3).Range.Text = $xServer
 									If($Null -eq $User.PasswordLastSet)
-									{
-										$Table.Cell($xRow,3).Shading.BackgroundPatternColor = $wdColorRed
-										$Table.Cell($xRow,3).Range.Font.Bold  = $True
-										$Table.Cell($xRow,3).Range.Font.Color = $WDColorBlack
-										$Table.Cell($xRow,3).Range.Text = "No Date Set"
-									}
-									Else
-									{
-										$Table.Cell($xRow,3).Range.Text = (Get-Date $User.PasswordLastSet -f d)
-									}
-									If($User.PasswordNeverExpires -eq $True)
 									{
 										$Table.Cell($xRow,4).Shading.BackgroundPatternColor = $wdColorRed
 										$Table.Cell($xRow,4).Range.Font.Bold  = $True
 										$Table.Cell($xRow,4).Range.Font.Color = $WDColorBlack
+										$Table.Cell($xRow,4).Range.Text = "No Date Set"
 									}
-									$Table.Cell($xRow,4).Range.Text = $User.PasswordNeverExpires.ToString()
-									If($User.Enabled -eq $False)
+									Else
+									{
+										$Table.Cell($xRow,4).Range.Text = (Get-Date $User.PasswordLastSet -f d)
+									}
+									If($User.PasswordNeverExpires -eq $True)
 									{
 										$Table.Cell($xRow,5).Shading.BackgroundPatternColor = $wdColorRed
 										$Table.Cell($xRow,5).Range.Font.Bold  = $True
 										$Table.Cell($xRow,5).Range.Font.Color = $WDColorBlack
 									}
-									$Table.Cell($xRow,5).Range.Text = $User.Enabled.ToString()
+									$Table.Cell($xRow,5).Range.Text = $User.PasswordNeverExpires.ToString()
+									If($User.Enabled -eq $False)
+									{
+										$Table.Cell($xRow,6).Shading.BackgroundPatternColor = $wdColorRed
+										$Table.Cell($xRow,6).Range.Font.Bold  = $True
+										$Table.Cell($xRow,6).Range.Font.Color = $WDColorBlack
+									}
+									$Table.Cell($xRow,6).Range.Text = $User.Enabled.ToString()
 								}
 								If($Text)
 								{
@@ -12954,11 +13693,12 @@ Function ProcessGroupInformation
 									{
 										$PasswordLastSet = (Get-Date $User.PasswordLastSet -f d)
 									}
-									Line 2 ( "{0,-50}  {1,-25} {2,-10} {3,-10} {4,-5}" -f $User.Name,$xServer,$PasswordLastSet,$User.PasswordNeverExpires.ToString(),$User.Enabled.ToString())
+									Line 2 ( "{0,-50}  {1,-20}  {2,-25}  {3,-10}  {4,-10}  {5,-5}" -f $User.Name,$User.SamAccountName,$xServer,$PasswordLastSet,$User.PasswordNeverExpires.ToString(),$User.Enabled.ToString())
 								}
 								If($HTML)
 								{
 									$UserName = $User.Name
+									$UserSamAccountName = $User.SamAccountName
 									$Domain = $xServer
 									If($Null -eq $User.PasswordLastSet)
 									{
@@ -12977,18 +13717,20 @@ Function ProcessGroupInformation
 								If($MSWord -or $PDF)
 								{
 									$Table.Cell($xRow,1).Range.Text = "$($User.Name) (group)"
-									$Table.Cell($xRow,2).Range.Text = $xServer
-									$Table.Cell($xRow,3).Range.Text = "N/A"
+									$Table.Cell($xRow,2).Range.Text = "$($User.SamAccountName)"
+									$Table.Cell($xRow,3).Range.Text = $xServer
 									$Table.Cell($xRow,4).Range.Text = "N/A"
 									$Table.Cell($xRow,5).Range.Text = "N/A"
+									$Table.Cell($xRow,6).Range.Text = "N/A"
 								}
 								If($Text)
 								{
-									Line 2 ( "{0,-43} (group) {1,-25} {2,-10} {3,-10} {4,-5}" -f $User.Name,$xServer,"N/A","N/A","N/A")
+									Line 2 ( "{0,-43} (group) {1,-20}  {2,-25}  {3,-10}  {4,-10}  {5,-5}" -f $User.Name,$User.SamAccountName,$xServer,"N/A","N/A","N/A")
 								}
 								If($HTML)
 								{
 									$UserName = "$($User.Name) (group)"
+									$UserSamAccountName = "$($User.SamAccountName)"
 									$Domain = $xServer
 									$PasswordLastSet = "N/A"
 									$PasswordNeverExpires = "N/A"
@@ -13001,18 +13743,20 @@ Function ProcessGroupInformation
 							If($MSWord -or $PDF)
 							{
 								$Table.Cell($xRow,1).Range.Text = $Admin.SID.Value
-								$Table.Cell($xRow,2).Range.Text = $xServer
-								$Table.Cell($xRow,3).Range.Text = "Unknown"
+								$Table.Cell($xRow,2).Range.Text = "Unknown"
+								$Table.Cell($xRow,3).Range.Text = $xServer
 								$Table.Cell($xRow,4).Range.Text = "Unknown"
 								$Table.Cell($xRow,5).Range.Text = "Unknown"
+								$Table.Cell($xRow,6).Range.Text = "Unknown"
 							}
 							If($Text)
 							{
-								Line 2 ( "{0,-50} {1,-25} {2,-10} {3,-10} {4,-5}" -f $Admin.SID.Value,$xServer,"Unknown","Unknown","Unknown")
+								Line 2 ( "{0,-50}  {1,-20}  {2,-25}  {3,-10}  {4,-10}  {5,-5}" -f $Admin.SID.Value,"Unknown",$xServer,"Unknown","Unknown","Unknown")
 							}
 							If($HTML)
 							{
 								$UserName = $Admin.SID.Value
+								$UserSamAccountName = "Unknown"
 								$Domain = $xServer
 								$PasswordLastSet = "Unknown"
 								$PasswordNeverExpires = "Unknown"
@@ -13051,6 +13795,7 @@ Function ProcessGroupInformation
 							
 							$rowdata[ $rowIndx ] = @(
 								$UserName,             $htmlwhite,
+								$UserSamAccountName,   $htmlwhite,
 								$Domain,               $htmlwhite,
 								$PasswordLastSet,      $HTMLHighlightedCells1,
 								$PasswordNeverExpires, $HTMLHighlightedCells2,
@@ -13069,11 +13814,12 @@ Function ProcessGroupInformation
 						{
 							Switch ($xcol.Index)
 							{
-							  1 {$xcol.width = 100; Break}
-							  2 {$xcol.width = 108; Break}
-							  3 {$xcol.width = 66; Break}
-							  4 {$xcol.width = 56; Break}
-							  5 {$xcol.width = 56; Break}
+								1 {$xcol.width = 100; Break}
+								2 {$xcol.width = 100; Break}
+								3 {$xcol.width = 108; Break}
+								4 {$xcol.width = 66; Break}
+								5 {$xcol.width = 56; Break}
+								6 {$xcol.width = 56; Break}
 							}
 						}
 
@@ -13094,16 +13840,17 @@ Function ProcessGroupInformation
 					}
 					If($HTML)
 					{
-						$columnWidths  = @( '100px', '108px', '66px', '56px', '56px' )
+						$columnWidths  = @( '125px', '125px', '135px', '70px', '60px', '60px' )
 						$columnHeaders = @(
 							'Name',                   $htmlsb,
+							'SamAccountName',         $htmlsb,
 							'Domain',                 $htmlsb,
 							'Password Last Changed',  $htmlsb,
 							'Password Never Expires', $htmlsb,
 							'Account Enabled',        $htmlsb
 						)
 
-						FormatHTMLTable -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth '386'
+						FormatHTMLTable -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth '575'
 						WriteHTMLLine 0 0 ''
 
 						$rowData = $null
@@ -13154,6 +13901,7 @@ Function ProcessGroupInformation
 			If($Domain -eq $Script:ForestRootDomain)
 			{
 				Write-Verbose "$(Get-Date -Format G): `t`tListing schema admins"
+				$Admins = $Null
 			
 				try
 				{
@@ -13168,7 +13916,6 @@ Function ProcessGroupInformation
 				If($? -and $Null -ne $Admins)
 				{
 					[int]$AdminsCount = $Admins.Count
-					[int]$xRow = 1
 					$Admins = $Admins | Sort-Object Name
 					[string]$AdminsCountStr = "{0:N0}" -f $AdminsCount
 					
@@ -13176,12 +13923,13 @@ Function ProcessGroupInformation
 					{
 						WriteWordLine 4 0 "Schema Admins ($($AdminsCountStr) members): "
 						$TableRange = $Script:doc.Application.Selection.Range
-						[int]$Columns = 5
+						[int]$Columns = 6
 						[int]$Rows = $AdminsCount + 1
+						[int]$xRow = 1
 						$Table = $Script:doc.Tables.Add($TableRange, $Rows, $Columns)
 						$Table.AutoFitBehavior($wdAutoFitFixed)
 						$Table.Style = $Script:MyHash.Word_TableGrid
-			
+				
 						$Table.rows.first.headingformat = $wdHeadingFormatTrue
 						$Table.Borders.InsideLineStyle = $wdLineStyleSingle
 						$Table.Borders.OutsideLineStyle = $wdLineStyleSingle
@@ -13190,21 +13938,24 @@ Function ProcessGroupInformation
 						$Table.Cell($xRow,1).Range.Font.Bold = $True
 						$Table.Cell($xRow,1).Range.Text = "Name"
 						$Table.Cell($xRow,2).Range.Font.Bold = $True
-						$Table.Cell($xRow,2).Range.Text = "Domain"
+						$Table.Cell($xRow,2).Range.Text = "SamAccountName"
 						$Table.Cell($xRow,3).Range.Font.Bold = $True
-						$Table.Cell($xRow,3).Range.Text = "Password Last Changed"
+						$Table.Cell($xRow,3).Range.Text = "Domain"
 						$Table.Cell($xRow,4).Range.Font.Bold = $True
-						$Table.Cell($xRow,4).Range.Text = "Password Never Expires"
+						$Table.Cell($xRow,4).Range.Text = "Password Last Changed"
 						$Table.Cell($xRow,5).Range.Font.Bold = $True
-						$Table.Cell($xRow,5).Range.Text = "Account Enabled"
+						$Table.Cell($xRow,5).Range.Text = "Password Never Expires"
+						$Table.Cell($xRow,6).Range.Font.Bold = $True
+						$Table.Cell($xRow,6).Range.Text = "Account Enabled"
 					}
 					If($Text)
 					{
 						Line 1 "Schema Admins ($($AdminsCountStr) members): "
-						Line 2 "                                                                              Password   Password          "
-						Line 2 "                                                                              Last       Never      Account"
-						Line 2 "Name                                                Domain                    Changed    Expires    Enabled"
-						Line 2 "==========================================================================================================="
+						Line 2 "                                                                                                     Password    Password          "
+						Line 2 "                                                                                                     Last        Never       Account"
+						Line 2 "Name                                                SamAccountName        Domain                     Changed     Expires     Enabled"
+						Line 2 "===================================================================================================================================="
+						#       12345678901234567890123456789012345678901234567890SS12345678901234567890SS1234567890123456789012345SS1234567890SS1234567890SS12345
 					}
 					If($HTML)
 					{
@@ -13217,7 +13968,11 @@ Function ProcessGroupInformation
 
 					ForEach($Admin in $Admins)
 					{
-						$xRow++
+						If($MSWord -or $PDF)
+						{
+							$xRow++
+						}
+
 						$dn = $Admin.distinguishedName
 						$xServer = $dn.SubString( $dn.IndexOf( ',DC=' ) + 1 ).Replace( 'DC=', '' ).Replace( ',', '.' )
 
@@ -13242,32 +13997,33 @@ Function ProcessGroupInformation
 								If($MSWord -or $PDF)
 								{
 									$Table.Cell($xRow,1).Range.Text = $User.Name
-									$Table.Cell($xRow,2).Range.Text = $xServer
+									$Table.Cell($xRow,2).Range.Text = $User.SamAccountName
+									$Table.Cell($xRow,3).Range.Text = $xServer
 									If($Null -eq $User.PasswordLastSet)
-									{
-										$Table.Cell($xRow,3).Shading.BackgroundPatternColor = $wdColorRed
-										$Table.Cell($xRow,3).Range.Font.Bold  = $True
-										$Table.Cell($xRow,3).Range.Font.Color = $WDColorBlack
-										$Table.Cell($xRow,3).Range.Text = "No Date Set"
-									}
-									Else
-									{
-										$Table.Cell($xRow,3).Range.Text = (Get-Date $User.PasswordLastSet -f d)
-									}
-									If($User.PasswordNeverExpires -eq $True)
 									{
 										$Table.Cell($xRow,4).Shading.BackgroundPatternColor = $wdColorRed
 										$Table.Cell($xRow,4).Range.Font.Bold  = $True
 										$Table.Cell($xRow,4).Range.Font.Color = $WDColorBlack
+										$Table.Cell($xRow,4).Range.Text = "No Date Set"
 									}
-									$Table.Cell($xRow,4).Range.Text = $User.PasswordNeverExpires.ToString()
-									If($User.Enabled -eq $False)
+									Else
+									{
+										$Table.Cell($xRow,4).Range.Text = (Get-Date $User.PasswordLastSet -f d)
+									}
+									If($User.PasswordNeverExpires -eq $True)
 									{
 										$Table.Cell($xRow,5).Shading.BackgroundPatternColor = $wdColorRed
 										$Table.Cell($xRow,5).Range.Font.Bold  = $True
 										$Table.Cell($xRow,5).Range.Font.Color = $WDColorBlack
 									}
-									$Table.Cell($xRow,5).Range.Text = $User.Enabled.ToString()
+									$Table.Cell($xRow,5).Range.Text = $User.PasswordNeverExpires.ToString()
+									If($User.Enabled -eq $False)
+									{
+										$Table.Cell($xRow,6).Shading.BackgroundPatternColor = $wdColorRed
+										$Table.Cell($xRow,6).Range.Font.Bold  = $True
+										$Table.Cell($xRow,6).Range.Font.Color = $WDColorBlack
+									}
+									$Table.Cell($xRow,6).Range.Text = $User.Enabled.ToString()
 								}
 								If($Text)
 								{
@@ -13279,11 +14035,12 @@ Function ProcessGroupInformation
 									{
 										$PasswordLastSet = (Get-Date $User.PasswordLastSet -f d)
 									}
-									Line 2 ( "{0,-50}  {1,-25} {2,-10} {3,-10} {4,-5}" -f $User.Name,$xServer,$PasswordLastSet,$User.PasswordNeverExpires.ToString(),$User.Enabled.ToString())
+									Line 2 ( "{0,-50}  {1,-20}  {2,-25}  {3,-10}  {4,-10}  {5,-5}" -f $User.Name,$User.SamAccountName,$xServer,$PasswordLastSet,$User.PasswordNeverExpires.ToString(),$User.Enabled.ToString())
 								}
 								If($HTML)
 								{
 									$UserName = $User.Name
+									$UserSamAccountName = $User.SamAccountName
 									$Domain = $xServer
 									If($Null -eq $User.PasswordLastSet)
 									{
@@ -13302,18 +14059,20 @@ Function ProcessGroupInformation
 								If($MSWord -or $PDF)
 								{
 									$Table.Cell($xRow,1).Range.Text = "$($User.Name) (group)"
-									$Table.Cell($xRow,2).Range.Text = $xServer
-									$Table.Cell($xRow,3).Range.Text = "N/A"
+									$Table.Cell($xRow,2).Range.Text = "$($User.SamAccountName)"
+									$Table.Cell($xRow,3).Range.Text = $xServer
 									$Table.Cell($xRow,4).Range.Text = "N/A"
 									$Table.Cell($xRow,5).Range.Text = "N/A"
+									$Table.Cell($xRow,6).Range.Text = "N/A"
 								}
 								If($Text)
 								{
-									Line 2 ( "{0,-43} (group) {1,-25} {2,-10} {3,-10} {4,-5}" -f $User.Name,$xServer,"N/A","N/A","N/A")
+									Line 2 ( "{0,-43} (group) {1,-20}  {2,-25}  {3,-10}  {4,-10}  {5,-5}" -f $User.Name,$User.SamAccountName,$xServer,"N/A","N/A","N/A")
 								}
 								If($HTML)
 								{
 									$UserName = "$($User.Name) (group)"
+									$UserSamAccountName = "$($User.SamAccountName)"
 									$Domain = $xServer
 									$PasswordLastSet = "N/A"
 									$PasswordNeverExpires = "N/A"
@@ -13326,18 +14085,20 @@ Function ProcessGroupInformation
 							If($MSWord -or $PDF)
 							{
 								$Table.Cell($xRow,1).Range.Text = $Admin.SID.Value
-								$Table.Cell($xRow,2).Range.Text = $xServer
-								$Table.Cell($xRow,3).Range.Text = "Unknown"
+								$Table.Cell($xRow,2).Range.Text = "Unknown"
+								$Table.Cell($xRow,3).Range.Text = $xServer
 								$Table.Cell($xRow,4).Range.Text = "Unknown"
 								$Table.Cell($xRow,5).Range.Text = "Unknown"
+								$Table.Cell($xRow,6).Range.Text = "Unknown"
 							}
 							If($Text)
 							{
-								Line 2 ( "{0,-50} {1,-25} {2,-10} {3,-10} {4,-5}" -f $Admin.SID.Value,$xServer,"Unknown","Unknown","Unknown")
+								Line 2 ( "{0,-50}  {1,-20}  {2,-25}  {3,-10}  {4,-10}  {5,-5}" -f $Admin.SID.Value,"Unknown",$xServer,"Unknown","Unknown","Unknown")
 							}
 							If($HTML)
 							{
 								$UserName = $Admin.SID.Value
+								$UserSamAccountName = "Unknown"
 								$Domain = $xServer
 								$PasswordLastSet = "Unknown"
 								$PasswordNeverExpires = "Unknown"
@@ -13375,6 +14136,7 @@ Function ProcessGroupInformation
 							
 							$rowdata[ $rowIndx ] = @(
 								$UserName,             $htmlwhite,
+								$UserSamAccountName,   $htmlwhite,
 								$Domain,               $htmlwhite,
 								$PasswordLastSet,      $HTMLHighlightedCells1,
 								$PasswordNeverExpires, $HTMLHighlightedCells2,
@@ -13393,11 +14155,12 @@ Function ProcessGroupInformation
 						{
 							Switch ($xcol.Index)
 							{
-							  1 {$xcol.width = 100; Break}
-							  2 {$xcol.width = 108; Break}
-							  3 {$xcol.width = 66; Break}
-							  4 {$xcol.width = 56; Break}
-							  5 {$xcol.width = 56; Break}
+								1 {$xcol.width = 100; Break}
+								2 {$xcol.width = 100; Break}
+								3 {$xcol.width = 108; Break}
+								4 {$xcol.width = 66; Break}
+								5 {$xcol.width = 56; Break}
+								6 {$xcol.width = 56; Break}
 							}
 						}
 						
@@ -13418,16 +14181,17 @@ Function ProcessGroupInformation
 					}
 					If($HTML)
 					{
-						$columnWidths  = @( '100px', '108px', '66px', '56px', '56px' )
+						$columnWidths  = @( '125px', '125px', '135px', '70px', '60px', '60px' )
 						$columnHeaders = @(
 							'Name',                   $htmlsb,
+							'SamAccountName',         $htmlsb,
 							'Domain',                 $htmlsb,
 							'Password Last Changed',  $htmlsb,
 							'Password Never Expires', $htmlsb,
 							'Account Enabled',        $htmlsb
 						)
 
-						FormatHTMLTable -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth '386'
+						FormatHTMLTable -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth '575'
 						WriteHTMLLine 0 0 ''
 
 						$rowdata = $null
@@ -13488,8 +14252,8 @@ Function ProcessGroupInformation
 				{
 					WriteWordLine 4 0 "Users with AdminCount=1 ($AdminsCountStr users):"
 					$TableRange = $Script:doc.Application.Selection.Range
-					[int]$Columns = 4
-					[int]$Rows = $AdminCounts.Count + 1
+					[int]$Columns = 6
+					[int]$Rows = $AdminsCount + 1
 					[int]$xRow = 1
 					$Table = $Script:doc.Tables.Add($TableRange, $Rows, $Columns)
 					$Table.AutoFitBehavior($wdAutoFitFixed)
@@ -13498,24 +14262,30 @@ Function ProcessGroupInformation
 					$Table.rows.first.headingformat = $wdHeadingFormatTrue
 					$Table.Borders.InsideLineStyle = $wdLineStyleSingle
 					$Table.Borders.OutsideLineStyle = $wdLineStyleSingle
-					
+
 					$Table.Rows.First.Shading.BackgroundPatternColor = $wdColorGray15
 					$Table.Cell($xRow,1).Range.Font.Bold = $True
 					$Table.Cell($xRow,1).Range.Text = "Name"
 					$Table.Cell($xRow,2).Range.Font.Bold = $True
-					$Table.Cell($xRow,2).Range.Text = "Password Last Changed"
+					$Table.Cell($xRow,2).Range.Text = "SamAccountName"
 					$Table.Cell($xRow,3).Range.Font.Bold = $True
-					$Table.Cell($xRow,3).Range.Text = "Password Never Expires"
+					$Table.Cell($xRow,3).Range.Text = "Domain"
 					$Table.Cell($xRow,4).Range.Font.Bold = $True
-					$Table.Cell($xRow,4).Range.Text = "Account Enabled"
+					$Table.Cell($xRow,4).Range.Text = "Password Last Changed"
+					$Table.Cell($xRow,5).Range.Font.Bold = $True
+					$Table.Cell($xRow,5).Range.Text = "Password Never Expires"
+					$Table.Cell($xRow,6).Range.Font.Bold = $True
+					$Table.Cell($xRow,6).Range.Text = "Account Enabled"
 				}
 				If($Text)
 				{
 					Line 1 "Users with AdminCount=1 ($AdminsCountStr users):"
-					Line 2 "                                                   Password   Password          "
-					Line 2 "                                                   Last       Never      Account"
-					Line 2 "Name                                               Changed    Expires    Enabled"
-					Line 2 "================================================================================"
+					Line 2 "                                                                                                     Password     Password           "
+					Line 2 "                                                                                                     Last         Never       Account"
+					Line 2 "Name                                                SamAccountName        Domain                     Changed      Expires     Enabled"
+					Line 2 "====================================================================================================================================="
+					#       12345678901234567890123456789012345678901234567890SS12345678901234567890SS1234567890123456789012345SS12345678901SS1234567890SS12345
+					#                                                                                                            No Date Set
 				}
 				If($HTML)
 				{
@@ -13541,31 +14311,33 @@ Function ProcessGroupInformation
 						If($MSWord -or $PDF)
 						{
 							$Table.Cell($xRow,1).Range.Text = $User.Name
+							$Table.Cell($xRow,2).Range.Text = $User.SamAccountName
+							$Table.Cell($xRow,3).Range.Text = $xServer
 							If($Null -eq $User.PasswordLastSet)
-							{
-								$Table.Cell($xRow,2).Shading.BackgroundPatternColor = $wdColorRed
-								$Table.Cell($xRow,2).Range.Font.Bold  = $True
-								$Table.Cell($xRow,2).Range.Font.Color = $WDColorBlack
-								$Table.Cell($xRow,2).Range.Text = "No Date Set"
-							}
-							Else
-							{
-								$Table.Cell($xRow,2).Range.Text = (Get-Date $User.PasswordLastSet -f d)
-							}
-							If($User.PasswordNeverExpires -eq $True)
-							{
-								$Table.Cell($xRow,3).Shading.BackgroundPatternColor = $wdColorRed
-								$Table.Cell($xRow,3).Range.Font.Bold  = $True
-								$Table.Cell($xRow,3).Range.Font.Color = $WDColorBlack
-							}
-							$Table.Cell($xRow,3).Range.Text = $User.PasswordNeverExpires.ToString()
-							If($User.Enabled -eq $False)
 							{
 								$Table.Cell($xRow,4).Shading.BackgroundPatternColor = $wdColorRed
 								$Table.Cell($xRow,4).Range.Font.Bold  = $True
 								$Table.Cell($xRow,4).Range.Font.Color = $WDColorBlack
+								$Table.Cell($xRow,4).Range.Text = "No Date Set"
 							}
-							$Table.Cell($xRow,4).Range.Text = $User.Enabled.ToString()
+							Else
+							{
+								$Table.Cell($xRow,4).Range.Text = (Get-Date $User.PasswordLastSet -f d)
+							}
+							If($User.PasswordNeverExpires -eq $True)
+							{
+								$Table.Cell($xRow,5).Shading.BackgroundPatternColor = $wdColorRed
+								$Table.Cell($xRow,5).Range.Font.Bold  = $True
+								$Table.Cell($xRow,5).Range.Font.Color = $WDColorBlack
+							}
+							$Table.Cell($xRow,5).Range.Text = $User.PasswordNeverExpires.ToString()
+							If($User.Enabled -eq $False)
+							{
+								$Table.Cell($xRow,6).Shading.BackgroundPatternColor = $wdColorRed
+								$Table.Cell($xRow,6).Range.Font.Bold  = $True
+								$Table.Cell($xRow,6).Range.Font.Color = $WDColorBlack
+							}
+							$Table.Cell($xRow,6).Range.Text = $User.Enabled.ToString()
 						}
 						If($Text)
 						{
@@ -13578,14 +14350,14 @@ Function ProcessGroupInformation
 								$PasswordLastSet = (Get-Date $User.PasswordLastSet -f d)
 							}
 							#V3.00
-							$PasswordNeverExpires = $User.PasswordNeverExpires.ToString()
-							#V3.00
-							$UserEnabled = $User.Enabled.ToString()
-							Line 2 ( "{0,-50} {1,-10} {2,-10} {3,-5}" -f $User.Name,$PasswordLastSet,$PasswordNeverExpires,$UserEnabled)
+							#$UserEnabled = $User.Enabled.ToString()
+							Line 2 ( "{0,-50}  {1,-20}  {2,-25}  {3,-11}  {4,-10}  {5,-5}" -f $User.Name,$User.SamAccountName,$xServer,$PasswordLastSet,$User.PasswordNeverExpires.ToString(),$User.Enabled.ToString())
 						}
 						If($HTML)
 						{
 							$UserName = $User.Name
+							$UserSamAccountName = $User.SamAccountName
+							$Domain = $xServer
 							If($Null -eq $User.PasswordLastSet)
 							{
 								$PasswordLastSet = "No Date Set"
@@ -13594,9 +14366,7 @@ Function ProcessGroupInformation
 							{
 								$PasswordLastSet = (Get-Date $User.PasswordLastSet -f d)
 							}
-							#V3.00
 							$PasswordNeverExpires = $User.PasswordNeverExpires.ToString()
-							#V3.00
 							$Enabled = $User.Enabled.ToString()
 						}
 					}
@@ -13604,17 +14374,22 @@ Function ProcessGroupInformation
 					{
 						If($MSWord -or $PDF)
 						{
-							$Table.Cell($xRow,2).Range.Text = $Admin.SID
-							$Table.Cell($xRow,3).Range.Text = "Unknown"
+							$Table.Cell($xRow,1).Range.Text = $Admin.SID.Value
+							$Table.Cell($xRow,2).Range.Text = "Unknown"
+							$Table.Cell($xRow,3).Range.Text = $xServer
 							$Table.Cell($xRow,4).Range.Text = "Unknown"
+							$Table.Cell($xRow,5).Range.Text = "Unknown"
+							$Table.Cell($xRow,6).Range.Text = "Unknown"
 						}
 						If($Text)
 						{
-							Line 2 ( "{0,-50} {1,-10} {2,-10} {3,-5}" -f $Admin.SID,"Unknown","Unknown","Unknown")
+							Line 2 ( "{0,-50}  {1,-20}  {2,-25}  {3,-10}  {4,-10}  {5,-5}" -f $Admin.SID.Value,"Unknown",$xServer,"Unknown","Unknown","Unknown")
 						}
 						If($HTML)
 						{
-							$UserName = $Admin.SID
+							$UserName = $Admin.SID.Value
+							$UserSamAccountName = "Unknown"
+							$Domain = $xServer
 							$PasswordLastSet = "Unknown"
 							$PasswordNeverExpires = "Unknown"
 							$Enabled = "Unknown"
@@ -13651,6 +14426,8 @@ Function ProcessGroupInformation
 						
 						$rowdata[ $rowIndx ] = @(
 							$UserName,             $htmlwhite,
+							$UserSamAccountName,   $htmlwhite,
+							$Domain,               $htmlwhite,
 							$PasswordLastSet,      $HTMLHighlightedCells1,
 							$PasswordNeverExpires, $HTMLHighlightedCells2,
 							$Enabled,              $HTMLHighlightedCells3
@@ -13668,10 +14445,12 @@ Function ProcessGroupInformation
 					{
 						Switch ($xcol.Index)
 						{
-						  1 {$xcol.width = 200; Break}
-						  2 {$xcol.width = 66; Break}
-						  3 {$xcol.width = 56; Break}
-						  4 {$xcol.width = 56; Break}
+							1 {$xcol.width = 100; Break}
+							2 {$xcol.width = 100; Break}
+							3 {$xcol.width = 108; Break}
+							4 {$xcol.width = 66; Break}
+							5 {$xcol.width = 56; Break}
+							6 {$xcol.width = 56; Break}
 						}
 					}
 
@@ -13692,15 +14471,17 @@ Function ProcessGroupInformation
 				}
 				If($HTML)
 				{
-					$columnWidths  = @( '200px', '66px', '56px', '56px' )
+					$columnWidths  = @( '125px', '125px', '135px', '70px', '60px', '60px' )
 					$columnHeaders = @(
 						'Name',                   $htmlsb,
+						'SamAccountName',         $htmlsb,
+						'Domain',                 $htmlsb,
 						'Password Last Changed',  $htmlsb,
 						'Password Never Expires', $htmlsb,
 						'Account Enabled',        $htmlsb
 					)
 
-					FormatHTMLTable -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth '378'
+					FormatHTMLTable -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth '575'
 					WriteHTMLLine 0 0 ''
 
 					$rowData = $null
@@ -14155,20 +14936,23 @@ Function ProcessGPOsByDomain
 					$ItemsWordTable.Add($WordTableRowHash) > $Null
 				}
 
-				$Table = AddWordTable -Hashtable $ItemsWordTable `
-				-Columns GPOName `
-				-Headers "GPO Name" `
-				-Format $wdTableGrid `
-				-AutoFit $wdAutoFitFixed
+				If($ItemsWordTable.Count -gt 0)	#3.07
+				{
+					$Table = AddWordTable -Hashtable $ItemsWordTable `
+					-Columns GPOName `
+					-Headers "GPO Name" `
+					-Format $wdTableGrid `
+					-AutoFit $wdAutoFitFixed
 
-				SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+					SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-				$Table.Columns.Item(1).Width = 300
+					$Table.Columns.Item(1).Width = 300
 
-				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+					$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
-				FindWordDocumentEnd
-				$Table = $Null
+					FindWordDocumentEnd
+					$Table = $Null
+				}
 			}
 			If($Text)
 			{
@@ -14278,23 +15062,9 @@ Function ProcessgGPOsByOUOld
 		#V3.00
 		Write-Verbose "$(Get-Date -Format G): `tSearching for all OUs in domain $($Domain)"
 
-		## FIXME - we get "all OUs for the domain" three times in this script - that needs to be fixed.
-		## [Webster] not really. ProcessGPOsByOUNew and ProcessGPOsByOUOld are separate Functions and never used in the same script run
-		## ProcessOrganizationUnits uses different OU properties. So, $OUs is only used twice but each is different.
-		
-		## FIXME - v3.00 see optimizations applied in getDSUsers
 		#get all OUs for the domain
-		$OUs = @(Get-ADOrganizationalUnit -Filter * -Server $Domain `
-			-Properties CanonicalName, DistinguishedName, Name -EA 0 | `
-			Select-Object CanonicalName, DistinguishedName, Name | `
-			Sort-Object CanonicalName)
-		
-		If( !$? )
-		{
-			Write-Warning "Error retrieving OU base data for OU $($OU.CanonicalName)"
-			Continue
-		}
-
+		#V3.20 - used cached results
+		$OUs = GetOU $Domain
 		If( $null -eq $OUs )
 		{
 			If($MSWORD -or $PDF)
@@ -14325,9 +15095,9 @@ Function ProcessgGPOsByOUOld
 			$OUDisplayName = $OU.CanonicalName.SubString($OU.CanonicalName.IndexOf("/")+1)
 			Write-Verbose "$(Get-Date -Format G): `t`tProcessing OU $($OU.CanonicalName) - OU # $OUCount of $NumOUs"
 			
-			#V3.00 FIXME MAYBE???? LinkedGroupPolicyObjects
+			#V3.20 FIXME MAYBE???? LinkedGroupPolicyObjects
+			#would it be faster to add this attribute to GetOU? or have the separate call to GetADOU?
 			#get data for the individual OU
-			##$OUInfo = Get-ADOrganizationalUnit -Identity $OU.DistinguishedName -Server $Domain -Properties * -EA 0 
 			$OUInfo = Get-ADOrganizationalUnit -Identity $OU.DistinguishedName -Server $Domain `
 				-Properties LinkedGroupPolicyObjects -EA 0 
 			
@@ -14427,7 +15197,30 @@ Function ProcessgGPOsByOUOld
 					ForEach($Item in $GPOArray)
 					{
 						$xRow++
-						$Table.Cell($xRow,1).Range.Text = $Item
+						#3.07 somehow PoSH thinks some GPOs are arrays. 
+						#The GPOs in my lab that start with "+" PoSH says are arrays and I started getting this error
+						#Unable to cast object of type 'System.Object[]' to type 'System.String'.
+						#At C:\Webster\Docu-ActiveDirectory.ps1:14923 char:7
+						#+                         $Table.Cell($xRow,1).Range.Text = $Item
+						#+                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+						#+ CategoryInfo          : OperationStopped: (:) [], InvalidCastException
+						#+ FullyQualifiedErrorId : System.InvalidCastException       
+						#
+						#Group Policies by OUs in Domain LabADDomain.com (Forest Root)
+						#(Contains only OUs with linked Group Policies)
+						#Domain Controllers (3)
+						#+ SERVER Set PDCe Domain Controller as Authoritative Time Server v1.0 [somehow seen as an array, not a string]
+						#+ SERVER Set Time Settings on non-PDCe Domain Controllers v1.0 [somehow seen as an array, not a string]
+						#Default Domain Controllers Policy
+
+                        If($Item -is [array]) 
+                        {
+						    $Table.Cell($xRow,1).Range.Text = $Item[0]
+                        }
+                        Else
+                        {
+						    $Table.Cell($xRow,1).Range.Text = $Item
+                        }
 					}
 
 					$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
@@ -14562,30 +15355,8 @@ Function ProcessgGPOsByOUNew
 		Write-Verbose "$(Get-Date -Format G): `tSearching for all OUs in domain $($Domain)"
 
 		#get all OUs for the domain
-		$OUs = @(Get-ADOrganizationalUnit -Filter * -Server $Domain `
-			-Properties CanonicalName, DistinguishedName, Name -EA 0 | `
-			Select-Object CanonicalName, DistinguishedName, Name | `
-			Sort-Object CanonicalName)
-
-		If( !$? )
-		{
-			$txt = "Error retrieving OU data for domain $($Domain)"
-			Write-Warning $txt
-			If($MSWORD -or $PDF)
-			{
-				WriteWordLine 0 0 $txt "" $Null 0 $False $True
-			}
-			If($Text)
-			{
-				Line 0 $txt
-			}
-			If($HTML)
-			{
-				WriteHTMLLine 0 0 $txt
-			}
-
-			Continue
-		}
+		#V3.20 use cached OUs
+		$OUs = GetOU $Domain
 
 		If( $null -eq $OUs )
 		{
@@ -14622,7 +15393,7 @@ Function ProcessgGPOsByOUNew
 			#change for 2.16
 			#work around invalid property DisplayName when the gpolinks and inheritedgpolinks collections are empty
 
-			$Results = Get-GPInheritance -target $OU.DistinguishedName -EA 0
+			$Results = Get-GPInheritance -target $OU.DistinguishedName -Domain $Domain -EA 0 #3.04 add domain
 
 			#V3.00 check for error Return, just like with Get-AdOrganizationalUnit above
 			If( !$? )
@@ -14694,7 +15465,14 @@ Function ProcessgGPOsByOUNew
 
 				$AllGPOS = $AllGPOs | Sort-Object GPOName
 
-				[int]$Rows = $AllGPOS.Length
+				If($null -eq $AllGPOS)
+				{
+					[int]$Rows = 0
+				}
+				Else
+				{
+					[int]$Rows = $AllGPOS.Length
+				}
 
 				If($MSWORD -or $PDF)
 				{
@@ -14712,23 +15490,26 @@ Function ProcessgGPOsByOUNew
 						$GPOWordTable.Add($WordTableRowHash) > $Null
 					}
 
-					$Table = AddWordTable -Hashtable $GPOWordTable `
-					-Columns GPOName, GPOType `
-					-Headers "GPO Name", "GPO Type" `
-					-Format $wdTableGrid `
-					-AutoFit $wdAutoFitFixed;
+					If($GPOWordTable.Count -gt 0)	#3.07
+					{
+						$Table = AddWordTable -Hashtable $GPOWordTable `
+						-Columns GPOName, GPOType `
+						-Headers "GPO Name", "GPO Type" `
+						-Format $wdTableGrid `
+						-AutoFit $wdAutoFitFixed;
 
-					SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+						SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-					## IB - set column widths without recursion
-					$Table.Columns.Item(1).Width = 400;
-					$Table.Columns.Item(2).Width = 65;
+						## IB - set column widths without recursion
+						$Table.Columns.Item(1).Width = 400;
+						$Table.Columns.Item(2).Width = 65;
 
-					$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+						$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
-					FindWordDocumentEnd
-					$Table = $Null
-					WriteWordLine 0 0 ""
+						FindWordDocumentEnd
+						$Table = $Null
+						WriteWordLine 0 0 ""
+					}
 				}
 				If($Text)
 				{
@@ -14776,6 +15557,206 @@ Function ProcessgGPOsByOUNew
 		$First = $False
 	}
 } ## end Function ProcessgGPOsByOUNew
+#endregion
+
+#region OUs by domain for Blocked Inheritance
+Function ProcessOUsForBlockedInheritance
+{
+	Write-Verbose "$(Get-Date -Format G): Writing OUs with GPO Blocked Inheritance"
+
+	If($MSWORD -or $PDF)
+	{
+		$Script:selection.InsertNewPage()
+		WriteWordLine 1 0 "OUs with GPO Blocked Inheritance"
+	}
+	If($Text)
+	{
+		Line 0 "///  OUs with GPO Blocked Inheritance  \\\"
+	}
+	If($HTML)
+	{
+		WriteHTMLLine 1 0 "///&nbsp;&nbsp;OUs with GPO Blocked Inheritance&nbsp;&nbsp;\\\"
+	}
+	$First = $True
+
+	ForEach($Domain in $Script:Domains)
+	{
+		Write-Verbose "$(Get-Date -Format G): `tProcessing OUs with GPO Blocked Inheritance for domain $($Domain)"
+
+		$DomainInfo = Get-ADDomain -Identity $Domain -EA 0 
+
+		If( !$? )
+		{
+			$txt = "Error retrieving domain data for domain $($Domain)"
+			Write-Warning $txt
+			If($MSWORD -or $PDF)
+			{
+				WriteWordLine 0 0 $txt '' $Null 0 $False $True
+			}
+			If($Text)
+			{
+				Line 0 $txt
+			}
+			If($HTML)
+			{
+				WriteHTMLLine 0 0 $txt
+			}
+
+			Continue
+		}
+
+		If( $null -eq $DomainInfo )
+		{
+			$txt = "No Domain data was retrieved for domain $($Domain)"
+			If($MSWORD -or $PDF)
+			{
+				WriteWordLine 0 0 $txt "" $Null 0 $False $True
+			}
+			If($Text)
+			{
+				Line 0 $txt
+			}
+			If($HTML)
+			{
+				WriteHTMLLine 0 0 $txt
+			}
+
+			Continue
+		}
+
+		If(($MSWORD -or $PDF) -and !$First)
+		{
+			#put each domain, starting with the second, on a new page
+			$Script:selection.InsertNewPage()
+		}
+
+		$txt = $Domain
+		If($Domain -eq $Script:ForestRootDomain)
+		{
+			$txt += ' (Forest Root)'
+		}
+
+		If($MSWORD -or $PDF)
+		{
+			WriteWordLine 2 0 $txt
+			WriteWordLine 3 0 "OUs with Blocked Inheritance" 
+		}
+		If($Text)
+		{
+			Line 1 "///  $($txt)  \\\"
+			Line 1 "OUs with Blocked Inheritance" 
+		}
+		If($HTML)
+		{
+			WriteHTMLLine 2 0 "///&nbsp;&nbsp;$($txt)&nbsp;&nbsp;\\\"
+			WriteHTMLLine 3 0 "OUs with Blocked Inheritance" 
+		}
+
+		Write-Verbose "$(Get-Date -Format G): `t`tGetting OUs with Blocked Inheritance"
+
+		$DomainName = $DomainInfo.Name
+		#$DomainFQDN = $DomainInfo.DNSRoot
+
+		## FIXME - maybe - can we use the results from GetOU here???
+		$source             = New-Object System.DirectoryServices.DirectorySearcher( "LDAP://$DomainName" )
+		$source.SearchScope = 'Subtree'
+		$source.PageSize    = 1000
+		$source.filter      = '(&(objectclass=OrganizationalUnit)(gpoptions=1))'
+
+		$BlockedOUs = $source.findall()
+		
+		If($Null -eq $BlockedOUs)
+		{
+			If($MSWORD -or $PDF)
+			{
+				WriteWordLine 0 0 "<None>"
+			}
+			If($Text)
+			{
+				Line 2 "<None>"
+			}
+			If($HTML)
+			{
+				WriteHTMLLine 0 0 "None"
+			}
+		}
+		Else
+		{
+			$OUArray = New-Object System.Collections.ArrayList
+			
+			ForEach($Item in $BlockedOUs)
+			{
+				$obj = [PSCustomObject] @{
+					OUName = $Item.Properties.Item('distinguishedname')
+				}
+
+				$null = $OUArray.Add( $obj )
+			}
+			
+			$OUArray = @($OUArray | Sort-Object OUName)
+			
+			If($MSWORD -or $PDF)
+			{
+				$ItemsWordTable = New-Object System.Collections.ArrayList
+				ForEach($Item in $OUArray)
+				{
+					## Add the required key/values to the hashtable
+					$WordTableRowHash = @{ 
+						OUName = $Item.OUName
+					}
+
+					## Add the hash to the array
+					$ItemsWordTable.Add($WordTableRowHash) > $Null
+				}
+
+				If($ItemsWordTable.Count -gt 0)	#3.07
+				{
+					$Table = AddWordTable -Hashtable $ItemsWordTable `
+					-Columns OUName `
+					-Headers "OU Name" `
+					-Format $wdTableGrid `
+					-AutoFit $wdAutoFitFixed
+
+					SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+					$Table.Columns.Item(1).Width = 300
+
+					$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+					FindWordDocumentEnd
+					$Table = $Null
+				}
+			}
+			If($Text)
+			{
+				ForEach($Item in $OUArray)
+				{
+					Line 2 $Item.OUName
+				}
+				Line 0 ""
+			}
+			If($HTML)
+			{
+				$rowData = @()
+
+				ForEach($Item in $OUArray)
+				{
+					$rowdata += @(,($Item.OUName,$htmlwhite))
+				}
+
+				$columnHeaders = @( 'OU Name', $htmlsb )
+
+				FormatHTMLTable -rowArray $rowdata -columnArray $columnHeaders
+				WriteHTMLLine 0 0 ''
+
+				$rowData = $null
+			}
+
+			$OUArray = $Null
+		}
+		$First = $False
+	}
+} ## end Function ProcessGPOsByDomain
 #endregion
 
 #region misc info by domain
@@ -14866,7 +15847,8 @@ Function getDSUsers
 		### Using ConvertLargeIntegerToInt64 takes the COM object and converts 
 		### it into a native .Net type.
 
-		#[Int64] $script:MaxPasswordAge = $domainADSI.ConvertLargeIntegerToInt64( $domainADSI.maxPwdAge.Value )
+		#Uncomment this line in 3.11 to fix bug reported by Danny de Kooker
+		[Int64] $script:MaxPasswordAge = $domainADSI.ConvertLargeIntegerToInt64( $domainADSI.maxPwdAge.Value )
 
 		### Convert to days
 		### 	there are 86,400 seconds per day (24 * 60 * 60)
@@ -14875,7 +15857,8 @@ Function getDSUsers
 
 		#Update for 3.03 from MBS
 
-		[Int64] $script:MaxPasswordAge = ( -$MaxPasswordAge / ( 86400 * 10000000 ) )
+		#Comment this line in 3.11 to fix bug reported by Danny de Kooker
+		#[Int64] $script:MaxPasswordAge = ( -$MaxPasswordAge / ( 86400 * 10000000 ) )
 		
 		If( $script:MaxPasswordAge -eq [Int64]::MinValue )
 		{
@@ -14907,7 +15890,7 @@ Function getDSUsers
     catch [Exception] 
     {
         Write-Error $_.Exception.Message
-        exit
+        AbortScript
     }
 
     # Get AD Distinguished Name
@@ -15304,42 +16287,46 @@ Function getDSUsers
 
     Write-Verbose "$(Get-Date -Format G): `t`tGetDSUsers main processing done"
 	
-	#FSP added in 3.03
-    Write-Verbose "$(Get-Date -Format G): `t`tProcessing Orphaned Foreign Security Principals"
-	
-	#https://powershell.org/forums/topic/foreign-security-principals/
-
-	# Get a list of FSPs
-	$results = Get-ADObject -Filter { objectClass -eq "foreignSecurityPrincipal" } -Properties memberof | Sort-Object Name
-	ForEach($result in $results)
+	#3.04 only process the foreign security principals for the root domain
+	If($TrustedDomain -eq $Script:ForestRootDomain)
 	{
+
+		#FSP added in 3.03
+		Write-Verbose "$(Get-Date -Format G): `t`tProcessing Orphaned Foreign Security Principals"
 		
-		$TranslatedName = $null
-		try 
+		#https://powershell.org/forums/topic/foreign-security-principals/
+
+		# Get a list of FSPs
+		$results = Get-ADObject -Filter { objectClass -eq "foreignSecurityPrincipal" } -Properties memberof | Sort-Object Name
+		ForEach($result in $results)
 		{
-			$TranslatedName = ([System.Security.Principal.SecurityIdentifier] $result.Name).Translate([System.Security.Principal.NTAccount])
-		}
-		catch 
-		{
-			$TranslatedName = "Orphaned"
 			
-			#only need the orphans
-			$FSPGroups = ""
-			ForEach($Group in $Result.MemberOf)
+			$TranslatedName = $null
+			try 
 			{
-				$FSPGroups += $Group
+				$TranslatedName = ([System.Security.Principal.SecurityIdentifier] $result.Name).Translate([System.Security.Principal.NTAccount])
 			}
-			$obj = [PSCustomObject] @{
-				Name           = $Result.Name
-				TranslatedName = $TranslatedName
-				Groups         = $FSPGroups
+			catch 
+			{
+				$TranslatedName = "Orphaned"
+				
+				#only need the orphans
+				$FSPGroups = ""
+				ForEach($Group in $Result.MemberOf)
+				{
+					$FSPGroups += $Group
+				}
+				$obj = [PSCustomObject] @{
+					Name           = $Result.Name
+					TranslatedName = $TranslatedName
+					Groups         = $FSPGroups
+				}
+				$listOrphanedFSPs.Add($obj) > $Null
 			}
-			$listOrphanedFSPs.Add($obj) > $Null
 		}
+
+		$ctOrphanedFSPs = $listOrphanedFSPs.Count
 	}
-
-	$ctOrphanedFSPs = $listOrphanedFSPs.Count
-
     <#
 	Write-Verbose "$(Get-Date -Format G): ctUsers                $ctUsers"
     Write-Verbose "$(Get-Date -Format G): ctUsersDisabled        $ctUsersDisabled"
@@ -15438,7 +16425,10 @@ Function getDSUsers
         lx 1 'Who have a homedrive                    ' $strHomeDrive            ', ' $pctHomeDrive
         lx 1 'Who have a primary group                ' $strPrimaryGroup         ', ' $pctPrimaryGroup
         lx 1 'Who have a RDS homedrive                ' $strRDSHomeDrive         ', ' $pctRDSHomeDrive
-        lx 1 'Orphaned Foreign Security Principals    ' $strOrphanedFSPs         ', ' " N/A"
+		If($TrustedDomain -eq $Script:ForestRootDomain)
+		{
+			lx 1 'Orphaned Foreign Security Principals    ' $strOrphanedFSPs         ', ' " N/A"
+		}
         lx 0
         lx 1 '* Unknown users are user accounts with no UserAccountControl property.'
         lx 1 '  This should not occur.'
@@ -15469,86 +16459,89 @@ Function getDSUsers
 
 		$rowdata[ 0 ] = @(
 			'Who are unknown*', $htmlsb,
-			$strUsersUnknown,   $htmlwhite,
+			$strUsersUnknown,   ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctUsersUnknown,   $htmlwhite
 		)
 
 		$rowdata[ 1 ] = @(
 			'Who are disabled', $htmlsb,
-			$strUsersDisabled,  $htmlwhite,
+			$strUsersDisabled,  ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctUsersDisabled,  $htmlwhite
 		)
 
 		$rowdata[ 2 ] = @(
 			'Who are locked out', $htmlsb,
-			$strUsersLockedOut,   $htmlwhite,
+			$strUsersLockedOut,   ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctUsersLockedOut,   $htmlwhite
 		)
 
 		$rowdata[ 3 ]= @(
 			'With password expired', $htmlsb,
-			$strPasswordExpired,     $htmlwhite,
+			$strPasswordExpired,     ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctPasswordExpired,     $htmlwhite
 		)
 
 		$rowdata[ 4 ] = @(
 			'With password never expires', $htmlsb,
-			$strPasswordNeverExpires,      $htmlwhite,
+			$strPasswordNeverExpires,      ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctPasswordNeverExpires,      $htmlwhite
 		)
 
 		$rowdata[ 5 ] = @(
 			'With password not required', $htmlsb,
-			$strPasswordNotRequired,      $htmlwhite,
+			$strPasswordNotRequired,      ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctPasswordNotRequired,      $htmlwhite
 		)
 
 		$rowdata[ 6 ] = @(
 			'Who cannot change password', $htmlsb,
-			$strCannotChangePassword,     $htmlwhite,
+			$strCannotChangePassword,     ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctCannotChangePassword,     $htmlwhite
 		)
 
 		$rowdata[ 7 ] = @(
 			'Who have never logged on', $htmlsb,
-			$strNolastLogonTimestamp,   $htmlwhite,
+			$strNolastLogonTimestamp,   ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctNolastLogonTimestamp,   $htmlwhite
 		)
 
 		$rowdata[ 8 ] = @(
 			'Who have SID history', $htmlsb,
-			$strHasSIDHistory,      $htmlwhite,
+			$strHasSIDHistory,      ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctHasSIDHistory,      $htmlwhite
 		)
 
 		$rowdata[ 9 ] = @(
 			'Who have a homedrive', $htmlsb,
-			$strHomeDrive,          $htmlwhite,
+			$strHomeDrive,          ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctHomeDrive,          $htmlwhite
 		)
 
 		$rowdata[ 10 ] = @(
 			'Who have a primary group', $htmlsb,
-			$strPrimaryGroup,           $htmlwhite,
+			$strPrimaryGroup,           ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctPrimaryGroup,           $htmlwhite
 		)
 
 		$rowdata[ 11 ] = @(
 			'Who have a RDS homedrive', $htmlsb,
-			$strRDSHomeDrive,           $htmlwhite,
+			$strRDSHomeDrive,           ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctRDSHomeDrive,           $htmlwhite
 		)
 
-		$rowdata[ 11 ] = @(
-			'Orphaned Foreign Security Principals', $htmlsb,
-			 $strOrphanedFSPs,           $htmlwhite,
-			"N/A",           $htmlwhite
-		)
-
+		If($TrustedDomain -eq $Script:ForestRootDomain)
+		{
+			$rowdata[ 11 ] = @(
+				'Orphaned Foreign Security Principals', $htmlsb,
+				 $strOrphanedFSPs, ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
+				"N/A", $htmlwhite
+			)
+		}
+		
 		$columnWidths = @( '300px', '75px', '125px' )
 		$columnHeaders = @(
 			'Total Users', $htmlsb,
-			$strUsers,     $htmlwhite,
+			$strUsers,     ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			'',            $htmlwhite
 		)
 
@@ -15574,44 +16567,44 @@ Function getDSUsers
 
 		$rowdata[ 0 ] = @(
 			'Total Active Users', $htmlsb,
-			$strActiveUsers,      $htmlwhite,
+			$strActiveUsers,      ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctActiveUsers,      $htmlwhite
 		)
 
 		$rowdata[ 1 ] = @(
 			'With password expired',   $htmlsb,
-			$strActivePasswordExpired, $htmlwhite,
+			$strActivePasswordExpired, ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctActivePasswordExpired, $htmlwhite
 		)
 
 		$rowdata[ 2 ] = @(
 			'With password never expires',  $htmlsb,
-			$strActivePasswordNeverExpires, $htmlwhite,
+			$strActivePasswordNeverExpires, ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctActivePasswordNeverExpires, $htmlwhite
 		)
 
 		$rowdata[ 3 ] = @(
 			'With password not required',  $htmlsb,
-			$strActivePasswordNotRequired, $htmlwhite,
+			$strActivePasswordNotRequired, ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctActivePasswordNotRequired, $htmlwhite
 		)
 
 		$rowdata[ 4 ] = @(
 			'Who cannot change password',   $htmlsb,
-			$strActiveCannotChangePassword, $htmlwhite,
+			$strActiveCannotChangePassword, ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctActiveCannotChangePassword, $htmlwhite
 		)
 
 		$rowdata[ 5 ] = @(
 			'Who have never logged on',     $htmlsb,
-			$strActiveNolastLogonTimestamp, $htmlwhite,
+			$strActiveNolastLogonTimestamp, ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			$pctActiveNolastLogonTimestamp, $htmlwhite
 		)
 
-		$columnWidths = @( '300px', '75px', '125px' )
+		$columnWidths = @( '300px', '75px', '150px' )
 		$columnHeaders = @(
 			'Total Users', $htmlsb,
-			$strUsers,     $htmlwhite,
+			$strUsers,     ( $htmlwhite -bor $global:htmlAlignRight ), #3.06 add alignright
 			'',            $htmlwhite
 		)
 
@@ -15624,7 +16617,14 @@ Function getDSUsers
 		WriteWordLine 3 0 'All Users'
 		$TableRange   = $Script:doc.Application.Selection.Range
 		[int]$Columns = 3
-		[int]$Rows = 12
+		If($TrustedDomain -eq $Script:ForestRootDomain)
+		{
+			[int]$Rows = 14
+		}
+		Else
+		{
+			[int]$Rows = 13
+		}
 		$Table = $Script:doc.Tables.Add($TableRange, $Rows, $Columns)
 		$Table.Style = $Script:MyHash.Word_TableGrid
 
@@ -15733,13 +16733,16 @@ Function getDSUsers
 		$Table.Cell(13,3).Range.ParagraphFormat.Alignment = $wdAlignParagraphRight
 		$Table.Cell(13,3).Range.Text = $pctRDSHomeDrive
 
-		$Table.Cell(14,1).Shading.BackgroundPatternColor = $wdColorGray15
-		$Table.Cell(14,1).Range.Font.Bold = $True
-		$Table.Cell(14,1).Range.Text = "Orphaned Foreign Security Principals"
-		$Table.Cell(14,2).Range.ParagraphFormat.Alignment = $wdAlignParagraphRight
-		$Table.Cell(14,2).Range.Text = $strOrphanedFSPs
-		$Table.Cell(14,3).Range.ParagraphFormat.Alignment = $wdAlignParagraphRight
-		$Table.Cell(14,3).Range.Text = "N/A"
+		If($TrustedDomain -eq $Script:ForestRootDomain)
+		{
+			$Table.Cell(14,1).Shading.BackgroundPatternColor = $wdColorGray15
+			$Table.Cell(14,1).Range.Font.Bold = $True
+			$Table.Cell(14,1).Range.Text = "Orphaned Foreign Security Principals"
+			$Table.Cell(14,2).Range.ParagraphFormat.Alignment = $wdAlignParagraphRight
+			$Table.Cell(14,2).Range.Text = $strOrphanedFSPs
+			$Table.Cell(14,3).Range.ParagraphFormat.Alignment = $wdAlignParagraphRight
+			$Table.Cell(14,3).Range.Text = "N/A"
+		}
 
 		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
 		$Table.AutoFitBehavior($wdAutoFitContent)
@@ -16038,22 +17041,25 @@ Function OutputUserInfo
 		}
 		
 		## Add the table to the document, using the hashtable
-		$Table = AddWordTable -Hashtable $UsersWordTable `
-		-Columns SamAccountName, DN `
-		-Headers "SamAccountName", "DistinguishedName" `
-		-Format $wdTableGrid `
-		-AutoFit $wdAutoFitFixed;
+		If($UsersWordTable.Count -gt 0)	#3.07
+		{
+			$Table = AddWordTable -Hashtable $UsersWordTable `
+			-Columns SamAccountName, DN `
+			-Headers "SamAccountName", "DistinguishedName" `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
 
-		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-		$Table.Columns.Item(1).Width = 150;
-		$Table.Columns.Item(2).Width = 350;
+			$Table.Columns.Item(1).Width = 150;
+			$Table.Columns.Item(2).Width = 350;
 
-		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
 
-		FindWordDocumentEnd
-		$Table = $Null
-		WriteWordLine 0 0 ""
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ""
+		}
 	}
 	If($Text)
 	{
@@ -16141,27 +17147,30 @@ Function OutputHDUserInfo
 		}
 		
 		## Add the table to the document, using the hashtable
-		$Table = AddWordTable -Hashtable $UsersWordTable `
-		-Columns SamAccountName, DN, HomeDrive, HomeDir, ProfilePath, ScriptPath `
-		-Headers "SamAccountName", "DistinguishedName", "Home drive", "Home folder", "Profile path", "Login script" `
-		-Format $wdTableGrid `
-		-AutoFit $wdAutoFitFixed;
+		If($UsersWordTable.Count -gt 0)	#3.07
+		{
+			$Table = AddWordTable -Hashtable $UsersWordTable `
+			-Columns SamAccountName, DN, HomeDrive, HomeDir, ProfilePath, ScriptPath `
+			-Headers "SamAccountName", "DistinguishedName", "Home drive", "Home folder", "Profile path", "Login script" `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
 
-		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
-		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
+			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-		$Table.Columns.Item(1).Width = 100;
-		$Table.Columns.Item(2).Width = 110;
-		$Table.Columns.Item(3).Width = 35;
-		$Table.Columns.Item(4).Width = 85;
-		$Table.Columns.Item(5).Width = 85;
-		$Table.Columns.Item(6).Width = 85;
+			$Table.Columns.Item(1).Width = 100;
+			$Table.Columns.Item(2).Width = 110;
+			$Table.Columns.Item(3).Width = 35;
+			$Table.Columns.Item(4).Width = 85;
+			$Table.Columns.Item(5).Width = 85;
+			$Table.Columns.Item(6).Width = 85;
 
-		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
 
-		FindWordDocumentEnd
-		$Table = $Null
-		WriteWordLine 0 0 ''
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ''
+		}
 	}
 	If($Text)
 	{
@@ -16257,24 +17266,27 @@ Function OutputPGUserInfo
 		}
 		
 		## Add the table to the document, using the hashtable
-		$Table = AddWordTable -Hashtable $UsersWordTable `
-		-Columns SamAccountName, DN, PG `
-		-Headers "SamAccountName", "DistinguishedName", "Primary Group" `
-		-Format $wdTableGrid `
-		-AutoFit $wdAutoFitFixed;
+		If($UsersWordTable.Count -gt 0)	#3.07
+		{
+			$Table = AddWordTable -Hashtable $UsersWordTable `
+			-Columns SamAccountName, DN, PG `
+			-Headers "SamAccountName", "DistinguishedName", "Primary Group" `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
 
-		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
-		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
+			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-		$Table.Columns.Item(1).Width = 100;
-		$Table.Columns.Item(2).Width = 200;
-		$Table.Columns.Item(3).Width = 200;
+			$Table.Columns.Item(1).Width = 100;
+			$Table.Columns.Item(2).Width = 200;
+			$Table.Columns.Item(3).Width = 200;
 
-		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
 
-		FindWordDocumentEnd
-		$Table = $Null
-		WriteWordLine 0 0 ""
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ""
+		}
 	}
 	If($Text)
 	{
@@ -16373,27 +17385,30 @@ Function OutputRDSHDUserInfo
 		}
 		
 		## Add the table to the document, using the hashtable
-		$Table = AddWordTable -Hashtable $UsersWordTable `
-		-Columns SamAccountName, DN, HomeDrive, HomeDir, ProfilePath, ALlowLogon `
-		-Headers "SamAccountName", "DistinguishedName", "RDS Home drive", "RDS Home folder", "RDS Profile path", "Allow Logon" `
-		-Format $wdTableGrid `
-		-AutoFit $wdAutoFitFixed;
+		If($UsersWordTable.Count -gt 0)	#3.07
+		{
+			$Table = AddWordTable -Hashtable $UsersWordTable `
+			-Columns SamAccountName, DN, HomeDrive, HomeDir, ProfilePath, ALlowLogon `
+			-Headers "SamAccountName", "DistinguishedName", "RDS Home drive", "RDS Home folder", "RDS Profile path", "Allow Logon" `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
 
-		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
-		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
+			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-		$Table.Columns.Item(1).Width = 100;
-		$Table.Columns.Item(2).Width = 140;
-		$Table.Columns.Item(3).Width = 35;
-		$Table.Columns.Item(4).Width = 75;
-		$Table.Columns.Item(5).Width = 90;
-		$Table.Columns.Item(6).Width = 60;
+			$Table.Columns.Item(1).Width = 100;
+			$Table.Columns.Item(2).Width = 140;
+			$Table.Columns.Item(3).Width = 35;
+			$Table.Columns.Item(4).Width = 75;
+			$Table.Columns.Item(5).Width = 90;
+			$Table.Columns.Item(6).Width = 60;
 
-		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
 
-		FindWordDocumentEnd
-		$Table = $Null
-		WriteWordLine 0 0 ""
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ""
+		}
 	}
 	If($Text)
 	{
@@ -16488,23 +17503,26 @@ Function OutputFSPUserInfo
 		}
 		
 		## Add the table to the document, using the hashtable
-		$Table = AddWordTable -Hashtable $UsersWordTable `
-		-Columns Name, Groups `
-		-Headers "Name", "Groups" `
-		-Format $wdTableGrid `
-		-AutoFit $wdAutoFitFixed;
+		If($UsersWordTable.Count -gt 0)	#3.07
+		{
+			$Table = AddWordTable -Hashtable $UsersWordTable `
+			-Columns Name, Groups `
+			-Headers "Name", "Groups" `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
 
-		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
-		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
+			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-		$Table.Columns.Item(1).Width = 250;
-		$Table.Columns.Item(2).Width = 250;
+			$Table.Columns.Item(1).Width = 250;
+			$Table.Columns.Item(2).Width = 250;
 
-		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustNone)
 
-		FindWordDocumentEnd
-		$Table = $Null
-		WriteWordLine 0 0 ""
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ""
+		}
 	}
 	If($Text)
 	{
@@ -16617,28 +17635,31 @@ Function ProcessDCDNSInfo
 		}
 
 		## Add the table to the document, using the hashtable
-		$Table = AddWordTable -Hashtable $ItemsWordTable `
-		-Columns DCName, DCSite, DCIpAddress1, DCIpAddress2, DCDNS1, DCDNS2, DCDNS3, DCDNS4 `
-		-Headers "DC Name", "Site", "IP Address 1", "IP Address 2", "DNS 1", "DNS 2", "DNS 3", "DNS 4" `
-		-Format $wdTableGrid `
-		-AutoFit $wdAutoFitFixed
+		If($ItemsWordTable.Count -gt 0)	#3.07
+		{
+			$Table = AddWordTable -Hashtable $ItemsWordTable `
+			-Columns DCName, DCSite, DCIpAddress1, DCIpAddress2, DCDNS1, DCDNS2, DCDNS3, DCDNS4 `
+			-Headers "DC Name", "Site", "IP Address 1", "IP Address 2", "DNS 1", "DNS 2", "DNS 3", "DNS 4" `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed
 
-		SetWordCellFormat -Collection $Table -Size 8 -BackgroundColor $wdColorWhite
-		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+			SetWordCellFormat -Collection $Table -Size 8 -BackgroundColor $wdColorWhite
+			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-		$Table.Columns.Item(1).Width = 100;
-		$Table.Columns.Item(2).Width = 60;
-		$Table.Columns.Item(3).Width = 70;
-		$Table.Columns.Item(4).Width = 70;
-		$Table.Columns.Item(5).Width = 50;
-		$Table.Columns.Item(6).Width = 50;
-		$Table.Columns.Item(7).Width = 50;
-		$Table.Columns.Item(8).Width = 50;
+			$Table.Columns.Item(1).Width = 100;
+			$Table.Columns.Item(2).Width = 60;
+			$Table.Columns.Item(3).Width = 70;
+			$Table.Columns.Item(4).Width = 70;
+			$Table.Columns.Item(5).Width = 50;
+			$Table.Columns.Item(6).Width = 50;
+			$Table.Columns.Item(7).Width = 50;
+			$Table.Columns.Item(8).Width = 50;
 
-		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
-		FindWordDocumentEnd
-		$Table = $Null
+			FindWordDocumentEnd
+			$Table = $Null
+		}
 	}
 	If( $Text )
 	{
@@ -16787,29 +17808,32 @@ Function ProcessTimeServerInfo
 		}
 
 		## Add the table to the document, using the hashtable
-		$Table = AddWordTable -Hashtable $ItemsWordTable `
-		-Columns DCName, DCTimeSource, DCAnnounceFlags, DCMaxNegPhaseCorrection, DCMaxPosPhaseCorrection, DCNtpServer, DCNtpType, DCSpecialPollInterval, DCVMICTimeProvider `
-		-Headers "DC Name", "Time Source", "Announce Flags", "Max Neg Phase Correction", "Max Pos Phase Correction", "NTP Server", "Type", "Special Poll Interval", "VMIC Time Provider" `
-		-Format $wdTableGrid `
-		-AutoFit $wdAutoFitFixed;
+		If($ItemsWordTable.Count -gt 0)	#3.07
+		{
+			$Table = AddWordTable -Hashtable $ItemsWordTable `
+			-Columns DCName, DCTimeSource, DCAnnounceFlags, DCMaxNegPhaseCorrection, DCMaxPosPhaseCorrection, DCNtpServer, DCNtpType, DCSpecialPollInterval, DCVMICTimeProvider `
+			-Headers "DC Name", "Time Source", "Announce Flags", "Max Neg Phase Correction", "Max Pos Phase Correction", "NTP Server", "Type", "Special Poll Interval", "VMIC Time Provider" `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
 
-		SetWordCellFormat -Collection $Table -Size 8 -BackgroundColor $wdColorWhite
-		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+			SetWordCellFormat -Collection $Table -Size 8 -BackgroundColor $wdColorWhite
+			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-		$Table.Columns.Item(1).Width = 105;
-		$Table.Columns.Item(2).Width = 73;
-		$Table.Columns.Item(3).Width = 45;
-		$Table.Columns.Item(4).Width = 47;
-		$Table.Columns.Item(5).Width = 47;
-		$Table.Columns.Item(6).Width = 73;
-		$Table.Columns.Item(7).Width = 33;
-		$Table.Columns.Item(8).Width = 37;
-		$Table.Columns.Item(9).Width = 40;
+			$Table.Columns.Item(1).Width = 105;
+			$Table.Columns.Item(2).Width = 73;
+			$Table.Columns.Item(3).Width = 45;
+			$Table.Columns.Item(4).Width = 47;
+			$Table.Columns.Item(5).Width = 47;
+			$Table.Columns.Item(6).Width = 73;
+			$Table.Columns.Item(7).Width = 33;
+			$Table.Columns.Item(8).Width = 37;
+			$Table.Columns.Item(9).Width = 40;
 
-		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
-		FindWordDocumentEnd
-		$Table = $Null
+			FindWordDocumentEnd
+			$Table = $Null
+		}
 	}
 	If( $Text )
 	{
@@ -16969,7 +17993,7 @@ Function ProcessEventLogInfo
 			$rowdata[ $rowIndx ] = @(
 				$Item.EventLogName, $htmlwhite,
 				$Item.DCName,       $htmlwhite,
-				$Item.EventLogSize, $htmlwhite
+				$Item.EventLogSize, ( $htmlwhite -bor $global:htmlAlignRight ) #3.06 add alignright
 			)
 			$rowIndx++
 		}
@@ -16977,24 +18001,27 @@ Function ProcessEventLogInfo
 
 	If($MSWord -or $PDF)
 	{
-		$Table = AddWordTable -Hashtable $ELWordTable `
-		-Columns EventLogName, DCName, EventLogSize `
-		-Headers "Event Log Name", "DC Name", "Event Log Size (KB)" `
-		-Format $wdTableGrid `
-		-AutoFit $wdAutoFitFixed;
+		If($ELWordTable.Count -gt 0)	#3.07
+		{
+			$Table = AddWordTable -Hashtable $ELWordTable `
+			-Columns EventLogName, DCName, EventLogSize `
+			-Headers "Event Log Name", "DC Name", "Event Log Size (KB)" `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
 
-		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-		## IB - set column widths without recursion
-		$Table.Columns.Item(1).Width = 150;
-		$Table.Columns.Item(2).Width = 150;
-		$Table.Columns.Item(3).Width = 100;
+			## IB - set column widths without recursion
+			$Table.Columns.Item(1).Width = 150;
+			$Table.Columns.Item(2).Width = 150;
+			$Table.Columns.Item(3).Width = 100;
 
-		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
-		FindWordDocumentEnd
-		$Table = $Null
-		WriteWordLine 0 0 ""
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ""
+		}
 	}
 	If($Text)
 	{
@@ -17002,7 +18029,7 @@ Function ProcessEventLogInfo
 	}
 	If($HTML)
 	{
-		$columnWidths  = @( '300px', '150px', '100px' )
+		$columnWidths  = @( '300px', '150px', '90px' )
 		$columnHeaders = @(
 			'Event Log Name',      $htmlsb,
 			'DC Name',             $htmlsb,
@@ -17020,7 +18047,209 @@ Function ProcessEventLogInfo
 }
 #endregion
 
+#region SYSVOLStateInfo
+Function ProcessSYSVOLStateInfo
+{
+	#new function added in 3.06
+	#Domain Controller SYSVOL State Data
+	If($MSWord -or $PDF)
+	{
+		$Script:selection.InsertNewPage()
+		WriteWordLine 1 0 "Domain Controller SYSVOL State Data"
+	}
+	If($Text)
+	{
+		Line 0 "///  Domain Controller SYSVOL State Data  \\\"
+		Line 0 ""
+	}
+	If($HTML)
+	{
+		WriteHTMLLine 1 0 "///&nbsp;&nbsp;Domain Controller SYSVOL State Data&nbsp;&nbsp;\\\"
+	}
+	
+	Write-Verbose "$(Get-Date -Format G): Create Domain Controller SYSVOL State Data"
+	Write-Verbose "$(Get-Date -Format G): `tAdd Domain Controller SYSVOL State Data table to doc"
+	
+	#sort by DC
+	$xSYSVOLStateInfo = @($Script:DCSYSVOLState | Sort-Object DCName)
+	
+	If($MSWord -or $PDF)
+	{
+		$SSWordTable = New-Object System.Collections.ArrayList
+		$WordHighlightedCells = New-Object System.Collections.ArrayList
+		[int] $CurrentServiceIndex = 1
+	}
+	If($HTML)
+	{
+		$rowData = New-Object System.Array[] $xSYSVOLStateInfo.Count
+		$rowIndx = 0
+	}
+
+	ForEach($Item in $xSYSVOLStateInfo)
+	{
+		If($MSWord -or $PDF)
+		{
+			$CurrentServiceIndex++
+			
+			$WordTableRowHash = @{ 
+			DCName      = $Item.DCName; 
+			SYSVOLState = $Item.SYSVOLState
+			}
+
+			## Add the hash to the array
+			$SSWordTable.Add($WordTableRowHash) > $Null
+
+			If($Item.SYSVOLState -NotLike "4 = Normal")
+			{
+				$WordHighlightedCells.Add(@{ Row = $CurrentServiceIndex; Column = 2; }) > $Null
+			}
+		}
+		If($Text)
+		{
+			Line 1 "DC Name`t`t: " $Item.DCName
+			If($Item.SYSVOLState -NotLike "4 = Normal")
+			{
+				Line 1 "SYSVOL State`t: " "***$($Item.SYSVOLState)***"
+			}
+			Else
+			{
+				Line 1 "SYSVOL State`t: " $Item.SYSVOLState
+			}
+			Line 0 ""
+		}
+		If($HTML)
+		{
+			If($Item.SYSVOLState -NotLike "4 = Normal")
+			{
+				$HTMLHighlightedCells = $htmlred
+			}
+			Else
+			{
+				$HTMLHighlightedCells = $htmlwhite
+			} 
+			
+			$rowdata[ $rowIndx ] = @(
+				$Item.DCName,      $htmlwhite,
+				$Item.SYSVOLState, $HTMLHighlightedCells
+			)
+			$rowIndx++
+		}
+	}
+
+	If($MSWord -or $PDF)
+	{
+		If($SSWordTable.Count -gt 0)	#3.07
+		{
+			$Table = AddWordTable -Hashtable $SSWordTable `
+			-Columns DCName, SYSVOLState `
+			-Headers "DC Name", "SYSVOL State" `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
+
+			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+			If($WordHighlightedCells.Count -gt 0)
+			{
+				SetWordCellFormat -Coordinates $WordHighlightedCells -Table $Table -Bold -BackgroundColor $wdColorRed -Solid;
+			}
+
+			## IB - set column widths without recursion
+			$Table.Columns.Item(1).Width = 200;
+			$Table.Columns.Item(2).Width = 200;
+
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ""
+		}
+	}
+	If($Text)
+	{
+		#nothing to do
+	}
+	If($HTML)
+	{
+		$columnWidths  = @( '200px', '200px' )
+		$columnHeaders = @(
+			'DC Name',      $htmlsb,
+			'SYSVOL State', $htmlsb
+		)
+		
+		FormatHTMLTable -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth '400'
+		WriteHTMLLine 0 0 ''
+	}
+
+	Write-Verbose "$(Get-Date -Format G): Finished Create Domain Controller SYSVOL State Data"
+	Write-Verbose "$(Get-Date -Format G): "
+}
+#endregion
+
 #region general script Functions
+Function OutputReportFooter
+{
+	#Added in 3.07
+	<#
+	Report Footer
+		Report information:
+			Created with: <Script Name> - Release Date: <Script Release Date>
+			Script version: <Script Version>
+			Started on <Date Time in Local Format>
+			Elapsed time: nn days, nn hours, nn minutes, nn.nn seconds
+			Ran from domain <Domain Name> by user <Username>
+			Ran from the folder <Folder Name>
+
+	Script Name and Script Release date are script-specific variables.
+	Script version is a script variable.
+	Start Date Time in Local Format is a script variable.
+	Domain Name is $env:USERDNSDOMAIN.
+	Username is $env:USERNAME.
+	Folder Name is a script variable.
+	#>
+
+	$runtime = $(Get-Date) - $Script:StartTime
+	$Str = [string]::format("{0} days, {1} hours, {2} minutes, {3}.{4} seconds",
+		$runtime.Days,
+		$runtime.Hours,
+		$runtime.Minutes,
+		$runtime.Seconds,
+		$runtime.Milliseconds)
+
+	If($MSWORD -or $PDF)
+	{
+		$Script:selection.InsertNewPage()
+		WriteWordLine 1 0 "Report Footer"
+		WriteWordLine 2 0 "Report Information:"
+		WriteWordLine 0 1 "Created with: $Script:ScriptName - Release Date: $Script:ReleaseDate"
+		WriteWordLine 0 1 "Script version: $Script:MyVersion"
+		WriteWordLine 0 1 "Started on $Script:StartTime"
+		WriteWordLine 0 1 "Elapsed time: $Str"
+		WriteWordLine 0 1 "Ran from domain $env:USERDNSDOMAIN by user $env:USERNAME"
+		WriteWordLine 0 1 "Ran from the folder $Script:pwdpath"
+	}
+	If($Text)
+	{
+		Line 0 "///  Report Footer  \\\"
+		Line 1 "Report Information:"
+		Line 2 "Created with: $Script:ScriptName - Release Date: $Script:ReleaseDate"
+		Line 2 "Script version: $Script:MyVersion"
+		Line 2 "Started on $Script:StartTime"
+		Line 2 "Elapsed time: $Str"
+		Line 2 "Ran from domain $env:USERDNSDOMAIN by user $env:USERNAME"
+		Line 2 "Ran from the folder $Script:pwdpath"
+	}
+	If($HTML)
+	{
+		WriteHTMLLine 1 0 "///&nbsp;&nbsp;Report Footer&nbsp;&nbsp;\\\"
+		WriteHTMLLine 2 0 "Report Information:"
+		WriteHTMLLine 0 1 "Created with: $Script:ScriptName - Release Date: $Script:ReleaseDate"
+		WriteHTMLLine 0 1 "Script version: $Script:MyVersion"
+		WriteHTMLLine 0 1 "Started on $Script:StartTime"
+		WriteHTMLLine 0 1 "Elapsed time: $Str"
+		WriteHTMLLine 0 1 "Ran from domain $env:USERDNSDOMAIN by user $env:USERNAME"
+		WriteHTMLLine 0 1 "Ran from the folder $Script:pwdpath"
+	}
+}
+
 Function ProcessDocumentOutput
 {
 	If($MSWORD -or $PDF)
@@ -17157,10 +18386,7 @@ Function ProcessScriptEnd
 		$SIFile = "$Script:pwdpath\ADInventoryScriptInfo_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
 		Out-File -FilePath $SIFile -InputObject "" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Add DateTime   : $AddDateTime" 4>$Null
-		If($MSWORD -or $PDF)
-		{
-			Out-File -FilePath $SIFile -Append -InputObject "Company Name   : $Script:CoName" 4>$Null		
-		}
+		Out-File -FilePath $SIFile -Append -InputObject "Company Name   : $Script:CoName" 4>$Null	#3.06 always output
 		Out-File -FilePath $SIFile -Append -InputObject "ComputerName   : $ComputerName" 4>$Null
 		If($MSWORD -or $PDF)
 		{
@@ -17202,6 +18428,7 @@ Function ProcessScriptEnd
 		Out-File -FilePath $SIFile -Append -InputObject "IncludeUserInfo: $IncludeUserInfo" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Log            : $($Log)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "MaxDetails     : $MaxDetails" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Report Footer  : $ReportFooter" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Save As HTML   : $HTML" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Save As PDF    : $PDF" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Save As TEXT   : $TEXT" 4>$Null
@@ -17335,6 +18562,9 @@ If($Section -eq "All" -or $Section -eq "GPOs")
 	{
 		ProcessgGPOsByOUOld
 	}
+	
+	ProcessOUsForBlockedInheritance
+	
 	ProcessGCCollect 'GPOs'
 }
 
@@ -17347,9 +18577,13 @@ If($Section -eq "All" -or $Section -eq "Misc")
 If(($Section -eq "All" -or $Section -eq "Domains"))
 {
 	#V3.00 combined these three into one "If"
-	ProcessDCDNSInfo
+	If($DCDnsInfo) #V3.04, only process if DCDNSInfo is true. No need for an empty table and Appendix otherwise
+	{
+		ProcessDCDNSInfo
+	}
 	ProcessTimeServerInfo
 	ProcessEventLogInfo
+	ProcessSYSVOLStateInfo
 	ProcessGCCollect 'Domains-2'
 }
 #endregion
@@ -17360,9 +18594,14 @@ Write-Verbose "$(Get-Date -Format G): Finishing up document"
 
 If(($MSWORD -or $PDF) -and ($Script:CoverPagesExist))
 {
-	$AbstractTitle = "Microsoft Active Directory Inventory Report $MyVersion"
-	$SubjectTitle = "Active Directory Inventory Report $MyVersion"
+	$AbstractTitle = "Microsoft Active Directory Inventory Report $script:MyVersion"
+	$SubjectTitle = "Active Directory Inventory Report $script:MyVersion"
 	UpdateDocumentProperties $AbstractTitle $SubjectTitle
+}
+
+If($ReportFooter)
+{
+	OutputReportFooter
 }
 
 ProcessDocumentOutput
