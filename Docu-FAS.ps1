@@ -22,8 +22,7 @@
 	Word and PDF Document includes a Cover Page, Table of Contents, and Footer.
 	Includes support for the following language versions of Microsoft Word:
 		Catalan
-		Chinese
-		Danish-add	
+		Danish
 		Dutch
 		English
 		Finnish
@@ -48,9 +47,9 @@
 	Adds a date timestamp to the end of the file name.
 	
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2021 at 6PM is 2021-06-01_1800.
+	June 1, 2022 at 6PM is 2022-06-01_1800.
 	
-	Output filename will be ReportName_2021-06-01_1800.<fileextension>.
+	Output filename will be ReportName_2022-06-01_1800.<fileextension>.
 	
 	This parameter is disabled by default.
 	This parameter has an alias of ADT.
@@ -86,6 +85,27 @@
 	
 	This parameter is disabled by default.
 	This parameter has an alias of SI.
+.PARAMETER ReportFooter
+	Outputs a footer section at the end of the report.
+
+	This parameter has an alias of RF.
+	
+	Report Footer
+		Report information:
+			Created with: <Script Name> - Release Date: <Script Release Date>
+			Script version: <Script Version>
+			Started on <Date Time in Local Format>
+			Elapsed time: nn days, nn hours, nn minutes, nn.nn seconds
+			Ran from domain <Domain Name> by user <Username>
+			Ran from the folder <Folder Name>
+
+	Script Name and Script Release date are script-specific variables.
+	Script version is a script variable.
+	Start Date Time in Local Format is a script variable.
+	Elapsed time is a calculated value.
+	Domain Name is $env:USERDNSDOMAIN.
+	Username is $env:USERNAME.
+	Folder Name is a script variable.
 .PARAMETER CitrixTemplatesOnly
 	When processing the Microsoft certificate templates, only process the templates
 	with Citrix in the template name.
@@ -116,7 +136,7 @@
 
 	This parameter is disabled by default.
 .PARAMETER CompanyAddress
-	Company Address to use for the Cover Page, if the Cover Page has the Address field.
+	Company Address to use for the Cover page if the Cover Page has the Address field.
 	
 	The following Cover Pages have an Address field:
 		Banded (Word 2013/2016)
@@ -132,7 +152,7 @@
 	This parameter is only valid with the MSWORD and PDF output parameters.
 	This parameter has an alias of CA.
 .PARAMETER CompanyEmail
-	Company Email to use for the Cover Page, if the Cover Page has the Email field. 
+	Company Email to use for the Cover page if the Cover Page has the Email field. 
 	
 	The following Cover Pages have an Email field:
 		Facet (Word 2013/2016)
@@ -140,7 +160,7 @@
 	This parameter is only valid with the MSWORD and PDF output parameters.
 	This parameter has an alias of CE.
 .PARAMETER CompanyFax
-	Company Fax to use for the Cover Page, if the Cover Page has the Fax field. 
+	Company Fax to use for the Cover page if the Cover Page has the Fax field. 
 	
 	The following Cover Pages have a Fax field:
 		Contrast (Word 2010)
@@ -265,7 +285,7 @@
 .EXAMPLE
 	PS C:\PSScript > .\Docu-FAS.ps1 -HTML -MSWord -PDF -Text
 	
-	Creates four reports. One each in HTML, Microsoft Word, PDF, and plain text.
+	Creates four reports, one each in HTML, Microsoft Word, PDF, and plain text.
 .EXAMPLE
 	PS C:\PSScript .\Docu-FAS.ps1 -MSWord -CompanyName "Carl Webster 
 	Consulting" -CoverPage "Mod" -UserName "Carl Webster"
@@ -284,13 +304,9 @@
 		Carl Webster for the User Name (alias UN).
 		The computer running the script for the AdminAddress.
 .EXAMPLE
-	PS C:\PSScript .\Docu-FAS.ps1 -MSWord 
-	-CompanyName "Sherlock Holmes Consulting" 
-	-CoverPage Exposure 
-	-UserName "Dr. Watson"
-	-CompanyAddress "221B Baker Street, London, England"
-	-CompanyFax "+44 1753 276600"
-	-CompanyPhone "+44 1753 276200"
+	PS C:\PSScript .\Docu-FAS.ps1 -MSWord -CompanyName "Sherlock Holmes 
+    Consulting" -CoverPage Exposure -UserName "Dr. Watson" -CompanyAddress "221B Baker 
+    Street, London, England" -CompanyFax "+44 1753 276600" -CompanyPhone "+44 1753 276200"
 	
 	Will use:
 		Sherlock Holmes Consulting for the Company Name.
@@ -300,11 +316,9 @@
 		+44 1753 276600 for the Company Fax.
 		+44 1753 276200 for the Company Phone.
 .EXAMPLE
-	PS C:\PSScript .\Docu-FAS.ps1 -MSWord 
-	-CompanyName "Sherlock Holmes Consulting" 
-	-CoverPage Facet 
-	-UserName "Dr. Watson"
-	-CompanyEmail SuperSleuth@SherlockHolmes.com
+	PS C:\PSScript .\Docu-FAS.ps1 -MSWord -CompanyName "Sherlock Holmes 
+    Consulting" -CoverPage Facet -UserName "Dr. Watson" -CompanyEmail 
+    SuperSleuth@SherlockHolmes.com
 
 	Will use:
 		Sherlock Holmes Consulting for the Company Name.
@@ -317,8 +331,8 @@
 	Creates an HTML file.
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be CitrixFASInventory_2020-06-01_1800.html.
+	June 1, 2022 at 6PM is 2022-06-01_1800.
+	Output filename will be CitrixFASInventory_2022-06-01_1800.html.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-FAS.ps1 -PDF -AddDateTime
 	
@@ -334,8 +348,8 @@
 
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be CitrixFASInventory_2020-06-01_1800.pdf.
+	June 1, 2022 at 6PM is 2022-06-01_1800.
+	Output filename will be CitrixFASInventory_2022-06-01_1800.pdf.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-FAS.ps1 -Folder \\FileServer\ShareName
 	
@@ -345,14 +359,14 @@
 	
 	Creates an HTML file.
 	
-	Creates a text file named FASV1InventoryScriptErrors_yyyy-MM-dd_HHmm.txt that 
+	Creates a text file named FASInventoryScriptErrors_yyyy-MM-dd_HHmm.txt that 
 	contains up to the last 250 errors reported by the script.
 	
-	Creates a text file named FASV1InventoryScriptInfo_yyyy-MM-dd_HHmm.txt that 
+	Creates a text file named FASInventoryScriptInfo_yyyy-MM-dd_HHmm.txt that 
 	contains all the script parameters and other basic information.
 	
 	Creates a text file for transcript logging named 
-	FASV1DocScriptTranscript_yyyy-MM-dd_HHmm.txt.
+	FASDocScriptTranscript_yyyy-MM-dd_HHmm.txt.
 .EXAMPLE
 	PS C:\PSScript > .\Docu-FAS.ps1 -CitrixTemplatesOnly
 	
@@ -364,33 +378,29 @@
 	Creates an HTML report.
 	Includes up to the first 25 user certificates.
 .EXAMPLE
-	PS C:\PSScript > .\Docu-FAS.ps1 
-	-SmtpServer mail.domain.tld
-	-From XDAdmin@domain.tld 
-	-To ITGroup@domain.tld	
+	PS C:\PSScript > .\Docu-FAS.ps1 -SmtpServer mail.domain.tld -From 
+	XDAdmin@domain.tld -To ITGroup@domain.tld	
 
-	The script will use the email server mail.domain.tld, sending from XDAdmin@domain.tld, 
-	sending to ITGroup@domain.tld.
+    The script uses the email server mail.domain.tld, sending from XDAdmin@domain.tld,
+    sending to ITGroup@domain.tld.
 
-	The script will use the default SMTP port 25 and will not use SSL.
+    The script uses the default SMTP port 25 and does not use SSL.
 
-	If the current user's credentials are not valid to send email, 
-	the user will be prompted to enter valid credentials.
+    If the current user's credentials are not valid to send an email,
+    the script prompts the to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\Docu-FAS.ps1 
-	-SmtpServer mailrelay.domain.tld
-	-From Anonymous@domain.tld 
-	-To ITGroup@domain.tld	
+	PS C:\PSScript > .\Docu-FAS.ps1 -SmtpServer mailrelay.domain.tld -From 
+	Anonymous@domain.tld -To ITGroup@domain.tld	
 
 	***SENDING UNAUTHENTICATED EMAIL***
 
-	The script will use the email server mailrelay.domain.tld, sending from 
-	anonymous@domain.tld, sending to ITGroup@domain.tld.
+    The script uses the email server mailrelay.domain.tld, sending from
+    anonymous@domain.tld, sending to ITGroup@domain.tld.
 
-	To send unauthenticated email using an email relay server requires the From email account 
-	to use the name Anonymous.
+    To send an unauthenticated email using an email relay server requires the From email 
+	account to use the name Anonymous.
 
-	The script will use the default SMTP port 25 and will not use SSL.
+    The script uses the default SMTP port 25 and does not use SSL.
 	
 	***GMAIL/G SUITE SMTP RELAY***
 	https://support.google.com/a/answer/2956491?hl=en
@@ -400,14 +410,12 @@
 	the "Less secure app access" option on your account.
 	***GMAIL/G SUITE SMTP RELAY***
 
-	The script will generate an anonymous secure password for the anonymous@domain.tld 
-	account.
+    The script generates an anonymous, secure password for the anonymous@domain.tld
+    account.
 .EXAMPLE
-	PS C:\PSScript > .\Docu-FAS.ps1 
-	-SmtpServer labaddomain-com.mail.protection.outlook.com
-	-UseSSL
-	-From SomeEmailAddress@labaddomain.com 
-	-To ITGroupDL@labaddomain.com	
+	PS C:\PSScript > .\Docu-FAS.ps1 SmtpServer 
+	labaddomain-com.mail.protection.outlook.com -UseSSL -From 
+	SomeEmailAddress@labaddomain.com -To ITGroupDL@labaddomain.com	
 
 	***OFFICE 365 Example***
 
@@ -417,41 +425,33 @@
 	
 	***OFFICE 365 Example***
 
-	The script will use the email server labaddomain-com.mail.protection.outlook.com, 
-	sending from SomeEmailAddress@labaddomain.com, sending to ITGroupDL@labaddomain.com.
+    The script uses the email server labaddomain-com.mail.protection.outlook.com,
+    sending from SomeEmailAddress@labaddomain.com, sending to ITGroupDL@labaddomain.com.
 
-	The script will use the default SMTP port 25 and will use SSL.
+    The script uses the default SMTP port 25 and SSL.
 .EXAMPLE
-	PS C:\PSScript > .\Docu-FAS.ps1 
-	-SmtpServer smtp.office365.com 
-	-SmtpPort 587
-	-UseSSL 
-	-From Webster@CarlWebster.com 
-	-To ITGroup@CarlWebster.com	
+	PS C:\PSScript > .\Docu-FAS.ps1 -SmtpServer smtp.office365.com -SmtpPort 587
+	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
-	The script will use the email server smtp.office365.com on port 587 using SSL, 
-	sending from webster@carlwebster.com, sending to ITGroup@carlwebster.com.
+    The script uses the email server smtp.office365.com on port 587 using SSL,
+    sending from webster@carlwebster.com, sending to ITGroup@carlwebster.com.
 
-	If the current user's credentials are not valid to send email, 
-	the user will be prompted to enter valid credentials.
+    If the current user's credentials are not valid to send an email,
+    the script prompts the user to enter valid credentials.
 .EXAMPLE
-	PS C:\PSScript > .\Docu-FAS.ps1 
-	-SmtpServer smtp.gmail.com 
-	-SmtpPort 587
-	-UseSSL 
-	-From Webster@CarlWebster.com 
-	-To ITGroup@CarlWebster.com	
+	PS C:\PSScript > .\Docu-FAS.ps1 -SmtpServer smtp.gmail.com -SmtpPort 587
+	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
 	*** NOTE ***
 	To send email using a Gmail or g-suite account, you may have to turn ON
 	the "Less secure app access" option on your account.
 	*** NOTE ***
 	
-	The script will use the email server smtp.gmail.com on port 587 using SSL, 
-	sending from webster@gmail.com, sending to ITGroup@carlwebster.com.
+    The script uses the email server smtp.gmail.com on port 587 using SSL,
+    sending from webster@gmail.com, sending to ITGroup@carlwebster.com.
 
-	If the current user's credentials are not valid to send email, 
-	the user will be prompted to enter valid credentials.
+    If the current user's credentials are not valid to send an email,
+    the script prompts the user to enter valid credentials.
 .INPUTS
 	None. You cannot pipe objects to this script.
 .OUTPUTS
@@ -459,9 +459,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: Docu-FAS.ps1
-	VERSION: 1.12
+	VERSION: 1.15
 	AUTHOR: Carl Webster and Michael B. Smith
-	LASTEDIT: January 10, 2021
+	LASTEDIT: April 25, 2022
 #>
 
 #endregion
@@ -498,6 +498,10 @@ Param(
 	[Alias("SI")]
 	[Switch]$ScriptInfo=$False,
 	
+	[parameter(Mandatory=$False)] 
+	[Alias("RF")]
+	[Switch]$ReportFooter=$False,
+
 	[parameter(Mandatory=$False)] 
 	[Alias("CTO")]
 	[Switch]$CitrixTemplatesOnly=$False,
@@ -571,6 +575,48 @@ Param(
 #http://www.CarlWebster.com
 #Created on March 31, 2019
 #
+#Version 1.15 25-Apr-2022
+#	Change all Get-WMIObject to Get-CIMInstance
+#	General code cleanup
+#	In Function OutputNicItem, fixed several issues with DHCP data
+#	Updated the help text
+#	Updated the ReadMe file
+#
+#Version 1.14 7-Feb-2022
+#	Changed the date format for the transcript and error log files from yyyy-MM-dd_HHmm format to the FileDateTime format
+#		The format is yyyyMMddTHHmmssffff (case-sensitive, using a 4-digit year, 2-digit month, 2-digit day, 
+#		the letter T as a time separator, 2-digit hour, 2-digit minute, 2-digit second, and 4-digit millisecond). 
+#		For example: 20221225T0840107271.
+#	Fixed the German Table of Contents (Thanks to Rene Bigler)
+#		From 
+#			'de-'	{ 'Automatische Tabelle 2'; Break }
+#		To
+#			'de-'	{ 'Automatisches Verzeichnis 2'; Break }
+#	In Function AbortScript, add test for the winword process and terminate it if it is running
+#		Added stopping the transcript log if the log was enabled and started
+#	In Functions AbortScript and SaveandCloseDocumentandShutdownWord, add code from Guy Leech to test for the "Id" property before using it
+#	Replaced most script Exit calls with AbortScript to stop the transcript log if the log was enabled and started
+#	Updated the help text
+#	Updated the ReadMe file
+#
+#Version 1.13 11-Sep-2021
+#	Add array error checking for non-empty arrays before attempting to create the Word table for most Word tables
+#	Add Function OutputReportFooter
+#	Add Parameter ReportFooter
+#		Outputs a footer section at the end of the report.
+#		Report Footer
+#			Report information:
+#				Created with: <Script Name> - Release Date: <Script Release Date>
+#				Script version: <Script Version>
+#				Started on <Date Time in Local Format>
+#				Elapsed time: nn days, nn hours, nn minutes, nn.nn seconds
+#				Ran from domain <Domain Name> by user <Username>
+#				Ran from the folder <Folder Name>
+#	Update Functions SaveandCloseTextDocument and SaveandCloseHTMLDocument to add a "Report Complete" line
+#	Update Functions ShowScriptOptions and ProcessScriptEnd to add $ReportFooter
+#	Updated the help text
+#	Updated the ReadMe file
+#
 #Version 1.12
 #	Added to the Computer Hardware section, the server's Power Plan
 #	Changed all Write-Verbose statements from Get-Date to Get-Date -Format G as requested by Guy Leech
@@ -606,12 +652,69 @@ Param(
 #
 #endregion
 
+
+Function AbortScript
+{
+	If($MSWord -or $PDF)
+	{
+		Write-Verbose "$(Get-Date -Format G): System Cleanup"
+		If(Test-Path variable:global:word)
+		{
+			$Script:Word.quit()
+			[System.Runtime.Interopservices.Marshal]::ReleaseComObject($Script:Word) | Out-Null
+			Remove-Variable -Name word -Scope Global 4>$Null
+		}
+	}
+	[gc]::collect() 
+	[gc]::WaitForPendingFinalizers()
+
+	If($MSWord -or $PDF)
+	{
+		#is the winword Process still running? kill it
+
+		#find out our session (usually "1" except on TS/RDC or Citrix)
+		$SessionID = (Get-Process -PID $PID).SessionId
+
+		#Find out if winword running in our session
+		$wordprocess = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}) | Select-Object -Property Id 
+		If( $wordprocess -and $wordprocess.Id -gt 0)
+		{
+			Write-Verbose "$(Get-Date -Format G): WinWord Process is still running. Attempting to stop WinWord Process # $($wordprocess.Id)"
+			Stop-Process $wordprocess.Id -EA 0
+		}
+	}
+	
+	Write-Verbose "$(Get-Date -Format G): Script has been aborted"
+	#stop transcript logging
+	If($Log -eq $True) 
+	{
+		If($Script:StartLog -eq $True) 
+		{
+			try 
+			{
+				Stop-Transcript | Out-Null
+				Write-Verbose "$(Get-Date -Format G): $Script:LogPath is ready for use"
+			} 
+			catch 
+			{
+				Write-Verbose "$(Get-Date -Format G): Transcript/log stop failed"
+			}
+		}
+	}
+	$ErrorActionPreference = $SaveEAPreference
+	Exit
+}
+
 #region initial variable testing and setup
 Set-StrictMode -Version Latest
 
 #force  on
 $PSDefaultParameterValues = @{"*:Verbose"=$True}
-$Script:emailCredentials = $Null
+$Script:emailCredentials 	= $Null
+$script:MyVersion         = '1.15'
+$Script:ScriptName        = "Docu-FAS.ps1"
+$tmpdate                  = [datetime] "04/25/2022"
+$Script:ReleaseDate       = $tmpdate.ToUniversalTime().ToShortDateString()
 
 function wv
 {
@@ -702,7 +805,7 @@ If($Script:pwdpath.EndsWith("\"))
 If($Log) 
 {
 	#start transcript logging
-	$Script:LogPath = "$Script:pwdpath\FASV1DocScriptTranscript_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+	$Script:LogPath = "$Script:pwdpath\FASDocScriptTranscript_$(Get-Date -f FileDateTime).txt"
 	
 	try 
 	{
@@ -720,7 +823,7 @@ If($Log)
 If($Dev)
 {
 	$Error.Clear()
-	$Script:DevErrorFile = "$Script:pwdpath\FASV1InventoryScriptErrors_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+	$Script:DevErrorFile = "$Script:pwdpath\FASInventoryScriptErrors_$(Get-Date -f FileDateTime).txt"
 }
 
 If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($From) -and [String]::IsNullOrEmpty($To))
@@ -733,7 +836,7 @@ If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($From) -an
 	`t`t
 	Script cannot continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($From) -and ![String]::IsNullOrEmpty($To))
 {
@@ -745,7 +848,7 @@ If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($From) -an
 	`t`t
 	Script cannot continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($To) -and ![String]::IsNullOrEmpty($From))
 {
@@ -757,7 +860,7 @@ If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($To) -and 
 	`t`t
 	Script cannot continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 If(![String]::IsNullOrEmpty($From) -and ![String]::IsNullOrEmpty($To) -and [String]::IsNullOrEmpty($SmtpServer))
 {
@@ -769,7 +872,7 @@ If(![String]::IsNullOrEmpty($From) -and ![String]::IsNullOrEmpty($To) -and [Stri
 	`t`t
 	Script cannot continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 If(![String]::IsNullOrEmpty($From) -and [String]::IsNullOrEmpty($SmtpServer))
 {
@@ -781,7 +884,7 @@ If(![String]::IsNullOrEmpty($From) -and [String]::IsNullOrEmpty($SmtpServer))
 	`t`t
 	Script cannot continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 If(![String]::IsNullOrEmpty($To) -and [String]::IsNullOrEmpty($SmtpServer))
 {
@@ -793,12 +896,12 @@ If(![String]::IsNullOrEmpty($To) -and [String]::IsNullOrEmpty($SmtpServer))
 	`t`t
 	Script cannot continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 #endregion
 
 #region initialize variables for Word, HTML, and text
-[string]$Script:RunningOS = (Get-WmiObject -class Win32_OperatingSystem -EA 0).Caption
+[string]$Script:RunningOS = (Get-CIMInstance -ClassName Win32_OperatingSystem -EA 0 -Verbose:$False).Caption
 
 If($MSWord -or $PDF)
 {
@@ -807,13 +910,13 @@ If($MSWord -or $PDF)
 	#http://msdn.microsoft.com/en-us/library/office/aa211923(v=office.11).aspx
 	[int]$wdAlignPageNumberRight = 2
 	[int]$wdColorGray15 = 14277081
-	[int]$wdColorGray05 = 15987699 
+	#[int]$wdColorGray05 = 15987699 
 	[int]$wdMove = 0
 	[int]$wdSeekMainDocument = 0
 	[int]$wdSeekPrimaryFooter = 4
 	[int]$wdStory = 6
-	[int]$wdColorRed = 255
-	[int]$wdColorBlack = 0
+	#[int]$wdColorRed = 255
+	#[int]$wdColorBlack = 0
 	[int]$wdWord2007 = 12
 	[int]$wdWord2010 = 14
 	[int]$wdWord2013 = 15
@@ -831,7 +934,7 @@ If($MSWord -or $PDF)
 	#[int]$wdCellAlignVerticalBottom = 2
 	#http://msdn.microsoft.com/en-us/library/office/ff844856%28v=office.15%29.aspx
 	[int]$wdAutoFitFixed = 0
-	[int]$wdAutoFitContent = 1
+	#[int]$wdAutoFitContent = 1
 	#[int]$wdAutoFitWindow = 2
 	#http://msdn.microsoft.com/en-us/library/office/ff821928%28v=office.15%29.aspx
 	[int]$wdAdjustNone = 0
@@ -853,7 +956,7 @@ If($MSWord -or $PDF)
 	[int]$wdStyleHeading4 = -5
 	[int]$wdStyleNoSpacing = -158
 	[int]$wdTableGrid = -155
-	[int]$wdTableLightListAccent3 = -206
+	#[int]$wdTableLightListAccent3 = -206
 
 	#http://groovy.codehaus.org/modules/scriptom/1.6.0/scriptom-office-2K3-tlb/apidocs/org/codehaus/groovy/scriptom/tlb/office/word/WdLineStyle.html
 	[int]$wdLineStyleNone = 0
@@ -941,6 +1044,7 @@ Function GetComputerWMIInfo
 	# modified 1-May-2014 to work in trusted AD Forests and using different domain admin credentials	
 	# modified 17-Aug-2016 to fix a few issues with Text and HTML output
 	# modified 29-Apr-2018 to change from Arrays to New-Object System.Collections.ArrayList
+	# modified 11-Mar-2022 changed from using Get-WmiObject to Get-CimInstance
 
 	#Get Computer info
 	Write-Verbose "$(Get-Date -Format G): `t`tProcessing WMI Computer information"
@@ -952,8 +1056,8 @@ Function GetComputerWMIInfo
 	}
 	If($Text)
 	{
-		Line 0 "Computer Information: $($RemoteComputerName)"
-		Line 1 "General Computer"
+		Line 3 "Computer Information: $($RemoteComputerName)"
+		Line 4 "General Computer"
 	}
 	If($HTML)
 	{
@@ -963,7 +1067,14 @@ Function GetComputerWMIInfo
 	
 	Try
 	{
-		$Results = Get-WmiObject -computername $RemoteComputerName win32_computersystem
+		If($RemoteComputerName -eq $env:computername)
+		{
+			$Results = Get-CimInstance -ClassName win32_computersystem -Verbose:$False
+		}
+		Else
+		{
+			$Results = Get-CimInstance -computername $RemoteComputerName -ClassName win32_computersystem -Verbose:$False
+		}
 	}
 	
 	Catch
@@ -977,7 +1088,14 @@ Function GetComputerWMIInfo
 		@{N="TotalPhysicalRam"; E={[math]::round(($_.TotalPhysicalMemory / 1GB),0)}}, `
 		NumberOfProcessors, NumberOfLogicalProcessors
 		$Results = $Null
-		[string]$ComputerOS = (Get-WmiObject -class Win32_OperatingSystem -computername $RemoteComputerName -EA 0).Caption
+		If($RemoteComputerName -eq $env:computername)
+		{
+			[string]$ComputerOS = (Get-CimInstance -ClassName Win32_OperatingSystem -EA 0 -Verbose:$False).Caption
+		}
+		Else
+		{
+			[string]$ComputerOS = (Get-CimInstance -ClassName Win32_OperatingSystem -CimSession $RemoteComputerName -EA 0 -Verbose:$False).Caption
+		}
 
 		ForEach($Item in $ComputerItems)
 		{
@@ -986,29 +1104,20 @@ Function GetComputerWMIInfo
 	}
 	ElseIf(!$?)
 	{
-		Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_computersystem failed for $($RemoteComputerName)"
-		Write-Warning "Get-WmiObject win32_computersystem failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-CimInstance win32_computersystem failed for $($RemoteComputerName)"
+		Write-Warning "Get-CimInstance win32_computersystem failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
-			WriteWordLine 0 2 "Get-WmiObject win32_computersystem failed for $($RemoteComputerName)" "" $Null 0 $False $True
-			WriteWordLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" "" $Null 0 $False $True
-			WriteWordLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" "" $Null 0 $False $True
-			WriteWordLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." "" $Null 0 $False $True
+			WriteWordLine 0 2 "Get-CimInstance win32_computersystem failed for $($RemoteComputerName)" "" $Null 0 $False $True
 		}
 		If($Text)
 		{
-			Line 2 "Get-WmiObject win32_computersystem failed for $($RemoteComputerName)"
-			Line 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository"
-			Line 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may"
-			Line 2 "need to rerun the script with Domain Admin credentials from the trusted Forest."
+			Line 2 "Get-CimInstance win32_computersystem failed for $($RemoteComputerName)"
 			Line 2 ""
 		}
 		If($HTML)
 		{
-			WriteHTMLLine 0 2 "Get-WmiObject win32_computersystem failed for $($RemoteComputerName)" -option $htmlBold
-			WriteHTMLLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" -option $htmlBold
-			WriteHTMLLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" -Option $htmlBold
-			WriteHTMLLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." -Option $htmlBold
+			WriteHTMLLine 0 2 "Get-CimInstance win32_computersystem failed for $($RemoteComputerName)" -option $htmlBold
 		}
 	}
 	Else
@@ -1037,7 +1146,7 @@ Function GetComputerWMIInfo
 	}
 	If($Text)
 	{
-		Line 1 "Drive(s)"
+		Line 4 "Drive(s)"
 	}
 	If($HTML)
 	{
@@ -1046,7 +1155,14 @@ Function GetComputerWMIInfo
 
 	Try
 	{
-		$Results = Get-WmiObject -computername $RemoteComputerName Win32_LogicalDisk
+		If($RemoteComputerName -eq $env:computername)
+		{
+			$Results = Get-CimInstance -ClassName Win32_LogicalDisk -Verbose:$False
+		}
+		Else
+		{
+			$Results = Get-CimInstance -CimSession $RemoteComputerName -ClassName Win32_LogicalDisk -Verbose:$False
+		}
 	}
 	
 	Catch
@@ -1070,28 +1186,19 @@ Function GetComputerWMIInfo
 	}
 	ElseIf(!$?)
 	{
-		Write-Verbose "$(Get-Date -Format G): Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)"
-		Write-Warning "Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-CimInstance Win32_LogicalDisk failed for $($RemoteComputerName)"
+		Write-Warning "Get-CimInstance Win32_LogicalDisk failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
-			WriteWordLine 0 2 "Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)" "" $Null 0 $False $True
-			WriteWordLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" "" $Null 0 $False $True
-			WriteWordLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" "" $Null 0 $False $True
-			WriteWordLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." "" $Null 0 $False $True
+			WriteWordLine 0 2 "Get-CimInstance Win32_LogicalDisk failed for $($RemoteComputerName)" "" $Null 0 $False $True
 		}
 		If($Text)
 		{
-			Line 2 "Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)"
-			Line 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository"
-			Line 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may"
-			Line 2 "need to rerun the script with Domain Admin credentials from the trusted Forest."
+			Line 2 "Get-CimInstance Win32_LogicalDisk failed for $($RemoteComputerName)"
 		}
 		If($HTML)
 		{
-			WriteHTMLLine 0 2 "Get-WmiObject Win32_LogicalDisk failed for $($RemoteComputerName)" -Option $htmlBold
-			WriteHTMLLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" -Option $htmlBold
-			WriteHTMLLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" -Option $htmlBold
-			WriteHTMLLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." -Option $htmlBold
+			WriteHTMLLine 0 2 "Get-CimInstance Win32_LogicalDisk failed for $($RemoteComputerName)" -Option $htmlBold
 		}
 	}
 	Else
@@ -1120,7 +1227,7 @@ Function GetComputerWMIInfo
 	}
 	If($Text)
 	{
-		Line 1 "Processor(s)"
+		Line 4 "Processor(s)"
 	}
 	If($HTML)
 	{
@@ -1129,7 +1236,14 @@ Function GetComputerWMIInfo
 
 	Try
 	{
-		$Results = Get-WmiObject -computername $RemoteComputerName win32_Processor
+		If($RemoteComputerName -eq $env:computername)
+		{
+			$Results = Get-CimInstance -ClassName win32_Processor -Verbose:$False
+		}
+		Else
+		{
+			$Results = Get-CimInstance -computername $RemoteComputerName -ClassName win32_Processor -Verbose:$False
+		}
 	}
 	
 	Catch
@@ -1149,28 +1263,19 @@ Function GetComputerWMIInfo
 	}
 	ElseIf(!$?)
 	{
-		Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_Processor failed for $($RemoteComputerName)"
-		Write-Warning "Get-WmiObject win32_Processor failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-CimInstance win32_Processor failed for $($RemoteComputerName)"
+		Write-Warning "Get-CimInstance win32_Processor failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
-			WriteWordLine 0 2 "Get-WmiObject win32_Processor failed for $($RemoteComputerName)" "" $Null 0 $False $True
-			WriteWordLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" "" $Null 0 $False $True
-			WriteWordLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" "" $Null 0 $False $True
-			WriteWordLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." "" $Null 0 $False $True
+			WriteWordLine 0 2 "Get-CimInstance win32_Processor failed for $($RemoteComputerName)" "" $Null 0 $False $True
 		}
 		If($Text)
 		{
-			Line 2 "Get-WmiObject win32_Processor failed for $($RemoteComputerName)"
-			Line 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository"
-			Line 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may"
-			Line 2 "need to rerun the script with Domain Admin credentials from the trusted Forest."
+			Line 2 "Get-CimInstance win32_Processor failed for $($RemoteComputerName)"
 		}
 		If($HTML)
 		{
-			WriteHTMLLine 0 2 "Get-WmiObject win32_Processor failed for $($RemoteComputerName)" -Option $htmlBold
-			WriteHTMLLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" -Option $htmlBold
-			WriteHTMLLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" -Option $htmlBold
-			WriteHTMLLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." -Option $htmlBold
+			WriteHTMLLine 0 2 "Get-CimInstance win32_Processor failed for $($RemoteComputerName)" -Option $htmlBold
 		}
 	}
 	Else
@@ -1199,7 +1304,7 @@ Function GetComputerWMIInfo
 	}
 	If($Text)
 	{
-		Line 1 "Network Interface(s)"
+		Line 4 "Network Interface(s)"
 	}
 	If($HTML)
 	{
@@ -1210,7 +1315,14 @@ Function GetComputerWMIInfo
 	
 	Try
 	{
-		$Results = Get-WmiObject -computername $RemoteComputerName win32_networkadapterconfiguration
+		If($RemoteComputerName -eq $env:computername)
+		{
+			$Results = Get-CimInstance -ClassName win32_networkadapterconfiguration -Verbose:$False
+		}
+		Else
+		{
+			$Results = Get-CimInstance -computername $RemoteComputerName -ClassName win32_networkadapterconfiguration -Verbose:$False
+		}
 	}
 	
 	Catch
@@ -1229,7 +1341,7 @@ Function GetComputerWMIInfo
 		} 
 		Else 
 		{ 
-			$GotNics = !($Nics.__PROPERTY_COUNT -eq 0) 
+			$GotNics = $True
 		} 
 	
 		If($GotNics)
@@ -1238,7 +1350,14 @@ Function GetComputerWMIInfo
 			{
 				Try
 				{
-					$ThisNic = Get-WmiObject -computername $RemoteComputerName win32_networkadapter | Where-Object {$_.index -eq $nic.index}
+					If($RemoteComputerName -eq $env:computername)
+					{
+						$ThisNic = Get-CimInstance -ClassName win32_networkadapter -Verbose:$False | Where-Object {$_.index -eq $nic.index}
+					}
+					Else
+					{
+						$ThisNic = Get-CimInstance -computername $RemoteComputerName -ClassName win32_networkadapter -Verbose:$False | Where-Object {$_.index -eq $nic.index}
+					}
 				}
 				
 				Catch 
@@ -1253,31 +1372,19 @@ Function GetComputerWMIInfo
 				ElseIf(!$?)
 				{
 					Write-Warning "$(Get-Date): Error retrieving NIC information"
-					Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
-					Write-Warning "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
+					Write-Verbose "$(Get-Date -Format G): Get-CimInstance win32_networkadapterconfiguration failed for $($RemoteComputerName)"
+					Write-Warning "Get-CimInstance win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 					If($MSWORD -or $PDF)
 					{
 						WriteWordLine 0 2 "Error retrieving NIC information" "" $Null 0 $False $True
-						WriteWordLine 0 2 "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)" "" $Null 0 $False $True
-						WriteWordLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" "" $Null 0 $False $True
-						WriteWordLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" "" $Null 0 $False $True
-						WriteWordLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." "" $Null 0 $False $True
 					}
 					If($Text)
 					{
 						Line 2 "Error retrieving NIC information"
-						Line 2 "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
-						Line 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository"
-						Line 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may"
-						Line 2 "need to rerun the script with Domain Admin credentials from the trusted Forest."
 					}
 					If($HTML)
 					{
 						WriteHTMLLine 0 2 "Error retrieving NIC information" -Option $htmlBold
-						WriteHTMLLine 0 2 "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)" -Option $htmlBold
-						WriteHTMLLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" -Option $htmlBold
-						WriteHTMLLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" -Option $htmlBold
-						WriteHTMLLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." -Option $htmlBold
 					}
 				}
 				Else
@@ -1289,7 +1396,7 @@ Function GetComputerWMIInfo
 					}
 					If($Text)
 					{
-						Line 2 "No results Returned for NIC information"
+						Line 4 "No results Returned for NIC information"
 					}
 					If($HTML)
 					{
@@ -1302,31 +1409,19 @@ Function GetComputerWMIInfo
 	ElseIf(!$?)
 	{
 		Write-Warning "$(Get-Date): Error retrieving NIC configuration information"
-		Write-Verbose "$(Get-Date -Format G): Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
-		Write-Warning "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
+		Write-Verbose "$(Get-Date -Format G): Get-CimInstance win32_networkadapterconfiguration failed for $($RemoteComputerName)"
+		Write-Warning "Get-CimInstance win32_networkadapterconfiguration failed for $($RemoteComputerName)"
 		If($MSWORD -or $PDF)
 		{
 			WriteWordLine 0 2 "Error retrieving NIC configuration information" "" $Null 0 $False $True
-			WriteWordLine 0 2 "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)" "" $Null 0 $False $True
-			WriteWordLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" "" $Null 0 $False $True
-			WriteWordLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" "" $Null 0 $False $True
-			WriteWordLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." "" $Null 0 $False $True
 		}
 		If($Text)
 		{
 			Line 2 "Error retrieving NIC configuration information"
-			Line 2 "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)"
-			Line 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository"
-			Line 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may"
-			Line 2 "need to rerun the script with Domain Admin credentials from the trusted Forest."
 		}
 		If($HTML)
 		{
 			WriteHTMLLine 0 2 "Error retrieving NIC configuration information" -Option $htmlBold
-			WriteHTMLLine 0 2 "Get-WmiObject win32_networkadapterconfiguration failed for $($RemoteComputerName)" -Option $htmlBold
-			WriteHTMLLine 0 2 "On $($RemoteComputerName) you may need to run winmgmt /verifyrepository" -Option $htmlBold
-			WriteHTMLLine 0 2 "and winmgmt /salvagerepository. If this is a trusted Forest, you may" -Option $htmlBold
-			WriteHTMLLine 0 2 "need to rerun the script with Domain Admin credentials from the trusted Forest." -Option $htmlBold
 		}
 	}
 	Else
@@ -1370,9 +1465,18 @@ Function OutputComputerItem
 	try 
 	{
 
-		$PowerPlan = (Get-WmiObject -ComputerName $RemoteComputerName -Class Win32_PowerPlan -Namespace "root\cimv2\power" |
-			Where-Object {$_.IsActive -eq $true} |
-			Select-Object @{Name = "PowerPlan"; Expression = {$_.ElementName}}).PowerPlan
+		If($RemoteComputerName -eq $env:computername)
+		{
+			$PowerPlan = (Get-CimInstance -ClassName Win32_PowerPlan -Namespace "root\cimv2\power" -Verbose:$False |
+				Where-Object {$_.IsActive -eq $true} |
+				Select-Object @{Name = "PowerPlan"; Expression = {$_.ElementName}}).PowerPlan
+		}
+		Else
+		{
+			$PowerPlan = (Get-CimInstance -CimSession $RemoteComputerName -ClassName Win32_PowerPlan -Namespace "root\cimv2\power" -Verbose:$False |
+				Where-Object {$_.IsActive -eq $true} |
+				Select-Object @{Name = "PowerPlan"; Expression = {$_.ElementName}}).PowerPlan
+		}
 	}
 
 	catch 
@@ -1427,19 +1531,18 @@ Function OutputComputerItem
 	If($HTML)
 	{
 		$rowdata = @()
-		$columnHeaders = @("Manufacturer",($htmlsilver -bor $htmlBold),$Item.manufacturer,$htmlwhite)
-		$rowdata += @(,('Model',($htmlsilver -bor $htmlBold),$Item.model,$htmlwhite))
-		$rowdata += @(,('Domain',($htmlsilver -bor $htmlBold),$Item.domain,$htmlwhite))
-		$rowdata += @(,('Operating System',($htmlsilver -bor $htmlBold),$OS,$htmlwhite))
-		$rowdata += @(,('Power Plan',($htmlsilver -bor $htmlBold),$PowerPlan,$htmlwhite))
-		$rowdata += @(,('Total Ram',($htmlsilver -bor $htmlBold),"$($Item.totalphysicalram) GB",$htmlwhite))
-		$rowdata += @(,('Physical Processors (sockets)',($htmlsilver -bor $htmlBold),$Item.NumberOfProcessors,$htmlwhite))
-		$rowdata += @(,('Logical Processors (cores w/HT)',($htmlsilver -bor $htmlBold),$Item.NumberOfLogicalProcessors,$htmlwhite))
+		$columnHeaders = @("Manufacturer",($global:htmlsb),$Item.manufacturer,$htmlwhite)
+		$rowdata += @(,('Model',($global:htmlsb),$Item.model,$htmlwhite))
+		$rowdata += @(,('Domain',($global:htmlsb),$Item.domain,$htmlwhite))
+		$rowdata += @(,('Operating System',($global:htmlsb),$OS,$htmlwhite))
+		$rowdata += @(,('Power Plan',($global:htmlsb),$PowerPlan,$htmlwhite))
+		$rowdata += @(,('Total Ram',($global:htmlsb),"$($Item.totalphysicalram) GB",$htmlwhite))
+		$rowdata += @(,('Physical Processors (sockets)',($global:htmlsb),$Item.NumberOfProcessors,$htmlwhite))
+		$rowdata += @(,('Logical Processors (cores w/HT)',($global:htmlsb),$Item.NumberOfLogicalProcessors,$htmlwhite))
 
 		$msg = ""
 		$columnWidths = @("150px","200px")
 		FormatHTMLTable $msg -rowarray $rowdata -columnArray $columnheaders -fixedWidth $columnWidths -tablewidth "350"
-		WriteHTMLLine 0 0 " "
 	}
 }
 
@@ -1450,13 +1553,13 @@ Function OutputDriveItem
 	$xDriveType = ""
 	Switch ($drive.drivetype)
 	{
-		0	{$xDriveType = "Unknown"; Break}
-		1	{$xDriveType = "No Root Directory"; Break}
-		2	{$xDriveType = "Removable Disk"; Break}
-		3	{$xDriveType = "Local Disk"; Break}
-		4	{$xDriveType = "Network Drive"; Break}
-		5	{$xDriveType = "Compact Disc"; Break}
-		6	{$xDriveType = "RAM Disk"; Break}
+		0		{$xDriveType = "Unknown"; Break}
+		1		{$xDriveType = "No Root Directory"; Break}
+		2		{$xDriveType = "Removable Disk"; Break}
+		3		{$xDriveType = "Local Disk"; Break}
+		4		{$xDriveType = "Network Drive"; Break}
+		5		{$xDriveType = "Compact Disc"; Break}
+		6		{$xDriveType = "RAM Disk"; Break}
 		Default {$xDriveType = "Unknown"; Break}
 	}
 	
@@ -1499,6 +1602,7 @@ Function OutputDriveItem
 		$Table = AddWordTable -Hashtable $DriveInformation `
 		-Columns Data,Value `
 		-List `
+		-Format $wdTableGrid `
 		-AutoFit $wdAutoFitFixed;
 
 		## Set first column format
@@ -1543,27 +1647,27 @@ Function OutputDriveItem
 	If($HTML)
 	{
 		$rowdata = @()
-		$columnHeaders = @("Caption",($htmlsilver -bor $htmlBold),$Drive.caption,$htmlwhite)
-		$rowdata += @(,('Size',($htmlsilver -bor $htmlBold),"$($drive.drivesize) GB",$htmlwhite))
+		$columnHeaders = @("Caption",($global:htmlsb),$Drive.caption,$htmlwhite)
+		$rowdata += @(,('Size',($global:htmlsb),"$($drive.drivesize) GB",$htmlwhite))
 
 		If(![String]::IsNullOrEmpty($drive.filesystem))
 		{
-			$rowdata += @(,('File System',($htmlsilver -bor $htmlBold),$Drive.filesystem,$htmlwhite))
+			$rowdata += @(,('File System',($global:htmlsb),$Drive.filesystem,$htmlwhite))
 		}
-		$rowdata += @(,('Free Space',($htmlsilver -bor $htmlBold),"$($drive.drivefreespace) GB",$htmlwhite))
+		$rowdata += @(,('Free Space',($global:htmlsb),"$($drive.drivefreespace) GB",$htmlwhite))
 		If(![String]::IsNullOrEmpty($drive.volumename))
 		{
-			$rowdata += @(,('Volume Name',($htmlsilver -bor $htmlBold),$Drive.volumename,$htmlwhite))
+			$rowdata += @(,('Volume Name',($global:htmlsb),$Drive.volumename,$htmlwhite))
 		}
 		If(![String]::IsNullOrEmpty($drive.volumedirty))
 		{
-			$rowdata += @(,('Volume is Dirty',($htmlsilver -bor $htmlBold),$xVolumeDirty,$htmlwhite))
+			$rowdata += @(,('Volume is Dirty',($global:htmlsb),$xVolumeDirty,$htmlwhite))
 		}
 		If(![String]::IsNullOrEmpty($drive.volumeserialnumber))
 		{
-			$rowdata += @(,('Volume Serial Number',($htmlsilver -bor $htmlBold),$Drive.volumeserialnumber,$htmlwhite))
+			$rowdata += @(,('Volume Serial Number',($global:htmlsb),$Drive.volumeserialnumber,$htmlwhite))
 		}
-		$rowdata += @(,('Drive Type',($htmlsilver -bor $htmlBold),$xDriveType,$htmlwhite))
+		$rowdata += @(,('Drive Type',($global:htmlsb),$xDriveType,$htmlwhite))
 
 		$msg = ""
 		$columnWidths = @("150px","200px")
@@ -1579,23 +1683,23 @@ Function OutputProcessorItem
 	$xAvailability = ""
 	Switch ($processor.availability)
 	{
-		1	{$xAvailability = "Other"; Break}
-		2	{$xAvailability = "Unknown"; Break}
-		3	{$xAvailability = "Running or Full Power"; Break}
-		4	{$xAvailability = "Warning"; Break}
-		5	{$xAvailability = "In Test"; Break}
-		6	{$xAvailability = "Not Applicable"; Break}
-		7	{$xAvailability = "Power Off"; Break}
-		8	{$xAvailability = "Off Line"; Break}
-		9	{$xAvailability = "Off Duty"; Break}
-		10	{$xAvailability = "Degraded"; Break}
-		11	{$xAvailability = "Not Installed"; Break}
-		12	{$xAvailability = "Install Error"; Break}
-		13	{$xAvailability = "Power Save - Unknown"; Break}
-		14	{$xAvailability = "Power Save - Low Power Mode"; Break}
-		15	{$xAvailability = "Power Save - Standby"; Break}
-		16	{$xAvailability = "Power Cycle"; Break}
-		17	{$xAvailability = "Power Save - Warning"; Break}
+		1		{$xAvailability = "Other"; Break}
+		2		{$xAvailability = "Unknown"; Break}
+		3		{$xAvailability = "Running or Full Power"; Break}
+		4		{$xAvailability = "Warning"; Break}
+		5		{$xAvailability = "In Test"; Break}
+		6		{$xAvailability = "Not Applicable"; Break}
+		7		{$xAvailability = "Power Off"; Break}
+		8		{$xAvailability = "Off Line"; Break}
+		9		{$xAvailability = "Off Duty"; Break}
+		10		{$xAvailability = "Degraded"; Break}
+		11		{$xAvailability = "Not Installed"; Break}
+		12		{$xAvailability = "Install Error"; Break}
+		13		{$xAvailability = "Power Save - Unknown"; Break}
+		14		{$xAvailability = "Power Save - Low Power Mode"; Break}
+		15		{$xAvailability = "Power Save - Standby"; Break}
+		16		{$xAvailability = "Power Cycle"; Break}
+		17		{$xAvailability = "Power Save - Warning"; Break}
 		Default	{$xAvailability = "Unknown"; Break}
 	}
 
@@ -1625,6 +1729,7 @@ Function OutputProcessorItem
 		$Table = AddWordTable -Hashtable $ProcessorInformation `
 		-Columns Data,Value `
 		-List `
+		-Format $wdTableGrid `
 		-AutoFit $wdAutoFitFixed;
 
 		## Set first column format
@@ -1667,27 +1772,27 @@ Function OutputProcessorItem
 	If($HTML)
 	{
 		$rowdata = @()
-		$columnHeaders = @("Name",($htmlsilver -bor $htmlBold),$Processor.name,$htmlwhite)
-		$rowdata += @(,('Description',($htmlsilver -bor $htmlBold),$Processor.description,$htmlwhite))
+		$columnHeaders = @("Name",($global:htmlsb),$Processor.name,$htmlwhite)
+		$rowdata += @(,('Description',($global:htmlsb),$Processor.description,$htmlwhite))
 
-		$rowdata += @(,('Max Clock Speed',($htmlsilver -bor $htmlBold),"$($processor.maxclockspeed) MHz",$htmlwhite))
+		$rowdata += @(,('Max Clock Speed',($global:htmlsb),"$($processor.maxclockspeed) MHz",$htmlwhite))
 		If($processor.l2cachesize -gt 0)
 		{
-			$rowdata += @(,('L2 Cache Size',($htmlsilver -bor $htmlBold),"$($processor.l2cachesize) KB",$htmlwhite))
+			$rowdata += @(,('L2 Cache Size',($global:htmlsb),"$($processor.l2cachesize) KB",$htmlwhite))
 		}
 		If($processor.l3cachesize -gt 0)
 		{
-			$rowdata += @(,('L3 Cache Size',($htmlsilver -bor $htmlBold),"$($processor.l3cachesize) KB",$htmlwhite))
+			$rowdata += @(,('L3 Cache Size',($global:htmlsb),"$($processor.l3cachesize) KB",$htmlwhite))
 		}
 		If($processor.numberofcores -gt 0)
 		{
-			$rowdata += @(,('Number of Cores',($htmlsilver -bor $htmlBold),$Processor.numberofcores,$htmlwhite))
+			$rowdata += @(,('Number of Cores',($global:htmlsb),$Processor.numberofcores,$htmlwhite))
 		}
 		If($processor.numberoflogicalprocessors -gt 0)
 		{
-			$rowdata += @(,('Number of Logical Processors (cores w/HT)',($htmlsilver -bor $htmlBold),$Processor.numberoflogicalprocessors,$htmlwhite))
+			$rowdata += @(,('Number of Logical Processors (cores w/HT)',($global:htmlsb),$Processor.numberoflogicalprocessors,$htmlwhite))
 		}
-		$rowdata += @(,('Availability',($htmlsilver -bor $htmlBold),$xAvailability,$htmlwhite))
+		$rowdata += @(,('Availability',($global:htmlsb),$xAvailability,$htmlwhite))
 
 		$msg = ""
 		$columnWidths = @("150px","200px")
@@ -1700,7 +1805,16 @@ Function OutputNicItem
 {
 	Param([object]$Nic, [object]$ThisNic, [string]$RemoteComputerName)
 	
-	$powerMgmt = Get-WmiObject -computername $RemoteComputerName MSPower_DeviceEnable -Namespace root\wmi | Where-Object{$_.InstanceName -match [regex]::Escape($ThisNic.PNPDeviceID)}
+	If($RemoteComputerName -eq $env:computername)
+	{
+		$powerMgmt = Get-CimInstance -ClassName MSPower_DeviceEnable -Namespace "root\wmi" -Verbose:$False |
+			Where-Object{$_.InstanceName -match [regex]::Escape($ThisNic.PNPDeviceID)}
+	}
+	Else
+	{
+		$powerMgmt = Get-CimInstance -CimSession $RemoteComputerName -ClassName MSPower_DeviceEnable -Namespace "root\wmi" -Verbose:$False |
+			Where-Object{$_.InstanceName -match [regex]::Escape($ThisNic.PNPDeviceID)}
+	}
 
 	If($? -and $Null -ne $powerMgmt)
 	{
@@ -1708,7 +1822,7 @@ Function OutputNicItem
 		{
 			$PowerSaving = "Enabled"
 		}
-		Else
+		Else	
 		{
 			$PowerSaving = "Disabled"
 		}
@@ -1746,13 +1860,20 @@ Function OutputNicItem
 	Try
 	{
 		#https://ios.developreference.com/article/10085450/How+do+I+enable+VRSS+(Virtual+Receive+Side+Scaling)+for+a+Windows+VM+without+relying+on+Enable-NetAdapterRSS%3F
-		$RSSEnabled = (Get-WmiObject -ComputerName $RemoteComputerName MSFT_NetAdapterRssSettingData -Namespace "root\StandardCimV2" -ea 0).Enabled
+		If($RemoteComputerName -eq $env:computername)
+		{
+			$RSSEnabled = (Get-CimInstance -ClassName MSFT_NetAdapterRssSettingData -Namespace "root\StandardCimV2" -ea 0 -Verbose:$False).Enabled
+		}
+		Else
+		{
+			$RSSEnabled = (Get-CimInstance -CimSession $RemoteComputerName -ClassName MSFT_NetAdapterRssSettingData -Namespace "root\StandardCimV2" -ea 0 -Verbose:$False).Enabled
+		}
 
 		If($RSSEnabled)
 		{
 			$RSSEnabled = "Enabled"
 		}
-		ELse
+		Else
 		{
 			$RSSEnabled = "Disabled"
 		}
@@ -1760,7 +1881,7 @@ Function OutputNicItem
 	
 	Catch
 	{
-		$RSSEnabled = "Not available on $Script:RunningOS"
+		$RSSEnabled = "Unable to determine for $RemoteComputerName"
 	}
 
 	$xIPAddress = New-Object System.Collections.ArrayList
@@ -1808,9 +1929,9 @@ Function OutputNicItem
 	$xTcpipNetbiosOptions = ""
 	Switch ($nic.TcpipNetbiosOptions)
 	{
-		0	{$xTcpipNetbiosOptions = "Use NetBIOS setting from DHCP Server"; Break}
-		1	{$xTcpipNetbiosOptions = "Enable NetBIOS"; Break}
-		2	{$xTcpipNetbiosOptions = "Disable NetBIOS"; Break}
+		0		{$xTcpipNetbiosOptions = "Use NetBIOS setting from DHCP Server"; Break}
+		1		{$xTcpipNetbiosOptions = "Enable NetBIOS"; Break}
+		2		{$xTcpipNetbiosOptions = "Disable NetBIOS"; Break}
 		Default	{$xTcpipNetbiosOptions = "Unknown"; Break}
 	}
 	
@@ -1824,6 +1945,20 @@ Function OutputNicItem
 		$xwinsenablelmhostslookup = "No"
 	}
 
+	If($nic.dhcpenabled)
+	{
+		$DHCPLeaseObtainedDate = $nic.dhcpleaseobtained.ToLocalTime()
+		If($nic.DHCPLeaseExpires -lt $nic.DHCPLeaseObtained)
+		{
+			#Could be an Azure DHCP Lease
+			$DHCPLeaseExpiresDate = (Get-Date).AddSeconds([UInt32]::MaxValue).ToLocalTime()
+		}
+		Else
+		{
+			$DHCPLeaseExpiresDate = $nic.DHCPLeaseExpires.ToLocalTime()
+		}
+	}
+		
 	If($MSWORD -or $PDF)
 	{
 		$NicInformation = New-Object System.Collections.ArrayList
@@ -1865,12 +2000,14 @@ Function OutputNicItem
 		}
 		If($nic.dhcpenabled)
 		{
-			$DHCPLeaseObtainedDate = $nic.ConvertToDateTime($nic.dhcpleaseobtained)
-			$DHCPLeaseExpiresDate = $nic.ConvertToDateTime($nic.dhcpleaseexpires)
-			$NicInformation.Add(@{ Data = "DHCP Enabled"; Value = $Nic.dhcpenabled; }) > $Null
+			$NicInformation.Add(@{ Data = "DHCP Enabled"; Value = $Nic.dhcpenabled.ToString(); }) > $Null
 			$NicInformation.Add(@{ Data = "DHCP Lease Obtained"; Value = $dhcpleaseobtaineddate; }) > $Null
 			$NicInformation.Add(@{ Data = "DHCP Lease Expires"; Value = $dhcpleaseexpiresdate; }) > $Null
 			$NicInformation.Add(@{ Data = "DHCP Server"; Value = $Nic.dhcpserver; }) > $Null
+		}
+		Else
+		{
+			$NicInformation.Add(@{ Data = "DHCP Enabled"; Value = $Nic.dhcpenabled.ToString(); }) > $Null
 		}
 		If(![String]::IsNullOrEmpty($nic.dnsdomain))
 		{
@@ -1921,7 +2058,11 @@ Function OutputNicItem
 		{
 			$NicInformation.Add(@{ Data = "Scope ID"; Value = $Nic.winsscopeid; }) > $Null
 		}
-		$Table = AddWordTable -Hashtable $NicInformation -Columns Data,Value -List -AutoFit $wdAutoFitFixed;
+		$Table = AddWordTable -Hashtable $NicInformation `
+		-Columns Data,Value `
+		-List `
+		-Format $wdTableGrid `
+		-AutoFit $wdAutoFitFixed;
 
 		## Set first column format
 		SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
@@ -1951,8 +2092,8 @@ Function OutputNicItem
 		Line 2 "Availability`t`t: " $xAvailability
 		Line 2 "Allow computer to turn "
 		Line 2 "off device to save power: " $PowerSaving
-		Line 2 "Receive Side Scaling`t: " $RSSEnabled
 		Line 2 "Physical Address`t: " $nic.macaddress
+		Line 2 "Receive Side Scaling`t: " $RSSEnabled
 		Line 2 "IP Address`t`t: " $xIPAddress[0]
 		$cnt = -1
 		ForEach($tmp in $xIPAddress)
@@ -1960,7 +2101,7 @@ Function OutputNicItem
 			$cnt++
 			If($cnt -gt 0)
 			{
-				Line 5 "  " $tmp
+				Line 8 "  " $tmp
 			}
 		}
 		Line 2 "Default Gateway`t`t: " $Nic.Defaultipgateway
@@ -1971,17 +2112,19 @@ Function OutputNicItem
 			$cnt++
 			If($cnt -gt 0)
 			{
-				Line 5 "  " $tmp
+				Line 8 "  " $tmp
 			}
 		}
 		If($nic.dhcpenabled)
 		{
-			$DHCPLeaseObtainedDate = $nic.ConvertToDateTime($nic.dhcpleaseobtained)
-			$DHCPLeaseExpiresDate = $nic.ConvertToDateTime($nic.dhcpleaseexpires)
-			Line 2 "DHCP Enabled`t`t: " $nic.dhcpenabled
+			Line 2 "DHCP Enabled`t`t: " $nic.dhcpenabled.ToString()
 			Line 2 "DHCP Lease Obtained`t: " $dhcpleaseobtaineddate
 			Line 2 "DHCP Lease Expires`t: " $dhcpleaseexpiresdate
 			Line 2 "DHCP Server`t`t:" $nic.dhcpserver
+		}
+		Else
+		{
+			Line 2 "DHCP Enabled`t`t: " $nic.dhcpenabled.ToString()
 		}
 		If(![String]::IsNullOrEmpty($nic.dnsdomain))
 		{
@@ -1997,7 +2140,7 @@ Function OutputNicItem
 				$cnt++
 				If($cnt -gt 0)
 				{
-					Line 5 "  " $tmp
+					Line 8 "  " $tmp
 				}
 			}
 		}
@@ -2012,7 +2155,7 @@ Function OutputNicItem
 				$cnt++
 				If($cnt -gt 0)
 				{
-					Line 5 "  " $tmp
+					Line 8 "  " $tmp
 				}
 			}
 		}
@@ -2040,98 +2183,100 @@ Function OutputNicItem
 	If($HTML)
 	{
 		$rowdata = @()
-		$columnHeaders = @("Name",($htmlsilver -bor $htmlBold),$ThisNic.Name,$htmlwhite)
+		$columnHeaders = @("Name",($global:htmlsb),$ThisNic.Name,$htmlwhite)
 		If($ThisNic.Name -ne $nic.description)
 		{
-			$rowdata += @(,('Description',($htmlsilver -bor $htmlBold),$Nic.description,$htmlwhite))
+			$rowdata += @(,('Description',($global:htmlsb),$Nic.description,$htmlwhite))
 		}
-		$rowdata += @(,('Connection ID',($htmlsilver -bor $htmlBold),$ThisNic.NetConnectionID,$htmlwhite))
+		$rowdata += @(,('Connection ID',($global:htmlsb),$ThisNic.NetConnectionID,$htmlwhite))
 		If(validObject $Nic Manufacturer)
 		{
-			$rowdata += @(,('Manufacturer',($htmlsilver -bor $htmlBold),$Nic.manufacturer,$htmlwhite))
+			$rowdata += @(,('Manufacturer',($global:htmlsb),$Nic.manufacturer,$htmlwhite))
 		}
-		$rowdata += @(,('Availability',($htmlsilver -bor $htmlBold),$xAvailability,$htmlwhite))
-		$rowdata += @(,('Allow the computer to turn off this device to save power',($htmlsilver -bor $htmlBold),$PowerSaving,$htmlwhite))
-		$rowdata += @(,('Receive Side Scaling',($htmlsilver -bor $htmlbold),$RSSEnabled,$htmlwhite))
-		$rowdata += @(,('Physical Address',($htmlsilver -bor $htmlBold),$Nic.macaddress,$htmlwhite))
-		$rowdata += @(,('IP Address',($htmlsilver -bor $htmlBold),$xIPAddress[0],$htmlwhite))
+		$rowdata += @(,('Availability',($global:htmlsb),$xAvailability,$htmlwhite))
+		$rowdata += @(,('Allow the computer to turn off this device to save power',($global:htmlsb),$PowerSaving,$htmlwhite))
+		$rowdata += @(,('Physical Address',($global:htmlsb),$Nic.macaddress,$htmlwhite))
+		$rowdata += @(,('Receive Side Scaling',($global:htmlsb),$RSSEnabled,$htmlwhite))
+		$rowdata += @(,('IP Address',($global:htmlsb),$xIPAddress[0],$htmlwhite))
 		$cnt = -1
 		ForEach($tmp in $xIPAddress)
 		{
 			$cnt++
 			If($cnt -gt 0)
 			{
-				$rowdata += @(,('IP Address',($htmlsilver -bor $htmlBold),$tmp,$htmlwhite))
+				$rowdata += @(,('IP Address',($global:htmlsb),$tmp,$htmlwhite))
 			}
 		}
-		$rowdata += @(,('Default Gateway',($htmlsilver -bor $htmlBold),$Nic.Defaultipgateway[0],$htmlwhite))
-		$rowdata += @(,('Subnet Mask',($htmlsilver -bor $htmlBold),$xIPSubnet[0],$htmlwhite))
+		$rowdata += @(,('Default Gateway',($global:htmlsb),$Nic.Defaultipgateway[0],$htmlwhite))
+		$rowdata += @(,('Subnet Mask',($global:htmlsb),$xIPSubnet[0],$htmlwhite))
 		$cnt = -1
 		ForEach($tmp in $xIPSubnet)
 		{
 			$cnt++
 			If($cnt -gt 0)
 			{
-				$rowdata += @(,('Subnet Mask',($htmlsilver -bor $htmlBold),$tmp,$htmlwhite))
+				$rowdata += @(,('Subnet Mask',($global:htmlsb),$tmp,$htmlwhite))
 			}
 		}
 		If($nic.dhcpenabled)
 		{
-			$DHCPLeaseObtainedDate = $nic.ConvertToDateTime($nic.dhcpleaseobtained)
-			$DHCPLeaseExpiresDate = $nic.ConvertToDateTime($nic.dhcpleaseexpires)
-			$rowdata += @(,('DHCP Enabled',($htmlsilver -bor $htmlBold),$Nic.dhcpenabled,$htmlwhite))
-			$rowdata += @(,('DHCP Lease Obtained',($htmlsilver -bor $htmlBold),$dhcpleaseobtaineddate,$htmlwhite))
-			$rowdata += @(,('DHCP Lease Expires',($htmlsilver -bor $htmlBold),$dhcpleaseexpiresdate,$htmlwhite))
-			$rowdata += @(,('DHCP Server',($htmlsilver -bor $htmlBold),$Nic.dhcpserver,$htmlwhite))
+			$rowdata += @(,('DHCP Enabled',($global:htmlsb),$Nic.dhcpenabled.ToString(),$htmlwhite))
+			$rowdata += @(,('DHCP Lease Obtained',($global:htmlsb),$dhcpleaseobtaineddate,$htmlwhite))
+			$rowdata += @(,('DHCP Lease Expires',($global:htmlsb),$dhcpleaseexpiresdate,$htmlwhite))
+			$rowdata += @(,('DHCP Server',($global:htmlsb),$Nic.dhcpserver,$htmlwhite))
+		}
+		Else
+		{
+			$rowdata += @(,('DHCP Enabled',($global:htmlsb),$Nic.dhcpenabled.ToString(),$htmlwhite))
 		}
 		If(![String]::IsNullOrEmpty($nic.dnsdomain))
 		{
-			$rowdata += @(,('DNS Domain',($htmlsilver -bor $htmlBold),$Nic.dnsdomain,$htmlwhite))
+			$rowdata += @(,('DNS Domain',($global:htmlsb),$Nic.dnsdomain,$htmlwhite))
 		}
 		If($Null -ne $nic.dnsdomainsuffixsearchorder -and $nic.dnsdomainsuffixsearchorder.length -gt 0)
 		{
-			$rowdata += @(,('DNS Search Suffixes',($htmlsilver -bor $htmlBold),$xnicdnsdomainsuffixsearchorder[0],$htmlwhite))
+			$rowdata += @(,('DNS Search Suffixes',($global:htmlsb),$xnicdnsdomainsuffixsearchorder[0],$htmlwhite))
 			$cnt = -1
 			ForEach($tmp in $xnicdnsdomainsuffixsearchorder)
 			{
 				$cnt++
 				If($cnt -gt 0)
 				{
-					$rowdata += @(,('',($htmlsilver -bor $htmlBold),$tmp,$htmlwhite))
+					$rowdata += @(,('',($global:htmlsb),$tmp,$htmlwhite))
 				}
 			}
 		}
-		$rowdata += @(,('DNS WINS Enabled',($htmlsilver -bor $htmlBold),$xdnsenabledforwinsresolution,$htmlwhite))
+		$rowdata += @(,('DNS WINS Enabled',($global:htmlsb),$xdnsenabledforwinsresolution,$htmlwhite))
 		If($Null -ne $nic.dnsserversearchorder -and $nic.dnsserversearchorder.length -gt 0)
 		{
-			$rowdata += @(,('DNS Servers',($htmlsilver -bor $htmlBold),$xnicdnsserversearchorder[0],$htmlwhite))
+			$rowdata += @(,('DNS Servers',($global:htmlsb),$xnicdnsserversearchorder[0],$htmlwhite))
 			$cnt = -1
 			ForEach($tmp in $xnicdnsserversearchorder)
 			{
 				$cnt++
 				If($cnt -gt 0)
 				{
-					$rowdata += @(,('',($htmlsilver -bor $htmlBold),$tmp,$htmlwhite))
+					$rowdata += @(,('',($global:htmlsb),$tmp,$htmlwhite))
 				}
 			}
 		}
-		$rowdata += @(,('NetBIOS Setting',($htmlsilver -bor $htmlBold),$xTcpipNetbiosOptions,$htmlwhite))
-		$rowdata += @(,('WINS: Enabled LMHosts',($htmlsilver -bor $htmlBold),$xwinsenablelmhostslookup,$htmlwhite))
+		$rowdata += @(,('NetBIOS Setting',($global:htmlsb),$xTcpipNetbiosOptions,$htmlwhite))
+		$rowdata += @(,('WINS: Enabled LMHosts',($global:htmlsb),$xwinsenablelmhostslookup,$htmlwhite))
 		If(![String]::IsNullOrEmpty($nic.winshostlookupfile))
 		{
-			$rowdata += @(,('Host Lookup File',($htmlsilver -bor $htmlBold),$Nic.winshostlookupfile,$htmlwhite))
+			$rowdata += @(,('Host Lookup File',($global:htmlsb),$Nic.winshostlookupfile,$htmlwhite))
 		}
 		If(![String]::IsNullOrEmpty($nic.winsprimaryserver))
 		{
-			$rowdata += @(,('Primary Server',($htmlsilver -bor $htmlBold),$Nic.winsprimaryserver,$htmlwhite))
+			$rowdata += @(,('Primary Server',($global:htmlsb),$Nic.winsprimaryserver,$htmlwhite))
 		}
 		If(![String]::IsNullOrEmpty($nic.winssecondaryserver))
 		{
-			$rowdata += @(,('Secondary Server',($htmlsilver -bor $htmlBold),$Nic.winssecondaryserver,$htmlwhite))
+			$rowdata += @(,('Secondary Server',($global:htmlsb),$Nic.winssecondaryserver,$htmlwhite))
 		}
 		If(![String]::IsNullOrEmpty($nic.winsscopeid))
 		{
-			$rowdata += @(,('Scope ID',($htmlsilver -bor $htmlBold),$Nic.winsscopeid,$htmlwhite))
+			$rowdata += @(,('Scope ID',($global:htmlsb),$Nic.winsscopeid,$htmlwhite))
 		}
 
 		$msg = ""
@@ -2169,14 +2314,14 @@ Function SetWordHashTable
 	#nl - Dutch
 	#pt - Portuguese
 	#sv - Swedish
-	#zh - Chinese
 	
 	[string]$toc = $(
 		Switch ($CultureCode)
 		{
 			'ca-'	{ 'Taula automática 2'; Break }
 			'da-'	{ 'Automatisk tabel 2'; Break }
-			'de-'	{ 'Automatische Tabelle 2'; Break }
+#			'de-'	{ 'Automatische Tabelle 2'; Break }
+			'de-'	{ 'Automatisches Verzeichnis 2'; Break }
 			'en-'	{ 'Automatic Table 2'; Break }
 			'es-'	{ 'Tabla automática 2'; Break }
 			'fi-'	{ 'Automaattinen taulukko 2'; Break }
@@ -2187,7 +2332,6 @@ Function SetWordHashTable
 			'pt-'	{ 'Sumário Automático 2'; Break }
 			# fix in 1.90 thanks to Johan Kallio 'sv-'	{ 'Automatisk innehållsförteckning2'; Break }
 			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
-			'zh-'	{ '自动目录 2'; Break }
 		}
 	)
 
@@ -2208,7 +2352,6 @@ Function GetCulture
 	#codes obtained from http://support.microsoft.com/kb/221435
 	#http://msdn.microsoft.com/en-us/library/bb213877(v=office.12).aspx
 	$CatalanArray = 1027
-	$ChineseArray = 2052,3076,5124,4100
 	$DanishArray = 1030
 	$DutchArray = 2067, 1043
 	$EnglishArray = 3081, 10249, 4105, 9225, 6153, 8201, 5129, 13321, 7177, 11273, 2057, 1033, 12297
@@ -2231,12 +2374,10 @@ Function GetCulture
 	#nl - Dutch
 	#pt - Portuguese
 	#sv - Swedish
-	#zh - Chinese
 
 	Switch ($WordValue)
 	{
 		{$CatalanArray -contains $_}	{$CultureCode = "ca-"}
-		{$ChineseArray -contains $_}	{$CultureCode = "zh-"}
 		{$DanishArray -contains $_}		{$CultureCode = "da-"}
 		{$DutchArray -contains $_}		{$CultureCode = "nl-"}
 		{$EnglishArray -contains $_}	{$CultureCode = "en-"}
@@ -2485,16 +2626,6 @@ Function ValidateCoverPage
 				}
 			}
 
-		'zh-'	{
-				If($xWordVersion -eq $wdWord2010 -or $xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-				{
-					$xArray = ('奥斯汀', '边线型', '花丝', '怀旧', '积分',
-					'离子(浅色)', '离子(深色)', '母版型', '平面', '切片(浅色)',
-					'切片(深色)', '丝状', '网格', '镶边', '信号灯',
-					'运动型')
-				}
-			}
-
 		Default	{
 					If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
 					{
@@ -2537,7 +2668,7 @@ Function CheckWordPrereq
 	
 	#Find out if winword is running in our session
 	#fixed by MBS
-	[bool]$wordrunning = $null -ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$wordrunning = $null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
 		Write-Host "`n`n`tPlease close all instances of Microsoft Word before running this report.`n`n"
@@ -2749,7 +2880,7 @@ Function SetupWord
 		Script cannot continue.
 		`n`n
 		"
-		Exit
+		AbortScript
 	}
 	Else
 	{
@@ -2893,13 +3024,6 @@ Function SetupWord
 					}
 				}
 
-			'zh-'	{
-					If($CoverPage -eq "Sideline")
-					{
-						$CoverPage = "边线型"
-						$CPChanged = $True
-					}
-				}
 		}
 
 		If($CPChanged)
@@ -4382,7 +4506,6 @@ Function SaveandCloseDocumentandShutdownWord
 	{
 		#the $saveFormat below passes StrictMode 2
 		#I found this at the following two links
-		#http://blogs.technet.com/b/bshukla/archive/2011/09/27/3347395.aspx
 		#http://msdn.microsoft.com/en-us/library/microsoft.office.interop.word.wdsaveformat(v=office.14).aspx
 		If($PDF)
 		{
@@ -4426,23 +4549,24 @@ Function SaveandCloseDocumentandShutdownWord
 	$Script:Word.Quit()
 	Write-Verbose "$(Get-Date -Format G): System Cleanup"
 	[System.Runtime.Interopservices.Marshal]::ReleaseComObject($Script:Word) | Out-Null
-	Remove-Variable -Name word -Scope Script 4>$Null
-	Remove-Variable -Name Doc  -Scope Script 4>$Null
+	If(Test-Path variable:global:word)
+	{
+		Remove-Variable -Name word -Scope Global 4>$Null
+	}
 	$SaveFormat = $Null
 	[gc]::collect() 
 	[gc]::WaitForPendingFinalizers()
 	
-	#is the winword process still running? kill it
+	#is the winword Process still running? kill it
 
 	#find out our session (usually "1" except on TS/RDC or Citrix)
 	$SessionID = (Get-Process -PID $PID).SessionId
 
-	#Find out if winword is running in our session
-	$wordprocess = $Null
-	$wordprocess = (Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}
-	If($null -ne $wordprocess -and $wordprocess.Id -gt 0)
+	#Find out if winword running in our session
+	$wordprocess = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}) | Select-Object -Property Id 
+	If( $wordprocess -and $wordprocess.Id -gt 0)
 	{
-		Write-Verbose "$(Get-Date -Format G): WinWord process is still running. Attempting to stop WinWord process # $($wordprocess.Id)"
+		Write-Verbose "$(Get-Date -Format G): WinWord Process is still running. Attempting to stop WinWord Process # $($wordprocess.Id)"
 		Stop-Process $wordprocess.Id -EA 0
 	}
 }
@@ -4465,13 +4589,17 @@ Function SetupText
 Function SaveandCloseTextDocument
 {
 	Write-Verbose "$(Get-Date -Format G): Saving Text file"
-	Write-Output $Script:Output.ToString() | Out-File $Script:TextFileName 4>$Null
+	Line 0 ""
+	Line 0 "Report Complete"
+	Write-Output $global:Output.ToString() | Out-File $Script:TextFileName 4>$Null
 }
 
 Function SaveandCloseHTMLDocument
 {
 	Write-Verbose "$(Get-Date -Format G): Saving HTML file"
-	Out-File -FilePath $Script:HtmlFileName -Append -InputObject "<p></p></body></html>" 4>$Null
+	WriteHTMLLine 0 0 ""
+	WriteHTMLLine 0 0 "Report Complete"
+	Out-File -FilePath $Script:HTMLFileName -Append -InputObject "<p></p></body></html>" 4>$Null
 }
 
 Function SetFilenames
@@ -4493,6 +4621,70 @@ Function SetFilenames
 		SetupHTML
 	}
 	ShowScriptOptions
+}
+
+Function OutputReportFooter
+{
+	<#
+	Report Footer
+		Report information:
+			Created with: <Script Name> - Release Date: <Script Release Date>
+			Script version: <Script Version>
+			Started on <Date Time in Local Format>
+			Elapsed time: nn days, nn hours, nn minutes, nn.nn seconds
+			Ran from domain <Domain Name> by user <Username>
+			Ran from the folder <Folder Name>
+
+	Script Name and Script Release date are script-specific variables.
+	Script version is a script variable.
+	Start Date Time in Local Format is a script variable.
+	Domain Name is $env:USERDNSDOMAIN.
+	Username is $env:USERNAME.
+	Folder Name is a script variable.
+	#>
+
+	$runtime = $(Get-Date) - $Script:StartTime
+	$Str = [string]::format("{0} days, {1} hours, {2} minutes, {3}.{4} seconds",
+		$runtime.Days,
+		$runtime.Hours,
+		$runtime.Minutes,
+		$runtime.Seconds,
+		$runtime.Milliseconds)
+
+	If($MSWORD -or $PDF)
+	{
+		$Script:selection.InsertNewPage()
+		WriteWordLine 1 0 "Report Footer"
+		WriteWordLine 2 0 "Report Information:"
+		WriteWordLine 0 1 "Created with: $Script:ScriptName - Release Date: $Script:ReleaseDate"
+		WriteWordLine 0 1 "Script version: $Script:MyVersion"
+		WriteWordLine 0 1 "Started on $Script:StartTime"
+		WriteWordLine 0 1 "Elapsed time: $Str"
+		WriteWordLine 0 1 "Ran from domain $env:USERDNSDOMAIN by user $env:USERNAME"
+		WriteWordLine 0 1 "Ran from the folder $Script:pwdpath"
+	}
+	If($Text)
+	{
+		Line 0 "///  Report Footer  \\\"
+		Line 1 "Report Information:"
+		Line 2 "Created with: $Script:ScriptName - Release Date: $Script:ReleaseDate"
+		Line 2 "Script version: $Script:MyVersion"
+		Line 2 "Started on $Script:StartTime"
+		Line 2 "Elapsed time: $Str"
+		Line 2 "Ran from domain $env:USERDNSDOMAIN by user $env:USERNAME"
+		Line 2 "Ran from the folder $Script:pwdpath"
+	}
+	If($HTML)
+	{
+		WriteHTMLLine 1 0 "///&nbsp;&nbsp;Report Footer&nbsp;&nbsp;\\\"
+		WriteHTMLLine 2 0 "Report Information:"
+		WriteHTMLLine 0 1 "Created with: $Script:ScriptName - Release Date: $Script:ReleaseDate"
+		WriteHTMLLine 0 1 "Script version: $Script:MyVersion"
+		WriteHTMLLine 0 1 "Started on $Script:StartTime"
+		WriteHTMLLine 0 1 "Elapsed time: $Str"
+		WriteHTMLLine 0 1 "Ran from domain $env:USERDNSDOMAIN by user $env:USERNAME"
+		WriteHTMLLine 0 1 "Ran from the folder $Script:pwdpath"
+	}
 }
 
 Function ProcessDocumentOutput
@@ -4600,79 +4792,72 @@ Function ShowScriptOptions
 {
 	Write-Verbose "$(Get-Date -Format G): "
 	Write-Verbose "$(Get-Date -Format G): "
-	Write-Verbose "$(Get-Date -Format G): Add DateTime         : $($AddDateTime)"
-	Write-Verbose "$(Get-Date -Format G): Citrix Templates Only: $($CitrixTemplatesOnly)"
+	Write-Verbose "$(Get-Date -Format G): Add DateTime         : $AddDateTime"
+	Write-Verbose "$(Get-Date -Format G): Citrix Templates Only: $CitrixTemplatesOnly"
 	If($MSWORD -or $PDF)
 	{
-		Write-Verbose "$(Get-Date -Format G): Company Name         : $($Script:CoName)"
-		Write-Verbose "$(Get-Date -Format G): Company Address      : $($CompanyAddress)"
-		Write-Verbose "$(Get-Date -Format G): Company Email        : $($CompanyEmail)"
-		Write-Verbose "$(Get-Date -Format G): Company Fax          : $($CompanyFax)"
-		Write-Verbose "$(Get-Date -Format G): Company Phone        : $($CompanyPhone)"
-		Write-Verbose "$(Get-Date -Format G): Cover Page           : $($CoverPage)"
+		Write-Verbose "$(Get-Date -Format G): Company Name         : $Script:CoName"
+		Write-Verbose "$(Get-Date -Format G): Company Address      : $CompanyAddress"
+		Write-Verbose "$(Get-Date -Format G): Company Email        : $CompanyEmail"
+		Write-Verbose "$(Get-Date -Format G): Company Fax          : $CompanyFax"
+		Write-Verbose "$(Get-Date -Format G): Company Phone        : $CompanyPhone"
+		Write-Verbose "$(Get-Date -Format G): Cover Page           : $CoverPage"
 	}
-	Write-Verbose "$(Get-Date -Format G): Dev                  : $($Dev)"
+	Write-Verbose "$(Get-Date -Format G): Dev                  : $Dev"
 	If($Dev)
 	{
-		Write-Verbose "$(Get-Date -Format G): DevErrorFile         : $($Script:DevErrorFile)"
+		Write-Verbose "$(Get-Date -Format G): DevErrorFile         : $Script:DevErrorFile"
 	}
 	If($MSWord)
 	{
-		Write-Verbose "$(Get-Date -Format G): Word FileName        : $($Script:WordFileName)"
+		Write-Verbose "$(Get-Date -Format G): Word FileName        : $Script:WordFileName"
 	}
 	If($HTML)
 	{
-		Write-Verbose "$(Get-Date -Format G): HTML FileName        : $($Script:HtmlFileName)"
+		Write-Verbose "$(Get-Date -Format G): HTML FileName        : $Script:HtmlFileName"
 	} 
 	If($PDF)
 	{
-		Write-Verbose "$(Get-Date -Format G): PDF FileName         : $($Script:PDFFileName)"
+		Write-Verbose "$(Get-Date -Format G): PDF FileName         : $Script:PDFFileName"
 	}
 	If($Text)
 	{
-		Write-Verbose "$(Get-Date -Format G): Text FileName        : $($Script:TextFileName)"
+		Write-Verbose "$(Get-Date -Format G): Text FileName        : $Script:TextFileName"
 	}
-	Write-Verbose "$(Get-Date -Format G): Folder               : $($Folder)"
-	Write-Verbose "$(Get-Date -Format G): From                 : $($From)"
-	Write-Verbose "$(Get-Date -Format G): Hardware Inventory   : $($Hardware)"
-	Write-Verbose "$(Get-Date -Format G): Limit User Certs     : $($LimitUserCertificates)"
-	Write-Verbose "$(Get-Date -Format G): Log                  : $($Log)"
-	Write-Verbose "$(Get-Date -Format G): Save As HTML         : $($HTML)"
-	Write-Verbose "$(Get-Date -Format G): Save As PDF          : $($PDF)"
-	Write-Verbose "$(Get-Date -Format G): Save As TEXT         : $($TEXT)"
-	Write-Verbose "$(Get-Date -Format G): Save As WORD         : $($MSWORD)"
-	Write-Verbose "$(Get-Date -Format G): ScriptInfo           : $($ScriptInfo)"
-	Write-Verbose "$(Get-Date -Format G): Smtp Port            : $($SmtpPort)"
-	Write-Verbose "$(Get-Date -Format G): Smtp Server          : $($SmtpServer)"
-	Write-Verbose "$(Get-Date -Format G): Title                : $($Script:FASDisplayName)"
-	Write-Verbose "$(Get-Date -Format G): To                   : $($To)"
-	Write-Verbose "$(Get-Date -Format G): Use SSL              : $($UseSSL)"
+	Write-Verbose "$(Get-Date -Format G): Folder               : $Folder"
+	Write-Verbose "$(Get-Date -Format G): From                 : $From"
+	Write-Verbose "$(Get-Date -Format G): Hardware Inventory   : $Hardware"
+	Write-Verbose "$(Get-Date -Format G): Limit User Certs     : $LimitUserCertificates"
+	Write-Verbose "$(Get-Date -Format G): Log                  : $Log"
+	Write-Verbose "$(Get-Date -Format G): Report Footer        : $ReportFooter"
+	Write-Verbose "$(Get-Date -Format G): Save As HTML         : $HTML"
+	Write-Verbose "$(Get-Date -Format G): Save As PDF          : $PDF"
+	Write-Verbose "$(Get-Date -Format G): Save As TEXT         : $TEXT"
+	Write-Verbose "$(Get-Date -Format G): Save As WORD         : $MSWORD"
+	Write-Verbose "$(Get-Date -Format G): ScriptInfo           : $ScriptInfo"
+	Write-Verbose "$(Get-Date -Format G): Smtp Port            : $SmtpPort"
+	Write-Verbose "$(Get-Date -Format G): Smtp Server          : $SmtpServer"
+	Write-Verbose "$(Get-Date -Format G): Title                : $Script:FASDisplayName"
+	Write-Verbose "$(Get-Date -Format G): To                   : $To"
+	Write-Verbose "$(Get-Date -Format G): Use SSL              : $UseSSL"
 	If($MSWORD -or $PDF)
 	{
-		Write-Verbose "$(Get-Date -Format G): User Name            : $($UserName)"
+		Write-Verbose "$(Get-Date -Format G): User Name            : $UserName"
 	}
 	Write-Verbose "$(Get-Date -Format G): "
-	Write-Verbose "$(Get-Date -Format G): OS Detected          : $($Script:RunningOS)"
-	Write-Verbose "$(Get-Date -Format G): PoSH version         : $($Host.Version)"
-	Write-Verbose "$(Get-Date -Format G): PSCulture            : $($PSCulture)"
-	Write-Verbose "$(Get-Date -Format G): PSUICulture          : $($PSUICulture)"
+	Write-Verbose "$(Get-Date -Format G): OS Detected          : $Script:RunningOS"
+	Write-Verbose "$(Get-Date -Format G): PoSH version         : $Host.Version"
+	Write-Verbose "$(Get-Date -Format G): PSCulture            : $PSCulture"
+	Write-Verbose "$(Get-Date -Format G): PSUICulture          : $PSUICulture"
 	If($MSWORD -or $PDF)
 	{
-		Write-Verbose "$(Get-Date -Format G): Word language        : $($Script:WordLanguageValue)"
-		Write-Verbose "$(Get-Date -Format G): Word version         : $($Script:WordProduct)"
+		Write-Verbose "$(Get-Date -Format G): Word language        : $Script:WordLanguageValue"
+		Write-Verbose "$(Get-Date -Format G): Word version         : $Script:WordProduct"
 	}
 	Write-Verbose "$(Get-Date -Format G): "
-	Write-Verbose "$(Get-Date -Format G): Script start         : $($Script:StartTime)"
+	Write-Verbose "$(Get-Date -Format G): Script start         : $Script:StartTime"
 	Write-Verbose "$(Get-Date -Format G): "
 	Write-Verbose "$(Get-Date -Format G): "
-}
-
-Function AbortScript
-{
-	[gc]::collect() 
-	[gc]::WaitForPendingFinalizers()
-	Write-Verbose "$(Get-Date -Format G): Script has been aborted"
-	Exit
 }
 
 # Copyright (c) Microsoft Corporation. All rights reserved.
@@ -5343,72 +5528,73 @@ Function ProcessScriptEnd
 
 	If($ScriptInfo)
 	{
-		$SIFile = "$Script:pwdpath\FASV1InventoryScriptInfo_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+		$SIFile = "$Script:pwdpath\FASInventoryScriptInfo_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
 		Out-File -FilePath $SIFile -InputObject "" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Add DateTime         : $($AddDateTime)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Citrix Templates Only: $($AddDateTime)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Add DateTime         : $AddDateTime" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Citrix Templates Only: $AddDateTime" 4>$Null
 		If($MSWORD -or $PDF)
 		{
-			Out-File -FilePath $SIFile -Append -InputObject "Company Name         : $($Script:CoName)" 4>$Null		
-			Out-File -FilePath $SIFile -Append -InputObject "Company Address      : $($CompanyAddress)" 4>$Null		
-			Out-File -FilePath $SIFile -Append -InputObject "Company Email        : $($CompanyEmail)" 4>$Null		
-			Out-File -FilePath $SIFile -Append -InputObject "Company Fax          : $($CompanyFax)" 4>$Null		
-			Out-File -FilePath $SIFile -Append -InputObject "Company Phone        : $($CompanyPhone)" 4>$Null		
-			Out-File -FilePath $SIFile -Append -InputObject "Cover Page           : $($CoverPage)" 4>$Null
+			Out-File -FilePath $SIFile -Append -InputObject "Company Name         : $Script:CoName" 4>$Null		
+			Out-File -FilePath $SIFile -Append -InputObject "Company Address      : $CompanyAddress" 4>$Null		
+			Out-File -FilePath $SIFile -Append -InputObject "Company Email        : $CompanyEmail" 4>$Null		
+			Out-File -FilePath $SIFile -Append -InputObject "Company Fax          : $CompanyFax" 4>$Null		
+			Out-File -FilePath $SIFile -Append -InputObject "Company Phone        : $CompanyPhone" 4>$Null		
+			Out-File -FilePath $SIFile -Append -InputObject "Cover Page           : $CoverPage" 4>$Null
 		}
-		Out-File -FilePath $SIFile -Append -InputObject "Dev                  : $($Dev)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Dev                  : $Dev" 4>$Null
 		If($Dev)
 		{
-			Out-File -FilePath $SIFile -Append -InputObject "DevErrorFile         : $($Script:DevErrorFile)" 4>$Null
+			Out-File -FilePath $SIFile -Append -InputObject "DevErrorFile         : $Script:DevErrorFile" 4>$Null
 		}
 		If($MSWord)
 		{
-			Out-File -FilePath $SIFile -Append -InputObject "Word FileName        : $($Script:WordFileName)" 4>$Null
+			Out-File -FilePath $SIFile -Append -InputObject "Word FileName        : $Script:WordFileName" 4>$Null
 		}
 		If($HTML)
 		{
-			Out-File -FilePath $SIFile -Append -InputObject "HTML FileName        : $($Script:HtmlFileName)" 4>$Null
+			Out-File -FilePath $SIFile -Append -InputObject "HTML FileName        : $Script:HtmlFileName" 4>$Null
 		}
 		If($PDF)
 		{
-			Out-File -FilePath $SIFile -Append -InputObject "PDF Filename         : $($Script:PDFFileName)" 4>$Null
+			Out-File -FilePath $SIFile -Append -InputObject "PDF Filename         : $Script:PDFFileName" 4>$Null
 		}
 		If($Text)
 		{
-			Out-File -FilePath $SIFile -Append -InputObject "Text FileName        : $($Script:TextFileName)" 4>$Null
+			Out-File -FilePath $SIFile -Append -InputObject "Text FileName        : $Script:TextFileName" 4>$Null
 		}
-		Out-File -FilePath $SIFile -Append -InputObject "Folder               : $($Folder)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "From                 : $($From)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Hardware Inventory   : $($Hardware)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Limit User Certs     : $($LimitUserCertificates)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Log                  : $($Log)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Save As HTML         : $($HTML)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Save As PDF          : $($PDF)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Save As TEXT         : $($TEXT)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Save As WORD         : $($MSWORD)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Script Info          : $($ScriptInfo)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Smtp Port            : $($SmtpPort)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Smtp Server          : $($SmtpServer)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Title                : $($Script:FASDisplayName)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "To                   : $($To)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Use SSL              : $($UseSSL)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Folder               : $Folder" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "From                 : $From" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Hardware Inventory   : $Hardware" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Limit User Certs     : $LimitUserCertificates" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Log                  : $Log" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Report Footer        : $ReportFooter" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Save As HTML         : $HTML" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Save As PDF          : $PDF" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Save As TEXT         : $TEXT" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Save As WORD         : $MSWORD" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Script Info          : $ScriptInfo" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Smtp Port            : $SmtpPort" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Smtp Server          : $SmtpServer" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Title                : $Script:FASDisplayName" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "To                   : $To" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Use SSL              : $UseSSL" 4>$Null
 		If($MSWORD -or $PDF)
 		{
-			Out-File -FilePath $SIFile -Append -InputObject "User Name            : $($UserName)" 4>$Null
+			Out-File -FilePath $SIFile -Append -InputObject "User Name            : $UserName" 4>$Null
 		}
 		Out-File -FilePath $SIFile -Append -InputObject "" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "OS Detected          : $($Script:RunningOS)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "PoSH version         : $($Host.Version)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "PSCulture            : $($PSCulture)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "PSUICulture          : $($PSUICulture)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "OS Detected          : $Script:RunningOS" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "PoSH version         : $Host.Version" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "PSCulture            : $PSCulture" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "PSUICulture          : $PSUICulture" 4>$Null
 		If($MSWORD -or $PDF)
 		{
-			Out-File -FilePath $SIFile -Append -InputObject "Word language        : $($Script:WordLanguageValue)" 4>$Null
-			Out-File -FilePath $SIFile -Append -InputObject "Word version         : $($Script:WordProduct)" 4>$Null
+			Out-File -FilePath $SIFile -Append -InputObject "Word language        : $Script:WordLanguageValue" 4>$Null
+			Out-File -FilePath $SIFile -Append -InputObject "Word version         : $Script:WordProduct" 4>$Null
 		}
 		Out-File -FilePath $SIFile -Append -InputObject "" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Script start         : $($Script:StartTime)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Elapsed time         : $($Str)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Script start         : $Script:StartTime" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Elapsed time         : $Str" 4>$Null
 	}
 
 	#stop transcript logging
@@ -6775,24 +6961,27 @@ Function OutputUserCertificates
 		
 		If($MSWord -or $PDF)
 		{
-			$Table = AddWordTable -Hashtable $CertWordTable `
-			-Columns xUPN, xRole, xCertDef, xExpiryDate `
-			-Headers "User Principal Name", "Role", "Certificate definition", "Expiry Date" `
-			-Format $wdTableGrid `
-			-AutoFit $wdAutoFitFixed;
+			If($CertWordTable.Count -gt 0)
+			{
+				$Table = AddWordTable -Hashtable $CertWordTable `
+				-Columns xUPN, xRole, xCertDef, xExpiryDate `
+				-Headers "User Principal Name", "Role", "Certificate definition", "Expiry Date" `
+				-Format $wdTableGrid `
+				-AutoFit $wdAutoFitFixed;
 
-			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+				SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-			$Table.Columns.Item(1).Width = 200;
-			$Table.Columns.Item(2).Width = 75;
-			$Table.Columns.Item(3).Width = 100;
-			$Table.Columns.Item(3).Width = 125;
-			
-			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+				$Table.Columns.Item(1).Width = 200;
+				$Table.Columns.Item(2).Width = 75;
+				$Table.Columns.Item(3).Width = 100;
+				$Table.Columns.Item(3).Width = 125;
+				
+				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
-			FindWordDocumentEnd
-			$Table = $Null
-			WriteWordLine 0 0 ""
+				FindWordDocumentEnd
+				$Table = $Null
+				WriteWordLine 0 0 ""
+			}
 		}
 		If($Text)
 		{
@@ -6858,6 +7047,11 @@ If(($MSWORD -or $PDF) -and ($Script:CoverPagesExist))
 }
 
 ProcessDocumentOutput "Regular"
+
+If($ReportFooter)
+{
+	OutputReportFooter
+}
 
 ProcessScriptEnd
 #endregionnn
