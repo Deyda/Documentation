@@ -2668,7 +2668,7 @@ Function CheckWordPrereq
 	
 	#Find out if winword is running in our session
 	#fixed by MBS
-	[bool]$wordrunning = $null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$wordrunning = $null -ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
 		Write-Host "`n`n`tPlease close all instances of Microsoft Word before running this report.`n`n"
