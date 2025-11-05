@@ -17,7 +17,7 @@
 	You do NOT have to run this script on a Controller. This script was developed and run 
 	from a Windows 10 VM.
 	
-	You can run this script remotely using the –AdminAddress (AA) parameter.
+	You can run this script remotely using the -AdminAddress (AA) parameter.
 	
 	This script supports versions of CVAD starting with 2006.
 	
@@ -4783,7 +4783,7 @@ Function CheckWordPrereq
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
 	#Find out if winword runsning in our session
-	[bool]$wordrunning = $null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$wordrunning = $null -ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
 		$ErrorActionPreference = $SaveEAPreference
@@ -6549,7 +6549,7 @@ Function CheckExcelPrereq
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
 	#Find out if excel runsning in our session
-	[bool]$excelrunning = $null –ne ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$excelrunning = $null -ne ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	
 	If($excelrunning)
 	{
@@ -41350,7 +41350,7 @@ Script cannot continue
 	
 	#$asm = [reflection.assembly]::loadwithpartialname('microsoft.sqlserver.smo')
 	$asm = [System.Reflection.Assembly]::LoadFrom("C:\Program Files\Citrix\XenDesktopPoshSdk\Module\Citrix.XenDesktop.Admin.V1\Citrix.XenDesktop.Admin\Microsoft.SqlServer.Smo.dll")
-	If( $null –eq $asm )
+	If( $null -eq $asm )
 	{
 		Write-Verbose "$(Get-Date -Format G): `tSQL Server Assembly could not be loaded"
 		$Script:SQLServerLoaded = $False
