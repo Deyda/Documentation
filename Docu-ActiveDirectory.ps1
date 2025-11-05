@@ -3841,7 +3841,7 @@ Function CheckWordPrereq
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
 	#Find out if winword is running in our session
-	[bool]$wordrunning = $null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	[bool]$wordrunning = $null -ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
 		$ErrorActionPreference = $SaveEAPreference
@@ -8781,7 +8781,7 @@ Function ProcessCAInformation
 		}
 	}
 	
-	#if you have enrollment authorities and no roots – that’s a BIG error
+	#if you have enrollment authorities and no roots - that’s a BIG error
 	If($AllCnt -gt 0 -and $RootCnt -eq 0)
 	{
 		$txt = "Error: Certification Authority Issuers(s) (also known as Enrollment Agents) exist, but no Certification Authority Root(s) exist"
