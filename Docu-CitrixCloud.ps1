@@ -5,27 +5,27 @@
 
 <#
 .SYNOPSIS
-	Creates an inventory of a Citrix Cloud Site.
+	Creates an inventory of a Citrix Cloud (now DaaS) Site.
 .DESCRIPTION
-	Creates an inventory of a Citrix Cloud Site using Microsoft PowerShell, Word, plain 
-	text, or HTML.
+	Creates an inventory of a Citrix Cloud (now DaaS) Site using Microsoft PowerShell, Word, 
+	plain text, or HTML.
 	
 	This script requires at least PowerShell version 5.
 	
-	This script must run from an elevated PowerShell session.
-
 	The default output is HTML.
 	
 	Run this script on a computer with the Remote SDK installed.
 	
 	https://download.apps.cloud.com/CitrixPoshSdk.exe
+	or
+	https://www.citrix.com/downloads/citrix-cloud/product-software/xenapp-and-xendesktop-service.html
 	
 	This script was developed and run from two Windows 10 VMs. One was domain-joined and 
     the other was in a Workgroup.
 	
-	This script supports only Citrix Cloud, not the on-premises CVAD products.
+	This script supports only Citrix Cloud (now DaaS), not the on-premises CVAD products.
 	
-		If you are running XA/XD 7.0 through 7.7, please use: 
+	If you are running XA/XD 7.0 through 7.7, please use: 
 	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
 
 	If you are running XA/XD 7.8 through CVAD 2006, please use:
@@ -34,12 +34,13 @@
 	If you are running CVAD 2006 and later, please use:
 	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
 
-	To prevent multiple Citrix Cloud authentication prompts, follow the instructions in 
-	the Authentication section of the ReadMe file to create a profile named Default.
+	To prevent multiple Citrix Cloud (now DaaS) authentication prompts, follow the 
+	instructions in the Authentication section of the ReadMe file to create a profile named 
+	Default.
 	
-	ReadMe file: https://carlwebster.sharefile.com/d-sb4e144f9ecc48e7b
+	ReadMe file: https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
 	
-	By default, only gives summary information for:
+	By default, the script only gives summary information for:
 		Administrators
 		App-V Publishing
 		Application Groups
@@ -73,12 +74,13 @@
 	Using both the MachineCatalogs and DeliveryGroups parameters can cause the report to 
 	take an extremely long time to complete and generate an exceptionally long report.
 
-	Creates an output file named after the CC Site (which by default is cloudxdsite), unless 
-	you use the SiteName parameter.
+	Creates an output file named after the Citrix Cloud (now DaaS) Site (which by default is 
+	cloudxdsite) unless you use the SiteName parameter.
 	
-	Word and PDF Document includes a Cover Page, Table of Contents and Footer.
+	Word and PDF Document includes a Cover Page, Table of Contents, and Footer.
 	Includes support for the following language versions of Microsoft Word:
 		Catalan
+		Chinese
 		Danish
 		Dutch
 		English
@@ -92,7 +94,7 @@
 		
 .PARAMETER HTML
 	Creates an HTML file with an.html extension.
-	This parameter is set True if no other output format is selected.
+	This parameter is set to True if no other output format is selected.
 .PARAMETER Text
 	Creates a formatted text file with a.txt extension.
 	This parameter is disabled by default.
@@ -102,18 +104,18 @@
 	The name associated with a set of credentials in the local store that are to be 
 	read.
 	
-	You must follow the process in either the ReadMe file or your own process to capture 
+	You must follow the Process in either the ReadMe file or your own Process to capture 
 	the Client ID and Client Secret and save them to a CSV credential profile.
 	
-	ReadMe file: https://carlwebster.sharefile.com/d-sb4e144f9ecc48e7b
+	ReadMe file: https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
 
-	To prevent multiple Citrix Cloud authentication prompts, create a profile named 
-	Default.
+	To prevent multiple Citrix Cloud (now DaaS) authentication prompts, create a profile 
+	named Default.
 
 	This parameter is blank by default.
 	This parameter has an alias of PN.
 .PARAMETER SiteName
-	Site Name to use for the all output files. 
+	Site Name to use for all output files. 
 
 	The default is "cloudxdsite".
 	This parameter has an alias of SN.
@@ -199,7 +201,7 @@
 	Includes only Site policies created in Studio.
 	
 	This Switch is useful in large AD environments, where there may be thousands
-	of policies, to keep SYSVOL from being searched.
+	of policies to keep SYSVOL from being searched.
 	
 	This parameter is disabled by default.
 	This parameter has an alias of NoAD.
@@ -218,19 +220,14 @@
 	This parameter is disabled by default.
 	This parameter has an alias of NS.
 .PARAMETER Policies
-	Give detailed information for both Site and Citrix AD based Policies.
+	Give detailed information for both Site and Citrix AD-based Policies.
 	
 	Using the Policies parameter can cause the report to take a very long time 
 	to complete and can generate an extremely long report.
 	
-	Note: The Citrix Group Policy PowerShell module will not load from an elevated 
-	PowerShell session. 
-	If the module is manually imported, the module is not detected from an elevated 
-	PowerShell session.
-	
 	There are three related parameters: Policies, NoPolicies, and NoADPolicies.
 	
-	Policies and NoPolicies are mutually exclusive and priority is given to NoPolicies.
+	Policies and NoPolicies are mutually exclusive, and priority is given to NoPolicies.
 	
 	This parameter is disabled by default.
 	This parameter has an alias of Pol.
@@ -267,11 +264,10 @@
 
 	This parameter has an alias of MAX.
 .PARAMETER Section
-	Processes a specific section of the report.
+	Processes one or more sections of the report.
 	Valid options are:
 		Admins (Administrators)
 		Apps (Applications and Application Group Details)
-		AppV
 		Catalogs (Machine Catalogs)
 		Config (Configuration)
 		Groups (Delivery Groups)
@@ -282,7 +278,10 @@
 		StoreFront
 		Zones
 		All
+
 	This parameter defaults to All sections.
+	
+	Multiple sections are separated by a comma. -Section catalogs, groups
 	
 	Notes:
 	Using Logging will force the Logging Switch to True.
@@ -291,8 +290,8 @@
 .PARAMETER AddDateTime
 	Adds a date timestamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2021 at 6PM is 2021-06-01_1800.
-	Output filename will be ReportName_2021-06-01_1800.docx (or.pdf).
+	June 1, 2025, at 6PM is 2025-06-01_1800.
+	The output filename will be ReportName_2025-06-01_1800.docx (or.pdf).
 	This parameter is disabled by default.
 	This parameter has an alias of ADT.
 .PARAMETER CSV
@@ -310,7 +309,7 @@
 	Outputs all errors to a text file at the end of the script.
 	
 	This is used when the script developer requests more troubleshooting data.
-	The text file is placed in the same folder from where the script is run.
+	The text file is placed in the same folder from where the script runs.
 	
 	This parameter is disabled by default.
 .PARAMETER Folder
@@ -319,10 +318,30 @@
 	Generates a log file for troubleshooting.
 .PARAMETER ScriptInfo
 	Outputs information about the script to a text file.
-	The text file is placed in the same folder from where the script is run.
+	The text file is placed in the same folder from where the script runs.
 	
 	This parameter is disabled by default.
 	This parameter has an alias of SI.
+.PARAMETER ReportFooter
+	Outputs a footer section at the end of the report.
+
+	This parameter has an alias of RF.
+	
+	Report Footer
+		Report information:
+			Created with: <Script Name> - Release Date: <Script Release Date>
+			Script version: <Script Version>
+			Started on <Date Time in Local Format>
+			Elapsed time: nn days, nn hours, nn minutes, nn.nn seconds
+			Ran from domain <Domain Name> by user <Username>
+			Ran from the folder <Folder Name>
+
+	Script Name and Script Release date are script-specific variables.
+	Start Date Time in Local Format is a script variable.
+	Elapsed time is a calculated value.
+	Domain Name is $env:USERDNSDOMAIN.
+	Username is $env:USERNAME.
+	Folder Name is a script variable.
 .PARAMETER MSWord
 	SaveAs DOCX file
 	This parameter is disabled by default.
@@ -333,7 +352,7 @@
 	This parameter requires Microsoft Word to be installed.
 	This parameter uses the Word SaveAs PDF capability.
 .PARAMETER CompanyAddress
-	Company Address to use for the Cover Page, if the Cover Page has the Address field.
+	Company Address to use for the Cover Page if the Cover Page has the Address field.
 	
 	The following Cover Pages have an Address field:
 		Banded (Word 2013/2016)
@@ -349,7 +368,7 @@
 	This parameter is only valid with the MSWORD and PDF output parameters.
 	This parameter has an alias of CA.
 .PARAMETER CompanyEmail
-	Company Email to use for the Cover Page, if the Cover Page has the Email field. 
+	Company Email to use for the Cover Page if the Cover Page has the Email field. 
 	
 	The following Cover Pages have an Email field:
 		Facet (Word 2013/2016)
@@ -357,7 +376,7 @@
 	This parameter is only valid with the MSWORD and PDF output parameters.
 	This parameter has an alias of CE.
 .PARAMETER CompanyFax
-	Company Fax to use for the Cover Page, if the Cover Page has the Fax field. 
+	Company Fax to use for the Cover Page if the Cover Page has the Fax field. 
 	
 	The following Cover Pages have a Fax field:
 		Contrast (Word 2010)
@@ -455,8 +474,11 @@
 	
 	Creates an HTML report by default.
 	
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -ProfileName "My CC Profile"
 	
@@ -466,7 +488,7 @@
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -MSWord
 	
-	Will use all default values.
+	Uses all default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -474,11 +496,14 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
 	Creates a Microsoft Word report.
 	
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	****************************************************
 	* Example for using the script as a scheduled task *
@@ -486,13 +511,13 @@
 	
 	First, from an elevated PowerShell session, create a profile named Default.
 	
-	Set-XDCredentials -CustomerID "CustomerID" -ProfileType CloudAPI -StoreAs "Default" 
-	-APIKey "ID" -SecretKey "Secret"
+	C:\PSScript >.Set-XDCredentials -CustomerID "CustomerID" -ProfileType CloudAPI 
+	-StoreAs "Default" -APIKey "ID" -SecretKey "Secret"
 
 	Note: Review the instructions in the Authentication section of the ReadMe file for the 
 	details on creating a profile named Default.
 	
-	ReadMe file: https://carlwebster.sharefile.com/d-sb4e144f9ecc48e7b
+	ReadMe file: https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
 	
 	PowerShell.exe -NoLogo -File "C:\PSScript\Docu-CitrixCloud.ps1 -MaxDetails 
 	-SiteName MyCCSite' -AddDateTime"	
@@ -514,7 +539,7 @@
 
 	Creates an HTML report named MyCCSite_YYYY-MM-DD_HHMM.html.
 
-	Uses the profile named Default, which prevents any extraneous Citrix Cloud 
+	Uses the profile named Default, which prevents any extraneous Citrix Cloud (now DaaS) 
 	authentication prompts.
 
 	For more information on running a PowerShell script as a scheduled task, see:	
@@ -523,7 +548,7 @@
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -PDF
 	
-	Will use all default values and save the document as a PDF file.
+	Uses all default values and saves the document as a PDF file.
 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
@@ -532,39 +557,54 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
 	
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -Text
 
 	Saves the document as a formatted text file.
 	
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -HTML
 
 	Saves the document as an HTML file.
 	
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -MachineCatalogs
 	
 	Creates an HTML report with full details for all machines in all Machine Catalogs.
 	
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -DeliveryGroups
 	
 	Creates an HTML report with full details for all desktops in all Desktop (Delivery) 
 	Groups.
 	
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -DeliveryGroupsUtilization -MSWord
 	
@@ -574,7 +614,7 @@
 	Creates a Microsoft Word report with utilization details for all Desktop (Delivery) 
 	Groups.
 
-	Will use all Default values.
+	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -582,10 +622,13 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
 	
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -DeliveryGroupsUtilization -PDF
 	
@@ -594,7 +637,7 @@
 	
 	Creates a PDF report with utilization details for all Desktop (Delivery) Groups.
 
-	Will use all Default values.
+	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -602,79 +645,106 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
+
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -DeliveryGroups -MachineCatalogs
 	
 	Creates an HTML report with full details for all machines in all Machine Catalogs and 
 	all desktops in all Delivery Groups.
 	
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -Applications
 	
 	Creates an HTML report with full details for all applications.
 	
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -Policies
 	
 	Creates an HTML report with full details for Policies.
 	
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 	
-	Note: If a profile named Default does not exist, you may be prompted for Citrix Cloud 
-	credentials.
+	Note: If a profile named Default does not exist, you may be prompted multiple times 
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -NoPolicies
 	
 	Creates an HTML report with no Policy information.
 	
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -NoADPolicies
 	
-	Creates an HTML report with no Citrix AD based Policy information.
+	Creates an HTML report with no Citrix AD-based Policy information.
 	
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 	
-	Note: If a profile named Default does not exist, you may be prompted for Citrix Cloud 
-	credentials.
+	Note: If a profile named Default does not exist, you may be prompted multiple times 
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -Policies -NoADPolicies
 	
 	Creates an HTML report with full details on Site policies created in Studio but 
-	no Citrix AD based Policy information.
+	no Citrix AD-based Policy information.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
-	
-	Note: If a profile named Default does not exist, you may be prompted for Citrix Cloud 
-	credentials.
-.EXAMPLE
-	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -Logging -StartDate 09/01/2020 -EndDate 
-	09/30/2020	
-	
-	Creates an HTML report with Configuration Logging details for the dates 09/01/2020 
-	through 09/30/2020.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
+	
+	Note: If a profile named Default does not exist, you may be prompted multiple times 
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
-	PS C:\PSScript >.\CVAD_Inventory_V3.ps1 -Logging -StartDate "09/01/2020 10:00:00" 
-	-EndDate "09/01/2020 14:00:00" -MSWord
+	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -Logging -StartDate 09/01/2025 -EndDate 
+	09/30/2025	
+	
+	Creates an HTML report with Configuration Logging details for the dates 09/01/2025 
+	through 09/30/2025.
+
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
+.EXAMPLE
+	PS C:\PSScript >.\CVAD_Inventory_V3.ps1 -Logging -StartDate "09/01/2025 10:00:00" 
+	-EndDate "09/01/2025 14:00:00" -MSWord
 	
 	Creates a Microsoft Word report with Configuration Logging details for the time range 
-	09/01/2020 10:00:00AM through 09/01/2020 02:00:00PM.
+	09/01/2025 10:00:00AM through 09/01/2025 02:00:00PM.
 	
 	Narrowing the report down to seconds does not work. Seconds must be either 00 or 59.
 	
-	Will use all Default values.
+	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -682,31 +752,43 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -Administrators
 	
 	Creates an HTML report with full details on Administrator Scopes and Roles.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -Hosting
 	
 	Creates an HTML report with full details for Hosts, Host Connections, and Resources.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -StoreFront
 	
 	Creates an HTML report with full details for StoreFront.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -MachineCatalogs -DeliveryGroups 
 	-Applications -Policies -Hosting -StoreFront	
@@ -719,11 +801,14 @@
 		Hosts, Host Connections, and Resources
 		StoreFront
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 	
-	Note: If a profile named Default does not exist, you may be prompted for Citrix Cloud 
-	credentials.
+	Note: If a profile named Default does not exist, you may be prompted multiple times 
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -MC -DG -Apps -Policies -Hosting -PDF
 	
@@ -734,7 +819,7 @@
 		Policies
 		Hosts, Host Connections, and Resources
 		
-	Will use all Default values.
+	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -742,83 +827,101 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 	
-	Note: If a profile named Default does not exist, you may be prompted for Citrix Cloud 
-	credentials.
+	Note: If a profile named Default does not exist, you may be prompted multiple times 
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript.\Docu-CitrixCloud.ps1 -MSWord -CompanyName "Carl Webster 
 	Consulting" -CoverPage "Mod" -UserName "Carl Webster"
 	
 	Creates a Microsoft Word report.
-	Will use:
+	Uses:
 		Carl Webster Consulting for the Company Name.
 		Mod for the Cover Page format.
-		Carl Webster for the User Name.
+		Carl Webster for the Username.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript.\Docu-CitrixCloud.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
 	-UN "Carl Webster" -MSWord
 	
 	Creates a Microsoft Word report.
-	Will use:
+	Uses:
 		Carl Webster Consulting for the Company Name (alias CN).
 		Mod for the Cover Page format (alias CP).
-		Carl Webster for the User Name (alias UN).
+		Carl Webster for the Username (alias UN).
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript.\Docu-CitrixCloud.ps1 -MSWord -CompanyName "Sherlock Holmes 
 	Consulting" -CoverPage Exposure -UserName "Dr. Watson" -CompanyAddress "221B Baker 
 	Street, London, England" -CompanyFax "+44 1753 276600" -CompanyPhone "+44 1753 276200"
 	
 	Creates a Microsoft Word report.
-	Will use:
+	Uses:
 		Sherlock Holmes Consulting for the Company Name.
 		Exposure for the Cover Page format.
-		Dr. Watson for the User Name.
+		Dr. Watson for the Username.
 		221B Baker Street, London, England for the Company Address.
 		+44 1753 276600 for the Company Fax.
 		+44 1753 276200 for the Company Phone.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript.\Docu-CitrixCloud.ps1 -MSWord -CompanyName "Sherlock Holmes 
 	Consulting" -CoverPage Facet -UserName "Dr. Watson" -CompanyEmail 
 	SuperSleuth@SherlockHolmes.com
 
 	Creates a Microsoft Word report.
-	Will use:
+	Uses:
 		Sherlock Holmes Consulting for the Company Name.
 		Facet for the Cover Page format.
-		Dr. Watson for the User Name.
+		Dr. Watson for the Username.
 		SuperSleuth@SherlockHolmes.com for the Company Email.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -AddDateTime
 	
 	Creates an HTML report.
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be CCSiteName_2020-06-01_1800.docx
+	June 1, 2025, at 6PM is 2025-06-01_1800.
+	The output filename will be CCSiteName_2025-06-01_1800.docx
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -PDF -AddDateTime
 	
 	Creates a PDF report.
-	Will use all Default values and save the document as a PDF file.
+	Uses all Default values and saves the document as a PDF file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -826,59 +929,148 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
 
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be CCSiteName_2020-06-01_1800.pdf
+	June 1, 2025, at 6PM is 2025-06-01_1800.
+	The output filename will be CCSiteName_2025-06-01_1800.pdf
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -Folder \\FileServer\ShareName
 	
 	Creates an HTML report.
-	Output file will be saved in the path \\FileServer\ShareName
+	Output file is saved in the path \\FileServer\ShareName
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -Section Policies
 	
 	Creates an HTML report that contains only policy information.
 	Processes only the Policies section of the report.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 	
-	Note: If a profile named Default does not exist, you may be prompted for Citrix Cloud 
-	credentials.
+	Note: If a profile named Default does not exist, you may be prompted multiple times 
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -Section Groups -DG
 	
 	Creates an HTML report.
 	Processes only the Delivery Groups section of the report with Delivery Group details.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -Section Groups
 	
 	Creates an HTML report.
 	Processes only the Delivery Groups section of the report with no Delivery Group details.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
+.EXAMPLE
+	PS C:\PSScript > .\Docu-CitrixCloud.ps1 -Section Config, Licensing -HTML 
+
+	Creates an HTML report.
+
+	The report includes only the Configuration and Licensing sections.
+
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -VDARegistryKeys
 	
 	Creates an HTML report.
 	Adds the information on VDA registry keys to Appendix A.
-	Forces the MachineCatalogs parameter to $True
+	Forces the MachineCatalogs parameter to $True if DeliveryGroups is not selected.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
+.EXAMPLE
+	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -VDARegistryKeys -MachineCatalogs
+	
+	Creates an HTML report.
+	Adds the information on VDA registry keys to Appendix A.
+
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
+.EXAMPLE
+	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -VDARegistryKeys -DeliveryGroups
+	
+	Creates an HTML report.
+	Adds the information on VDA registry keys to Appendix A.
+
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
+.EXAMPLE
+	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -VDARegistryKeys -MachineCatalogs 
+	-DeliveryGroups
+	
+	Creates an HTML report.
+	Adds the information on VDA registry keys to Appendix A.
+	Only processes machine details for the machine catalogs.
+
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
+.EXAMPLE
+	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -Section Catalogs -VDARegistryKeys 
+	-MachineCatalogs
+	
+	Creates an HTML report with only machine catalog data.
+	Adds the information on VDA registry keys to Appendix A.
+
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
+.EXAMPLE
+	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -Section Groups -VDARegistryKeys 
+	-DeliveryGroups
+	
+	Creates an HTML report with only delivery group data.
+	Adds the information on VDA registry keys to Appendix A.
+
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -MaxDetails
 	
@@ -898,17 +1090,20 @@
 
 	Creates an HTML report.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 	
-	Note: If a profile named Default does not exist, you may be prompted for Citrix Cloud 
-	credentials.
+	Note: If a profile named Default does not exist, you may be prompted multiple times 
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -MaxDetails -HTML -MSWord -PDF -Text
 	
 	Creates four reports: HTML, Microsoft Word, PDF, and plain text.
 	
-	For Microsoft Word and PDF, will use all Default values.
+	For Microsoft Word and PDF, Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -916,7 +1111,7 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
 	
 	Set the following parameter values:
 		Administrators      = True
@@ -932,58 +1127,67 @@
 		NoPolicies          = False
 		Section             = "All"
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 	
-	Note: If a profile named Default does not exist, you may be prompted for Citrix Cloud 
-	credentials.
+	Note: If a profile named Default does not exist, you may be prompted multiple times 
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -Dev -ScriptInfo -Log
 	
 	Creates an HTML report.
 	
-	Creates a text file named CCInventoryScriptErrors_yyyy-MM-dd_HHmm.txt that 
+	Creates a text file named CCInventoryScriptErrors_yyyyMMddTHHmmssffff.txt that 
 	contains up to the last 250 errors reported by the script.
 	
 	Creates a text file named CCInventoryScriptInfo_yyyy-MM-dd_HHmm.txt that 
 	contains all the script parameters and other basic information.
 	
 	Creates a text file for transcript logging named 
-	CCDocScriptTranscript_yyyy-MM-dd_HHmm.txt.
+	CCDocScriptTranscript_yyyyMMddTHHmmssffff.txt.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -CSV
 	
-	Will use all Default values.
+	Uses all Default values.
 
 	Creates a CSV file for each Appendix.
 	For example:
 		CCSiteName_Documentation_AppendixA_VDARegistryItems.csv
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -MaxDetails -HTML -MSWord -PDF -Text -Dev 
 	-ScriptInfo -Log -CSV
 	
 	Creates four reports: HTML, Microsoft Word, PDF, and plain text.
 	
-	Creates a text file named CCInventoryScriptErrors_yyyy-MM-dd_HHmm.txt that 
+	Creates a text file named CCInventoryScriptErrors_yyyyMMddTHHmmssffff.txt that 
 	contains up to the last 250 errors reported by the script.
 	
 	Creates a text file named CCInventoryScriptInfo_yyyy-MM-dd_HHmm.txt that 
 	contains all the script parameters and other basic information.
 	
 	Creates a text file for transcript logging named 
-	CCDocScriptTranscript_yyyy-MM-dd_HHmm.txt.
+	CCDocScriptTranscript_yyyyMMddTHHmmssffff.txt.
 
 	Creates a CSV file for each Appendix.
 	For example:
 		CCSiteName_Documentation_AppendixA_VDARegistryItems.csv
 
-	For Microsoft Word and PDF, will use all Default values.
+	For Microsoft Word and PDF, Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -991,7 +1195,7 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
 	
 	Set the following parameter values:
 		Administrators      = True
@@ -1007,56 +1211,65 @@
 		NoPolicies          = False
 		Section             = "All"
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 	
-	Note: If a profile named Default does not exist, you may be prompted for Citrix Cloud 
-	credentials.
+	Note: If a profile named Default does not exist, you may be prompted multiple times 
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -SmtpServer mail.domain.tld -From 
 	CCAdmin@domain.tld -To ITGroup@domain.tld	
 
-	The script will use the email server mail.domain.tld, sending from 
-	CCAdmin@domain.tld, sending to ITGroup@domain.tld.
+	The script Uses the email server mail.domain.tld, sending from CCAdmin@domain.tld and 
+	sending to ITGroup@domain.tld.
 
-	The script will use the default SMTP port 25 and will not use SSL.
+	The script Uses the default SMTP port 25 and does not use SSL.
 
-	If the current user's credentials are not valid to send email, 
-	the user will be prompted to enter valid credentials.
+	If the current user's credentials are not valid to send an email, the script prompts 
+	the user to enter valid credentials.
 
 	Creates an HTML report.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -SmtpServer mailrelay.domain.tld -From 
 	Anonymous@domain.tld -To ITGroup@domain.tld	
 
 	***SENDING UNAUTHENTICATED EMAIL***
 
-	The script will use the email server mailrelay.domain.tld, sending from 
+	The script uses the email server mailrelay.domain.tld, sending from 
 	anonymous@domain.tld, sending to ITGroup@domain.tld.
 
-	To send unauthenticated email using an email relay server requires the From email account 
-	to use the name Anonymous.
+	To send an unauthenticated email using an email relay server requires the From email 
+	account to use the name Anonymous.
 
-	The script will use the default SMTP port 25 and will not use SSL.
+	The script uses the default SMTP port 25 and does not use SSL.
 	
 	***GMAIL/G SUITE SMTP RELAY***
 	https://support.google.com/a/answer/2956491?hl=en
 	https://support.google.com/a/answer/176600?hl=en
 
-	To send email using a Gmail or g-suite account, you may have to turn ON
-	the "Less secure app access" option on your account.
+	To send an email using a Gmail or g-suite account, you may have to turn ON the "Less 
+	secure app access" option on your account.
 	***GMAIL/G SUITE SMTP RELAY***
 
-	The script will generate an anonymous secure password for the anonymous@domain.tld 
+	The script will generate an anonymous, secure password for the anonymous@domain.tld 
 	account.
 
 	Creates an HTML report.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -SmtpServer 
 	labaddomain-com.mail.protection.outlook.com -UseSSL -From 
@@ -1070,48 +1283,57 @@
 	
 	***OFFICE 365 Example***
 
-	The script will use the email server labaddomain-com.mail.protection.outlook.com, 
-	sending from SomeEmailAddress@labaddomain.com, sending to ITGroupDL@labaddomain.com.
+	The script uses the email server labaddomain-com.mail.protection.outlook.com, sending 
+	from SomeEmailAddress@labaddomain.com and sending to ITGroupDL@labaddomain.com.
 
-	The script will use the default SMTP port 25 and will use SSL.
+	The script uses the default SMTP port 25 and SSL.
 
 	Creates an HTML report.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -SmtpServer smtp.office365.com -SmtpPort 587 
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
-	The script will use the email server smtp.office365.com on port 587 using SSL, 
-	sending from webster@carlwebster.com, sending to ITGroup@carlwebster.com.
+	The script uses the email server smtp.office365.com on port 587 using SSL, sending from 
+	webster@carlwebster.com and sending to ITGroup@carlwebster.com.
 
-	If the current user's credentials are not valid to send email, 
-	the user will be prompted to enter valid credentials.
+	If the current user's credentials are not valid to send an email, the script prompts 
+	the user to enter valid credentials.
 
 	Creates an HTML report.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .EXAMPLE
 	PS C:\PSScript >.\Docu-CitrixCloud.ps1 -SmtpServer smtp.gmail.com -SmtpPort 587 
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
 	*** NOTE ***
-	To send email using a Gmail or g-suite account, you may have to turn ON
-	the "Less secure app access" option on your account.
+	To send an email using a Gmail or g-suite account, you may have to turn ON the "Less 
+	secure app access" option on your account.
 	*** NOTE ***
 	
-	The script will use the email server smtp.gmail.com on port 587 using SSL, 
-	sending from webster@gmail.com, sending to ITGroup@carlwebster.com.
+	The script uses the email server smtp.gmail.com on port 587 using SSL, sending from 
+	webster@gmail.com and sending to ITGroup@carlwebster.com.
 
-	If the current user's credentials are not valid to send email, 
-	the user will be prompted to enter valid credentials.
+	If the current user's credentials are not valid to send an email, the script prompts 
+	the user to enter valid credentials.
 
 	Creates an HTML report.
 
-	If no authentication profile exists, prompts for Citrix Cloud credentials.
-	If a profile named Default exists, uses the credentials stored in the Default profile.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
 .INPUTS
 	None. You cannot pipe objects to this script.
 .OUTPUTS
@@ -1119,9 +1341,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: Docu-CitrixCloud.ps1
-	VERSION: 1.12
+	VERSION: 1.28.003
 	AUTHOR: Carl Webster
-	LASTEDIT: January 30, 2021
+	LASTEDIT: August 1, 2025
 #>
 
 #endregion
@@ -1145,6 +1367,10 @@ Param(
 	[Alias("SN")]
 	[string]$SiteName="",
     
+	[parameter(Mandatory=$False)] 
+	[Alias("MAX")]
+	[Switch]$MaxDetails=$False,
+
 	[parameter(Mandatory=$False)] 
 	[Alias("Admins")]
 	[Switch]$Administrators=$False,	
@@ -1204,14 +1430,10 @@ Param(
 	[Alias("VRK")]
 	[Switch]$VDARegistryKeys=$False,
 
-	[parameter(Mandatory=$False)] 
-	[Alias("MAX")]
-	[Switch]$MaxDetails=$False,
-
-	[ValidateSet('All', 'Admins', 'Apps', 'AppV', 'Catalogs', 'Config', 'Groups', 
+	[ValidateSet('All', 'Admins', 'Apps', 'Catalogs', 'Config', 'Groups', 
 	'Hosting', 'Licensing', 'Logging', 'Policies', 'StoreFront', 'Zones')]
 	[parameter(Mandatory=$False)] 
-	[string]$Section="All",
+	[String[]] $Section = 'All',
 	
 	[parameter(Mandatory=$False)] 
 	[Alias("ADT")]
@@ -1233,6 +1455,10 @@ Param(
 	[Alias("SI")]
 	[Switch]$ScriptInfo=$False,
 	
+	[parameter(Mandatory=$False)] 
+	[Alias("RF")]
+	[Switch]$ReportFooter=$False,
+
 	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
 	[Switch]$MSWord=$False,
 
@@ -1271,7 +1497,7 @@ Param(
 
 	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
 	[Alias("UN")]
-	[ValidateNotNullOrEmpty()]
+ 	[ValidateNotNullOrEmpty()]
 	[string]$UserName=$env:username,
 
 	[parameter(Mandatory=$False)] 
@@ -1301,6 +1527,1622 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.28.003 1-Aug-2025 (Thanks to CG from Citrix who privded this information)
+#	Added more settings configurable by Set-BrokerServiceConfigurationData
+#		Core.MaxOpEventsToPurge (2411)
+#			Type: int
+#			Default: 7000
+#			Info: Minimum=1000
+#			Summary: Maximum number of already sent operational events to purge 
+#					 from the journal in a single database delete operation. The 
+#					 default value allows a maximum of ~20 million events per day 
+#					 to be deleted.
+#
+#		HostingManagementSettings.CancelAutoMaintenanceMode (2503)
+#			Type: bool
+#			Default: false
+#			Info: 
+#			Summary: When this setting is True, if a VDA has been automatically placed 
+#					 into maintenance mode following multiple failed registrations 
+#					 (see MaxFailedRegistrationsAllowed) but later registers successfully, 
+#					 the VDA is automatically removed from maintenance mode.
+#
+#					 When this setting is False, or the VDA was placed into maintenance 
+#					 mode by the admin, then the VDA remains in maintenance mode even if 
+#					 it later registers successfully.
+#
+#		LhcSettings.TrustServiceKeySyncIntervalSecs (2503)
+#			Type: int
+#			Default: 120
+#			Info: Seconds Minimum=60
+#			Summary: The interval at which LHC would check with Trust service for updated service keys.
+#
+#		XmsSettings.PowerStateCacheEntryExpiryTimeSecs (2503)
+#			Type: int
+#			Default: 1800
+#			Info: Seconds Minimum=60
+#			Summary: Time after which a power state cache entry is expired.
+#
+#		XmsSettings.PowerStateCachePollingIntervalSecs (2411)
+#			Type: int
+#			Default: 300
+#			Info: Seconds Minimum=60
+#			Summary: Time after which the power state cache is refreshed from the database.
+#
+#		XmsSettings.UniqueDeviceIdOptions (2411)
+#			Type: int
+#			Default: 0
+#			Info: Minimum=0 Maximum=3
+#			Summary: Specifies options to use when trying to ensure that the client device 
+#					 ID received from WSP/SF is unique. This setting should not be changed 
+#					 from its default value except to workaround specific issues observed 
+#					 in a particular site.
+#
+#					 The value is a bit mask where the bits have the following meanings:
+#
+#					 Bit 0: When set, causes the client device ID to be unconditionally 
+#					 qualified by the client's IP address. This can rectify session 
+#					 reconnection problems caused by non-unique device IDs, but can 
+#					 conversely cause session reconnection problems if network infrastructure 
+#					 such as firewalls or load balancers causes the IP address of a client 
+#					 device to change over time even when actively connected to a VDA.
+#
+#					 Bit 1: When set, if no device ID is received or its value is known to be 
+#					 non-unique, do not try substituting the client name for the device ID, 
+#					 but instead use the client IP address. This may avoid problems caused 
+#					 where multiple devices are reporting the same non-unique client name.
+#
+#Version 1.28.002 30-Jul-2025 - Thanks to Ferroque Systems, Michael Shuster, Lina FLorez, and Richard Faulkner for the help in gathering data for this update. 
+#	In Function GetRolePermissions:
+#		Added new permissions
+#			Admin_NameControl
+#			Admin_Sync
+#			Director_Analytics
+#			Director_BulkActions_Edit
+#			Director_CostSavings
+#			Director_InfrastructureMonitor_Edit
+#			Director_MTOPInformation_Edit
+#			Director_ProbeSummaryView
+#			Director_Search_Cond_Auth_Transaction
+#			Director_SecurePrivateAccess
+#			Director_Settings
+#			Director_ShadowSessionViaHDXSS
+#			Director_ShadowSessionViaHDXSS_Edit
+#			EntitlementPolicyRule_ChangeTags (New section Entitlement Policy Rules)
+#			EntitlementPolicyRule_Machine_ChangeTags (New section Entitlement Policy Rules)
+#			Hosts_DetectOrphanedResources
+#			Configuration_Restricted_ServiceRead
+#			Configuration_Restricted_ServiceWrite
+#			Director_Admin
+#			EdgeService_Admin
+#			Paladin_Admin
+#			PVS_Admin
+#			SkylightBroker
+#			Trust_MultiTenantAccessList
+#			Trust_VdaEnrollment
+#
+#		Updated description for
+#			Director_AlertWebhookProfile_Edit
+#			DirectorAgent_Registration
+#
+#Version 1.28.001 26-Jun-2025
+#	Fix a typo spotted by Mike Streetz. Remove an erroneous "-" on line 1500
+#	Go ahead and update the version lists for 7.43, 7.44, and 7.45
+#
+#Version 1.28 16-Oct-2024 Webster's For Real Final Update
+#
+#	Change the Site version data to use PowerShell's [version]
+#
+#	Cleanup old dead code that is no longer used
+#
+#	From Citrix to fix the Known Issues in 1.27:
+#		When you run the Group Policy PowerShell Provider with the DaaS SDK, have the DaaS SDK installed and the user authenticated, 
+#		then run the script with -controller localhost. Don't use $GLOBAL:XDSDKProxy because it's not a remote DDC address and it's 
+#		not needed. Once you have the user authenticated, the remote connection is already established and there is no need to specify 
+#		a remote DDC. The -BearerToken parameter is also not needed. It was introduced in an earlier version and later was fixed so 
+#		that it's not needed.
+#	End from Citrix
+#
+#	Updated the error message for when the LocalSiteGPO PSDrive cannot be created.
+#
+#		*******************************************************************************************
+#		LocalSiteGPO PSDrive was not created, which should not have happened. Turning Policies off.
+#                                                                                           
+#		Are the two Visual C++ Runtimes installed?                                                 
+#                                                                                           
+#		Verify that the Visual C++ Runtimes are installed.                                         
+#                                                                                           
+#		Install from the Microsoft download page                                                   
+#			https://aka.ms/vs/17/release/vc_redist.x86.exe (install first)                             
+#			https://aka.ms/vs/17/release/vc_redist.x64.exe                                             
+#                                                                                           
+#		Please see the ReadMe file:                                                                
+#			https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799                      
+#		*******************************************************************************************
+#
+#	Reformatted the tables for policies to reduce word wrapping.
+#	
+#	Removed all references to $Script:GPSnapinVersion and $Script:SDKVersion
+#
+#	Removed all premature references to product version 2409 (Since this is almost November). I jumped the gun on that.
+#
+#	Removed from all Citrix cmdlets AdminAddress = $GLOBAL:XDSDKProxy and BearerToken = $GLOBAL:XDAuthToken
+#		Also removed from the Group Policy calls
+#
+#	Replaced using the Citrix.GroupPolicy.Commands Snapin with the module
+#
+#	Updated the help text
+#	Updated the ReadMe file
+#
+#Version 1.27 7-Oct-2024 Webster's Final Update
+#
+########################################################################################################################################
+#	KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES  #
+#                                                                                                                                      #
+#	Citrix broke the processing of policies, Site and Active directory, and other stuff with version 7.42 of the PowerShell SDK and    #
+#	Group Policy stuff.                                                                                                                #
+#                                                                                                                                      #
+#	I PERSONALLY WOULD NOT USE THE POWERSHELL SDK 7.42 (Sep4, 2024) OR GROUP POLICY 2407                                               #
+#                                                                                                                                      #
+#	VERBOSE: 10/7/2024 5:39:32 PM: Testing required PowerShell modules for Citrix Cloud                                                #
+#	VERBOSE: Cannot verify the Microsoft .NET Framework version 4.7.2 because it is not included in the list of permitted versions.    #
+#	VERBOSE: Loading module from path                                                                                                  #
+#			 'C:\Program Files\Citrix\CloudPowerShellModules\Citrix.PoshSdkProxy.Commands\Citrix.PoshSdkProxy.Commands.psm1'.          #
+#	VERBOSE: 10/7/2024 5:39:32 PM: Loading Citrix.Common.GroupPolicy PSSnapin                                                          #
+#	                                                                                                                                   #
+#	VERBOSE: 10/7/2024 5:39:32 PM: 	Citrix.Broker.Commands                                                                             #
+#                                                                                                                                      #
+#	You are running Remote SDK version . [Webster: Unable to now get the SDK version data]                                             #
+#                                                                                                                                      #
+#	You are running Group Policy Snapin version 7.42.100.66.                                                                           #
+#                                                                                                                                      #
+#	VERBOSE: 10/7/2024 5:39:34 PM: 	Does LocalSiteGPO PSDrive already exist?                                                           #
+#	VERBOSE: 10/7/2024 5:39:34 PM: 		Creating LocalSiteGPO PSDrive for Studio-based policies                                        #
+#	PS>TerminatingError(New-PSDrive): "A parameter cannot be found that matches parameter name 'controller'.                           #
+#	This failure might be caused by applying the default parameter binding. You can disable the default parameter binding in           #
+#	$PSDefaultParameterValues by setting $PSDefaultParameterValues["Disabled"] to be $true, and retry.                                 #
+#	The following default parameter was successfully bound for this cmdlet when the error occurred: -Verbose"                          #
+#                                                                                                                                      #
+#	*******************************************************************************************                                        #
+#	LocalSiteGPO PSDrive was not created, which should not have happened. Turning Policies off.                                        #
+#	*******************************************************************************************                                        #
+#                                                                                                                                      #
+#	KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES  #
+########################################################################################################################################
+#
+#	Added more settings configurable by Set-BrokerServiceConfigurationData
+#		Core.AlternateSkipAlgorithmThreshold
+#			Type: int
+#			Default: 10
+#			Info: Minimum=0
+#			Summary: When using the -Skip parameter with various Broker SDK Get- cmdlets, this is the skip value above which 
+#					 an alternative optimized algorithm is used for fetching values from the database. 
+#
+#		Core.AutoTagRuleIdleIntervalsTimeSecs
+#			Type: int
+#			Default: 7200
+#			Info: Seconds Minimum=60
+#			Summary: Time interval that Auto Tag Rule site service will run auto tagging process when the site is idle. 
+#
+#		Core.MachineUnusedTokenExpiryHours
+#			Type: int
+#			Default: 48
+#			Info: Hours
+#			Summary: The time period for which the Machine Unused Token is valid. 
+#
+#		Core.MachineUnusedTokenMaxDelaySecs
+#			Type: int
+#			Default: 300
+#			Info: Seconds
+#			Summary: Maximum period between a VDA being powered-on and it registering for it to be trusted as being clean 
+#					 (previously unused) once registered. 
+#
+#		Core.MaxConsecutiveFailedRegistrationsBeforeSinBin
+#			Type: int
+#			Default: 2
+#			Info: Minimum=1
+#			Summary: Maximum times a worker can fail registration continuously before being put into the registration sinbin.
+#
+#		Core.RegistrationSinbinPeriodSecs
+#			Type: int
+#			Default: 180
+#			Info: Seconds, Minimum=60, Maximum=300
+#			Summary: Maximum time a worker is put into sin bin when a registration failure occurs multiple times 
+#				 for a worker within a timeframe.
+#
+#		Core.ScrambleLicensingData
+#			Type: bool
+#			Default: false
+#			Info: 
+#			Summary: When enabled, scrambles personally identifiable information (PII) in licensing events.
+#
+#		Core.SetSiteDataWhenIdlePeriodSecs
+#			Type: int
+#			Default: 3600
+#			Info: Seconds Minimum=30
+#			Summary: The period in seconds for polling for updates to the site data when the site is idle. 
+#
+#		Core.UserDrivenSuspendTimeoutMs
+#			Type: int
+#			Default: 15000
+#			Info: Milliseconds, Minimum=0
+#			Summary: How long to allow for a user-driven suspend action to complete (success or fail).
+#
+#		DBConnectionSettings.SqlLogin
+#			Type: string
+#			Default: 
+#			Info: 
+#			Summary: The SQL login for use with SQL authenticated connections to the database.
+#
+#		DBConnectionSettings.SqlPassword
+#			Type: string
+#			Default: 
+#			Info: 
+#			Summary: The SQL password for use with SQL authenticated connections to the database.
+#
+#		HostingManagementSettings.MaxConcurrentScheduleOverrideQueries
+#			Type: int
+#			Default: 5
+#			Info: Minimum=1, Maximum=30
+#			Summary: The maximum number of schedule override queries to autoscale plugins that are allowed to run concurrently. 
+#					 If there are more plugins to be queried at any given time than this limit allows, the additional queries are 
+#					 queued and start as soon as earlier ones complete.
+#
+#					 This limit exists to restrict the number of threads required to obtain all required schedule overrides. The number 
+#					 of threads used is typically double the number of concurrent schedule override queries.
+#
+#					 This setting requires the Broker services to be restarted before a new value takes effect.
+#
+#		HostingManagementSettings.NoPowerActionsPeriodBeforeSlowPollSecs
+#			Type: int
+#			Default: 100
+#			Info: Seconds Minimum=30, Maximum=300
+#			Summary: This value determines how long the service will wait before delaying calls to the database when there been no power 
+#					 actions found.
+#
+#		HostingManagementSettings.NoPowerActionsSlowPollIntervalSecs
+#			Type: int
+#			Default: 15
+#			Info: Seconds Minimum=5, Maximum=30
+#			Summary: The interval between calls to the database when there have been no power actions.
+#
+#		HostingManagementSettings.NoWorkersPeriodBeforeSlowPollSecs
+#			Type: int
+#			Default: 100
+#			Info: Seconds Minimum=30, Maximum=300
+#			Summary: This value determines how long the service will wait before delaying calls to the database when there been no machines found.
+#
+#		HostingManagementSettings.NoWorkersSlowPollIntervalSecs
+#			Type: int
+#			Default: 60
+#			Info: Seconds Minimum=5, Maximum=120
+#			Summary: The interval between calls to the database when there have been no machines found.
+#
+#		HostingManagementSettings.ScheduleOverrideGenerationHour
+#			Type: int
+#			Default: 22
+#			Info: Minimum=1, Maximum=23
+#			Summary: The hour of the day when autoscale schedule overrides are generated for the following day. The hour is a 24-hour clock integer 
+#					 value and is evaluated in the time zone of the desktop group to which the generation relates.
+#
+#		HostingManagementSettings.ScheduleOverrideQueryTimeoutSecs
+#			Type: int
+#			Default: 60
+#			Info: Seconds Minimum=10, Maximum=120
+#			Summary: The maximum number of seconds for which a single schedule override query to an autoscale plugin is allowed to run before being 
+#					 timed-out and cancelled. A cancelled query is treated as though the plugin returned no schedule override, thus the next plugin 
+#					 in the sequence for the desktop group (if any) is then queried for a schedule override.
+#
+#		LhcState.IsElectedLastUpdatedAt
+#			Type: DateTIme
+#			Default: 0
+#			Info: 
+#			Summary: Indicates when this connector was elected leader.
+#
+#		LhcState.LeaderInHAModeLastUpdatedAt
+#			Type: DateTime
+#			Default: 0
+#			Info: 
+#			Summary: Indicates when this connector became leader.
+#
+#		MachineCommandQueuesSettings.MachineCommandForPingSuppressionSecs
+#			Type: Int
+#			Default: 30
+#			Info: Seconds Minimum=0, Maximum=120
+#			Summary: Period during which checks for pending machine commands to send in Ping responses are suppressed when no such pending commands 
+#					 are currently queued. This setting reduces database load at the potential cost of slight delays in sending commands.
+#
+#					 This setting only impacts commands sent using New-BrokerMachineCommand with a SendTrigger of NextContact.
+#
+#	In Function GetRolePermissions:
+#		Added new permissions
+#			Cost_Read
+#			Director_AlertWebhookProfile_Edit
+#			Director_EndpointMetrics_Edit
+#			Director_InfrastructureMonitor
+#			Director_IntegrationsAndDataExport
+#			Catalog_ManageWemSet
+#			DirectorAgent_Registration
+#			PolicySets_AddScope
+#			PolicySets_RemoveScope
+#			ServiceAccount_AddScope
+#			ServiceAccount_Create
+#			ServiceAccount_Delete
+#			ServiceAccount_EditProperties
+#			ServiceAccount_Read
+#			ServiceAccount_RemoveScope
+#
+#	In Function OutputLicensingOverview:
+#		Added:
+#			LicenseGraceSessionsRemaining
+#			LicensingGraceHoursLeft
+#			LicensingGracePeriodActive
+#			LicensingOutOfBoxGracePeriodActive
+#		Fixed the following to handle Null values:
+#			LicensingGraceHoursLeft
+#			LicenseGraceSessionsRemaining
+#			LicenseGraceSessionsRemaining
+#			LicensedSessionsActive
+#			PeakConcurrentLicenseUsers
+#			PeakConcurrentLicensedDevices
+#			TotalUniqueLicenseUsers
+#			LicensedSessionsActive
+#		Updated product editions
+#
+#	In Machine Details, for MCS catalogs:
+#		If the Provisioning Scheme doesn't exist, set the variables to "Unable to retrieve details because no ProvisioningSchemeUid"
+#		If no machine data is found, set the VDA and operating system variables to "Unable to retrieve details - no machine data"
+#
+#	No longer abort the script if the snapins or Group Policy module are not a specific version. Now, just find and display the versions used.
+#
+#	Updated Function ProcessCitrixPolicies to match the CVAD script with all policies added/updated/renamed since version 2206
+#
+#	Updated for 7.39 (2308), 7.40 (2311), 7.41 (2402), and 7.42 (2407)
+#
+#Version 1.26 23-Jun-2023
+#	In version 1.26, I am commenting out the catalog and machine VDA Upgrade Service sections 
+#		because the Get-VusCatalogInfo and Get-VusMachineInfo cmdlets were not supposed to be 
+#		made public. I added them to this script 11 months ago and now Citrix removed the cmdlets.
+#	Added Computer policy
+#		Profile Management\Advanced settings\Disable defragmentation for VHD disk compaction
+#		Profile Management\Advanced settings\Enable user-level policy settings
+#		Profile Management\Advanced settings\Set priority order for user groups
+#		VDA Data Collection\Security\Clipboard place metadata collection for Security monitoring
+#	Added to Function OutputZoneSiteView:
+#		Valid Edge Servers? 
+#		Healthy? (Is the Zone healthy?)
+#		Primary? (Is the Zone the Primary Zone? There can (should) only be one Primary Zone.)
+#
+#		Information from Citrix.
+#			1. What is a valid edge server?
+#
+#			"HasValidEdgeServers" is a property of Zone objects. A Zone has valid EdgeServers 
+#			if there are any EdgeServers in that Zone. NOTE: The presence of the edge server 
+#			record is dependent on the edge server data being returned from Citrix Cloud with 
+#			sufficient/correct data such as the presence of a SID value for the edge server. 
+#			Edge servers that do not have known SID values or cannot determine the AD domains 
+#			could be possibly seen as 'invalid'.
+#
+#			2. How do I fix an invalid edge server?
+#
+#			See response to #1.
+#
+#			3. What makes a zone healthy?
+#
+#			A Zone is considered healthy if any of the EdgeServers in that Zone are healthy (i.e., not in LHC outage mode).
+#
+#			4. What is an unhealthy Zone?
+#
+#			A Zone is considered unhealthy if all of the EdgeServers in that Zone are unhealthy (i.e., in LHC outage mode).
+#
+#			5. How do I fix an unhealthy Zone?
+#
+#			Once an EdgeServer comes out of LHC outage mode, the Zone's "IsHealthy" property should change to "true".
+#
+#			LHC is designed to operate automatically, without the need for admin intervention. 
+#			If a Zone's "IsHealthy" property is "false" for an extended period of time, you can check whether there are 
+#			any ongoing networking issues and/or reach out to Citrix customer support.
+#
+#		End of Information from Citrix.
+#
+#	Added two more settings configurable by Set-BrokerServiceConfigurationData
+#		Core.AssignmentPolicyMaxDesktops
+#			Type: int
+#			Default: 5
+#			Info: Minimum=1, Maximum=100
+#			Summary: The maximum value accepted for the MaxDesktops parameter of the New/Set-BrokerAssignmentPolicyRule cmdlets. 
+#					 This is limited here because enumeration creates #MaxDesktops AOFU resources - 
+#					 which if inadvertently set to a very large value impacts enumeration performance and 
+#					 also consumes large amounts of memory.
+#
+#		Core.SetSiteDataPeriodSecs
+#			Type: int
+#			Default: 600
+#			Info: Seconds, Minimum=30
+#			Summary: The period in seconds for polling for updates to the site data.
+#
+#		Lhc.OutageSummaryEventIntervalSecs
+#			Type: int
+#			Default: 120
+#			Info: Seconds Minimum=60
+#			Summary: The interval at which LHC would refresh the outage summary event.
+#
+#		LhcState.PeerStatus
+#			Type: string
+#			Default: 
+#			Info: 
+#			Summary: The status information of peers participating in election process.
+#
+#	In Function OutputMachines, for ProvisioningType -eq "MCS" added:
+#		Device Management Type - This can be Intune, IntuneWithCitrixTags, or None
+#		Identity Type - This can be ActiveDirectory, AzureAD, HybridAzureAD, or Workgroup
+#		Master Image VM Date - The date and time when the VM snapshot copy used by the provisioning scheme was made
+#		MDM Enrollment - This can be Intune, IntuneWithCitrixTags, or None
+#		Prepared Image Definition Name - The name for the image definition used for the provisioning scheme
+#		Prepared Image Version Number - The version number for the image version used for the provisioning scheme
+#		Windows Activation Type - Windows Activation Type set on the Master Image which has a mapping with the Provisioning Scheme
+#	In Function OutputMachines:
+#		Made the code consistent between the Daas and CVAD scripts
+#		Added missing fields that were in one script but not the other
+#		Added the Machine data metadatamap keys output that was in the Word output but not in the Text and HTML output
+#		Added Custom Properties For VMware
+#			FolderId
+#		Renamed "Master VM" to "Master Image VM"
+#	Removed the IncludeVMImageHistory parameter as it wasn't used
+#	Renamed Computer policy
+#		VDA Data Collection\VDA data collection for Performance Analytics to VDA Data Collection\VDA data collection for Analytics
+#	Tested with Group Policy Module 2305 dated May 31, 2023 
+#		(https://www.citrix.com/downloads/citrix-cloud/product-software/xenapp-and-xendesktop-service.html)
+#	Tested with PoSH SDK dated May 18, 2023 
+#		(https://download.apps.cloud.com/CitrixPoshSdk.exe)
+#	Updated for 7.38
+#
+#Version 1.25 11-Apr-2023
+#	Fixed six typos found when running a test for Citrix
+#
+#Version 1.24 24-Mar-2023
+#	Added settings configurable by Set-BrokerServiceConfigurationData
+#		Core.GetEntitlementTypePeriodHours
+#			Type: int
+#			Default: 24
+#			Info: Hours Minimum=1
+#			Summary: The time between checks in hours for GetEntitlementType check
+#		Core.LaunchResumeRetryPeriodSec
+#			Type: int
+#			Default: 15
+#			Info: Seconds Minimum=0
+#			Summary: Period after which users of the XML service are hinted to retry launches 
+#					 that are delayed due to a resume request just being sent to that VDA to 
+#					 satisfy launch.
+#		DBConnectionSettings.ResourceLimitRetryDelaySecs
+#			Type: int
+#			Default: 15
+#			Info: Seconds Minimum=2
+#			Summary: Interval between command batch retries when a resource limit appears to 
+#					 have been reached.
+#		HostingManagementSettings.MaxCompletedActionsToPurge
+#			Type: int
+#			Default: 700
+#			Info: Minimum=100
+#			Summary: Maximum completed power actions to purge in a single batch. This limit 
+#					 avoids timeouts/failures if for some reason huge numbers of actions have 
+#					 accumulated that need to be deleted.
+#
+#					 The default value allows for about 2 million actions to be purged per day 
+#					 if needed (700 every 30 seconds).
+#		LhcState.IsFirstConfigSyncSuccess
+#			Type: bool
+#			Default: false
+#			Info: 
+#			Summary: Indicates on the machine where the secondary broker resides that the 
+#					 secondary Broker successfully completed first config sync. An important 
+#					 function of this value is to ensure that if services are re-installed 
+#					 for any reason, the config sync ensures that we have the latest Lhc database.
+#		LhcState.LeaderInHAMode
+#			Type: bool
+#			Default: false
+#			Info: 
+#			Summary: Indicates whether the leader connector is in outage mode.
+#		NameCacheSettings.AlwaysRefreshNamesOnRegistration
+#			Type: bool
+#			Default: false
+#			Info: 
+#			Summary: Forces machine's cached name entries to be updated each time it registers. 
+#					 By default names are only updated by normal cache refresh logic.
+#		SiteServicesSettings.FeatureTelemetryCollectionPeriodSec
+#			Type: int
+#			Default: 21600
+#			Info: Seconds Minimum=1
+#			Summary: Period between instances of reporting of feature use.
+#		XmsSettings.NFuseAppDataBulkLookupThreshold
+#			Type: int
+#			Default: 2
+#			Info: Minimum=0
+#			Summary: Defines the threshold number of resources in an AppData transaction above 
+#					 which a bulk lookup mechanism is used. For small numbers of resources the 
+#					 higher setup cost outweighs the improved efficiency.
+#
+#	Added Computer policy
+#		ICA\HDX Direct
+#		Profile Management\Advanced settings\Free space ration (%)
+#		Profile Management\Advanced settings\Number of logoffs
+#		Profile Management\App access control
+#		Profile Management\Basic settings\Active write back on session lock and disconnection
+#		Profile Management\Profile container settings\Enable VHD disk compaction
+#		User Personalization Layer\User Layer Exclusions
+#	Added User policy
+#		ICA\File Redirection\Download file for Citrix Workspace app for Chrome OS/HTML5
+#		ICA\File Redirection\File transfer for Citrix Workspace app for Chrome OS/HTML5
+#		ICA\File Redirection\Upload file for Citrix Workspace app for Chrome OS/HTML5
+#	In Function GetRolePermissions:
+#		Added new permissions
+#			Director_Search_Transaction
+#			Image_Create        
+#			Image_Delete        
+#			Image_EditProperties
+#			Image_Read  
+#			SecureBrowser_NewConfiguration   
+#			SecureBrowser_Read               
+#			SecureBrowser_RemoveConfiguration
+#			SecureBrowser_SetConfiguration   
+#	In Function OutputDesktopOSMachine:
+#		test if there is a Desktop.DNSName
+#		If not, test Desktop.MachineName
+#		If not, test Desktop.HostedMachineName
+#		If not, use error message "error, there was no name found for the Desktop"
+#	In Function OutputHosting:
+#		update the list of Hypervisor Plugins
+#		for Word output:
+#			if there are no single-session OS or multi-session OS or sessions, output a message and don't waste a page
+#			add a page break after outputting Session data
+#	In Function OutputServerOSMachine:
+#		test if there is a Server.DNSName
+#		If not, test Server.MachineName
+#		If not, test Server.HostedMachineName
+#		If not, use error message "error, there was no name found for the Server"
+#	Tested with Group Policy Module 2303 dated March 20, 2023 
+#		(https://www.citrix.com/downloads/citrix-cloud/product-software/xenapp-and-xendesktop-service.html)
+#	Tested with PoSH SDK dated March 17, 2023 
+#		(https://download.apps.cloud.com/CitrixPoshSdk.exe)
+#	Updated for 7.37
+#
+#Version 1.23 6-Jan-2023
+#	Added to Function OutputMachines, the Catalog's reboot schedule if one exists
+#		https://docs.citrix.com/en-us/citrix-virtual-apps-desktops/install-configure/machine-catalogs-manage.html#update-the-catalog
+#	For Provisioning Custom Properties, added two Azure properties I hadn't noticed before:
+#		https://developer-docs.citrix.com/projects/citrix-virtual-apps-desktops-sdk/en/latest/MachineCreation/about_Prov_CustomProperties/
+#		PageFileDiskDriveLetterOverride
+#		StorageTypeAtShutdown
+#	In Function GetRolePermissions:
+#		Added new permissions
+#			DesktopGroup_CreateFolder
+#			DesktopGroup_EditFolder
+#			DesktopGroup_MoveFolder
+#			DesktopGroup_RemoveFolder
+#			PolicySets_AddScope
+#           PolicySets_Manage
+#           PolicySets_Read
+#           PolicySets_RemoveScope
+#           Setting_Edit
+#			Setting_Read
+#	In Function OutputMachines, fixed the misplaced code for image history and additional data
+#
+#Version 1.22 2-Oct-2022
+#	Added Computer policy
+#		Profile Management\Advanced settings\Maximum number of VHDX disks for storing Outlook OST files
+#		Profile Management\Citrix Virtual Apps Optimization settings\Enable Citrix Virtual Apps Optimization
+#		Profile Management\Citrix Virtual Apps Optimization settings\Path to Citrix Virtual Apps optimization definitions:
+#		Profile Management\File deduplication\Files to exclude from the shared store
+#		Profile Management\File deduplication\Files to include from the shared store
+#	Added User policy
+#		ICA\Printing\Client Printers\Client printer names
+#		ICA\Server Limits\Disconnected session timer - Multi-session
+#		ICA\Server Limits\Disconnected session timer interval (minutes) - Multi-session
+#		ICA\Server Limits\Session connection timer - Multi-session
+#		ICA\Server Limits\Session connection timer interval (minutes) - Multi-session
+#		ICA\Server Limits\Session idle timer - Multi-session
+#		ICA\Server Limits\Session idle timer interval (minutes) - Multi-session
+#
+#Version 1.21 22-Sep-2022
+#	Tested with Group Policy Module 2206 dated June 28, 2022 (https://www.citrix.com/downloads/citrix-cloud/product-software/xenapp-and-xendesktop-service.html)
+#	Tested with PoSH SDK dated August 29, 2022 (https://download.apps.cloud.com/CitrixPoshSdk.exe)
+#	Updated Function ProcessScriptSetup to support multiple Section items
+#	Updated the script to allow the Section parameter to support multiple items
+#	Updated the help text
+#	Updated the ReadMe file
+#
+#Version 1.20 25-Jul-2022
+#	Added support for Minimum Catalog Level 2206 (L7_34)
+#	Added the missing enums for VDAUpgrade.Type and VDAUpgrade.State to the Machine output
+#
+#Version 1.19 16-Jul-2022
+#	Added the missing enums for VDAUpgrade.Type and VDAUpgrade.State
+#		Type:
+#			Release type the VDA upgrades follow. Possible values are:
+#			o NotSet - Upgrade release type was not set by admin for this catalog.
+#			o CR - VDA upgrades follow CR release cycles.
+#			o LTSR - VDA upgrades follow LTSR release cycles.
+#		State:
+#			Represents whether one or more VDAs in a catalog can be upgraded. Possible values are: \n
+#			o MissingUpgradeType - Admin has not yet set UpgradeType, which is required to figure out whether catalog can be upgraded.
+#			o UpgradeScheduled - Upgrade was scheduled or is in progress for this catalog.
+#			o UpgradeAvailable - One or more machines in this catalog can be upgraded.
+#			o UpToDate - All VDAs in this catalog are on the most recently released version.
+#			o Unknown - Temporary state where the service is currently figuring out one of the above states.
+#	Updated the help text
+#	Updated the ReadMe file
+#
+#Version 1.18 27-Jun-2022
+#	Adding the missing $Script:Title variable if -Section Logging was selected
+#	Additional Word/PDF output cleanup
+#	Change almost every "Administrator" related table to a smaller font for Word/PDF output
+#		Some of the new default names are very long and caused a few tables to go off the right side of the page
+#	For Machine Catalogs, add the Folder Name. This meant I had to change several cmdlets to use the CatalogName 
+#		property and a couple to use Name instead of CatalogName. The Name property, in my testing, has the new 
+#		folder name prepended to it
+#	General code cleanup
+#	In Function GetRolePermissions:
+#		Added new permissions
+#			AppGroupApplications_CreateFolder
+#			AppGroupApplications_EditFolder
+#			AppGroupApplications_MoveFolder
+#			AppGroupApplications_RemoveFolder
+#			ApplicationGroup_CreateFolder
+#			ApplicationGroup_EditFolder
+#			ApplicationGroup_MoveFolder
+#			ApplicationGroup_RemoveFolder
+#			AppLib_RemoveAppVServer
+#			C365_EA_Acct
+#			C365_EA_Broker
+#			C365_EA_Hyp
+#			C365_EA_Prov
+#	In Function OutputMachine, add the Additional Data as discussed in the June 2022 What's New
+#		Retrieve region name information for Azure VMs, managed disks, snapshots, Azure VHD, and ARM template. 
+#		You can now display the region name information for an Azure VM, managed disks, snapshots, Azure VHD, 
+#		and ARM template. This information is displayed for the resources on the master image when a machine 
+#		catalog is assigned. For more information, see 
+#		https://docs.citrix.com/en-us/citrix-daas/install-configure/resource-location/azure-resource-manager.html#retrieve-region-name-information-for-azure-vms-managed-disks-snapshots-azure-vhd-and-arm-template
+#		In the call to function OutputMachineDetails, added two parameters to help support VDAUpgrade
+#	In Function OutputMachineDetails:
+#		Added two parameters to help support VDAUpgrade
+#		Added VDA Upgrade section
+#	The June 2022 update to Citrix Cloud added support for single-session restart schedules
+#		https://docs.citrix.com/en-us/citrix-daas/whats-new.html#june-2022
+#		Removed the restriction for showing restart schedules for multi-session OS only
+#	Updated the catalog's custom properties for the Provisioning Scheme
+#		These are the new custom properties documented at
+#		https://developer-docs.citrix.com/projects/citrix-daas-sdk/en/latest/MachineCreation/about_Prov_CustomProperties/
+#			New Custom Properties For Azure
+#				EnableIntuneEnroll
+#				InitialPageFileSizeInMB
+#				MaxPageFileSizeInMB
+#				PageFileDiskDriveLetter
+#				StorageType
+#				UseTempDiskForWBC
+#
+#			New Custom Properties For Gcp
+#				IdentityDiskStorageType
+#				PersistOsDisk
+#				PersistWBC
+#				StorageType
+#				WBCDiskStorageType
+#	Updated the ReadMe file
+#	When checking for VDA Upgrade capability, add testing for MCS catalogs
+#		Citrix added support for MCS catalogs in the June 2022 update
+#		https://docs.citrix.com/en-us/citrix-daas/whats-new.html#june-2022
+#		Extended support for VDA upgrade. Using the Full Configuration interface, 
+#		you can now upgrade MCS-provisioned persistent machines. You can upgrade 
+#		them on a per-catalog or a per-machine basis.
+#
+#		Added a per-machine VDA Upgrade section for eligible machines
+#
+#Version 1.17 21-Apr-2022
+#	Added from the April 2022 update:
+#		Support for upgrading VDA machines (preview)
+#		Using the Full Configuration interface, you can now upgrade VDA machines for your Citrix DaaS deployment
+#		You can upgrade them on a per-catalog or a per-machine basis
+#		***The feature applies only to physical machines***
+#	Added one setting configurable by Set-BrokerServiceConfigurationData
+#		Core.SaaSLicenseComponentCheckPeriodHours
+#			Type: int
+#			Default: 24
+#			Info: Hours Minimum=1 Maximum=24
+#			Summary: The time between checks in hours for SaaS license component check
+#	Added to a delivery group's Autoscale section:
+#		Arranged and renamed the output to reflect what is shown in the console
+#		General
+#			Delay powering off machines by __ minutes
+#			Machine instance cost per hour ($)
+#		Schedule and Peak Times
+#		Load-based Settings
+#			During peak times capacity buffer (%)
+#			During off-peak times capacity buffer (%)
+#		Dynamic Session Timeout
+#			During peak times idle session timeout (seconds)
+#			During off-peak times idle session timeout (seconds)
+#			During peak times disconnected session timeout (seconds)
+#			During off-peak times disconnected session timeout (seconds)
+#		Force User Logoff
+#		Autoscaling Tagged Machines
+#			Enable Autoscale for machine with tag
+#			Control when Autoscale starts powering on tagged machines
+#			When usage of untagged machines reaches (%) During peak times
+#			When usage of untagged machines reaches (%) During off-peak times
+#	Clean up some console output
+#	For Function OutputMachineDetails, added a parameter $WhatType for Machine or Desktop
+#	For the Summary Page, fixed the Word section headings from Heading4 to Heading2
+#	In Function GetRolePermissions:
+#		Renamed the App-V permissions group to Application Packages
+#		Added new permissions
+#			AppLib_PackageDiscovery_Create
+#			AppLib_PackageDiscoveryProfile_Create
+#			AppLib_PackageDiscoveryProfile_Remove
+#			Catalog_CreateFolder
+#			Catalog_EditFolder
+#			Catalog_MoveFolder
+#			Catalog_RemoveFolder
+#			AutoTagRule_Create
+#			AutoTagRule_Delete
+#			AutoTagRule_Edit
+#			AutoTagRule_Read
+#			VdaUpgrade_CatalogManage
+#			VdaUpgrade_MachineManage
+#	In Function ProcessLicensing, update the product names, editions, and licensing models
+#		https://docs.citrix.com/en-us/citrix-daas/whats-new.html
+#	In Function ProcessScriptSetup:
+#		If the SDK version is less than 7.34, end the script
+#		If the Group Policy Snapin version is less than 7.33, end the script
+#	Replaced all Get-WmiObject with Get-CimInstance
+#	Updated for CVAD 2203/7.33 and CVAD 2206/7.34
+#	Updated the help text
+#	Updated the ReadMe file
+#
+#Version 1.16 24-Dec-2021
+#	Added an additional error check after attempting to create the LocalSiteGPO PSDrive (thanks to Steven Taylor)
+#		If the PSDrive creation fails without an error, set $Policies and $Script:DoPolcies to $False and allow 
+#		the script to continue
+#	Added Computer policy
+#		HDX Analytics\HDX Insight for SD-WAN
+#		ICA\Multi-Stream Connections\Multi-Stream virtual channel stream assignment
+#			Drag and Drop - Stream 1
+#		Profile Management\Advanced settings\Customize storage path for VHDX files
+#	Added two more settings configurable by Set-BrokerServiceConfigurationData
+#		Core.LaunchCheckFaultStates
+#			Type: bool
+#			Default: false
+#			Info: 
+#			Summary: When true, indicates that selection of a VDA for a new session should not consider ones in fault 
+#					 state FailedToStart.
+#		Core.PhantomRegistrationSecs
+#			Type: int
+#			Default: 0
+#			Info: Seconds Minimum=0
+#			Summary: The time after reporting a VDA as being powered off that its registration request will be rejected. 
+#					 A value of 0 disables this behavior.
+#	Added User policy
+#		ICA\Graphics\Screen sharing
+#	Fixed the version check for the Group Policy Snapin (thanks to Steven Taylor)
+#		Added the download location for the up-to-date Group Policy Snapin download to the error message
+#	Updated the ReadMe file
+#
+#Version 1.15 7-Dec-2021 (Change log updated 1-Dec-2022)
+#	Added additional error checking for empty arrays before trying to output a Word table
+#	Added extra error checking, validation, and messages when retrieving Citrix Cloud credentials
+#		Reworked the logic for using Get-XDAuthentication and retrieving the CustomerID
+#	Added Function OutputReportFooter
+#	Added Functions ProcessControllerServiceConfig and OutputControllerServiceConfig
+#		Outputs data from Get-BrokerServiceConfigurationData
+#
+#		There are 66 possible settings configurable by Set-BrokerServiceConfigurationData
+#
+#		Since you have no access to set these registry keys and values on a Cloud Controller,
+#		use Set-BrokerServiceConfigurationData to configure the setting and value
+#
+#		Set-BrokerServiceConfigurationData Core.MaxHeartbeatIntervalMs  -SettingValue 360000
+#		Running this will set the MaxHeartbeatIntervalMs to 6 minutes
+#
+#			Core.AllowMultipleRemotePCAssignments
+#				Type: bool
+#				Default: true
+#				Info: 
+#				Summary: Controls whether to permit multiple automated user assignments to RemotePC machines.
+#			Core.AutoTagRuleIntervalsTimeSecs
+#				Type: int
+#				Default: 600
+#				Info: Seconds Minimum=60
+#				Summary: Time interval that Auto Tag Rule site service will run auto tagging Process.
+#			Core.DisableActiveSessionReconnect
+#				Type: bool
+#				Default: false
+#				Info: 
+#				Summary: Indicates whether the ability to connect to an active desktop session from a different 
+#						 endpoint is disabled. By default it is possible to connect to an active session from a 
+#						 different endpoint device without first disconnecting the session from the original endpoint.
+#			Core.FirstHeartbeatDistributionWidthSecs
+#				Type: int
+#				Default: 0
+#				Info: Seconds Minimum=0 Maximum=1800
+#				Summary: When set, causes intervals between the first and second ping messages immediately after registration 
+#						 to be randomized over the specified distribution period but always centered on the normal ping interval 
+#						 (that is, half the value of HeartbeatPeriodMs). Thus, a distribution width of 60 seconds causes pings 
+#						 to be randomized over intervals of HeartbeatPeriodMs/2 +/- 30 seconds. A value of zero disables interval 
+#						 randomization.
+#
+#						 The distribution width used is reduced if the specified value would result in ping intervals of less than 
+#						 MinHeartbeatPeriodMs, or within 30 seconds of the ping timeout defined by HeartbeatPeriodMs or 
+#						 MaxHeartbeatIntervalMs.
+#			Core.FreeSessionThresholdForLoadEvaluation
+#				Type: int
+#				Default: 20
+#				Info: Minimum=0
+#				Summary: Threshold for number of free sessions that is checked after a session terminates, at or below which the 
+#						 effective load index of the machine is immediately recalculated using the new session count. This additional 
+#						 evaluation maintains the figures used for load balancing in a more timely fashion as the machine approaches 
+#						 its configured session limit.
+#
+#						 This setting is only applicable to multi-session machines.
+#			Core.HeartbeatDistributionWidthSecs
+#				Type: int
+#				Default: 0
+#				Info: Seconds Minimum=0 Maximum=1800
+#				Summary: When set, causes intervals between ping messages to be randomized over the specified distribution period but 
+#						 always centered on the normal ping interval (that is, half the value of HeartbeatPeriodMs). Thus, a distribution 
+#						 width of 60 seconds causes pings to be randomized over intervals of HeartbeatPeriodMs/2 +/- 30 seconds. A value 
+#						 of zero disables interval randomization.
+#
+#						 The distribution width used is reduced if the specified value would result in ping intervals of less than 
+#						 MinHeartbeatPeriodMs, or within 30 seconds of the ping timeout defined by HeartbeatPeriodMs or 
+#						 MaxHeartbeatIntervalMs.
+#			Core.HeartbeatPeriodMs
+#				Type: int
+#				Default: 600000
+#				Info: Milliseconds
+#				Summary: Controls both the interval and timeouts used for the keep-alive 'pings' from the VDA.
+#
+#						 This value is sent from the DDC to VDA and causes the VDA to ping the DDC at an interval half that of the time 
+#						 specified by this setting. By default the DDC will consider contact to have been lost, and discard the VDA's 
+#						 registration, if no ping is received within the full time specified (i.e. the timeout is double the ping interval).
+#
+#						 This setting is dynamic, that is, changing it immediately alters both the active ping interval for all VDAs and 
+#						 the maximum interval enforced by the DDC.
+#
+#						 The maximum period over which no ping is received before contact is considered to have been lost can be controlled 
+#						 independently of the VDA ping interval itself using the MaxHeartbeatIntervalMs setting.
+#			Core.LaunchDelayedRetryPeriodSec
+#				Type: int
+#				Default: 30
+#				Info: Seconds Minimum=0
+#				Summary: Period after which users of the XML service are hinted to retry launches that are delayed due to a power on request 
+#						 just being sent to that VDA to satisfy launch
+#			Core.LaunchRetryPeriodSec
+#				Type: int
+#				Default: 5
+#				Info: Seconds Minimum=0
+#				Summary: Period after which users of the XML service are hinted to retry launches that are delayed due to circumstances such 
+#						 as VMs needing to be started to satisfy the launch.
+#			Core.LogonToleranceIsHardLimit
+#				Type: bool
+#				Default: false
+#				Info: 
+#				Summary: When set, indicates that the concurrent logon tolerance policy value used during brokering of shared sessions to 
+#						 RDS VDAs should be treated as a hard limit. The launch fails if no VDA is available that is not under the limit.
+#			Core.MachineSinBinStayTimeSecs
+#				Type: int
+#				Default: 60
+#				Info: Seconds Minimum=0
+#				Summary: Period during which new brokering requests are inhibited to a machine following a failed launch (applicable to 
+#						 shared desktops only).
+#			Core.MaxDisconnectWaitTimeSecs
+#				Type: int
+#				Default: 10
+#				Info: Seconds Minimum=0
+#				Summary: Maximum time that the VDA will wait for VDI sessions to disconnect when requested as part of user-driven restart 
+#						 request from StoreFront. This timeout value is sent to the VDA as part of the disconnect request and thus has no 
+#						 impact on the overall request timeout if there are network connectivity issues (see DisconnectOperationTimeOutSecs).
+#			Core.MaxLogoffWaitTimeSecs
+#				Type: int
+#				Default: 10
+#				Info: Seconds Minimum=0
+#				Summary: Maximum time that the VDA will wait for RDS sessions to logoff when requested as part of user-driven restart 
+#						 request from StoreFront. This timeout value is sent to the VDA as part of the logoff request and thus has no 
+#						 impact on the overall request timeout if there are network connectivity issues (see LogoffOperationTimeOutSecs).
+#			Core.MaxRegistrationCompletionTimeSecs
+#				Type: int
+#				Default: 600
+#				Info: Seconds Minimum=1
+#				Summary: Maximum time within which the registration sequence for a single machine must complete. This refers to both 
+#						 immediate hard registrations, and soft to hard registration transitions. If the registration fails to complete 
+#						 within this time then the machine's partial registration is discarded by the broker.
+#			Core.MaxSessionEstablishmentTimeSecs
+#				Type: int
+#				Default: 200
+#				Info: Seconds Minimum=10
+#				Summary: Used for logon ticket lifetime, VDA listening timeout, and deadline imposed by the broker for evidence of client 
+#						 connection.
+#			Core.MaxTimeForPrepareSecs
+#				Type: int
+#				Default: 60
+#				Info: Seconds Minimum=5
+#				Summary: A deadline imposed by the broker for launch preamble ahead of the PrepareSession call to the VDA. Following 
+#						 successful PrepareSession, the MaxSessionEstablishmentTimeSecs setting will be applied to replace this 
+#						 initial timeout.
+#			Core.MaxTotalConcurrentMachineCommands
+#				Type: int
+#				Default: 70
+#				Info: Minimum=10
+#				Summary: Maximum Synchronous Machine Commands allowed to be executing concurrently via the SDK. If a request for a 
+#						 further machine command is received that would cause this limit to be exceeded then the request is rejected 
+#						 without being performed.
+#			Core.MaxWorkers
+#				Type: int
+#				Default: 10000
+#				Info: Minimum=0
+#				Summary: The limit for the number of registered VDAs that the controller will accept.
+#			Core.NonContactableSessionGracePeriodSecs
+#				Type: int
+#				Default: 30
+#				Info: Seconds Minimum=0
+#				Summary: Grace period after which a session would otherwise be considered non-contactable before automatic session 
+#						 hiding during reconnect can occur. The grace period prevents transient failures from causing sessions to 
+#						 be hidden if a reconnect should occur just after the failure.
+#
+#						 The grace period does not apply to sessions on managed machines where contact has also been lost with the 
+#						 hypervisor. Losing contact with both the VDA and its hypervisor causes immediate session hiding during reconnect.
+#			Core.RoTPublicKeysUpdateMaxDelayHours
+#				Type: int
+#				Default: 168
+#				Info: Hours Minimum=1
+#				Summary: The maximum number of hours to wait before applying an update of the Root of Trust public keys to the Broker 
+#						 database.
+#			Core.TestVdaCommunicationsTimeoutSecs
+#				Type: int
+#				Default: 5
+#				Info: Seconds Minimum=1
+#				Summary: The timeout when verifying the connection between the broker and a VDA during a registration request.
+#			Core.UserDrivenResetDebounceTimeSecs
+#				Type: int
+#				Default: 480
+#				Info: Seconds Minimum=0
+#				Summary: The period after a user driven reset request during which a further reset request for the same VDA 
+#						 is ignored. This is used to avoid a user continuously resetting the same desktop without it ever 
+#						 having a chance to complete the restart and re-register. If the VDA shuts down, powers on, and 
+#						 re-registers within the debounce period then the debounce timer is cancelled and a further reset 
+#						 is allowed.
+#
+#						 Only applies to single-session VDAs.
+#			Core.UserDrivenResetTimeoutMs
+#				Type: int
+#				Default: 15000
+#				Info: Milliseconds Minimum=0
+#				Summary: How long to allow for a user-driven reset power-off action to complete (success or fail).
+#			Core.UserDrivenShutDownTimeoutMs
+#				Type: int
+#				Default: 15000
+#				Info: Milliseconds Minimum=0
+#				Summary: How long to allow for a user-driven shutdown action to complete (success or fail).
+#			Core.UserNotify2SigningKeyLifetimeHours
+#				Type: int
+#				Default: 1440
+#				Info: Minimum=1
+#				Summary: Duration in hours since last key rotation after which the UserNotify2 signing keys will 
+#						 be rotated. Default 1440 in hours is 60 days.
+#	CHANGE LOG UPDATE 1-DEC-2022
+#		In version 2206, Citrix changed this from Hosting. to HostingManagement.
+#		I updated all the Hosting. entries to HostingManagement.
+#			HostingManagement.AutoscalePowerActionQueuingPeriodSeconds
+#				Type: int
+#				Default: 120
+#				Info: Seconds Minimum=0
+#				Summary: Period over which an Autoscale power action queuing operation should take for each desktop group. 
+#						 When this limit is reached for a given desktop group, Autoscale will effectively carry-on where 
+#						 it left off at the next poll.
+#
+#						 A value of zero removes the constraint of how long a power action queuing operation should take 
+#						 per desktop group.
+#			HostingManagement.ComplexPowerActionTimeoutSecs
+#				Type: int
+#				Default: 1200
+#				Info: Seconds Minimum=300
+#				Summary: Maximum time in seconds to wait for a notification that an active power action has either completed 
+#						 successfully or failed. If no such notification is received then the action is marked as Lost (cancelled).
+#
+#						 This timeout applies to 'long' actions such as Shutdown or Restart where the action includes waiting for 
+#						 potentially lengthy Processing within the target VDA.
+#
+#						 See also SimplePowerActionTimeoutSecs.
+#			HostingManagement.HclConnectionStateCachePeriodSecs
+#				Type: int
+#				Default: 30
+#				Info: Minimum=0 Maximum=120
+#				Summary: Period over which the HCL's connection state to the actual hypervisor is cached. A value of zero disables 
+#						 caching causing the connection state to be reevaluated on every access.
+#			HostingManagement.HypervisorConnectionMaxPollFailures
+#				Type: int
+#				Default: 4
+#				Info: Minimum=1
+#				Summary: If the periodic poll to allow the HCL machine manager to be recreated when needed, itself repeatedly fails 
+#						 due to an error other than invalid credentials, then this value defines the maximum failures before the 
+#						 current site service is aborted thus allowing a new one to start, potentially on a different DDC.
+#			HostingManagement.HypervisorConnectionPollMaxPeriodSecs
+#				Type: int
+#				Default: 300
+#				Info: Seconds Minimum=30 Maximum=900
+#				Summary: If the periodic poll to allow the HCL machine manager to be recreated when needed, itself repeatedly 
+#						 fails due to invalid credentials, the poll interval is increased each time with the maximum interval 
+#						 being capped at this value. Repeatedly attempting to create/discard the machine manager is expensive 
+#						 and invalid credentials are likely to require admin intervention to fix.
+#			HostingManagement.LegacyPeakTransitionDisconnectedBehaviour
+#				Type: bool
+#				Default: false
+#				Info: 
+#				Summary: Controls whether to retain the legacy power policy peak transition disconnected behavior for all 
+#						 desktop groups.
+#			HostingManagement.MaxFailedRegistrationsAllowed
+#				Type: int
+#				Default: 2
+#				Info: 
+#				Summary: How many times a VM can fail to register before we put it into maintenance mode. A negative value 
+#						 means that we never automatically put a VM into maintenance mode.
+#			HostingManagement.MaxRegistrationDelayMin
+#				Type: int
+#				Default: 20
+#				Info: minutes
+#				Summary: How long to wait in minutes after a VM is powered on before a failure to receive a registration 
+#						 from the VM is deemed a problem.
+#
+#						 This setting is also used in combination with the RebootSchedule/MaxShutdownDelayMin setting to 
+#						 define the maximum allowed time for a machine (either physical or a VM) to successfully reboot 
+#						 during reboot schedule Processing.
+#			HostingManagement.MaxTimeBeforeStuckOnBootFaultSecs
+#				Type: int
+#				Default: 300
+#				Info: Seconds
+#				Summary: How long to wait in seconds after a machine starts for a notification that its VM tools are 
+#						 running. After this time with no notification, the machine's fault state is changed to 
+#						 StuckOnBoot.
+#			HostingManagement.MaxTimeBeforeUnregisteredFaultSecs
+#				Type: int
+#				Default: 600
+#				Info: Seconds
+#				Summary: How long to wait in seconds after a machine started but remains unregistered with the 
+#						 Broker (with or without attempting to register). After this timeout a machine's fault 
+#						 state would be set to Unregistered.
+#			HostingManagement.ParallelDesktopGroupScalingMaxThreads
+#				Type: int
+#				Default: 5
+#				Info: Minimum=0 Maximum=100
+#				Summary: Maximum number of threads to use when scaling multiple desktop groups.
+#			HostingManagement.ParallelPowerStateReadMaxThreads
+#				Type: int
+#				Default: 5
+#				Info: Minimum=0 Maximum=100
+#				Summary: Maximum number of threads to use when reading multiple machine states from the HCL in parallel. 
+#						 Note: (1) Value does not apply to HCL plugins that support bulk power state operations (e.g. Azure). 
+#						 (2) For Cloud, value is capped at 1 as the RemoteHCL does not support multiple concurrent operations, 
+#						 thus there's no advantage in using multiple threads. 
+#						 (3) A value of zero forces use of a simple loop for all such operations. This puts all machine state 
+#						 reads and database writes into a single thread. This uses the minimum resources but at the expense of 
+#						 throughput, and delayed database updates.
+#			HostingManagement.SimplePowerActionTimeoutSecs
+#				Type: int
+#				Default: 600
+#				Info: Seconds Minimum=60
+#				Summary: Maximum time in seconds to wait for a notification that an active power action has either completed 
+#						 successfully or failed. If no such notification is received then the action is marked as Lost (cancelled).
+#
+#						 This timeout applies to 'short' actions such as TurnOn, Resume, etc. where the action only involves 
+#						 operation of the hypervisor with no dependency on Processing within the target VDA.
+#
+#						 See also ComplexPowerActionTimeoutSecs.
+#	END OF CHANGE LOG UPDATE 1-DEC-2022
+#			IdleSessions.AutoSessionDisconnectGracePeriodSecs
+#				Type: int
+#				Default: 120
+#				Info: Seconds Minimum=0
+#				Summary: Grace period after which a reconnected session can be considered for disconnection by dynamic 
+#						 session time-outs. The grace period protects a session from auto-disconnecting for the configured 
+#						 grace period after a reconnect, allowing the end-user to actually do something.
+#
+#						 This grace period does not impact newly launched sessions.
+#			IdleSessions.MaxIdleSessionToTerminatePercent
+#				Type: int
+#				Default: 1
+#				Info: Minimum=1 Maximum=100
+#				Summary: Maximum number of sessions to terminate when load threshold on the machine and desktop group are hit.
+#			IdleSessions.MaxRetriesPerSession
+#				Type: int
+#				Default: 3
+#				Info: Minimum=1
+#				Summary: Maximum time a logoff/disconnect operation is retried before the session is put into a sin bin.
+#			IdleSessions.MaxSessionOperationWaitTimeSecs
+#				Type: int
+#				Default: 30
+#				Info: Minimum=30
+#				Summary: Maximum time a logoff/disconnect operation is to be performed in for the list of sessions on each worker.
+#			Lhc.ConfigSyncIntervalSeconds
+#				Type: int
+#				Default: 300
+#				Info: Seconds Minimum=60 Maximum=3600
+#				Summary: The interval Config Sync Service(CSS) will sync configuration from cloud ddc to connector.
+#			Logging.ConnectionLogLifetimeHours
+#				Type: int
+#				Default: 40
+#				Info: Hours Minimum=0
+#				Summary: Time for which connection log entries are kept before being purged.
+#			Logging.HypervisorAlertLifetimeHours
+#				Type: int
+#				Default: 168
+#				Info: Hours Minimum=0
+#				Summary: Time for which hypervisor alert entries are kept before being purged.
+#			Logging.HypervisorSummaryReportIntervalSecs
+#				Type: int
+#				Default: 300
+#				Info: Seconds Minimum=60
+#				Summary: Time in seconds between summary reports of hypervisor power action queue lengths being written to CDF 
+#						 and optionally Splunk.
+#			Logging.SlowDBAccessLogThresholdMs
+#				Type: int
+#				Default: 2000
+#				Info: Milliseconds Minimum=1
+#				Summary: Upper threshold for the period that a successful database transaction takes to complete before a message 
+#						 is written to CDF and optionally to Splunk warning of slow database access. This threshold does not apply 
+#						 to SDK 'Get' queries that are covered by the SlowSdkDBAccessLogThresholdMs setting.
+#			Logging.SlowSdkDBAccessLogThresholdMs
+#				Type: int
+#				Default: 5000
+#				Info: Milliseconds Minimum=1
+#				Summary: Upper threshold for the period that a successful SDK Get database query takes to complete before a message 
+#						 is written to CDF and optionally to Splunk warning of slow database access.
+#			MachineCommandQueues.VdaCommandBufferExpiryTime
+#				Type: int
+#				Default: 120
+#				Info: Seconds Minimum=0 Maximum=600
+#				Summary: Maximum amount of time before commands must be sent to any of the buffered services if they have not 
+#						 already been dispatched.
+#			MachineCommandQueues.VdaCommandBufferSizeLimitKB
+#				Type: int
+#				Default: 128
+#				Info: kibibytes Minimum=32 Maximum=1024
+#				Summary: Maximum size of aggregated payloads before the commands that are buffered must be sent to the service.
+#			NameCache.DisableAutomaticDomainTrustSearch
+#				Type: bool
+#				Default: false
+#				Info: 
+#				Summary: Disables automatic traversal of the trust relationships to the Citrix Broker Service controller's 
+#						 computer domain used to identify domains and forests available for performing name lookups. If 
+#						 disabled, only Domain Controllers in the controller’s domain, or Global Catalogs in the controller's 
+#						 forest are used for name lookups. When disabled, machine and user names from remote forests are 
+#						 typically not available.
+#			NameCache.DisableDomainCaching
+#				Type: bool
+#				Default: false
+#				Info: 
+#				Summary: Prevents persistent connections being held open to a Domain Controller in each domain visible to 
+#						 the Citrix Broker Service, but incurs additional setup cost each time a name lookup is performed 
+#						 against a domain.
+#			NameCache.MachineNameLookupTimeoutMs
+#				Type: int
+#				Default: 3000
+#				Info: Milliseconds Minimum=0
+#				Summary: Maximum time to wait for machine name resolution during creation of a desktop.
+#			NameCache.NameRefreshExponentialBackoffMaximumMins
+#				Type: int
+#				Default: 7200
+#				Info: Minutes Minimum=1
+#				Summary: Maximum period after which cached AD user/group account name, or machine name details are refreshed 
+#						 in the case where the SAM name of the cached entity could not be obtained (the cache may thus either 
+#						 contain no SAM name information, or potentially an out of date value).
+#			NameCache.NameRefreshMaximumPeriodSecs
+#				Type: int
+#				Default: 1800
+#				Info: Seconds Minimum=0
+#				Summary: Maximum time allowed for a name cache refresh to complete.
+#			NameCache.NameRefreshPeriodAfterErrorMins
+#				Type: int
+#				Default: 60
+#				Info: Minutes Minimum=1
+#				Summary: Starting period after which cached AD user/group account name, or machine name details are refreshed 
+#						 in the case where the SAM name of the cached entity could not be obtained (the cache may thus either 
+#						 contain no SAM name information, or potentially an out of date value). This period is increased 
+#						 exponentially depending on the number of consecutive lookup failures.
+#			NameCache.NameRefreshPeriodMins
+#				Type: int
+#				Default: 1440
+#				Info: Minutes Minimum=5
+#				Summary: Period after which cached AD user/group account name, or machine name details are refreshed in the 
+#						 case where the SAM name of the cached entity was successfully obtained.
+#			NameCache.UserNameLookupTimeoutMs
+#				Type: int
+#				Default: 3000
+#				Info: Milliseconds Minimum=0
+#				Summary: Maximum time to wait for user/group account name resolution during creation of SDK objects that 
+#						 expose informational account names.
+#			RebootSchedule.MaxShutdownDelayMin
+#				Type: int
+#				Default: 10
+#				Info: Minutes Minimum=1 Maximum=60
+#				Summary: Maximum time allowed for a VM to shutdown during reboot cycle Processing before the reboot of 
+#						 the VM is deemed to have failed.
+#
+#						 This setting is also used in combination with the MaxRegistrationDelayMin setting to define 
+#						 the maximum allowed time for a machine (either physical or VM) to successfully reboot during 
+#						 reboot schedule Processing.
+#			RebootSchedule.RebootCycleDataLifetimeHours
+#				Type: int
+#				Default: 336
+#				Info: Hours Minimum=0
+#				Summary: Time for which data for completed/cancelled/abandoned reboot cycles is retained before being purged.
+#			RebootSchedule.ShutdownTimeoutRecovery
+#				Type: bool
+#				Default: false
+#				Info: 
+#				Summary: Causes VDAs that fail to shutdown within their allowed timeout period to be either powered off or 
+#						 reset as applicable. This avoids potentially leaving VDAs hung in shutdown Processing, or (for RDS 
+#						 VDAs) powered off after a reboot cycle, however it may result in loss of work for the end user if 
+#						 the VDA is simply too slow at shutting down.
+#			Xms.StableServerFarmDataCachePeriodSecs
+#				Type: int
+#				Default: 120
+#				Info: Seconds Minimum=1 Maximum=600
+#				Summary: Period over which a cached ServerFarmData response is considered valid for reuse when the Broker 
+#						 service is in stable operation.
+#			Xms.UnstableServerFarmDataCachePeriodSecs
+#				Type: int
+#				Default: 15
+#				Info: Seconds Minimum=1 Maximum=600
+#				Summary: Period over which a cached ServerFarmData response is considered valid for reuse when the Broker 
+#						 service is not in stable operation. This includes periods when the service is starting-up or 
+#						 shutting down or when database connectivity has been lost.
+#			Xms.XmlStaIdentity
+#				Type: string
+#				Default: 
+#				Info: 
+#				Summary: Must be defined for the STA to function. Must contain only upper case letter and digit characters. 
+#						 Must be less than 32 characters long. Usually of the form 'STAXXXXXXXX' where XXXXXX is a 
+#						 hexadecimal number.
+#			Xms.XmlStaRefreshableTicketLifetimeInSeconds
+#				Type: int
+#				Default: 500
+#				Info: Seconds
+#				Summary: The time for which a refreshable ticket remains live (without being refreshed).
+#			Xms.XmlStaTicketLifetimeInSeconds
+#				Type: int
+#				Default: 100
+#				Info: Seconds
+#				Summary: The time for which a non-refreshable ticket remains live.
+#	Added Parameter ReportFooter
+#		Outputs a footer section at the end of the report.
+#		Report Footer
+#			Report information:
+#				Created with: <Script Name> - Release Date: <Script Release Date>
+#				Script version: <Script Version>
+#				Started on <Date Time in Local Format>
+#				Elapsed time: nn days, nn hours, nn minutes, nn.nn seconds
+#				Ran from domain <Domain Name> by user <Username>
+#				Ran from the folder <Folder Name>
+#	Added support for Minimum Catalog Level 2106 (L7_30)
+#	Added to all Citrix cmdlets that don't use CCParams2: AdminAddress = $GLOBAL:XDSDKProxy and BearerToken = $GLOBAL:XDAuthToken
+#	Added to CCParams2, AdminAddress = $GLOBAL:XDSDKProxy and BearerToken = $GLOBAL:XDAuthToken
+#	Added User policy
+#		ICA\Audio\Adaptive audio
+#	Before running the Function ProcessHosting, test to verify the XDHyp: PSDrive exists and if it doesn't exist, 
+#		don't run the Function ProcessHosting
+#	Changed from using LocalFarmGPO to LocalSiteGPO for the Citrix Policy PSDrive at the request of Citrix
+#	Changed if $VDARegistryKeys is $True, only set $MachineCatalogs to $True if $MachineCatalogs and $DeliveryGroups are both $False
+#		If $DeliveryGroups is $True, $VDARegistryKeys is $True, and $MachineCatalogs is $False, 
+#			$MachineCatalogs was set $True which prevented machine details and VDA Registry keys from processing for the delivery groups
+#	Changed more empty/blank values to use "-" to match all the other empty values
+#	Changed the date format for the transcript and error log files from yyyy-MM-dd_HHmm format to the FileDateTime format
+#		The format is yyyyMMddTHHmmssffff (case-sensitive, using a 4-digit year, 2-digit month, 2-digit day, 
+#		the letter T as a time separator, 2-digit hour, 2-digit minute, 2-digit second, and 4-digit millisecond). 
+#		For example: 20221225T0840107271.
+#	Fixed a logic error in Function ProcessPolicySummary.
+#		Instead of getting both Computer and User policies at one time (which didn't work), get them separately
+#	Fixed a variable name typo in Function OutputMachines for text output
+#	Fixed numerous issues with Text and HTML output
+#	Fixed the German Table of Contents (Thanks to Rene Bigler)
+#		From 
+#			'de-'	{ 'Automatische Tabelle 2'; Break }
+#		To
+#			'de-'	{ 'Automatisches Verzeichnis 2'; Break }
+#	For Function OutputMachineDetails, added a parameter $ADSearchBase
+#		Before calling that function from Function ProcessMachineCatalogs and OutputDeliveryGroup, added the following lines:
+#			$TrustedDomain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain().Name
+#			$context = New-Object System.DirectoryServices.ActiveDirectory.DirectoryContext( "domain", $TrustedDomain )
+#			$domain = [System.DirectoryServices.ActiveDirectory.Domain]::GetDomain( $context )
+#			$ADSearchBase = $domain.GetDirectoryEntry().DistinguishedName.Value
+#		To support this, added two functions from Michael B. Smith: getObject and __simpleSearch
+#		Before calling Resolve-DNSName, test if the machine exists in Active Directory
+#		If it doesn't exist in AD, don't test DNS
+#	In Function AbortScript, add test for the winword process and terminate it if it is running
+#		Added stopping the transcript log if the log was enabled and started
+#	In Function GetRolePermissions, added new permissions
+#		GroupName              Id        Name                                                                               
+#		---------              --        ----                                                                               
+#		Citrix Catalog Service EA_Acct   Catalog Service Identity operations                                                
+#		Citrix Catalog Service EA_Broker Catalog Service Broker operations                                                  
+#		Citrix Catalog Service EA_Hyp    Catalog Service Hypervisor operations                                              
+#		Citrix Catalog Service EA_Prov   Remove Desktop from Delivery Group (1)                                             
+#	In Function GetVDARegistryKeys, sorted the VDA registry key paths in alpha order
+#	In Function OutputDeliveryGroupDetails, added -EA 0 to Get-BrokerMachineConfiguration
+#		Added properties:
+#			AutomaticRestartForUntaggedMachines
+#			AutoscaleLogOffWarningMessage
+#			AutoscaleLogOffWarningTitle
+#			AutoscaleMaxSecondsBeforeForcedLogOffDuringOffPeak
+#			AutoscaleMaxSecondsBeforeForcedLogOffDuringPeak   
+#			AutoscalingEnabled         
+#
+#			It seems most people had no idea that Citrix added AutoScale in CVADS.
+#			https://developer-docs.citrix.com/projects/citrix-virtual-apps-desktops-service-sdk/en/latest/Broker/Set-BrokerDesktopGroup/
+#			https://developer-docs.citrix.com/projects/citrix-virtual-apps-desktops-service-sdk/en/latest/Broker/New-BrokerDesktopGroup/
+#			https://docs.citrix.com/en-us/citrix-virtual-apps-desktops-service/manage-deployment/autoscale/schedule-based-and-load-based-settings.html#miscellaneous-settings
+#			Go to July 2021 https://docs.citrix.com/en-us/citrix-virtual-apps-desktops-service/whats-new.html
+#		Only get a delivery group's StoreFront server data if there is any machine configuration data
+#	In Function OutputMachines, fix the headings and output for Text
+#		Added new properties for MCS catalogs
+#			CleanOnBoot
+#			DedicatedTenancy
+#			IdentityPoolName
+#			ResetAdministratorPasswords
+#			ZoneHealthy
+#		Added error check to verify that the variables $TempDiskCacheSize and $TempMemoryCacheSize exist before using them
+#		Added the catalog's custom properties for the Provisioning Scheme
+#		These are the custom properties documented at
+#		https://developer-docs.citrix.com/projects/citrix-daas-sdk/en/latest/MachineCreation/about_Prov_CustomProperties/
+#			Custom Properties For Azure
+#				DedicatedHostGroupId
+#				DiskEncryptionSetId
+#				IdentityDiskStorageType
+#				LicenseType
+#				MachinesPerStorageAccount
+#				OsType
+#				PersistOsDisk
+#				PersistVm
+#				PersistWBC
+#				ResourceGroups
+#				SchemaVersion
+#				SharedImageGalleryReplicaMaximum
+#				SharedImageGalleryReplicaRatio
+#				SharedImageGalleryStorageAccountType (not documented but found in testing)
+#				StorageAccountsPerResourceGroup
+#				StorageAccountType
+#				UseEphemeralOsDisk
+#				UseManagedDisks
+#				UseSharedImageGallery
+#				WBCDiskStorageType
+#				Zones
+#
+#			Custom Properties For Aws
+#				AwsCaptureInstanceProperties
+#				AwsOperationalResourcesTagging
+#
+#			Custom Properties For Gcp
+#				CatalogZones
+#				CryptoKeyId
+#
+#		Added Image History for the catalog's Provisioning Scheme
+#			Provisioning Scheme Name
+#			Date
+#			Master Image VM
+#			Master Image Note
+#			Functional Level
+#			Image Status
+#		Fixed the wrong variable name used to get MetadataMap.Keys data for Word/PDF and Text output
+#		Reordered the output in alphabetical order
+#		Reworked creating several variables to reduce the number of lines of code, which for me, makes the code more readable
+#	In Function OutputRoleDefinitions, fixed a logic error that prevented the correct HTML output if both MSWord/PDF and HTML were used
+#		Sort output by folder name and then permission name
+#	In Function OutputSiteSettings, add the following items:
+#		Bypass Authentication for Cached Resources
+#			Allows client to display cached resources without authentication
+#		Cloud Site License
+#			Configures the single cloud license chosen to be used as the default one for the site
+#		Cloud Valid Licenses
+#			The valid cloud license SKUs
+#		Credential Forwarding to Cloud Allowed
+#			The indicator that whether the Connector is allowed to forward user credentials to cloud
+#		Default Reuse Machines Without Shutdown In Outage
+#			The default ReuseMachinesWithoutShutdownInOutage used for new desktop groups when no explicit value is provided
+#		Delete Resource Leases on Logoff
+#			Forces client to delete all leases on explicit logoff
+#		Enable automatic assignment of multiple users for Remote PC Access
+#		Load Balance Multi-Session Catalogs
+#			Use vertical scaling when finding an RDS machine for a session launch
+#		Resource Lease Validity Period in Days
+#			Validity period for a lease
+#		Resource Leasing Enabled
+#			Enables lease syncing on client
+#		Telemetry Headless Launch Enabled
+#			Enables client to perform headless telemetry launches
+#		Telemetry Launch Minimum Time Interval in Minutes
+#			Configures minimum time interval (in minutes) between headless telemetry launches
+#		Telemetry Launch Shadow Delay in Minutes
+#			Configures delay (in minutes) between ICA-HDX launch and headless telemetry launch
+#	In Function OutputAppendixA, only output data when the arrays contain data
+#	In Function OutputSiteSettings, removed "Is Secondary Broker", as that is an internal Citrix setting
+#	In Function ProcessAdministrators, sort Administrators by Name
+#	In Function ProcessScriptSetup, added tests for the SDK and Group Policy Snapin versions
+#		If the SDK version is less than 7.32, end the script
+#		If the Group Policy Snapin version is less than 7.30, end the script
+#	In Function ProcessScriptSetup, added a variable for the Remote SDK and Group Policy Snapin versions
+#		If Policies are specified, verify both the User and Computer nodes exist in the LocalSiteGPO PSDrive
+#		If either is missing, retry five times
+#		If either is still missing after five retries, end the script
+#	In Functions ShowScriptOptions and ProcessScriptEnd, added the authentication profile name and SDK and Group Policy Snapin versions
+#	In Functions AbortScript and SaveandCloseDocumentandShutdownWord, add code from Guy Leech to test for the "Id" property before using it
+#	Moved testing for authentication to after initializing tracsript logging
+#		That should allow me to see in the transcript log if you successfully authenticated
+#	Removed the App-V Publishing section from the script as Citrix Cloud uses App Packages, not App-V
+#		I'll figure out how to add App Packages later
+#	Removed the requirement for the Citrix.GroupPolicy.Commands.psm1 module file (Thanks to Guy Leech for the help)
+#		Added the following functions from the module to the script and cleaned up the Citrix code
+#			CreateDictionary
+#			CreateObject
+#			FilterString
+#			Get-CitrixGroupPolicy
+#			Get-CitrixGroupPolicyConfiguration
+#			Get-CitrixGroupPolicyFilter
+#	Replaced most script Exit calls with AbortScript to stop the transcript log if the log was enabled and started
+#	Reworked the use of LocalSiteGPO PSDrive to prevent multiple creations and deletions
+#	Some console output cleanup
+#	There is an "odd" issue with the LocalSiteGPO PSDrive where it suddenly loses the child nodes of either the User or Computer parent nodes
+#		When this happens, the script cannot continue. I added a fatal terminating error to the script for when this issue happens.
+#		If you use -DEV to record errors, PowerShell records a terminating error: 
+#			PS>TerminatingError(Get-ChildItem): "FailedToAuthenticate: AuthHeader MISSING"
+#		I look for this issue by looking for an array count of 0 and aborting the script:
+#		Get-CitrixGroupPolicy :
+#
+#       		FATAL ERROR.
+#        		The User node is missing for the PSDrive named LocalSiteGPO.
+#
+#        		Script cannot Continue.
+#
+#
+#		At C:\webster\Docu-CitrixCloud.ps1:nnnnn char:nn
+#		+ ... Policies += Get-CitrixGroupPolicy -DriveName LocalSiteGPO -PolicyName ...
+#		+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#		+ CategoryInfo          : NotSpecified: (:) [Write-Error], WriteErrorException
+#		+ FullyQualifiedErrorId : Microsoft.PowerShell.Commands.WriteErrorException,Get-CitrixGroupPolicy
+#
+#		VERBOSE: mm/dd/yyyy hh:mm:ss AM: System Cleanup
+#		VERBOSE: mm/dd/yyyy hh:mm:ss AM: Script has been aborted
+#
+#		If you immediately rerun the script in the same PoSH session, the error usually is gone
+#		I try to catch this at the beginning of the script, but sometimes one of the nodes just disappears
+#	Updated for CVAD 2109/7.31 and CVAD 2112/7.32
+#	Updated Functions SaveandCloseTextDocument and SaveandCloseHTMLDocument to add a "Report Complete" line
+#	Updated Functions ShowScriptOptions and ProcessScriptEnd to add $ReportFooter
+#	Updated the help text
+#	Updated the expired link for the ReadMe file 
+#		https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
+#	Updated the ReadMe file
+#
+#Version 1.14 29-Jul-2021
+#	Added Computer policy
+#		ICA\Multi-Stream Connections\Multi-Port Policy
+#		Profile Management\Advanced settings\Enable credential-based access to user stores
+#		Profile Management\Advanced settings\Replicate user stores - Paths to replicate a user store
+#		Profile Management\File system\Large File Handling List - Files to be created as symbolic links
+#		Profile Management\File system\Synchronization\Accelerate folder mirroring
+#		Profile Management\Profile container settings\Enable local caching for profile containers
+#		Profile Management\Profile container settings\Folders to exclude in profile container
+#		Profile Management\Profile container settings\Folders to include in profile container
+#		VDA Data Collection\VDA data collection for Performance Analytics
+#	Added to Delivery Group details, "Allow session reconnect in maintenance mode"
+#	Added User policy
+#		ICA\Browser Content Redirection\Allow Bidirectional Content Redirection
+#		ICA\Browser Content Redirection\Allowed URLs to be redirected to Client
+#		ICA\Browser Content Redirection\Allowed URLs to be redirected to VDA
+#		ICA\Desktop launches
+#		ICA\Graphics\Graphic status indicator
+#	Changed the array built for the User policy setting ICA\Printing\Universal Printing\Universal printing optimization defaults
+#		from splitting on "," to splitting on ";"
+#	Changed the Processing for the following policy settings. When they are Disabled in the console, the State value is still Enabled.
+#		If the State property is Enabled and the Value property is "", then show the policy setting as disabled.
+#			ICA\Rendezvous proxy configuration
+#			Profile Management\Basic settings\Migrate user store
+#			Profile Management\Basic settings\Path to user store
+#			Profile Management\Cross-Platform settings\Path to cross-platform definitions
+#			Profile Management\Cross-Platform settings\Path to cross-platform settings store
+#			Profile Management\Log settings\Path to log file
+#			Profile Management\Profile handling\Path to the template profile
+#			Profile Management\Citrix Virtual Apps Optimization settings\Path to Citrix Virtual Apps optimization definitions:
+#			ICA\Multimedia\Browser Content Redirection Proxy Configuration
+#			Profile Management\Folder Redirection\AppData(Roaming)\AppData(Roaming) path
+#			Profile Management\Folder Redirection\Contacts\Contacts path
+#			Profile Management\Folder Redirection\Desktop\Desktop path
+#			Profile Management\Folder Redirection\Documents\Documents path
+#			Profile Management\Folder Redirection\Downloads\Downloads path
+#			Profile Management\Folder Redirection\Favorites\Favorites path
+#			Profile Management\Folder Redirection\Links\Links path
+#			Profile Management\Folder Redirection\Music\Music path
+#			Profile Management\Folder Redirection\Pictures\Pictures path
+#			Profile Management\Folder Redirection\Saved Games\Saved Games path
+#			Profile Management\Folder Redirection\Searches\Searches path
+#			Profile Management\Folder Redirection\Start Menu\Start Menu path
+#			Profile Management\Folder Redirection\Videos\Videos path
+#	Changed the way the array was built and Processed for ICA\Multi-Stream Connections\Multi-Port Policy\CGP default port and CGP default port priority
+#	Cleaned up text output for policy settings
+#	Fixed numerous typos in Switch statements for policy settings
+#	Fixed wrong variable name used to create array for Virtual Delivery Agent Settings\Monitoring\List of applications excluded from failure monitoring
+#	For Computer policy setting ICA\Keyboard and IME\Client keyboard layout synchronization and IME improvement, add Disabled option to Switch statement
+#	Renamed Computer policy
+#		ICA\Local App Access\URL redirection blacklist to ICA\Local App Access\URL redirection black list
+#		ICA\WebSockets\WebSocket connections to ICA\WebSockets\WebSockets connections
+#	Update the Site version Switch statement for version 7.28/2012, 7.29/2103, and 7.30/2106
+#
+#Version 1.13 14-Apr-2021
+#	Added Computer policy
+#		Profile Management\Enable profile streaming for folders
+#		Workspace Environment Management\Citrix Cloud Connectors
+#	Added User policy
+#		ICA\Multimedia\Browser Content Redirection Server Fetch Proxy Auth
+#	Changed $Application.IconFromClient to $Application.IconFromClient.ToString()
+#	Changed how the Session Recording Status was obtained
+#	Enabled the Session Recording code that was commented out
+#	Fixed three typos of "Unabled" to "Unable"
+#	Fixed typos of "Descriptione" to "Description"
+#	For Restart schedules added the following items:
+#		Use natural reboot
+#		Ignore maintenance mode
+#		Maximum Overtime Start Minutes
+#	For the following three Delivery Group properties, if there is no data or value, use "-" to match all the other empty values
+#		All connections not through NetScaler Gateway
+#		Connections through NetScaler Gateway
+#		Restrict to tag
+#	In Machine details added 
+#		Draining Until Shutdown (Multi-session only)
+#		Last Connection Failure reason
+#			"None"                = "None"
+#			"SessionPreparation"  = "Session preparation"
+#			"RegistrationTimeout" = "Registration timeout"
+#			"ConnectionTimeout"   = "Connection Timeout"
+#			"Licensing"           = "Licensing"
+#			"Ticketing"           = "Ticketing"
+#			"Other"               = "Other"
+#		Maintenance Mode reason
+#			"Administrator"          = "Machine was manually placed in maintenance mode by an administrator"
+#			"MaxFailedRegistrations" = "Machine was automatically placed in maintenance mode due to reaching the maximum failed registration limit"
+#			"None"                   = "Machine is not in maintenance mode"
+#		Will Shutdown After Use reason
+#			"None"                   = "Machine will not shutdown after use"
+#			"ResetDiskImage"         = "Machine will shutdown after use to reset its disk image"
+#			"ScheduledNaturalReboot" = "Machine will shutdown after use as part of the scheduled natural reboot Process"
+#			"OnDemandNaturalReboot"  = "Machine will shutdown after use as part of an on-demand natural reboot Process"
+#	In Machine Details, for MCS catalogs, if the Provisioning Scheme doesn't exist, set the $MasterVM variable to "Unable to retrieve details"
+#	Moved Authentication code to right after the test for elevation. If authentication fails, there is no need to test and set a bunch of variables.
+#	Renamed computer policy
+#		Enable multi-session write-back for FSLogix Profile Container to Enable multi-session write-back for profile containers
+#		Virtual channel white list to Virtual channel allow list
+#	To get the Master Image VM for an Azure Catalog, add searching for ".manageddisk"
+#		Also added ".snapshot" which was found in customer data
+#	Updated the Authentication section in the ReadMe
+#	Updated the text explanations for:
+#		Machine Fault State
+#			"None"          = "No fault; machine is healthy"
+#			"FailedToStart" = "Last power-on operation for machine failed"
+#			"StuckOnBoot"   = "Machine does not seem to have booted following power on"
+#			"Unregistered"  = "Machine has failed to register within expected period, or its registration has been rejected"
+#			"MaxCapacity"   = "Machine is reporting itself at maximum capacity"
+#		Machine Scheduled Reboot
+#			"None"       = "No reboot is scheduled"
+#			"Pending"    = "Machine is awaiting reboot but is available for us"
+#			"Draining"   = "Machine is awaiting reboot and is unavailable for new sessions; reconnections to existing connections are still allowed, however"
+#			"InProgress" = "Machine is actively undergoing a scheduled reboot"
+#			"Natural"    = "Natural reboot in progress. Machine is awaiting a restart"
+#	When testing a session for Session Recording status, add a test for $Null -ne $results
+#
+#Version 1.12 30-Jan-2021
+#	Fixed duplicate item in the HTML output for Machine Catalogs
+#
+#Version 1.11 25-Jan-2021
+#	Added error checking in Function Check-NeededPSSnapins (Requested by Guy Leech)
+#	Updated the error message when Get-XDAuthentication fails
+#	Updated the error messages in Function ProcessScriptSetup
+#	Updated the help text
+#	Updated the ReadMe file
+#
 #Version 1.10 5-Dec-2020
 #	Added CustomerID to function ShowScriptInfo and ProcessScriptEnd
 #	Added the missing ReadMe file link to the warning message about the missing Citrix.GroupPolicy.Commands file
@@ -1371,7 +3213,7 @@ Param(
 #Version 1.00 21-Sep-2020
 #
 #	Add a switch statement for the machine/desktop/server Power State
-#	Add a test to make sure the script is running from an elevated PowerShell session
+#	Add a test to make sure the script runsning from an elevated PowerShell session
 #	Add additional Citrix Cloud administrator permissions:
 #		App-V
 #			Add App-V applications
@@ -1395,8 +3237,8 @@ Param(
 #			Delete UPM Broker Machine Configuration
 #	Added a ValidateSet to the Sections parameter. You can use -Section, press tab, and tab through all the section options. (Credit to Guy Leech)
 #	Added a -ProfileName parameter for use by Get-XDAuthentication 
-#		For more information, see the Authentication section in the ReadMe file https://carlwebster.sharefile.com/d-sb4e144f9ecc48e7b
-#		Thanks to David Prows and Devan Tilly for documenting this process for me to use
+#		For more information, see the Authentication section in the ReadMe file https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
+#		Thanks to David Prows and Devan Tilly for documenting this Process for me to use
 #	Added testing to see if the computer running the script is in a Domain or Workgroup
 #		If not in a domain, and VDARegistryKeys is set, set it to $False
 #		If not in a domain, set NoADPolicies to $True
@@ -1448,21 +3290,69 @@ Param(
 #		Hardcode $AdminAddress to LocalHost
 #	Removed licensing data that didn't make sense for Citrix Cloud and added some data that did make sense
 #	Since the RegistrationState property is an enum, add .ToString() to the machine/desktop/server variable so HTML output is correct
-#	When getting the Master VM for an MCS based machine catalog, also check for images ending in .template for Nutanix
-#	When getting the provisioning scheme data for a machine, only process machines with a provisioning type of MCS
+#	When getting the Master Image VM for an MCS based machine catalog, also check for images ending in .template for Nutanix
+#	When getting the provisioning scheme data for a machine, only Process machines with a provisioning type of MCS
 #		There is no provisioning scheme data for manually or PVS provisioned machines
 #	When VDARegistryKeys is used, now test the RemoteRegistry service for its status
 #		If the service is not running, add that information into the various *VDARegistryItems arrays
 #	Where appropriate, changed all "CVAD" to "CC"
 #endregion
 
+Function AbortScript
+{
+	If($MSWord -or $PDF)
+	{
+		Write-Verbose "$(Get-Date -Format G): System Cleanup"
+		If(Test-Path variable:global:word)
+		{
+			$Script:Word.quit()
+			[System.Runtime.Interopservices.Marshal]::ReleaseComObject($Script:Word) | Out-Null
+			Remove-Variable -Name word -Scope Global 4>$Null
+		}
+	}
+	[gc]::collect() 
+	[gc]::WaitForPendingFinalizers()
+
+	If($MSWord -or $PDF)
+	{
+		#is the winword Process still running? kill it
+
+		#find out our session (usually "1" except on TS/RDC or Citrix)
+		$SessionID = (Get-Process -PID $PID).SessionId
+
+		#Find out if winword running in our session
+		$wordprocess = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}) | Select-Object -Property Id 
+		If( $wordprocess -and $wordprocess.Id -gt 0)
+		{
+			Write-Verbose "$(Get-Date -Format G): WinWord Process is still running. Attempting to stop WinWord Process # $($wordprocess.Id)"
+			Stop-Process $wordprocess.Id -EA 0
+		}
+	}
+	
+	Write-Verbose "$(Get-Date -Format G): Script has been aborted"
+	#stop transcript logging
+	#added in 1.15
+	If($Log -eq $True) 
+	{
+		If($Script:StartLog -eq $True) 
+		{
+			try 
+			{
+				Stop-Transcript | Out-Null
+				Write-Verbose "$(Get-Date -Format G): $Script:LogPath is ready for use"
+			} 
+			catch 
+			{
+				Write-Verbose "$(Get-Date -Format G): Transcript/log stop failed"
+			}
+		}
+	}
+	$ErrorActionPreference = $SaveEAPreference
+	Exit
+}
+
 #region initial variable testing and setup
 Set-StrictMode -Version Latest
-
-#force  on
-$PSDefaultParameterValues = @{"*:Verbose"=$True}
-$SaveEAPreference = $ErrorActionPreference
-$ErrorActionPreference = 'SilentlyContinue'
 
 Write-Verbose "$(Get-Date -Format G): Testing for elevation"
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal( [Security.Principal.WindowsIdentity]::GetCurrent() )
@@ -1481,6 +3371,17 @@ Else
 	`n"
 	Exit
 }
+
+#force  on
+$PSDefaultParameterValues = @{"*:Verbose"=$True}
+$SaveEAPreference         = $ErrorActionPreference
+$ErrorActionPreference    = 'SilentlyContinue'
+$Error.Clear()
+
+$script:MyVersion   = "'1.28 Webster's For Real Final Update"
+$Script:ScriptName  = "Docu-CitrixCloud.ps1"
+$tmpdate            = [datetime] "10/15/2024"
+$Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
 {
@@ -1528,7 +3429,7 @@ If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($From) -an
 	`t`t
 	Script cannot continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($From) -and ![String]::IsNullOrEmpty($To))
 {
@@ -1540,7 +3441,7 @@ If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($From) -an
 	`t`t
 	Script cannot continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($To) -and ![String]::IsNullOrEmpty($From))
 {
@@ -1552,7 +3453,7 @@ If(![String]::IsNullOrEmpty($SmtpServer) -and [String]::IsNullOrEmpty($To) -and 
 	`t`t
 	Script cannot continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 If(![String]::IsNullOrEmpty($From) -and ![String]::IsNullOrEmpty($To) -and [String]::IsNullOrEmpty($SmtpServer))
 {
@@ -1564,7 +3465,7 @@ If(![String]::IsNullOrEmpty($From) -and ![String]::IsNullOrEmpty($To) -and [Stri
 	`t`t
 	Script cannot continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 If(![String]::IsNullOrEmpty($From) -and [String]::IsNullOrEmpty($SmtpServer))
 {
@@ -1576,7 +3477,7 @@ If(![String]::IsNullOrEmpty($From) -and [String]::IsNullOrEmpty($SmtpServer))
 	`t`t
 	Script cannot continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 If(![String]::IsNullOrEmpty($To) -and [String]::IsNullOrEmpty($SmtpServer))
 {
@@ -1588,7 +3489,7 @@ If(![String]::IsNullOrEmpty($To) -and [String]::IsNullOrEmpty($SmtpServer))
 	`t`t
 	Script cannot continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 
 #If the MaxDetails parameter is used, set a bunch of stuff true and some stuff false
@@ -1602,7 +3503,7 @@ If($MaxDetails)
 	$MachineCatalogs	= $True
 	$Policies			= $True
 	$StoreFront			= $True
-	$VDARegistryKeys	= $True
+	$VDARegistryKeys 	= $True
 	
 	$NoPolicies			= $False
 	$Section			= "All"
@@ -1631,25 +3532,25 @@ If($NoPolicies -and $Section -eq "Policies")
 	`t`t
 	Script cannot continue.
 	`n`n"
-	Exit
+	AbortScript
 }
 
 $ValidSection = $False
+#1.21 remove the Break statements since there can now be multiple sections entered
 Switch ($Section)
 {
-	"Admins"		{$ValidSection = $True; Break}
-	"Apps"			{$ValidSection = $True; Break}
-	"AppV"			{$ValidSection = $True; Break}
-	"Catalogs"		{$ValidSection = $True; Break}
-	"Config"		{$ValidSection = $True; Break}
-	"Groups"		{$ValidSection = $True; Break}
-	"Hosting"		{$ValidSection = $True; Break}
-	"Licensing"		{$ValidSection = $True; Break}
-	"Logging"		{$ValidSection = $True; $Logging = $True; Break}	#force $logging true if the config logging section is specified
-	"Policies"		{$ValidSection = $True; $Policies = $True; Break} #force $policies true if the policies section is specified
-	"StoreFront"	{$ValidSection = $True; Break}
-	"Zones"			{$ValidSection = $True; Break}
-	"All"			{$ValidSection = $True; Break}
+	"Admins"		{$ValidSection = $True}
+	"Apps"			{$ValidSection = $True}
+	"Catalogs"		{$ValidSection = $True}
+	"Config"		{$ValidSection = $True}
+	"Groups"		{$ValidSection = $True}
+	"Hosting"		{$ValidSection = $True}
+	"Licensing"		{$ValidSection = $True}
+	"Logging"		{$ValidSection = $True; $Logging = $True}	#force $logging true if the config logging section is specified
+	"Policies"		{$ValidSection = $True; $Policies = $True} #force $policies true if the policies section is specified
+	"StoreFront"	{$ValidSection = $True}
+	"Zones"			{$ValidSection = $True}
+	"All"			{$ValidSection = $True}
 }
 
 If($ValidSection -eq $False)
@@ -1665,7 +3566,6 @@ If($ValidSection -eq $False)
 	
 	`tAdmins
 	`tApps
-	`tAppV
 	`tCatalogs (Machine Catalogs)
 	`tConfig (Configuration)
 	`tGroups (Delivery Groups)
@@ -1681,7 +3581,7 @@ If($ValidSection -eq $False)
 	Script cannot continue.
 	`n`n
 	"
-	Exit
+	AbortScript
 }
 
 If($Folder -ne "")
@@ -1706,7 +3606,7 @@ If($Folder -ne "")
 			`n`n
 	Script cannot continue.
 			`n`n"
-			Exit
+			AbortScript
 		}
 	}
 	Else
@@ -1719,7 +3619,7 @@ If($Folder -ne "")
 	Script cannot continue.
 		`n`n
 		"
-		Exit
+		AbortScript
 	}
 }
 
@@ -1741,26 +3641,158 @@ If($Script:pwdpath.EndsWith("\"))
 If($Log) 
 {
 	#start transcript logging
-	$Script:LogPath = "$Script:pwdpath\CCDocScriptTranscript_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+	$Script:LogPath = "$Script:pwdpath\CCDocScriptTranscript_$(Get-Date -f FileDateTime).txt"
 	
 	try 
 	{
-		Start-Transcript -Path $Script:LogPath -Force -Verbose:$false | Out-Null
+		Start-Transcript -Path $Script:LogPath -Force -Verbose:$False | Out-Null
 		Write-Verbose "$(Get-Date -Format G): Transcript/log started at $Script:LogPath"
-		$Script:StartLog = $true
+		$Script:StartLog = $True
 	} 
 	catch 
 	{
 		Write-Verbose "$(Get-Date -Format G): Transcript/log failed at $Script:LogPath"
-		$Script:StartLog = $false
+		$error[0].Exception
+		$Script:StartLog = $False
 	}
 }
 
 If($Dev)
 {
 	$Error.Clear()
-	$Script:DevErrorFile = "$Script:pwdpath\CCInventoryScriptErrors_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
+	$Script:DevErrorFile = "$Script:pwdpath\CCInventoryScriptErrors_$(Get-Date -f FileDateTime).txt"
 }
+
+If($ProfileName -eq "")
+{
+	$Script:AuthProfileName = "Default"
+}
+Else
+{
+	$Script:AuthProfileName = $ProfileName
+}
+
+Write-Host "Attempting to authenticate using the profile named $Script:AuthProfileName" -ForegroundColor White
+
+Get-XDAuthentication -ProfileName $Script:AuthProfileName #-EA 0 *>$Null
+
+If($?)
+{
+	Write-Host "Successfully authenticated using the profile named $Script:AuthProfileName. Attempting to get the CustomerId." -ForegroundColor White
+	Write-Host "" -ForegroundColor White
+	
+	#change the Process in 1.15
+	$CCCreds = Get-XDCredentials -ProfileName $Script:AuthProfileName #-EA 0 4>$Null
+	
+	If($? -and $Null -ne $CCCreds)
+	{
+		#$CCCreds = $Results.Credentials
+		Write-Host "Successfully retrieved the CustomerId: $($CCCreds.CustomerId)." -ForegroundColor White
+		Write-Host "" -ForegroundColor White
+	}
+	Else
+	{
+		Write-Host "`tFailed to retrieve the CustomerId." -ForegroundColor White
+		Write-Host "" -ForegroundColor White
+		
+		Write-Host "Results Credentials variable: " -NoNewLinecc
+		$($Results)
+		Write-Host "" -ForegroundColor White
+		
+		Write-Host "Exception: " -NoNewLine
+		$error[0].Exception
+		
+		Write-Error "
+`n`n
+Get-XDAuthentication failed.
+`n`n
+For more information, see the Authentication section in the ReadMe file at 
+`n`n
+https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
+`n`n
+This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
+`n`n
+If you are running XA/XD 7.0 through 7.7, please use: 
+https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+`n`n
+If you are running XA/XD 7.8 through CVAD 2006, please use:
+https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+`n`n
+If you are running CVAD 2006 and later, please use:
+https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+`n`n
+Script cannot continue.
+`n`n
+	"
+		AbortScript
+	}
+}
+Else
+{
+	Write-Host "Failed to authenticate using the profile named $Script:AuthProfileName." -ForegroundColor White
+	Write-Host "" -ForegroundColor White
+	Write-Host "Exception: " -NoNewLine
+	$error[0].Exception
+	
+	If($error[0].Exception -like "*ProfileNotFound*")
+	{
+		Write-Host "
+	The Profile used, $Script:AuthProfileName, does not exist.
+	`n
+	"
+
+		Write-Error "
+`n`n
+Get-XDAuthentication failed.
+`n`n
+For more information, see the Authentication section in the ReadMe file at 
+`n`n
+https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
+`n`n
+This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
+`n`n
+If you are running XA/XD 7.0 through 7.7, please use: 
+https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+`n`n
+If you are running XA/XD 7.8 through CVAD 2006, please use:
+https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+`n`n
+If you are running CVAD 2006 and later, please use:
+https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+`n`n
+Script cannot continue.
+`n`n
+	"
+	}
+	Else
+	{
+		Write-Error "
+`n`n
+Get-XDAuthentication failed.
+`n`n
+For more information, see the Authentication section in the ReadMe file at 
+`n`n
+https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
+`n`n
+This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
+`n`n
+If you are running XA/XD 7.0 through 7.7, please use: 
+https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+`n`n
+If you are running XA/XD 7.8 through CVAD 2006, please use:
+https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+`n`n
+If you are running CVAD 2006 and later, please use:
+https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+`n`n
+Script cannot continue.
+`n`n
+	"
+	}
+	AbortScript
+}
+
+$Script:CustomerID = $CCCreds.CustomerID
 
 [int]$Script:TotalComputerPolicies       = 0
 [int]$Script:TotalUserPolicies           = 0
@@ -1796,7 +3828,7 @@ If($Dev)
 [int]$Script:TotalStoreFrontServers      = 0
 
 [int]$Script:TotalZones                  = 0
-[string]$Script:RunningOS                = (Get-WmiObject -class Win32_OperatingSystem -EA 0).Caption
+[string]$Script:RunningOS = (Get-CIMInstance -ClassName Win32_OperatingSystem -EA 0 -Verbose:$False).Caption
 	
 $Script:VDARegistryItems                 = New-Object System.Collections.ArrayList
 $Script:WordALLVDARegistryItems          = New-Object System.Collections.ArrayList
@@ -1809,7 +3841,7 @@ $Script:HTMLALLVDARegistryItems          = New-Object System.Collections.ArrayLi
 #a workgroup computer cannot access the registry on domain-joined computers nor access SYSVOL
 #
 #http://powershell-guru.com/powershell-tip-63-check-if-a-computer-is-member-of-a-domain-or-workgroup/
-If(!((Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain))
+If(!((Get-CimInstance -ClassName win32_computersystem -Verbose:$False).PartOfDomain))
 {
 	#member of workgroup, not a domain
 	Write-Host "
@@ -1831,53 +3863,16 @@ If(!((Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain))
 	}
 }
 
-If($VDARegistryKeys)
+If($VDARegistryKeys -eq $True -and $MachineCatalogs -eq $False -and $DeliveryGroups -eq $False)
 {	
+	#changed in 1.15
+	#Changed if $VDARegistryKeys is $True, only set $MachineCatalogs to $True if $MachineCatalogs and $DeliveryGroups are both $False
+	#	If $DeliveryGroups is $True, $VDARegistryKeys is $True, and $MachineCatalogs is $False, 
+	#		$MachineCatalogs was set $True which prevented machine details and VDA Registry keys from processing for the delivery groups
 	#Force $MachineCatalogs to True
 	Write-Verbose "$(Get-Date -Format G): VDARegistryKeys Switch is set True. Forcing MachineCatalogs to True."
 	$MachineCatalogs = $True
 }
-
-If($ProfileName -eq "")
-{
-	Get-XDAuthentication -EA 0 *>$Null
-	$CCCreds = (Get-XDCredentials -ProfileName default).Credentials
-}
-Else
-{
-	Get-XDAuthentication -ProfileName $ProfileName -EA 0 *>$Null
-	$CCCreds = (Get-XDCredentials -ProfileName $ProfileName).Credentials
-}
-
-$Script:CustomerID = $CCCreds.CustomerID
-
-If(!$?)
-{
-	Write-Error "
-	`n`n
-	Get-XDAuthentication failed.
-	`n`n
-	For more information, see the Authentication section in the ReadMe file at 
-	`n`n
-	https://carlwebster.sharefile.com/d-sb4e144f9ecc48e7b
-	`n`n
-	This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
-	`n`n
-	If you are running XA/XD 7.0 through 7.7, please use: 
-	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
-	`n`n
-	If you are running XA/XD 7.8 through CVAD 2006, please use:
-	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
-	`n`n
-	If you are running CVAD 2006 and later, please use:
-	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
-	`n`n
-	Script cannot continue.
-	`n`n
-	"
-	Exit
-}
-
 #endregion
 
 #region initialize variables for Word, HTML, and text
@@ -1895,12 +3890,12 @@ If($MSWord -or $PDF)
 	[int]$wdSeekMainDocument      = 0
 	[int]$wdSeekPrimaryFooter     = 4
 	[int]$wdStory                 = 6
-	[int]$wdColorBlack            = 0
-	[int]$wdColorGray05           = 15987699 
+	#[int]$wdColorBlack            = 0
+	#[int]$wdColorGray05           = 15987699 
 	[int]$wdColorGray15           = 14277081
-	[int]$wdColorRed              = 255
+	#[int]$wdColorRed              = 255
 	[int]$wdColorWhite            = 16777215
-	[int]$wdColorYellow           = 65535
+	#[int]$wdColorYellow           = 65535
 	[int]$wdWord2007              = 12
 	[int]$wdWord2010              = 14
 	[int]$wdWord2013              = 15
@@ -1921,7 +3916,7 @@ If($MSWord -or $PDF)
 	[int]$wdAutoFitContent = 1
 	#[int]$wdAutoFitWindow = 2
 	#http://msdn.microsoft.com/en-us/library/office/ff821928%28v=office.15%29.aspx
-	[int]$wdAdjustNone         = 0
+	#[int]$wdAdjustNone         = 0
 	[int]$wdAdjustProportional = 1
 	#[int]$wdAdjustFirstColumn = 2
 	#[int]$wdAdjustSameWidth   = 3
@@ -1940,14 +3935,12 @@ If($MSWord -or $PDF)
 	[int]$wdStyleHeading4         = -5
 	[int]$wdStyleNoSpacing        = -158
 	[int]$wdTableGrid             = -155
-	[int]$wdTableLightListAccent3 = -206
+	#[int]$wdTableLightListAccent3 = -206
 
 	[int]$wdLineStyleNone       = 0
 	[int]$wdLineStyleSingle     = 1
 	[int]$wdHeadingFormatTrue   = -1
 	#[int]$wdHeadingFormatFalse = 0 
-	
-	[string]$Script:RunningOS = (Get-WmiObject -class Win32_OperatingSystem -EA 0).Caption
 }
 Else
 {
@@ -1956,6 +3949,9 @@ Else
 
 If($HTML)
 {
+	#Prior versions used Set-Variable. That hid the variables
+	#from @code. So MBS switched to using $global:
+
     $global:htmlredmask       = "#FF0000" 4>$Null
     $global:htmlcyanmask      = "#00FFFF" 4>$Null
     $global:htmlbluemask      = "#0000FF" 4>$Null
@@ -2055,17 +4051,18 @@ Function SetWordHashTable
 	[string]$toc = $(
 		Switch ($CultureCode)
 		{
-			'ca-'	{ 'Taula automÃ¡tica 2'; Break }
+			'ca-'	{ 'Taula automática 2'; Break }
 			'da-'	{ 'Automatisk tabel 2'; Break }
-			'de-'	{ 'Automatische Tabelle 2'; Break }
+			#'de-'	{ 'Automatische Tabelle 2'; Break }
+			'de-'	{ 'Automatisches Verzeichnis 2'; Break } #changed 7-dec-2021 rene bigler
 			'en-'	{ 'Automatic Table 2'; Break }
-			'es-'	{ 'Tabla automÃ¡tica 2'; Break }
+			'es-'	{ 'Tabla automática 2'; Break }
 			'fi-'	{ 'Automaattinen taulukko 2'; Break }
-			'fr-'	{ 'Table automatiqueÂ 2'; Break } #changed 10-feb-2017 david roquier and samuel legrand
+			'fr-'	{ 'Table automatique 2'; Break } #changed 10-feb-2017 david roquier and samuel legrand
 			'nb-'	{ 'Automatisk tabell 2'; Break }
 			'nl-'	{ 'Automatische inhoudsopgave 2'; Break }
-			'pt-'	{ 'SumÃ¡rio AutomÃ¡tico 2'; Break }
-			'sv-'	{ 'Automatisk innehÃ¥llsfÃ¶rteckn2'; Break }
+			'pt-'	{ 'Sumário Automático 2'; Break }
+			'sv-'	{ 'Automatisk innehållsförteckn2'; Break }
 		}
 	)
 
@@ -2136,228 +4133,229 @@ Function ValidateCoverPage
 	Switch ($CultureCode)
 	{
 		'ca-'	{
-			If($xWordVersion -eq $wdWord2016)
-			{
-				$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
-				"Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
-				"Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
-				"Sector (fosc)", "Semàfor", "Visualització principal", "Whisp")
+				If($xWordVersion -eq $wdWord2016)
+				{
+					$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
+					"Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
+					"Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
+					"Sector (fosc)", "Semàfor", "Visualització principal", "Whisp")
+				}
+				ElseIf($xWordVersion -eq $wdWord2013)
+				{
+					$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
+					"Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
+					"Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
+					"Sector (fosc)", "Semàfor", "Visualització", "Whisp")
+				}
+				ElseIf($xWordVersion -eq $wdWord2010)
+				{
+					$xArray = ("Alfabet", "Anual", "Austin", "Conservador",
+					"Contrast", "Cubicles", "Diplomàtic", "Exposició",
+					"Línia lateral", "Mod", "Mosiac", "Moviment", "Paper de diari",
+					"Perspectiva", "Piles", "Quadrícula", "Sobri",
+					"Transcendir", "Trencaclosques")
+				}
 			}
-			ElseIf($xWordVersion -eq $wdWord2013)
-			{
-				$xArray = ("Austin", "En bandes", "Faceta", "Filigrana",
-				"Integral", "Ió (clar)", "Ió (fosc)", "Línia lateral",
-				"Moviment", "Quadrícula", "Retrospectiu", "Sector (clar)",
-				"Sector (fosc)", "Semàfor", "Visualització", "Whisp")
-			}
-			ElseIf($xWordVersion -eq $wdWord2010)
-			{
-				$xArray = ("Alfabet", "Anual", "Austin", "Conservador",
-				"Contrast", "Cubicles", "Diplomàtic", "Exposició",
-				"Línia lateral", "Mod", "Mosiac", "Moviment", "Paper de diari",
-				"Perspectiva", "Piles", "Quadrícula", "Sobri",
-				"Transcendir", "Trencaclosques")
-			}
-		}
 
-	'da-'	{
-			If($xWordVersion -eq $wdWord2016)
-			{
-				$xArray = ("Austin", "BevægElse", "Brusen", "Facet", "Filigran", 
-				"Gitter", "Integral", "Ion (lys)", "Ion (mørk)", 
-				"Retro", "Semafor", "Sidelinje", "Stribet", 
-				"Udsnit (lys)", "Udsnit (mørk)", "Visningsmaster")
+		'da-'	{
+				If($xWordVersion -eq $wdWord2016)
+				{
+					$xArray = ("Austin", "BevægElse", "Brusen", "Facet", "Filigran", 
+					"Gitter", "Integral", "Ion (lys)", "Ion (mørk)", 
+					"Retro", "Semafor", "Sidelinje", "Stribet", 
+					"Udsnit (lys)", "Udsnit (mørk)", "Visningsmaster")
+				}
+				ElseIf($xWordVersion -eq $wdWord2013)
+				{
+					$xArray = ("BevægElse", "Brusen", "Ion (lys)", "Filigran",
+					"Retro", "Semafor", "Visningsmaster", "Integral",
+					"Facet", "Gitter", "Stribet", "Sidelinje", "Udsnit (lys)",
+					"Udsnit (mørk)", "Ion (mørk)", "Austin")
+				}
+				ElseIf($xWordVersion -eq $wdWord2010)
+				{
+					$xArray = ("BevægElse", "Moderat", "Perspektiv", "Firkanter",
+					"Overskrid", "Alfabet", "Kontrast", "Stakke", "Fliser", "Gåde",
+					"Gitter", "Austin", "Eksponering", "Sidelinje", "Enkel",
+					"Nålestribet", "Årlig", "Avispapir", "Tradionel")
+				}
 			}
-			ElseIf($xWordVersion -eq $wdWord2013)
-			{
-				$xArray = ("BevægElse", "Brusen", "Ion (lys)", "Filigran",
-				"Retro", "Semafor", "Visningsmaster", "Integral",
-				"Facet", "Gitter", "Stribet", "Sidelinje", "Udsnit (lys)",
-				"Udsnit (mørk)", "Ion (mørk)", "Austin")
-			}
-			ElseIf($xWordVersion -eq $wdWord2010)
-			{
-				$xArray = ("BevægElse", "Moderat", "Perspektiv", "Firkanter",
-				"Overskrid", "Alfabet", "Kontrast", "Stakke", "Fliser", "Gåde",
-				"Gitter", "Austin", "Eksponering", "Sidelinje", "Enkel",
-				"Nålestribet", "Årlig", "Avispapir", "Tradionel")
-			}
-		}
 
-	'de-'	{
-			If($xWordVersion -eq $wdWord2016)
-			{
-				$xArray = ("Austin", "Bewegung", "Facette", "Filigran", 
-				"Gebändert", "Integral", "Ion (dunkel)", "Ion (hell)", 
-				"Pfiff", "Randlinie", "Raster", "Rückblick", 
-				"Segment (dunkel)", "Segment (hell)", "Semaphor", 
-				"ViewMaster")
+		'de-'	{
+				If($xWordVersion -eq $wdWord2016)
+				{
+					$xArray = ("Austin", "Bewegung", "Facette", "Filigran", 
+					"Gebändert", "Integral", "Ion (dunkel)", "Ion (hell)", 
+					"Pfiff", "Randlinie", "Raster", "Rückblick", 
+					"Segment (dunkel)", "Segment (hell)", "Semaphor", 
+					"ViewMaster")
+				}
+				ElseIf($xWordVersion -eq $wdWord2013)
+				{
+					$xArray = ("Semaphor", "Segment (hell)", "Ion (hell)",
+					"Raster", "Ion (dunkel)", "Filigran", "Rückblick", "Pfiff",
+					"ViewMaster", "Segment (dunkel)", "Verbunden", "Bewegung",
+					"Randlinie", "Austin", "Integral", "Facette")
+				}
+				ElseIf($xWordVersion -eq $wdWord2010)
+				{
+					$xArray = ("Alphabet", "Austin", "Bewegung", "Durchscheinend",
+					"Herausgestellt", "Jährlich", "Kacheln", "Kontrast", "Kubistisch",
+					"Modern", "Nadelstreifen", "Perspektive", "Puzzle", "Randlinie",
+					"Raster", "Schlicht", "Stapel", "Traditionell", "Zeitungspapier")
+				}
 			}
-			ElseIf($xWordVersion -eq $wdWord2013)
-			{
-				$xArray = ("Semaphor", "Segment (hell)", "Ion (hell)",
-				"Raster", "Ion (dunkel)", "Filigran", "Rückblick", "Pfiff",
-				"ViewMaster", "Segment (dunkel)", "Verbunden", "Bewegung",
-				"Randlinie", "Austin", "Integral", "Facette")
-			}
-			ElseIf($xWordVersion -eq $wdWord2010)
-			{
-				$xArray = ("Alphabet", "Austin", "Bewegung", "Durchscheinend",
-				"Herausgestellt", "Jährlich", "Kacheln", "Kontrast", "Kubistisch",
-				"Modern", "Nadelstreifen", "Perspektive", "Puzzle", "Randlinie",
-				"Raster", "Schlicht", "Stapel", "Traditionell", "Zeitungspapier")
-			}
-		}
 
-	'en-'	{
-			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-			{
-				$xArray = ("Austin", "Banded", "Facet", "Filigree", "Grid",
-				"Integral", "Ion (Dark)", "Ion (Light)", "Motion", "Retrospect",
-				"Semaphore", "Sideline", "Slice (Dark)", "Slice (Light)", "ViewMaster",
-				"Whisp")
+		'en-'	{
+				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+				{
+					$xArray = ("Austin", "Banded", "Facet", "Filigree", "Grid",
+					"Integral", "Ion (Dark)", "Ion (Light)", "Motion", "Retrospect",
+					"Semaphore", "Sideline", "Slice (Dark)", "Slice (Light)", "ViewMaster",
+					"Whisp")
+				}
+				ElseIf($xWordVersion -eq $wdWord2010)
+				{
+					$xArray = ("Alphabet", "Annual", "Austere", "Austin", "Conservative",
+					"Contrast", "Cubicles", "Exposure", "Grid", "Mod", "Motion", "Newsprint",
+					"Perspective", "Pinstripes", "Puzzle", "Sideline", "Stacks", "Tiles", "Transcend")
+				}
 			}
-			ElseIf($xWordVersion -eq $wdWord2010)
-			{
-				$xArray = ("Alphabet", "Annual", "Austere", "Austin", "Conservative",
-				"Contrast", "Cubicles", "Exposure", "Grid", "Mod", "Motion", "Newsprint",
-				"Perspective", "Pinstripes", "Puzzle", "Sideline", "Stacks", "Tiles", "Transcend")
-			}
-		}
 
-	'es-'	{
-			If($xWordVersion -eq $wdWord2016)
-			{
-				$xArray = ("Austin", "Con bandas", "Cortar (oscuro)", "Cuadrícula", 
-				"Whisp", "Faceta", "Filigrana", "Integral", "Ion (claro)", 
-				"Ion (oscuro)", "Línea lateral", "Movimiento", "Retrospectiva", 
-				"Semáforo", "Slice (luz)", "Vista principal", "Whisp")
+		'es-'	{
+				If($xWordVersion -eq $wdWord2016)
+				{
+					$xArray = ("Austin", "Con bandas", "Cortar (oscuro)", "Cuadrícula", 
+					"Whisp", "Faceta", "Filigrana", "Integral", "Ion (claro)", 
+					"Ion (oscuro)", "Línea lateral", "Movimiento", "Retrospectiva", 
+					"Semáforo", "Slice (luz)", "Vista principal", "Whisp")
+				}
+				ElseIf($xWordVersion -eq $wdWord2013)
+				{
+					$xArray = ("Whisp", "Vista principal", "Filigrana", "Austin",
+					"Slice (luz)", "Faceta", "Semáforo", "Retrospectiva", "Cuadrícula",
+					"Movimiento", "Cortar (oscuro)", "Línea lateral", "Ion (oscuro)",
+					"Ion (claro)", "Integral", "Con bandas")
+				}
+				ElseIf($xWordVersion -eq $wdWord2010)
+				{
+					$xArray = ("Alfabeto", "Anual", "Austero", "Austin", "Conservador",
+					"Contraste", "Cuadrícula", "Cubículos", "Exposición", "Línea lateral",
+					"Moderno", "Mosaicos", "Movimiento", "Papel periódico",
+					"Perspectiva", "Pilas", "Puzzle", "Rayas", "Sobrepasar")
+				}
 			}
-			ElseIf($xWordVersion -eq $wdWord2013)
-			{
-				$xArray = ("Whisp", "Vista principal", "Filigrana", "Austin",
-				"Slice (luz)", "Faceta", "Semáforo", "Retrospectiva", "Cuadrícula",
-				"Movimiento", "Cortar (oscuro)", "Línea lateral", "Ion (oscuro)",
-				"Ion (claro)", "Integral", "Con bandas")
-			}
-			ElseIf($xWordVersion -eq $wdWord2010)
-			{
-				$xArray = ("Alfabeto", "Anual", "Austero", "Austin", "Conservador",
-				"Contraste", "Cuadrícula", "Cubículos", "Exposición", "Línea lateral",
-				"Moderno", "Mosaicos", "Movimiento", "Papel periódico",
-				"Perspectiva", "Pilas", "Puzzle", "Rayas", "Sobrepasar")
-			}
-		}
 
-	'fi-'	{
-			If($xWordVersion -eq $wdWord2016)
-			{
-				$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
-				"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
-				"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
-				"Kuiskaus", "Liike", "Ruudukko", "Sivussa")
+		'fi-'	{
+				If($xWordVersion -eq $wdWord2016)
+				{
+					$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
+					"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
+					"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
+					"Kuiskaus", "Liike", "Ruudukko", "Sivussa")
+				}
+				ElseIf($xWordVersion -eq $wdWord2013)
+				{
+					$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
+					"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
+					"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
+					"Kiehkura", "Liike", "Ruudukko", "Sivussa")
+				}
+				ElseIf($xWordVersion -eq $wdWord2010)
+				{
+					$xArray = ("Aakkoset", "Askeettinen", "Austin", "Kontrasti",
+					"Laatikot", "Liike", "Liituraita", "Mod", "Osittain peitossa",
+					"Palapeli", "Perinteinen", "Perspektiivi", "Pinot", "Ruudukko",
+					"Ruudut", "Sanomalehtipaperi", "Sivussa", "Vuotuinen", "Ylitys")
+				}
 			}
-			ElseIf($xWordVersion -eq $wdWord2013)
-			{
-				$xArray = ("Filigraani", "Integraali", "Ioni (tumma)",
-				"Ioni (vaalea)", "Opastin", "Pinta", "Retro", "Sektori (tumma)",
-				"Sektori (vaalea)", "Vaihtuvavärinen", "ViewMaster", "Austin",
-				"Kiehkura", "Liike", "Ruudukko", "Sivussa")
-			}
-			ElseIf($xWordVersion -eq $wdWord2010)
-			{
-				$xArray = ("Aakkoset", "Askeettinen", "Austin", "Kontrasti",
-				"Laatikot", "Liike", "Liituraita", "Mod", "Osittain peitossa",
-				"Palapeli", "Perinteinen", "Perspektiivi", "Pinot", "Ruudukko",
-				"Ruudut", "Sanomalehtipaperi", "Sivussa", "Vuotuinen", "Ylitys")
-			}
-		}
 
-	'fr-'	{
-			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-			{
-				$xArray = ("À bandes", "Austin", "Facette", "Filigrane", 
-				"Guide", "Intégrale", "Ion (clair)", "Ion (foncé)", 
-				"Lignes latérales", "Quadrillage", "Rétrospective", "Secteur (clair)", 
-				"Secteur (foncé)", "Sémaphore", "ViewMaster", "Whisp")
+		'fr-'	{
+				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+				{
+					$xArray = ("À bandes", "Austin", "Facette", "Filigrane", 
+					"Guide", "Intégrale", "Ion (clair)", "Ion (foncé)", 
+					"Lignes latérales", "Quadrillage", "Rétrospective", "Secteur (clair)", 
+					"Secteur (foncé)", "Sémaphore", "ViewMaster", "Whisp")
+				}
+				ElseIf($xWordVersion -eq $wdWord2010)
+				{
+					$xArray = ("Alphabet", "Annuel", "Austère", "Austin", 
+					"Blocs empilés", "Classique", "Contraste", "Emplacements de bureau", 
+					"Exposition", "Guide", "Ligne latérale", "Moderne", 
+					"Mosaïques", "Mots croisés", "Papier journal", "Perspective",
+					"Quadrillage", "Rayures fines", "Transcendant")
+				}
 			}
-			ElseIf($xWordVersion -eq $wdWord2010)
-			{
-				$xArray = ("Alphabet", "Annuel", "Austère", "Austin", 
-				"Blocs empilés", "Classique", "Contraste", "Emplacements de bureau", 
-				"Exposition", "Guide", "Ligne latérale", "Moderne", 
-				"Mosaïques", "Mots croisés", "Papier journal", "Perspective",
-				"Quadrillage", "Rayures fines", "Transcendant")
-			}
-		}
 
-	'nb-'	{
-			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-			{
-				$xArray = ("Austin", "BevegElse", "Dempet", "Fasett", "Filigran",
-				"Integral", "Ion (lys)", "Ion (mørk)", "Retrospekt", "Rutenett",
-				"Sektor (lys)", "Sektor (mørk)", "Semafor", "Sidelinje", "Stripet",
-				"ViewMaster")
+		'nb-'	{
+				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+				{
+					$xArray = ("Austin", "BevegElse", "Dempet", "Fasett", "Filigran",
+					"Integral", "Ion (lys)", "Ion (mørk)", "Retrospekt", "Rutenett",
+					"Sektor (lys)", "Sektor (mørk)", "Semafor", "Sidelinje", "Stripet",
+					"ViewMaster")
+				}
+				ElseIf($xWordVersion -eq $wdWord2010)
+				{
+					$xArray = ("Alfabet", "Årlig", "Avistrykk", "Austin", "Avlukker",
+					"BevegElse", "Engasjement", "Enkel", "Fliser", "Konservativ",
+					"Kontrast", "Mod", "Perspektiv", "Puslespill", "Rutenett", "Sidelinje",
+					"Smale striper", "Stabler", "Transcenderende")
+				}
 			}
-			ElseIf($xWordVersion -eq $wdWord2010)
-			{
-				$xArray = ("Alfabet", "Årlig", "Avistrykk", "Austin", "Avlukker",
-				"BevegElse", "Engasjement", "Enkel", "Fliser", "Konservativ",
-				"Kontrast", "Mod", "Perspektiv", "Puslespill", "Rutenett", "Sidelinje",
-				"Smale striper", "Stabler", "Transcenderende")
-			}
-		}
 
-	'nl-'	{
-			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-			{
-				$xArray = ("Austin", "Beweging", "Facet", "Filigraan", "Gestreept",
-				"Integraal", "Ion (donker)", "Ion (licht)", "Raster",
-				"Segment (Light)", "Semafoor", "Slice (donker)", "Spriet",
-				"Terugblik", "Terzijde", "ViewMaster")
+		'nl-'	{
+				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+				{
+					$xArray = ("Austin", "Beweging", "Facet", "Filigraan", "Gestreept",
+					"Integraal", "Ion (donker)", "Ion (licht)", "Raster",
+					"Segment (Light)", "Semafoor", "Slice (donker)", "Spriet",
+					"Terugblik", "Terzijde", "ViewMaster")
+				}
+				ElseIf($xWordVersion -eq $wdWord2010)
+				{
+					$xArray = ("Aantrekkelijk", "Alfabet", "Austin", "Bescheiden",
+					"Beweging", "Blikvanger", "Contrast", "Eenvoudig", "Jaarlijks",
+					"Krantenpapier", "Krijtstreep", "Kubussen", "Mod", "Perspectief",
+					"Puzzel", "Raster", "Stapels",
+					"Tegels", "Terzijde")
+				}
 			}
-			ElseIf($xWordVersion -eq $wdWord2010)
-			{
-				$xArray = ("Aantrekkelijk", "Alfabet", "Austin", "Bescheiden",
-				"Beweging", "Blikvanger", "Contrast", "Eenvoudig", "Jaarlijks",
-				"Krantenpapier", "Krijtstreep", "Kubussen", "Mod", "Perspectief",
-				"Puzzel", "Raster", "Stapels",
-				"Tegels", "Terzijde")
-			}
-		}
 
-	'pt-'	{
-			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-			{
-				$xArray = ("Animação", "Austin", "Em Tiras", "Exibição Mestra",
-				"Faceta", "Fatia (Clara)", "Fatia (Escura)", "Filete", "Filigrana", 
-				"Grade", "Integral", "Íon (Claro)", "Íon (Escuro)", "Linha Lateral",
-				"Retrospectiva", "Semáforo")
+		'pt-'	{
+				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+				{
+					$xArray = ("Animação", "Austin", "Em Tiras", "Exibição Mestra",
+					"Faceta", "Fatia (Clara)", "Fatia (Escura)", "Filete", "Filigrana", 
+					"Grade", "Integral", "Íon (Claro)", "Íon (Escuro)", "Linha Lateral",
+					"Retrospectiva", "Semáforo")
+				}
+				ElseIf($xWordVersion -eq $wdWord2010)
+				{
+					$xArray = ("Alfabeto", "Animação", "Anual", "Austero", "Austin", "Baias",
+					"Conservador", "Contraste", "Exposição", "Grade", "Ladrilhos",
+					"Linha Lateral", "Listras", "Mod", "Papel Jornal", "Perspectiva", "Pilhas",
+					"Quebra-cabeça", "Transcend")
+				}
 			}
-			ElseIf($xWordVersion -eq $wdWord2010)
-			{
-				$xArray = ("Alfabeto", "Animação", "Anual", "Austero", "Austin", "Baias",
-				"Conservador", "Contraste", "Exposição", "Grade", "Ladrilhos",
-				"Linha Lateral", "Listras", "Mod", "Papel Jornal", "Perspectiva", "Pilhas",
-				"Quebra-cabeça", "Transcend")
-			}
-		}
 
-	'sv-'	{
-			If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
-			{
-				$xArray = ("Austin", "Band", "Fasett", "Filigran", "Integrerad", "Jon (ljust)",
-				"Jon (mörkt)", "Knippe", "Rutnät", "RörElse", "Sektor (ljus)", "Sektor (mörk)",
-				"Semafor", "Sidlinje", "VisaHuvudsida", "Återblick")
+		'sv-'	{
+				If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
+				{
+					$xArray = ("Austin", "Band", "Fasett", "Filigran", "Integrerad", "Jon (ljust)",
+					"Jon (mörkt)", "Knippe", "Rutnät", "RörElse", "Sektor (ljus)", "Sektor (mörk)",
+					"Semafor", "Sidlinje", "VisaHuvudsida", "Återblick")
+				}
+				ElseIf($xWordVersion -eq $wdWord2010)
+				{
+					$xArray = ("Alfabetmönster", "Austin", "Enkelt", "Exponering", "Konservativt",
+					"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "Rutnät",
+					"RörElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Årligt",
+					"Övergående")
+				}
 			}
-			ElseIf($xWordVersion -eq $wdWord2010)
-			{
-				$xArray = ("Alfabetmönster", "Austin", "Enkelt", "Exponering", "Konservativt",
-				"Kontrast", "Kritstreck", "Kuber", "Perspektiv", "Plattor", "Pussel", "Rutnät",
-				"RörElse", "Sidlinje", "Sobert", "Staplat", "Tidningspapper", "Årligt",
-				"Övergående")
-			}
-		}
+
 
 		Default	{
 					If($xWordVersion -eq $wdWord2013 -or $xWordVersion -eq $wdWord2016)
@@ -2397,25 +4395,25 @@ Function CheckWordPrereq
 		If(($MSWord -eq $False) -and ($PDF -eq $True))
 		{
 			Write-Host "`n`n`t`tThis script uses Microsoft Word's SaveAs PDF function, please install Microsoft Word`n`n" -ForegroundColor White
-			Exit
+			AbortScript
 		}
 		Else
 		{
 			Write-Host "`n`n`t`tThis script directly outputs to Microsoft Word, please install Microsoft Word`n`n" -ForegroundColor White
-			Exit
+			AbortScript
 		}
 	}
 
 	#find out our session (usually "1" except on TS/RDC or Citrix)
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
-	#Find out if winword is running in our session
-	[bool]$wordrunning = $null -ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	#Find out if winword runsning in our session
+	[bool]$wordrunning = $Null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Host "`n`n`tPlease close all instances of Microsoft Word before running this report.`n`n" -ForegroundColor White
-		Exit
+		AbortScript
 	}
 }
 
@@ -2472,8 +4470,8 @@ Function Set-DocumentProperty {
     try {
         $binding = "System.Reflection.BindingFlags" -as [type]
         $builtInProperties = $Document.BuiltInDocumentProperties
-        $property = [System.__ComObject].invokemember("item", $binding::GetProperty, $null, $BuiltinProperties, $DocProperty)
-        [System.__ComObject].invokemember("value", $binding::SetProperty, $null, $property, $Value)
+        $property = [System.__ComObject].invokemember("item", $binding::GetProperty, $Null, $BuiltinProperties, $DocProperty)
+        [System.__ComObject].invokemember("value", $binding::SetProperty, $Null, $property, $Value)
     }
     catch {
         Write-Warning "Failed to set $DocProperty to $Value"
@@ -2524,7 +4522,7 @@ Function SetupWord
 		`n`n
 	Script cannot Continue.
 		`n`n"
-		Exit
+		AbortScript
 	}
 
 	Write-Verbose "$(Get-Date -Format G): Determine Word language value"
@@ -2587,7 +4585,7 @@ Function SetupWord
 	Script cannot Continue.
 		`n`n
 		"
-		Exit
+		AbortScript
 	}
 	Else
 	{
@@ -2639,7 +4637,7 @@ Function SetupWord
 			'ca-'	{
 					If($CoverPage -eq "Sideline")
 					{
-						$CoverPage = "LÃ­nia lateral"
+						$CoverPage = "Línia lateral"
 						$CPChanged = $True
 					}
 				}
@@ -2663,7 +4661,7 @@ Function SetupWord
 			'es-'	{
 					If($CoverPage -eq "Sideline")
 					{
-						$CoverPage = "LÃ­nea lateral"
+						$CoverPage = "Línea lateral"
 						$CPChanged = $True
 					}
 				}
@@ -2681,12 +4679,12 @@ Function SetupWord
 					{
 						If($Script:WordVersion -eq $wdWord2013 -or $Script:WordVersion -eq $wdWord2016)
 						{
-							$CoverPage = "Lignes latÃ©rales"
+							$CoverPage = "Lignes latérales"
 							$CPChanged = $True
 						}
 						Else
 						{
-							$CoverPage = "Ligne latÃ©rale"
+							$CoverPage = "Ligne latérale"
 							$CPChanged = $True
 						}
 					}
@@ -2723,6 +4721,7 @@ Function SetupWord
 						$CPChanged = $True
 					}
 				}
+
 		}
 
 		If($CPChanged)
@@ -2769,7 +4768,7 @@ Function SetupWord
 
 	$BuildingBlocksCollection | 
 	ForEach-Object {
-		If ($_.BuildingBlockEntries.Item($CoverPage).Name -eq $CoverPage) 
+		If($_.BuildingBlockEntries.Item($CoverPage).Name -eq $CoverPage) 
 		{
 			$BuildingBlocks = $_
 		}
@@ -2880,7 +4879,7 @@ Function SetupWord
 	$Script:Doc.ActiveWindow.ActivePane.view.SeekView = $wdSeekPrimaryFooter
 	#get the footer and format font
 	$footers = $Script:Doc.Sections.Last.Footers
-	ForEach ($footer in $footers) 
+	ForEach($footer in $footers) 
 	{
 		If($footer.exists) 
 		{
@@ -2906,7 +4905,7 @@ Function UpdateDocumentProperties
 	Param([string]$AbstractTitle, [string]$SubjectTitle)
 	#updated 8-Jun-2017 with additional cover page fields
 	#Update document properties
-	If($MSWORD -or $PDF)
+	If($MSWord -or $PDF)
 	{
 		If($Script:CoverPagesExist)
 		{
@@ -3026,7 +5025,7 @@ Function Get-RegistryValue2
         Catch
         {
             Write-Debug -Message "Failed to open HKLM on $ComputerName"
-            $Reg = $null
+            $Reg = $Null
         }
         if( $Reg -and ($RegKey = $Reg.OpenSubKey($path2) ) )
 		{
@@ -3070,17 +5069,17 @@ Function line
 
 	while( $tabs -gt 0 )
 	{
-		$null = $global:Output.Append( "`t" )
+		$Null = $global:Output.Append( "`t" )
 		$tabs--
 	}
 
 	If( $nonewline )
 	{
-		$null = $global:Output.Append( $name + $value )
+		$Null = $global:Output.Append( $name + $value )
 	}
 	Else
 	{
-		$null = $global:Output.AppendLine( $name + $value )
+		$Null = $global:Output.AppendLine( $name + $value )
 	}
 }
 	
@@ -3261,7 +5260,7 @@ Function WriteHTMLLine
 		[Int]    $tabs     = 0, 
 		[String] $name     = '', 
 		[String] $value    = '', 
-		[String] $fontName = $null,
+		[String] $fontName = $Null,
 		[Int]    $fontSize = 1,
 		[Int]    $options  = $htmlblack
 	)
@@ -3270,15 +5269,15 @@ Function WriteHTMLLine
 
 	If( [String]::IsNullOrEmpty( $name ) )	
 	{
-		$null = $sb.Append( '<p></p>' )
+		$Null = $sb.Append( '<p></p>' )
 	}
 	Else
 	{
 		[Bool] $ital = $options -band $htmlitalics
 		[Bool] $bold = $options -band $htmlBold
 
-		If( $ital ) { $null = $sb.Append( '<i>' ) }
-		If( $bold ) { $null = $sb.Append( '<b>' ) } 
+		If( $ital ) { $Null = $sb.Append( '<i>' ) }
+		If( $bold ) { $Null = $sb.Append( '<b>' ) } 
 
 		Switch( $style )
 		{
@@ -3289,19 +5288,19 @@ Function WriteHTMLLine
 			Default { $HTMLOpen = ''; $HTMLClose = ''; Break }
 		}
 
-		$null = $sb.Append( $HTMLOpen )
+		$Null = $sb.Append( $HTMLOpen )
 
-		$null = $sb.Append( ( '&nbsp;&nbsp;&nbsp;&nbsp;' * $tabs ) + $name + $value )
+		$Null = $sb.Append( ( '&nbsp;&nbsp;&nbsp;&nbsp;' * $tabs ) + $name + $value )
 
-		If( $HTMLClose -eq '' ) { $null = $sb.Append( '<br>' )     }
-		Else                    { $null = $sb.Append( $HTMLClose ) }
+		If( $HTMLClose -eq '' ) { $Null = $sb.Append( '<br>' )     }
+		Else                    { $Null = $sb.Append( $HTMLClose ) }
 
-		If( $ital ) { $null = $sb.Append( '</i>' ) }
-		If( $bold ) { $null = $sb.Append( '</b>' ) } 
+		If( $ital ) { $Null = $sb.Append( '</i>' ) }
+		If( $bold ) { $Null = $sb.Append( '</b>' ) } 
 
-		If( $HTMLClose -eq '' ) { $null = $sb.Append( '<br />' ) }
+		If( $HTMLClose -eq '' ) { $Null = $sb.Append( '<br />' ) }
 	}
-	$null = $sb.AppendLine( '' )
+	$Null = $sb.AppendLine( '' )
 
 	Out-File -FilePath $Script:HTMLFileName -Append -InputObject $sb.ToString() 4>$Null
 }
@@ -3322,8 +5321,8 @@ Function AddHTMLTable
 		[Int]      $fontSize  = 2,
 		[Int]      $colCount  = 0,
 		[Int]      $rowCount  = 0,
-		[Object[]] $rowInfo   = $null,
-		[Object[]] $fixedInfo = $null
+		[Object[]] $rowInfo   = $Null,
+		[Object[]] $fixedInfo = $Null
 	)
 
 	[System.Text.StringBuilder] $sb = New-Object System.Text.StringBuilder( 8192 )
@@ -3335,7 +5334,7 @@ Function AddHTMLTable
 
 	For( $rowCountIndex = 0; $rowCountIndex -lt $rowCount; $rowCountIndex++ )
 	{
-		$null = $sb.AppendLine( '<tr>' )
+		$Null = $sb.AppendLine( '<tr>' )
 
 		## reset
 		$row = $rowInfo[ $rowCountIndex ]
@@ -3358,22 +5357,22 @@ Function AddHTMLTable
 			[Bool] $bold = $format -band $htmlBold
 			[Bool] $ital = $format -band $htmlitalics
 
-			If( $null -eq $fixedInfo -or $fixedInfo.Length -eq 0 )
+			If( $Null -eq $fixedInfo -or $fixedInfo.Length -eq 0 )
 			{
-				$null = $sb.Append( "<td style=""background-color:$( $color )""><font face='$( $fontName )' size='$( $fontSize )'>" )
+				$Null = $sb.Append( "<td style=""background-color:$( $color )""><font face='$( $fontName )' size='$( $fontSize )'>" )
 			}
 			Else
 			{
-				$null = $sb.Append( "<td style=""width:$( $fixedInfo[ $columnIndex / 2 ] ); background-color:$( $color )""><font face='$( $fontName )' size='$( $fontSize )'>" )
+				$Null = $sb.Append( "<td style=""width:$( $fixedInfo[ $columnIndex / 2 ] ); background-color:$( $color )""><font face='$( $fontName )' size='$( $fontSize )'>" )
 			}
 
-			If( $bold ) { $null = $sb.Append( '<b>' ) }
-			If( $ital ) { $null = $sb.Append( '<i>' ) }
+			If( $bold ) { $Null = $sb.Append( '<b>' ) }
+			If( $ital ) { $Null = $sb.Append( '<i>' ) }
 
 			If( $text -eq ' ' -or $text.length -eq 0)
 			{
 				##$htmlbody += '&nbsp;&nbsp;&nbsp;'
-				$null = $sb.Append( '&nbsp;&nbsp;&nbsp;' )
+				$Null = $sb.Append( '&nbsp;&nbsp;&nbsp;' )
 			}
 			Else
 			{
@@ -3381,23 +5380,23 @@ Function AddHTMLTable
 				{
 					If( $text[ $inx ] -eq ' ' )
 					{
-						$null = $sb.Append( '&nbsp;' )
+						$Null = $sb.Append( '&nbsp;' )
 					}
 					Else
 					{
 						Break
 					}
 				}
-				$null = $sb.Append( $text )
+				$Null = $sb.Append( $text )
 			}
 
-			If( $bold ) { $null = $sb.Append( '</b>' ) }
-			If( $ital ) { $null = $sb.Append( '</i>' ) }
+			If( $bold ) { $Null = $sb.Append( '</b>' ) }
+			If( $ital ) { $Null = $sb.Append( '</i>' ) }
 
-			$null = $sb.AppendLine( '</font></td>' )
+			$Null = $sb.AppendLine( '</font></td>' )
 		}
 
-		$null = $sb.AppendLine( '</tr>' )
+		$Null = $sb.AppendLine( '</tr>' )
 	}
 
 	Out-File -FilePath $Script:HTMLFileName -Append -InputObject $sb.ToString() 4>$Null 
@@ -3416,7 +5415,7 @@ Function AddHTMLTable
 .DESCRIPTION
 	This function formats a table for HTML from multiple arrays of strings.
 .PARAMETER noBorder
-	If set to $true, a table will be generated without a border (border = '0'). Otherwise the table will be generated
+	If set to $True, a table will be generated without a border (border = '0'). Otherwise the table will be generated
 	with a border (border = '1').
 .PARAMETER noHeadCols
 	This parameter should be used when generating tables which do not have a separate array containing column headers
@@ -3484,7 +5483,7 @@ Function AddHTMLTable
 	$columnHeaders = @("User Name",$htmlsb,$UserName,$htmlwhite)
 	$rowdata += @(,('Save as PDF',$htmlsb,$PDF.ToString(),$htmlwhite))
 	$rowdata += @(,('Save as TEXT',$htmlsb,$TEXT.ToString(),$htmlwhite))
-	$rowdata += @(,('Save as WORD',$htmlsb,$MSWORD.ToString(),$htmlwhite))
+	$rowdata += @(,('Save as WORD',$htmlsb,$MSWord.ToString(),$htmlwhite))
 	$rowdata += @(,('Save as HTML',$htmlsb,$HTML.ToString(),$htmlwhite))
 	$rowdata += @(,('Add DateTime',$htmlsb,$AddDateTime.ToString(),$htmlwhite))
 	$rowdata += @(,('Hardware Inventory',$htmlsb,$Hardware.ToString(),$htmlwhite))
@@ -3529,50 +5528,16 @@ Function FormatHTMLTable
 		[String]   $tablewidth  = 'auto',
 		[String]   $fontName    = 'Calibri',
 		[Int]      $fontSize    = 2,
-		[Switch]   $noBorder    = $false,
+		[Switch]   $noBorder    = $False,
 		[Int]      $noHeadCols  = 1,
-		[Object[]] $rowArray    = $null,
-		[Object[]] $fixedWidth  = $null,
-		[Object[]] $columnArray = $null
+		[Object[]] $rowArray    = $Null,
+		[Object[]] $fixedWidth  = $Null,
+		[Object[]] $columnArray = $Null
 	)
-
-	## FIXME - the help text for this function is wacky wrong - MBS
-	## FIXME - Use StringBuilder - MBS - this only builds the table header - benefit relatively small
-<#
-	If( $SuperVerbose )
-	{
-		wv "FormatHTMLTable: fontname '$fontname', size $fontSize, tableheader '$tableheader'"
-		wv "FormatHTMLTable: noborder $noborder, noheadcols $noheadcols"
-		If( $rowarray -and $rowarray.count -gt 0 )
-		{
-			wv "FormatHTMLTable: rowarray has $( $rowarray.count ) elements"
-		}
-		Else
-		{
-			wv "FormatHTMLTable: rowarray is empty"
-		}
-		If( $columnarray -and $columnarray.count -gt 0 )
-		{
-			wv "FormatHTMLTable: columnarray has $( $columnarray.count ) elements"
-		}
-		Else
-		{
-			wv "FormatHTMLTable: columnarray is empty"
-		}
-		If( $fixedwidth -and $fixedwidth.count -gt 0 )
-		{
-			wv "FormatHTMLTable: fixedwidth has $( $fixedwidth.count ) elements"
-		}
-		Else
-		{
-			wv "FormatHTMLTable: fixedwidth is empty"
-		}
-	}
-#>
 
 	$HTMLBody = "<b><font face='" + $fontname + "' size='" + ($fontsize + 1) + "'>" + $tableheader + "</font></b>" + $crlf
 
-	If( $null -eq $columnArray -or $columnArray.Length -eq 0)
+	If( $Null -eq $columnArray -or $columnArray.Length -eq 0)
 	{
 		$NumCols = $noHeadCols + 1
 	}  # means we have no column headers, just a table
@@ -3581,7 +5546,7 @@ Function FormatHTMLTable
 		$NumCols = $columnArray.Length
 	}  # need to add one for the color attrib
 
-	If( $null -ne $rowArray )
+	If( $Null -ne $rowArray )
 	{
 		$NumRows = $rowArray.length + 1
 	}
@@ -3611,7 +5576,7 @@ Function FormatHTMLTable
 			[Bool] $bold = $val -band $htmlBold
 			[Bool] $ital = $val -band $htmlitalics
 
-			If( $null -eq $fixedWidth -or $fixedWidth.Length -eq 0 )
+			If( $Null -eq $fixedWidth -or $fixedWidth.Length -eq 0 )
 			{
 				$HTMLBody += "<td style=""background-color:$($tmp)""><font face='$($fontName)' size='$($fontSize)'>"
 			}
@@ -3669,7 +5634,7 @@ Function FormatHTMLTable
 		AddHTMLTable -fontName $fontName -fontSize $fontSize `
 		-colCount $numCols -rowCount $NumRows `
 		-rowInfo $rowArray -fixedInfo $fixedWidth
-		$rowArray = $null
+		$rowArray = $Null
 		$HTMLBody = '</table>'
 	}
 	Else
@@ -4066,7 +6031,7 @@ Function SetWordCellFormat
 				}
 			} # end Hashtable
 		} # end Switch
-	} # end process
+	} # end Process
 }
 
 <#
@@ -4140,20 +6105,20 @@ Function CheckExcelPrereq
 	{
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Host "`n`n`t`tFor the Delivery Groups Utilization option, this script directly outputs to Microsoft Excel, `n`t`tplease install Microsoft Excel or do not use the DeliveryGroupsUtilization (DGU) Switch`n`n" -ForegroundColor White
-		Exit
+		AbortScript
 	}
 
 	#find out our session (usually "1" except on TS/RDC or Citrix)
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
-	#Find out if excel is running in our session
-	[bool]$excelrunning = $null -ne ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
+	#Find out if excel runsning in our session
+	[bool]$excelrunning = $Null –ne ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	
 	If($excelrunning)
 	{
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Host "`n`n`tPlease close all instances of Microsoft Excel before running this report.`n`n" -ForegroundColor White
-		Exit
+		AbortScript
 	}
 }
 
@@ -4201,8 +6166,8 @@ Function Check-NeededPSSnapins
 	`n`n
 	Script cannot continue.
 	`n`n"
-					Return $false
-				}
+					Return $False
+				}				
 			}
 		}
 	}
@@ -4284,18 +6249,17 @@ Function SaveandCloseDocumentandShutdownWord
 	[gc]::collect() 
 	[gc]::WaitForPendingFinalizers()
 	
-	#is the winword process still running? kill it
+	#is the winword Process still running? kill it
 
 	#find out our session (usually "1" except on TS/RDC or Citrix)
 	$SessionID = (Get-Process -PID $PID).SessionId
 
-	#Find out if winword is running in our session
-	$wordprocess = $Null
-	$wordprocess = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}).Id
-	If($null -ne $wordprocess -and $wordprocess -gt 0)
+	#Find out if winword running in our session
+	$wordprocess = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}) | Select-Object -Property Id 
+	If( $wordprocess -and $wordprocess.Id -gt 0)
 	{
-		Write-Verbose "$(Get-Date -Format G): WinWord process is still running. Attempting to stop WinWord process # $($wordprocess)"
-		Stop-Process $wordprocess -EA 0
+		Write-Verbose "$(Get-Date -Format G): WinWord Process is still running. Attempting to stop WinWord Process # $($wordprocess.Id)"
+		Stop-Process $wordprocess.Id -EA 0
 	}
 }
 
@@ -4334,12 +6298,17 @@ Function SetupHTML
 Function SaveandCloseTextDocument
 {
 	Write-Verbose "$(Get-Date -Format G): Saving Text file"
+	Line 0 ""
+	Line 0 "Report Complete"
 	Write-Output $global:Output.ToString() | Out-File $Script:TextFileName 4>$Null
+	$global:output = $Null
 }
 
 Function SaveandCloseHTMLDocument
 {
 	Write-Verbose "$(Get-Date -Format G): Saving HTML file"
+	WriteHTMLLine 0 0 ""
+	WriteHTMLLine 0 0 "Report Complete"
 	Out-File -FilePath $Script:HTMLFileName -Append -InputObject "<p></p></body></html>" 4>$Null
 }
 
@@ -4364,9 +6333,73 @@ Function SetFileNames
 	ShowScriptOptions
 }
 
+Function OutputReportFooter
+{
+	<#
+	Report Footer
+		Report information:
+			Created with: <Script Name> - Release Date: <Script Release Date>
+			Script version: <Script Version>
+			Started on <Date Time in Local Format>
+			Elapsed time: nn days, nn hours, nn minutes, nn.nn seconds
+			Ran from domain <Domain Name> by user <Username>
+			Ran from the folder <Folder Name>
+
+	Script Name and Script Release date are script-specific variables.
+	Script version is a script variable.
+	Start Date Time in Local Format is a script variable.
+	Domain Name is $env:USERDNSDOMAIN.
+	Username is $env:USERNAME.
+	Folder Name is a script variable.
+	#>
+
+	$runtime = $(Get-Date) - $Script:StartTime
+	$Str = [string]::format("{0} days, {1} hours, {2} minutes, {3}.{4} seconds",
+		$runtime.Days,
+		$runtime.Hours,
+		$runtime.Minutes,
+		$runtime.Seconds,
+		$runtime.Milliseconds)
+
+	If($MSWord -or $PDF)
+	{
+		$Script:selection.InsertNewPage()
+		WriteWordLine 1 0 "Report Footer"
+		WriteWordLine 2 0 "Report Information:"
+		WriteWordLine 0 1 "Created with: $Script:ScriptName - Release Date: $Script:ReleaseDate"
+		WriteWordLine 0 1 "Script version: $Script:MyVersion"
+		WriteWordLine 0 1 "Started on $Script:StartTime"
+		WriteWordLine 0 1 "Elapsed time: $Str"
+		WriteWordLine 0 1 "Ran from domain $env:USERDNSDOMAIN by user $env:USERNAME"
+		WriteWordLine 0 1 "Ran from the folder $Script:pwdpath"
+	}
+	If($Text)
+	{
+		Line 0 "///  Report Footer  \\\"
+		Line 1 "Report Information:"
+		Line 2 "Created with: $Script:ScriptName - Release Date: $Script:ReleaseDate"
+		Line 2 "Script version: $Script:MyVersion"
+		Line 2 "Started on $Script:StartTime"
+		Line 2 "Elapsed time: $Str"
+		Line 2 "Ran from domain $env:USERDNSDOMAIN by user $env:USERNAME"
+		Line 2 "Ran from the folder $Script:pwdpath"
+	}
+	If($HTML)
+	{
+		WriteHTMLLine 1 0 "///&nbsp;&nbsp;Report Footer&nbsp;&nbsp;\\\"
+		WriteHTMLLine 2 0 "Report Information:"
+		WriteHTMLLine 0 1 "Created with: $Script:ScriptName - Release Date: $Script:ReleaseDate"
+		WriteHTMLLine 0 1 "Script version: $Script:MyVersion"
+		WriteHTMLLine 0 1 "Started on $Script:StartTime"
+		WriteHTMLLine 0 1 "Elapsed time: $Str"
+		WriteHTMLLine 0 1 "Ran from domain $env:USERDNSDOMAIN by user $env:USERNAME"
+		WriteHTMLLine 0 1 "Ran from the folder $Script:pwdpath"
+	}
+}
+
 Function ProcessDocumentOutput
 {
-	If($MSWORD -or $PDF)
+	If($MSWord -or $PDF)
 	{
 		SaveandCloseDocumentandShutdownWord
 	}
@@ -4461,6 +6494,7 @@ Function ShowScriptOptions
 	Write-Verbose "$(Get-Date -Format G): Add DateTime       : $($AddDateTime)"
 	Write-Verbose "$(Get-Date -Format G): Administrators     : $($Administrators)"
 	Write-Verbose "$(Get-Date -Format G): Applications       : $($Applications)"
+	Write-Verbose "$(Get-Date -Format G): Auth Profile Name  : $($Script:AuthProfileName)"
 	Write-Verbose "$(Get-Date -Format G): Company Name       : $($Script:CoName)"
 	Write-Verbose "$(Get-Date -Format G): Company Address    : $($CompanyAddress)"
 	Write-Verbose "$(Get-Date -Format G): Company Email      : $($CompanyEmail)"
@@ -4507,10 +6541,11 @@ Function ShowScriptOptions
 	Write-Verbose "$(Get-Date -Format G): NoADPolicies       : $($NoADPolicies)"
 	Write-Verbose "$(Get-Date -Format G): NoPolicies         : $($NoPolicies)"
 	Write-Verbose "$(Get-Date -Format G): Policies           : $($Policies)"
+	Write-Verbose "$(Get-Date -Format G): Report Footer      : $ReportFooter"
 	Write-Verbose "$(Get-Date -Format G): Save As PDF        : $($PDF)"
 	Write-Verbose "$(Get-Date -Format G): Save As HTML       : $($HTML)"
 	Write-Verbose "$(Get-Date -Format G): Save As TEXT       : $($TEXT)"
-	Write-Verbose "$(Get-Date -Format G): Save As WORD       : $($MSWORD)"
+	Write-Verbose "$(Get-Date -Format G): Save As WORD       : $($MSWord)"
 	Write-Verbose "$(Get-Date -Format G): ScriptInfo         : $($ScriptInfo)"
 	Write-Verbose "$(Get-Date -Format G): Section            : $($Section)"
 	Write-Verbose "$(Get-Date -Format G): Site Name          : $($CCSiteName)"
@@ -4520,15 +6555,17 @@ Function ShowScriptOptions
 	Write-Verbose "$(Get-Date -Format G): Title              : $($Script:Title)"
 	Write-Verbose "$(Get-Date -Format G): To                 : $($To)"
 	Write-Verbose "$(Get-Date -Format G): Use SSL            : $($UseSSL)"
-	Write-Verbose "$(Get-Date -Format G): User Name          : $($UserName)"
+	Write-Verbose "$(Get-Date -Format G): Username           : $($UserName)"
 	Write-Verbose "$(Get-Date -Format G): VDA Registry Keys  : $($VDARegistryKeys)"
-	Write-Verbose "$(Get-Date -Format G): CC Version         : $($Script:CCSiteVersion)"
+	Write-Verbose "$(Get-Date -Format G): "
+	Write-Verbose "$(Get-Date -Format G): Ctx Cloud Version1 : $($Script:CCSiteVersion)"
+	Write-Verbose "$(Get-Date -Format G): Ctx Cloud Version2 : $($Script:CCSiteVersionReal)"
 	Write-Verbose "$(Get-Date -Format G): "
 	Write-Verbose "$(Get-Date -Format G): OS Detected        : $($Script:RunningOS)"
 	Write-Verbose "$(Get-Date -Format G): PoSH version       : $($Host.Version)"
 	Write-Verbose "$(Get-Date -Format G): PSCulture          : $($PSCulture)"
 	Write-Verbose "$(Get-Date -Format G): PSUICulture        : $($PSUICulture)"
-	If($MSWORD -or $PDF)
+	If($MSWord -or $PDF)
 	{
 		Write-Verbose "$(Get-Date -Format G): Word language      : $($Script:WordLanguageValue)"
 		Write-Verbose "$(Get-Date -Format G): Word version       : $($Script:WordProduct)"
@@ -4536,25 +6573,6 @@ Function ShowScriptOptions
 	Write-Verbose "$(Get-Date -Format G): "
 	Write-Verbose "$(Get-Date -Format G): Script start       : $($Script:StartTime)"
 	Write-Verbose "$(Get-Date -Format G): "
-}
-
-Function AbortScript
-{
-	If($MSWord -or $PDF)
-	{
-		$Script:Word.quit()
-		Write-Verbose "$(Get-Date -Format G): System Cleanup"
-		[System.Runtime.Interopservices.Marshal]::ReleaseComObject($Script:Word) | Out-Null
-		If(Test-Path variable:global:word)
-		{
-			Remove-Variable -Name word -Scope Global 4>$Null
-		}
-	}
-	[gc]::collect() 
-	[gc]::WaitForPendingFinalizers()
-	Write-Verbose "$(Get-Date -Format G): Script has been aborted"
-	$ErrorActionPreference = $SaveEAPreference
-	Exit
 }
 
 Function OutputWarning
@@ -4633,9 +6651,9 @@ Function OutputAdminsForDetails
 		If($MSWord -or $PDF)
 		{
 			$AdminsWordTable += @{ 
-			AdminName = $Admin.Name;
-			Role = $Admin.Rights[0].RoleName;
-			Status = $Tmp;
+				AdminName = $Admin.Name;
+				Role = $Admin.Rights[0].RoleName;
+				Status = $Tmp;
 			}
 		}
 		If($Text)
@@ -4648,9 +6666,10 @@ Function OutputAdminsForDetails
 		If($HTML)
 		{
 			$rowdata += @(,(
-			$Admin.Name,$htmlwhite,
-			$Admin.Rights[0].RoleName,$htmlwhite,
-			$tmp,$htmlwhite))
+				$Admin.Name,$htmlwhite,
+				$Admin.Rights[0].RoleName,$htmlwhite,
+				$tmp,$htmlwhite)
+			)
 		}
 	}
 	
@@ -4659,9 +6678,9 @@ Function OutputAdminsForDetails
 		If($AdminsWordTable.Count -eq 0)
 		{
 			$AdminsWordTable += @{ 
-			AdminName = "No admins found";
-			Role = "N/A";
-			Status = "N/A";
+				AdminName = "No admins found";
+				Role = "N/A";
+				Status = "N/A";
 			}
 		}
 
@@ -4671,10 +6690,11 @@ Function OutputAdminsForDetails
 		-Format $wdTableGrid `
 		-AutoFit $wdAutoFitFixed;
 
+		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-		$Table.Columns.Item(1).Width = 275;
-		$Table.Columns.Item(2).Width = 200;
+		$Table.Columns.Item(1).Width = 220;
+		$Table.Columns.Item(2).Width = 220;
 		$Table.Columns.Item(3).Width = 60;
 
 		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
@@ -4695,15 +6715,17 @@ Function OutputAdminsForDetails
 		If($rowdata.Count -eq 0)
 		{
 			$rowdata += @(,(
-			"No admins found",$htmlwhite,
-			"N/A",$htmlwhite,
-			"N/A",$htmlwhite))
+				"No admins found",$htmlwhite,
+				"N/A",$htmlwhite,
+				"N/A",$htmlwhite)
+			)
 		}
 		
 		$columnHeaders = @(
-		'Administrator Name',($global:htmlsb),
-		'Role',($global:htmlsb),
-		'Status',($global:htmlsb))
+			'Administrator Name',($global:htmlsb),
+			'Role',($global:htmlsb),
+			'Status',($global:htmlsb)
+		)
 
 		$msg = ""
 		$columnWidths = @("275","200","60")
@@ -4717,21 +6739,21 @@ Function TranscriptLogging
 	{
 		try 
 		{
-			If($Script:StartLog -eq $false)
+			If($Script:StartLog -eq $False)
 			{
-				Start-Transcript -Path $Script:LogPath -Force -Verbose:$false | Out-Null
+				Start-Transcript -Path $Script:LogPath -Force -Verbose:$False | Out-Null
 			}
 			Else
 			{
-				Start-Transcript -Path $Script:LogPath -Append -Verbose:$false | Out-Null
+				Start-Transcript -Path $Script:LogPath -Append -Verbose:$False | Out-Null
 			}
 			Write-Verbose "$(Get-Date -Format G): Transcript/log started at $Script:LogPath"
-			$Script:StartLog = $true
+			$Script:StartLog = $True
 		} 
 		catch 
 		{
 			Write-Verbose "$(Get-Date -Format G): Transcript/log failed at $Script:LogPath"
-			$Script:StartLog = $false
+			$Script:StartLog = $False
 		}
 	}
 }
@@ -4836,7 +6858,7 @@ $Script:Title is attached.
 			$e = $error[0]
 			
 			#error 5.7.57 is O365 and error 5.7.0 is gmail
-			If($null -ne $e.Exception -and $e.Exception.ToString().Contains("5.7"))
+			If($Null -ne $e.Exception -and $e.Exception.ToString().Contains("5.7"))
 			{
 				#The server response was: 5.7.xx SMTP; Client was not authenticated to send anonymous mail during MAIL FROM
 				Write-Verbose "$(Get-Date -Format G): Current user's credentials failed. Ask for usable credentials."
@@ -4943,7 +6965,7 @@ Function GetAdmins
 		}
 		"Host" {
 			$scopes = Get-hypscopedobject -ObjectName $xName @CCParams2
-            If($null -ne $scopes)
+            If($Null -ne $scopes)
             {
 			    $scopes = (Get-hypscopedobject -ObjectName $xName @CCParams2).ScopeId
 
@@ -4965,7 +6987,7 @@ Function GetAdmins
             Else
             {
                 #work around issue of "The property 'ScopeId' cannot be found on this object. Verify that the property exists."
-			    $scopes = $null
+			    $scopes = $Null
 
 			    $permissions = Get-AdminPermission @CCParams2 | `
 			    Where-Object { $_.MetadataMap["Citrix_ObjectType"] -eq "Connection" -or `
@@ -5048,7 +7070,7 @@ Function ProcessMachineCatalogs
 		WriteHTMLLine 1 0 $txt
 	}
 
-	$AllMachineCatalogs = Get-BrokerCatalog @CCParams2 -SortBy Name 
+	$AllMachineCatalogs = Get-BrokerCatalog @CCParams2 -SortBy 'AdminFolderName,Name'
 
 	If($? -and $Null -ne $AllMachineCatalogs)
 	{
@@ -5079,11 +7101,11 @@ Function OutputMachines
 	}
 	If($Text)
 	{
-		Line 0 "                                                                              No. of   Allocated Allocation                                        "
-		Line 0 "Machine Catalog                          Machine Type                         Machines Machines  Type       User Data     Provisioning Method      "
-		Line 0 "==================================================================================================================================================="
-		#       1234567890123456789012345678901234567890S123456789012345678901234567890123456S12345678S12345678SS1234567890S1234567890123S1234567890123456789012345
-		#                                                Single-session OS (Remote PC Access)                               On local Disk Machine creation services
+		Line 0 "                                                                                                             No. of   Allocated Allocation                                        "
+		Line 0 "Folder Name                Machine Catalog                              Machine Type                         Machines Machines  Type       User Data     Provisioning Method      "
+		Line 0 "=================================================================================================================================================================================="
+		#       12345678901234567890123456S12345678901234567890123456789012345678901234S123456789012345678901234567890123456S12345678S123456789S1234567890S1234567890123S1234567890123456789012345
+		#       This is a long folder nameXXXXXX-Azure-XXXXXXXXXEast-Dedicated-Win10MS Single-session OS (Remote PC Access)                               On local Disk Machine creation services
 	}
 	If($HTML)
 	{
@@ -5092,9 +7114,9 @@ Function OutputMachines
 
 	ForEach($Catalog in $Catalogs)
 	{
-		$xCatalogType = ""
-		$xAllocationType = ""
-		$xPersistType = ""
+		$xCatalogType      = ""
+		$xAllocationType   = ""
+		$xPersistType      = ""
 		$xProvisioningType = ""
 		
 		If($Catalog.MachinesArePhysical -eq $True -and $Catalog.IsRemotePC -eq $False -and $Catalog.SessionSupport -eq "SingleSession")
@@ -5143,31 +7165,45 @@ Function OutputMachines
 			"MCS"    {$xProvisioningType = "Machine creation services"; Break}
 			Default  {$xProvisioningType = "Provisioning method could not be determined: $($Catalog.ProvisioningType)"; Break}
 		}
+		
+		#mdmenrollment added in 1.26
+		Switch ($Catalog.MdmEnrollment)
+		{
+			"Intune"				{$MDMEnrollment = "Microsoft Intune"; Break}
+			"IntuneWithCitrixTags"	{$MDMEnrollment = "Microsoft Intune with Citrix tags"; Break}
+			"None"					{$MDMEnrollment = "No MDM"; Break}
+			Default					{$MDMEnrollment = "MDM Enrollment method could not be determined: $($Catalog.MdmEnrollment)"; Break}
+		}
 
-		$Machines = @(Get-BrokerMachine @CCParams2 -CatalogName $Catalog.Name -SortBy DNSName)
+		#$Machines = @(Get-BrokerMachine @CCParams2 -CatalogName $Catalog.Name -SortBy DNSName)
+		#Citrix broke this cmdlet when they added folder names
+		#change to use the catalog's UID
+		$Machines = @(Get-BrokerMachine @CCParams2 -CatalogUID $Catalog.Uid -SortBy DNSName)
 		If($? -and ($Null -ne $Machines))
 		{
-			$NumberOfMachines = $Machines.Count
+			$NumberOfMachines = $Machines.Count.ToString()
 		}
 		
 		If($MSWord -or $PDF)
 		{
 			$WordTable += @{
-			MachineCatalogName = $Catalog.Name; 
-			MachineType        = $xCatalogType; 
-			NoOfMachines       = $NumberOfMachines.ToString();
-			AllocatedMachines  = $Catalog.UsedCount.ToString(); 
-			AllocationType     = $xAllocationType;
-			UserData           = $xPersistType;
-			ProvisioningMethod = $xProvisioningType;
+				AdminFolderName    = $Catalog.AdminFolderName; 
+				MachineCatalogName = $Catalog.CatalogName; 
+				MachineType        = $xCatalogType; 
+				NoOfMachines       = $NumberOfMachines;
+				AllocatedMachines  = $Catalog.UsedCount.ToString(); 
+				AllocationType     = $xAllocationType;
+				UserData           = $xPersistType;
+				ProvisioningMethod = $xProvisioningType;
 			}
 		}
 		If($Text)
 		{
-			Line 0 ( "{0,-40} {1,-36} {2,8} {3,8}  {4,-10} {5,-13} {6,-25}" -f `
-			$Catalog.Name, 
+			Line 0 ( "{0, -26} {1,-44} {2,-36} {3,8} {4,9} {5,-10} {6,-13} {7,-25}" -f `
+			$Catalog.AdminFolderName, 
+			$Catalog.CatalogName, 
 			$xCatalogType, 
-			$NumberOfMachines.ToString(), 
+			$NumberOfMachines, 
 			$Catalog.UsedCount.ToString(), 
 			$xAllocationType, 
 			$xPersistType, 
@@ -5176,34 +7212,50 @@ Function OutputMachines
 		If($HTML)
 		{
 			$rowdata += @(,(
-			$Catalog.Name,$htmlwhite,
-			$xCatalogType,$htmlwhite,
-			$NumberOfMachines.ToString(),$htmlwhite,
-			$Catalog.UsedCount.ToString(),$htmlwhite,
-			$xAllocationType,$htmlwhite,
-			$xPersistType,$htmlwhite,
-			$xProvisioningType,$htmlwhite))
+				$Catalog.AdminFolderName,$htmlwhite,
+				$Catalog.CatalogName,$htmlwhite,
+				$xCatalogType,$htmlwhite,
+				$NumberOfMachines,$htmlwhite,
+				$Catalog.UsedCount.ToString(),$htmlwhite,
+				$xAllocationType,$htmlwhite,
+				$xPersistType,$htmlwhite,
+				$xProvisioningType,$htmlwhite)
+			)
 		}
 	}
 
 	If($MSWord -or $PDF)
 	{
+		If($WordTable.Count -eq 0)
+		{
+			$WordTable += @{
+				AdminFolderName    = ""; 
+				MachineCatalogName = "None found"; 
+				MachineType        = ""; 
+				NoOfMachines       = "";
+				AllocatedMachines  = ""; 
+				AllocationType     = "";
+				UserData           = "";
+				ProvisioningMethod = "";
+			}
+		}
+		
 		$Table = AddWordTable -Hashtable $WordTable `
-		-Columns  MachineCatalogName, MachineType, NoOfMachines, AllocatedMachines, AllocationType, UserData, ProvisioningMethod `
-		-Headers  "Machine Catalog", "Machine type", "No. of machines", "Allocated machines", "Allocation Type", "User data", "Provisioning method" `
+		-Columns  AdminFolderName, MachineCatalogName, MachineType, NoOfMachines, AllocatedMachines, AllocationType, UserData, ProvisioningMethod `
+		-Headers  "Folder Name", "Machine Catalog", "Machine type", "No. of machines", "Allocated machines", "Allocation Type", "User data", "Provisioning method" `
 		-Format $wdTableGrid `
-		-AutoFit $wdAutoFitFixed;
+		-AutoFit $wdAutoFitContent;
 
 		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-		$Table.Columns.Item(1).Width = 105;
-		$Table.Columns.Item(2).Width = 100;
-		$Table.Columns.Item(3).Width = 75;
-		$Table.Columns.Item(4).Width = 50;
-		$Table.Columns.Item(5).Width = 55;
-		$Table.Columns.Item(6).Width = 50;
-		$Table.Columns.Item(7).Width = 65;
+		#$Table.Columns.Item(1).Width = 105;
+		#$Table.Columns.Item(2).Width = 100;
+		#$Table.Columns.Item(3).Width = 75;
+		#$Table.Columns.Item(4).Width = 50;
+		#$Table.Columns.Item(5).Width = 55;
+		#$Table.Columns.Item(6).Width = 50;
+		#$Table.Columns.Item(7).Width = 65;
 
 		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -5217,28 +7269,29 @@ Function OutputMachines
 	If($HTML)
 	{
 		$columnHeaders = @(
-		'Machine Catalog',($global:htmlsb),
-		'Machine type',($global:htmlsb),
-		'No. of machines',($global:htmlsb),
-		'Allocated machines',($global:htmlsb),
-		'Allocation Type',($global:htmlsb),
-		'User data',($global:htmlsb),
-		'Provisioning method',($global:htmlsb)
+			'Folder Name',($global:htmlsb),
+			'Machine Catalog',($global:htmlsb),
+			'Machine type',($global:htmlsb),
+			'No. of machines',($global:htmlsb),
+			'Allocated machines',($global:htmlsb),
+			'Allocation Type',($global:htmlsb),
+			'User data',($global:htmlsb),
+			'Provisioning method',($global:htmlsb)
 		)
 
-		$columnWidths = @("125","175","75","50","55","75","145")
+		$columnWidths = @("55","125","175","75","50","55","75","145")
 		$msg = ""
-		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "755"
 	}
 	
 	ForEach($Catalog in $Catalogs)
 	{
-		Write-Verbose "$(Get-Date -Format G): `t`tAdding Catalog $($Catalog.Name)"
-		$xCatalogType = ""
-		$xAllocationType = ""
-		$xPersistType = ""
+		Write-Verbose "$(Get-Date -Format G): `t`tAdding Catalog $($Catalog.CatalogName)"
+		$xCatalogType      = ""
+		$xAllocationType   = ""
+		$xPersistType      = ""
 		$xProvisioningType = ""
-		$xVDAVersion = ""
+		$xVDAVersion       = ""
 		
 		If($Catalog.MachinesArePhysical -eq $True -and $Catalog.IsRemotePC -eq $False -and $Catalog.SessionSupport -eq "SingleSession")
 		{
@@ -5291,6 +7344,8 @@ Function OutputMachines
 			"L7_9"	{$xVDAVersion = "7.9 (or newer)"; Break}
 			"L7_20"	{$xVDAVersion = "1811 (or newer)"; Break}
 			"L7_25"	{$xVDAVersion = "2003 (or newer)"; Break}
+			"L7_30"	{$xVDAVersion = "2106 (or newer)"; Break}
+			"L7_34"	{$xVDAVersion = "2206 (or newer)"; Break}
 			Default {$xVDAVersion = "Unable to determine VDA version: $($Catalog.MinimumFunctionalLevel)"; Break}
 		}
 
@@ -5300,12 +7355,12 @@ Function OutputMachines
 			
 			If(!$?)
 			{
-				$RemotePCOU = "Unable to retrieve"
+				$RemotePCOU    = "Unable to retrieve"
 				$RemotePCSubOU = "Unable to retrieve"
 			}
 			ElseIf($? -and $Null -eq $RemotePCAccounts)
 			{
-				$RemotePCOU = "No RemotePC OU configured"
+				$RemotePCOU    = "No RemotePC OU configured"
 				$RemotePCSubOU = "N/A"
 			}
 			ElseIf($? -and $Null -ne $RemotePCAccounts)
@@ -5317,18 +7372,21 @@ Function OutputMachines
 		}
 		
 		$MachineData = $Null
-		$Machines = @(Get-BrokerMachine @CCParams2 -CatalogName $Catalog.Name -SortBy DNSName)
+		#Citrix broke this cmdlet when they added folder names
+		#change to use the catalog's UID
+		#$Machines = @(Get-BrokerMachine @CCParams2 -CatalogName $Catalog.Name -SortBy DNSName)
+		$Machines = @(Get-BrokerMachine @CCParams2 -CatalogUID $Catalog.Uid -SortBy DNSName)
 		If($? -and ($Null -ne $Machines))
 		{
-			$NumberOfMachines = $Machines.Count
+			$NumberOfMachines = $Machines.Count.ToString()
 			
-			#don't process Manually provisioned
+			#don't Process Manually provisioned
 			#there is no $Catalog.ProvisioningSchemeId for manually provisioned catalogs or ones based on PVS, only MCS
 			If($Catalog.ProvisioningType -eq "MCS")
 			{
-				If($null -ne $Catalog.ProvisioningSchemeId)
+				If($Null -ne $Catalog.ProvisioningSchemeId)
 				{
-					$MachineData = Get-ProvScheme -ProvisioningSchemeUid $Catalog.ProvisioningSchemeId -EA 0
+					$MachineData = Get-ProvScheme -ProvisioningSchemeUid $Catalog.ProvisioningSchemeId @CCParams2
 				}
 				Else
 				{
@@ -5342,30 +7400,56 @@ Function OutputMachines
 					$tmp3 = $tmp2.Split(".")
 					$xDiskImage = $tmp3[0]
 
-					$MasterVM = ""
+					$MasterVM = "-"
 					ForEach($Item in $tmp1)
 					{
-						If(($Item.EndsWith(".vm")) -or ($Item.EndsWith(".template"))) #.template for Nutanix
+						 #.template for Nutanix and AWS
+						 #.manageddisk for Azure
+						 #.snapshot from sample data from a customer
+						If(($Item.EndsWith(".vm")) -or ($Item.EndsWith(".template")) -or ($Item.EndsWith(".manageddisk")) -or ($Item.EndsWith(".snapshot")))
 						{
 							$MasterVM = $Item
 						}
 					}
 					
+					$MasterImageVMDate = (Get-Date -UFormat "%c" $MachineData.MasterImageVMDate) #added in 1.26
+					
 					If(($Catalog.MinimumFunctionalLevel -eq "L7_9" -or 
 					    $Catalog.MinimumFunctionalLevel -eq "L7_20" -or 
-						$Catalog.MinimumFunctionalLevel -eq "L7_25") -and 
+						$Catalog.MinimumFunctionalLevel -eq "L7_25" -or
+						$Catalog.MinimumFunctionalLevel -eq "L7_30" -or 
+						$Catalog.MinimumFunctionalLevel -eq "L7_34") -and 
 					(($xAllocationType -eq "Random") -or 
 					($xAllocationType -eq "Permanent" -and $xPersistType -eq "Discard" )))
 					{
-						$TempDiskCacheSize = $MachineData.WriteBackCacheDiskSize
-						$TempMemoryCacheSize = $MachineData.WriteBackCacheMemorySize
+						If( $MachineData.PSObject.Properties[ 'WriteBackCacheDiskSize' ] )
+						{
+							$TempDiskCacheSize = "$($MachineData.WriteBackCacheDiskSize) GB"
+						}
+						Else
+						{
+							$TempDiskCacheSize = $Null
+							Remove-Variable TempDiskCacheSize
+						}
+						
+						If( $MachineData.PSObject.Properties[ 'WriteBackCacheMemorySize' ] )
+						{
+							$TempMemoryCacheSize = "$($MachineData.WriteBackCacheMemorySize) MB"
+						}
+						Else
+						{
+							$TempMemoryCacheSize = $Null
+							Remove-Variable TempMemoryCacheSize
+						}
 					}
 					
 					If(($Catalog.MinimumFunctionalLevel -eq "L7_9" -or 
 					    $Catalog.MinimumFunctionalLevel -eq "L7_20" -or 
-						$Catalog.MinimumFunctionalLevel -eq "L7_25") -and 
+						$Catalog.MinimumFunctionalLevel -eq "L7_25" -or
+						$Catalog.MinimumFunctionalLevel -eq "L7_30" -or
+						$Catalog.MinimumFunctionalLevel -eq "L7_34") -and
 					($xAllocationType -eq "Permanent" -and $xPersistType -eq "On local disk" ) -and 
-					((Get-ConfigEnabledFeature -EA 0) -contains "DedicatedFullDiskClone"))
+					((Get-ConfigEnabledFeature -EA 0) -contains "DedicatedFullDiskClone")) #fixed in 1.25
 					{
 						If($MachineData.UseFullDiskCloneProvisioning -eq $True)
 						{
@@ -5376,196 +7460,304 @@ Function OutputMachines
 							$VMCopyMode = "Fast Clone"
 						}
 					}
+					$CPUCount = $MachineData.CpuCount.ToString()
+					$MemoryMB = "$($MachineData.MemoryMB) MB"
+					$DiskSize = "$($MachineData.DiskSize) GB"
+					If( $MachineData.PSObject.Properties[ 'CleanOnBoot' ] )
+					{
+						$CleanOnBoot = $MachineData.CleanOnBoot.ToString()
+					}
+					Else
+					{
+						$CleanOnBoot = ""
+					}
+					If( $MachineData.PSObject.Properties[ 'DedicatedTenancy' ] )
+					{
+						$DedicatedTenancy = $MachineData.DedicatedTenancy.ToString()
+					}
+					Else
+					{
+						$DedicatedTenancy = "False"
+					}
+					If( $MachineData.PSObject.Properties[ 'IdentityPoolName' ] )
+					{
+						$IdentityPoolName = $MachineData.IdentityPoolName
+					}
+					Else
+					{
+						$IdentityPoolName = ""
+					}
+					
+					If( $MachineData.PSObject.Properties[ 'ResetAdministratorPasswords' ] )
+					{
+						$ResetAdministratorPasswords = $MachineData.ResetAdministratorPasswords.ToString()
+					}
+					Else
+					{
+						$ResetAdministratorPasswords = "False"
+					}
+					If( $MachineData.PSObject.Properties[ 'HostingUnitName' ] )
+					{
+						$HostingUnitName = $MachineData.HostingUnitName
+					}
+					Else
+					{
+						$HostingUnitName = ""
+					}
+					
+					#stuff added in 1.26
+					If( $MachineData.PSObject.Properties[ 'PreparedImageDefinitionName' ] )
+					{
+						$PreparedImageDefinitionName = $MachineData.PreparedImageDefinitionName
+					}
+					Else
+					{
+						$PreparedImageDefinitionName = ""
+					}
+					If( $MachineData.PSObject.Properties[ 'PreparedImageVersionNumber' ] )
+					{
+						$PreparedImageVersionNumber = $MachineData.PreparedImageVersionNumber
+					}
+					Else
+					{
+						$PreparedImageVersionNumber = ""
+					}
+					If( $MachineData.PSObject.Properties[ 'WindowsActivationType' ] )
+					{
+						#WindowsActivationType <string> Windows Activation Type set on the Master Image which has a 
+						#mapping with the Provisioning Scheme.
+						#This feature is supported from 2303 and successive VDA versions
+						
+						Switch ($MachineData.WindowsActivationType)
+						{
+							"KeyManagementService"	{$WindowsActivationType = "KMS"; Break}
+							"UnsupportedVDA"		{$WindowsActivationType = "Unsupported VDA"; Break}
+							Default					{$WindowsActivationType = "Unable to determine Windows Activation Type: $($MachineData.WindowsActivationType)"; Break}
+						}
+					}
+					Else
+					{
+						$WindowsActivationType = "Unsupported VDA Version"
+					}
 				}
 				Else
 				{
-					$xDiskImage = "Unable to retrieve details"
+					$CleanOnBoot                 = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$CPUCount                    = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$DedicatedTenancy            = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$DiskSize                    = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$HostingUnitName             = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$IdentityPoolName            = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$InstalledVDAVersion         = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$MasterVM                    = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$MasterImageVMDate           = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$MemoryMB                    = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$OperatingSystem             = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$PreparedImageDefinitionName = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$PreparedImageVersionNumber  = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$ResetAdministratorPasswords = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$TempDiskCacheSize           = $Null
+					$TempMemoryCacheSize         = $Null
+					$WindowsActivationType       = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$xDiskImage                  = "Unable to retrieve details because no ProvisioningSchemeUid"
+					Remove-Variable TempDiskCacheSize
+					Remove-Variable TempMemoryCacheSize
 				}
 			}
 			Else
 			{
 				$xDiskImage = "No details for manually or PVS provisioned machines"
 			}
+
+			If($Machines -is [array] -and $Machines.Count)
+			{
+				If([String]::IsNullOrEmpty($Machines[0].AgentVersion))
+				{
+					$InstalledVDAVersion = "-"
+					$OperatingSystem     = "-"
+				}
+				Else
+				{
+					$InstalledVDAVersion = $Machines[0].AgentVersion
+					$OperatingSystem     = $Machines[0].OSType
+				}
+			}
+			Else
+			{
+				$InstalledVDAVersion = "Unable to retrieve details - no machine data"
+				$OperatingSystem     = "Unable to retrieve details - no machine data"
+			}
 		}
 		Else
 		{
-			Write-Host "Unable to retrieve details for Machine Catalog $($Catalog.Name)" -ForegroundColor White
+			Write-Host "Unable to retrieve details for Machine Catalog $($Catalog.CatalogName) - no machines in Catalog" -ForegroundColor White
+			$CleanOnBoot                 = "Unable to retrieve details - no machines in Catalog"
+			$CPUCount                    = "Unable to retrieve details - no machines in Catalog"
+			$DedicatedTenancy            = "Unable to retrieve details - no machines in Catalog"
+			$DiskSize                    = "Unable to retrieve details - no machines in Catalog"
+			$HostingUnitName             = "Unable to retrieve details - no machines in Catalog"
+			$IdentityPoolName            = "Unable to retrieve details - no machines in Catalog"
+			$InstalledVDAVersion         = "Unable to retrieve details - no machines in Catalog"
+			$MasterVM                    = "Unable to retrieve details - no machines in Catalog"
+			$MasterImageVMDate           = "Unable to retrieve details - no machines in Catalog"
+			$MemoryMB                    = "Unable to retrieve details - no machines in Catalog"
+			$OperatingSystem             = "Unable to retrieve details - no machines in Catalog"
+			$PreparedImageDefinitionName = "Unable to retrieve details - no machines in Catalog"
+			$PreparedImageVersionNumber  = "Unable to retrieve details - no machines in Catalog"
+			$ResetAdministratorPasswords = "Unable to retrieve details - no machines in Catalog"
+			$TempDiskCacheSize           = $Null
+			$TempMemoryCacheSize         = $Null
+			$WindowsActivationType       = "Unable to retrieve details - no machines in Catalog"
+			$xDiskImage                  = "Unable to retrieve details - no machines in Catalog"
+			Remove-Variable TempDiskCacheSize
+			Remove-Variable TempMemoryCacheSize
 		}
-		
+
 		If($Catalog.ProvisioningType -eq "MCS")
 		{
 			$IdentityPool = @(Get-AcctIdentityPool @CCParams2 -IdentityPoolName $Catalog.Name)
 			
-			If($? -and $Null -ne $IdentityPool)
+			If($? -and $Null -ne $IdentityPool -and $IdentityPool.Count -gt 0)
 			{
-				If($IdentityPool.NamingSchemeType -eq "None")
-				{
-					$IdentityDomain           = "N/A"
-					$IdentityNamingScheme     = "Use existing AD accounts"
-					$IdentityNamingSchemeType = "None"
-					$IdentityOU               = "N/A"
-				}
-				Else
-				{
+				#If($IdentityPool.NamingSchemeType -ne "None") #fix in 1.26
+				#{
 					$IdentityDomain           = $IdentityPool.Domain
 					$IdentityNamingScheme     = $IdentityPool.NamingScheme
 					$IdentityNamingSchemeType = $IdentityPool.NamingSchemeType
 					$IdentityOU               = $IdentityPool.OU
-				}
+
+					#added in 1.26
+					<#
+						IdentityType	The type of identity type. 
+						This can be ActiveDirectory, AzureAD, HybridAzureAD, or Workgroup.
+					#>
+					Switch ($IdentityPool.IdentityType)
+					{
+						"ActiveDirectory"	{$IdentityType = "On-premises AD"; Break}
+						"AzureAD"			{$IdentityType = "Azure AD joined"; Break}
+						"HybridAzureAD"		{$IdentityType = "Hybrid Azure AD joined"; Break}
+						"Workgroup"			{$IdentityType = "Non-domain-joined"; Break}
+						Default				{$IdentityType = "-"; Break}
+					}
+					
+					<#
+						DeviceManagementType	The type of device management type. 
+						This can be Intune, IntuneWithCitrixTags, or None.
+					#>
+					Switch($IdentityPool.DeviceManagementType)
+					{
+						"Intune"				{$DeviceManagementType = "Microsoft Intune"; Break}
+						"IntuneWithCitrixTags"	{$DeviceManagementType = "Microsoft Intune with Citrix Tags"; Break}
+						"None"					{$DeviceManagementType = ""; Break}
+						""						{$DeviceManagementType = ""; Break}
+						Default					{$DeviceManagementType = "Unable to determine Device Management Type: $($IdentityPool.DeviceManagementType)"; Break}
+					}
+					#end added in 1.26
 			}
 			Else
 			{
 				$IdentityDomain           = "Not Found"
 				$IdentityNamingScheme     = "Not Found"
 				$IdentityNamingSchemeType = "Not Found"
+				$IdentityType             = "Not Found" #added in 1.26
 				$IdentityOU               = "Not Found"
+				$DeviceManagementType     = "Not Found" #added in 1.26
 			}
 		}
-
-		$SessionSupport = "Single-session OS"
-		If($Catalog.SessionSupport -eq "SingleSession")
+		
+		If([String]::IsNullOrEmpty($Catalog.Description))
 		{
-			$SessionSupport = "Single-session OS"
+			$Description = "-"
 		}
 		Else
 		{
-			$SessionSupport = "Multi-session OS"
+			$Description = $Catalog.Description
 		}
 		
+		If(![String]::IsNullOrEmpty($Catalog.AdminFolderName))
+		{
+			$AdminFolderName = $Catalog.AdminFolderName
+		}
+		Else
+		{
+			$AdminFolderName = ""
+		}
+
 		If($MSWord -or $PDF)
 		{
 			$Selection.InsertNewPage()
-			WriteWordLine 2 0 "Machine Catalog: $($Catalog.Name)"
+			WriteWordLine 2 0 "Machine Catalog: $AdminFolderName$($Catalog.CatalogName)"
 			[System.Collections.Hashtable[]] $CatalogInformation = @()
 			
 			If($Catalog.ProvisioningType -eq "MCS")
 			{
-				$CatalogInformation += @{Data = "Description"; Value = $Catalog.Description; }
-				$CatalogInformation += @{Data = "Machine type"; Value = $xCatalogType; }
-				$CatalogInformation += @{Data = "No. of machines"; Value = $NumberOfMachines.ToString(); }
-				$CatalogInformation += @{Data = "Allocated machines"; Value = $Catalog.UsedCount.ToString(); }
-				$CatalogInformation += @{Data = "Allocation type"; Value = $xAllocationType; }
-				$CatalogInformation += @{Data = "User data"; Value = $xPersistType; }
-				$CatalogInformation += @{Data = "Provisioning method"; Value = $xProvisioningType; }
 				$CatalogInformation += @{Data = "Account naming scheme"; Value = $IdentityNamingScheme; }
-				$CatalogInformation += @{Data = "Naming scheme type"; Value = $IdentityNamingSchemeType; }
 				$CatalogInformation += @{Data = "AD Domain"; Value = $IdentityDomain; }
 				$CatalogInformation += @{Data = "AD Location"; Value = $IdentityOU; }
+				$CatalogInformation += @{Data = "Allocated machines"; Value = $Catalog.UsedCount.ToString(); }
+				$CatalogInformation += @{Data = "Allocation type"; Value = $xAllocationType; }
+				$CatalogInformation += @{Data = "Clean on Boot"; Value = $CleanOnBoot; }
+				$CatalogInformation += @{Data = "Dedicated Tenancy"; Value = $DedicatedTenancy; }
+				$CatalogInformation += @{Data = "Description"; Value = $Description; }
+				$CatalogInformation += @{Data = "Device Management Type"; Value = $DeviceManagementType; } #added in 1.26
+				$CatalogInformation += @{Data = "Disk Image"; Value = $xDiskImage; }
+				$CatalogInformation += @{Data = "Hard disk"; Value = $DiskSize; }
+				$CatalogInformation += @{Data = "Identity Pool Name"; Value = $IdentityPoolName; }
+				$CatalogInformation += @{Data = "Identity Type"; Value = $IdentityType; } #added in 1.26
+				$CatalogInformation += @{Data = "Installed VDA version"; Value = $InstalledVDAVersion; }
+				$CatalogInformation += @{Data = "Machine type"; Value = $xCatalogType; }
+				$CatalogInformation += @{Data = "Master Image VM"; Value = $MasterVM; }
+				$CatalogInformation += @{Data = "Master Image VM Date"; Value = $MasterImageVMDate; } #added in 1.26
+				$CatalogInformation += @{Data = "MDM Enrollment"; Value = $MDMEnrollment; } #added in 1.26
+				$CatalogInformation += @{Data = "Memory"; Value = $MemoryMB; }
+				$CatalogInformation += @{Data = "Naming scheme type"; Value = $IdentityNamingSchemeType; }
+				$CatalogInformation += @{Data = "No. of machines"; Value = $NumberOfMachines; }
+				$CatalogInformation += @{Data = "Operating System"; Value = $OperatingSystem; }
+				$CatalogInformation += @{Data = "Prepared Image Definition Name"; Value = $PreparedImageDefinitionName; } #added in 1.26
+				$CatalogInformation += @{Data = "Prepared Image Version Number"; Value = $PreparedImageVersionNumber; } #added in 1.26
+				$CatalogInformation += @{Data = "Provisioning method"; Value = $xProvisioningType; }
+				$CatalogInformation += @{Data = "Reset Administrator Passwords"; Value = $ResetAdministratorPasswords; }
+				$CatalogInformation += @{Data = "Resources"; Value = $HostingUnitName; }
 				$CatalogInformation += @{Data = "Set to VDA version"; Value = $xVDAVersion; }
-				If($Null -ne $MachineData)
+				If(Test-Path variable:TempDiskCacheSize)
 				{
-					If( $MachineData.PSObject.Properties[ 'HostingUnitName' ] )
-					{
-						## GRL - The property 'HostingUnitName' cannot be found on this object. Verify that the property exists
-						$CatalogInformation += @{Data = "Resources"; Value = $MachineData.HostingUnitName; }
-					}
+					$CatalogInformation += @{Data = "Temporary disk cache size"; Value = $TempDiskCacheSize; }
 				}
-				$CatalogInformation += @{Data = "Zone"; Value = $Catalog.ZoneName; }
-
-				If($Null -ne $MachineData)
+				If(Test-Path variable:TempMemoryCacheSize)
 				{
-					$CatalogInformation += @{Data = "Master VM"; Value = $MasterVM; }
-					$CatalogInformation += @{Data = "Disk Image"; Value = $xDiskImage; }
-					$CatalogInformation += @{Data = "Virtual CPUs"; Value = $MachineData.CpuCount; }
-					$CatalogInformation += @{Data = "Memory"; Value = "$($MachineData.MemoryMB) MB"; }
-					$CatalogInformation += @{Data = "Hard disk"; Value = "$($MachineData.DiskSize) GB"; }
+					$CatalogInformation += @{Data = "Temporary memory cache size"; Value = $TempMemoryCacheSize; }
 				}
-				ElseIf($Null -eq $MachineData)
-				{
-					$CatalogInformation += @{Data = "Master VM"; Value = $MasterVM; }
-					$CatalogInformation += @{Data = "Disk Image"; Value = $xDiskImage; }
-					$CatalogInformation += @{Data = "Virtual CPUs"; Value = "Unable to retrieve details"; }
-					$CatalogInformation += @{Data = "Memory"; Value = "Unable to retrieve details"; }
-					$CatalogInformation += @{Data = "Hard disk"; Value = "Unable to retrieve details"; }
-				}
-			
-				If(($Catalog.MinimumFunctionalLevel -eq "L7_9" -or 
-					$Catalog.MinimumFunctionalLevel -eq "L7_20" -or 
-					$Catalog.MinimumFunctionalLevel -eq "L7_25") -and 
-				(($xAllocationType -eq "Random") -or 
-				($xAllocationType -eq "Permanent" -and $xPersistType -eq "Discard" )))
-				{
-					$CatalogInformation += @{Data = "Temporary memory cache size"; Value = "$($TempMemoryCacheSize) MB"; }
-					$CatalogInformation += @{Data = "Temporary disk cache size"; Value = "$($TempDiskCacheSize) GB"; }
-				}
-
-				If(($Catalog.MinimumFunctionalLevel -eq "L7_9" -or 
-					$Catalog.MinimumFunctionalLevel -eq "L7_20" -or 
-					$Catalog.MinimumFunctionalLevel -eq "L7_25") -and 
-				($xAllocationType -eq "Permanent" -and $xPersistType -eq "On local disk" ) -and 
-				((Get-ConfigEnabledFeature -EA 0) -contains "DedicatedFullDiskClone"))
+				$CatalogInformation += @{Data = "User data"; Value = $xPersistType; }
+				$CatalogInformation += @{Data = "Virtual CPUs"; Value = $CPUCount; }
+				If(Test-Path variable:VMCopyMode)
 				{
 					$CatalogInformation += @{Data = "VM copy mode"; Value = $VMCopyMode; }
 				}
-				
-				If($Null -ne $Machines)
-				{
-					If($Machines -is [array] -and $Machines.Count)
-					{
-						If([String]::IsNullOrEmpty($Machines[0].AgentVersion))
-						{
-							$CatalogInformation += @{Data = "Installed VDA version"; Value = "-"; }
-							$CatalogInformation += @{Data = "Operating System"; Value = "-"; }
-						}
-						Else
-						{
-							$CatalogInformation += @{Data = "Installed VDA version"; Value = $Machines[0].AgentVersion; }
-							$CatalogInformation += @{Data = "Operating System"; Value = $Machines[0].OSType; }
-						}
-					}
-					Else
-					{
-						$CatalogInformation += @{Data = "Installed VDA version"; Value = "Unable to retrieve details"; }
-						$CatalogInformation += @{Data = "Operating System"; Value = "Unable to retrieve details"; }
-					}
-				}
-				ElseIf($Null -eq $Machines)
-				{
-					$CatalogInformation += @{Data = "Installed VDA version"; Value = "Unable to retrieve details"; }
-					$CatalogInformation += @{Data = "Operating System"; Value = "Unable to retrieve details"; }
-				}
+				$CatalogInformation += @{Data = "Windows Activation Type"; Value = $WindowsActivationType; } #added in 1.26
+				$CatalogInformation += @{Data = "Zone"; Value = $Catalog.ZoneName; }
+				$CatalogInformation += @{Data = "Zone Healthy?"; Value = $Catalog.ZoneHealthy; }
 			}
 			ElseIf($Catalog.ProvisioningType -eq "PVS")
 			{
-				$CatalogInformation += @{Data = "Description"; Value = $Catalog.Description; }
+				$CatalogInformation += @{Data = "Allocation type"; Value = $xAllocationType; }
+				$CatalogInformation += @{Data = "Description"; Value = $Description; }
+				$CatalogInformation += @{Data = "Installed VDA version"; Value = $InstalledVDAVersion; }
 				$CatalogInformation += @{Data = "Machine type"; Value = $xCatalogType; }
+				$CatalogInformation += @{Data = "Operating System"; Value = $OperatingSystem; }
 				$CatalogInformation += @{Data = "Provisioning method"; Value = $xProvisioningType; }
 				$CatalogInformation += @{Data = "PVS address"; Value = $Catalog.PvsAddress; }
-				$CatalogInformation += @{Data = "Allocation type"; Value = $xAllocationType; }
 				$CatalogInformation += @{Data = "Set to VDA version"; Value = $xVDAVersion; }
 				$CatalogInformation += @{Data = "Zone"; Value = $Catalog.ZoneName; }
-			
-				If($Null -ne $Machines)
-				{
-					If($Machines -is [array] -and $Machines.Count)
-					{
-						If([String]::IsNullOrEmpty($Machines[0].AgentVersion))
-						{
-							$CatalogInformation += @{Data = "Installed VDA version"; Value = "-"; }
-							$CatalogInformation += @{Data = "Operating System"; Value = "-"; }
-						}
-						Else
-						{
-							$CatalogInformation += @{Data = "Installed VDA version"; Value = $Machines[0].AgentVersion; }
-							$CatalogInformation += @{Data = "Operating System"; Value = $Machines[0].OSType; }
-						}
-					}
-					Else
-					{
-						$CatalogInformation += @{Data = "Installed VDA version"; Value = "Unable to retrieve details"; }
-						$CatalogInformation += @{Data = "Operating System"; Value = "Unable to retrieve details"; }
-					}
-				}
-				ElseIf($Null -eq $Machines)
-				{
-					$CatalogInformation += @{Data = "Installed VDA version"; Value = "Unable to retrieve details"; }
-					$CatalogInformation += @{Data = "Operating System"; Value = "Unable to retrieve details"; }
-				}
+				$CatalogInformation += @{Data = "Zone Healthy?"; Value = $Catalog.ZoneHealthy; }
 			}
 			ElseIf($Catalog.ProvisioningType -eq "Manual" -and $Catalog.IsRemotePC -eq $True)
 			{
-				$CatalogInformation += @{Data = "Description"; Value = $Catalog.Description; }
-				
+				$CatalogInformation += @{Data = "Allocated machines"; Value = $Catalog.UsedCount.ToString(); }
+				$CatalogInformation += @{Data = "Description"; Value = $Description; }
+				$CatalogInformation += @{Data = "Installed VDA version"; Value = $InstalledVDAVersion; }
+				$CatalogInformation += @{Data = "Machine type"; Value = $xCatalogType; }
+				$CatalogInformation += @{Data = "No. of machines"; Value = $NumberOfMachines; }
+				$CatalogInformation += @{Data = "Operating System"; Value = $OperatingSystem; }
 				If($RemotePCAccounts -is [array])
 				{
 					ForEach($RemotePCAccount in $RemotePCAccounts)
@@ -5623,80 +7815,43 @@ Function OutputMachines
 					$CatalogInformation += @{Data = "     Allow subfolder matches"; Value = $RemotePCSubOU; }
 				}
 
-				$CatalogInformation += @{Data = "Machine type"; Value = $xCatalogType; }
-				$CatalogInformation += @{Data = "No. of machines"; Value = $NumberOfMachines.ToString(); }
-				$CatalogInformation += @{Data = "Allocated machines"; Value = $Catalog.UsedCount.ToString(); }
 				$CatalogInformation += @{Data = "Set to VDA version"; Value = $xVDAVersion; }
 				$CatalogInformation += @{Data = "Zone"; Value = $Catalog.ZoneName; }
-
-				If($Null -ne $Machines)
-				{
-					If($Machines -is [array] -and $Machines.Count)
-					{
-						If([String]::IsNullOrEmpty($Machines[0].AgentVersion))
-						{
-							$CatalogInformation += @{Data = "Installed VDA version"; Value = "-"; }
-							$CatalogInformation += @{Data = "Operating System"; Value = "-"; }
-						}
-						Else
-						{
-							$CatalogInformation += @{Data = "Installed VDA version"; Value = $Machines[0].AgentVersion; }
-							$CatalogInformation += @{Data = "Operating System"; Value = $Machines[0].OSType; }
-						}
-					}
-					Else
-					{
-						$CatalogInformation += @{Data = "Installed VDA version"; Value = "Unable to retrieve details"; }
-						$CatalogInformation += @{Data = "Operating System"; Value = "Unable to retrieve details"; }
-					}
-			}
-				ElseIf($Null -eq $Machines)
-				{
-					$CatalogInformation += @{Data = "Installed VDA version"; Value = "Unable to retrieve details"; }
-					$CatalogInformation += @{Data = "Operating System"; Value = "Unable to retrieve details"; }
-				}
+				$CatalogInformation += @{Data = "Zone Healthy?"; Value = $Catalog.ZoneHealthy.ToString(); }
 			}
 			ElseIf($Catalog.ProvisioningType -eq "Manual" -and $Catalog.IsRemotePC -ne $True)
 			{
-				$CatalogInformation += @{Data = "Description"; Value = $Catalog.Description; }
-				$CatalogInformation += @{Data = "Machine type"; Value = $xCatalogType; }
-				$CatalogInformation += @{Data = "No. of machines"; Value = $NumberOfMachines.ToString(); }
 				$CatalogInformation += @{Data = "Allocated machines"; Value = $Catalog.UsedCount.ToString(); }
 				$CatalogInformation += @{Data = "Allocation type"; Value = $xAllocationType; }
-				$CatalogInformation += @{Data = "User data"; Value = $xPersistType; }
+				$CatalogInformation += @{Data = "Description"; Value = $Description; }
+				$CatalogInformation += @{Data = "Installed VDA version"; Value = $InstalledVDAVersion; }
+				$CatalogInformation += @{Data = "Machine type"; Value = $xCatalogType; }
+				$CatalogInformation += @{Data = "No. of machines"; Value = $NumberOfMachines; }
+				$CatalogInformation += @{Data = "Operating System"; Value = $OperatingSystem; }
 				$CatalogInformation += @{Data = "Provisioning method"; Value = $xProvisioningType; }
 				$CatalogInformation += @{Data = "Set to VDA version"; Value = $xVDAVersion; }
+				$CatalogInformation += @{Data = "User data"; Value = $xPersistType; }
 				$CatalogInformation += @{Data = "Zone"; Value = $Catalog.ZoneName; }
-				
-				If($Null -ne $Machines)
+				$CatalogInformation += @{Data = "Zone Healthy?"; Value = $Catalog.ZoneHealthy.ToString(); }
+			}
+			
+			If($Null -ne $MachineData)
+			{
+				$itemKeys = $MachineData.MetadataMap.Keys
+
+				ForEach( $itemKey in $itemKeys )
 				{
-					If($Machines -is [array] -and $Machines.Count)
+					$value = $MachineData.MetadataMap[ $itemKey ]
+					
+					If($value -eq "")
 					{
-						If([String]::IsNullOrEmpty($Machines[0].AgentVersion))
-						{
-							$CatalogInformation += @{Data = "Installed VDA version"; Value = "-"; }
-							$CatalogInformation += @{Data = "Operating System"; Value = "-"; }
-						}
-						Else
-						{
-							$CatalogInformation += @{Data = "Installed VDA version"; Value = $Machines[0].AgentVersion; }
-							$CatalogInformation += @{Data = "Operating System"; Value = $Machines[0].OSType; }
-						}
+						$value = "Not set"
 					}
-					Else
-					{
-						$CatalogInformation += @{Data = "Installed VDA version"; Value = "Unable to retrieve details"; }
-						$CatalogInformation += @{Data = "Operating System"; Value = "Unable to retrieve details"; }
-					}
-				}
-				ElseIf($Null -eq $Machines)
-				{
-					$CatalogInformation += @{Data = "Installed VDA version"; Value = "Unable to retrieve details"; }
-					$CatalogInformation += @{Data = "Operating System"; Value = "Unable to retrieve details"; }
+					$CatalogInformation += @{Data = $itemKey; Value = $value; }
 				}
 			}
 			
-			If($SessionSupport -eq "MultiSession")
+			If($Catalog.SessionSupport -eq "MultiSession")
 			{
 				$itemKeys = $Catalog.MetadataMap.Keys
 
@@ -5740,134 +7895,76 @@ Function OutputMachines
 		}
 		If($Text)
 		{
-			Line 0 "Machine Catalog: $($Catalog.Name)"
+			Line 0 "Machine Catalog: $AdminFolderName$($Catalog.CatalogName)"
 			If($Catalog.ProvisioningType -eq "MCS")
 			{
-				Line 1 "Description`t`t`t`t: " $Catalog.Description
-				Line 1 "Machine type`t`t`t`t: " $xCatalogType
-				Line 1 "No. of machines`t`t`t`t: " $NumberOfMachines.ToString()
-				Line 1 "Allocated machines`t`t`t: " $Catalog.UsedCount.ToString()
-				Line 1 "Allocation type`t`t`t`t: " $xAllocationType
-				Line 1 "User data`t`t`t`t: " $xPersistType
-				Line 1 "Provisioning method`t`t`t: " $xProvisioningType
 				Line 1 "Account naming scheme`t`t`t: " $IdentityNamingScheme
-				Line 1 "Naming scheme type`t`t`t: " $IdentityNamingSchemeType
 				Line 1 "AD Domain`t`t`t`t: " $IdentityDomain
 				Line 1 "AD Location`t`t`t`t: " $IdentityOU
+				Line 1 "Allocated machines`t`t`t: " $Catalog.UsedCount.ToString()
+				Line 1 "Allocation type`t`t`t`t: " $xAllocationType
+				Line 1 "Clean on Boot`t`t`t`t: " $CleanOnBoot
+				Line 1 "Dedicated Tenancy`t`t`t: " $DedicatedTenancy
+				Line 1 "Description`t`t`t`t: " $Description
+				Line 1 "Device Management Type`t`t`t: " $DeviceManagementType #added in 1.26
+				Line 1 "Disk Image`t`t`t`t: " $xDiskImage
+				Line 1 "Hard disk`t`t`t`t: " $DiskSize
+				Line 1 "Identity Pool Name`t`t`t: " $IdentityPoolName
+				Line 1 "Identity Type`t`t`t`t: " $IdentityType #added in 1.26
+				Line 1 "Installed VDA version`t`t`t: " $InstalledVDAVersion
+				Line 1 "Machine type`t`t`t`t: " $xCatalogType
+				Line 1 "Master Image VM`t`t`t`t: " $MasterVM
+				Line 1 "Master Image VM Date`t`t`t: " $MasterImageVMDate #added in 1.26
+				Line 1 "MDM Enrollment`t`t`t`t: " $MDMEnrollment #added in 1.26
+				Line 1 "Memory`t`t`t`t`t: " $MemoryMB
+				Line 1 "Naming scheme type`t`t`t: " $IdentityNamingSchemeType
+				Line 1 "No. of machines`t`t`t`t: " $NumberOfMachines
+				Line 1 "Operating System`t`t`t: " $OperatingSystem
+				Line 1 "Prepared Image Definition Name`t`t: " $PreparedImageDefinitionName #added in 1.26
+				Line 1 "Prepared Image Version Number`t`t: " $PreparedImageVersionNumber #added in 1.26
+				Line 1 "Provisioning method`t`t`t: " $xProvisioningType
+				Line 1 "Reset Administrator Passwords`t`t: " $ResetAdministratorPasswords
+				Line 1 "Resources`t`t`t`t: " $HostingUnitName #fixed in 1.25
 				Line 1 "Set to VDA version`t`t`t: " $xVDAVersion
-				If($Null -ne $MachineData)
+				If(Test-Path variable:TempDiskCacheSize)
 				{
-					If( $MachineData.PSObject.Properties[ 'HostingUnitName' ] )
-					{
-						## GRL - The property 'HostingUnitName' cannot be found on this object. Verify that the property exists
-						Line 1 "Resources`t`t`t`t: " $MachineData.HostingUnitName
-					}
+					Line 1 "Temporary disk cache size`t`t: " $TempDiskCacheSize
 				}
-				Line 1 "Zone`t`t`t`t`t: " $Catalog.ZoneName
-				
-				If($Null -ne $MachineData)
+				If(Test-Path variable:TempMemoryCacheSize)
 				{
-					Line 1 "Master VM`t`t`t`t: " $MasterVM
-					Line 1 "Disk Image`t`t`t`t: " $xDiskImage
-					Line 1 "Virtual CPUs`t`t`t`t: " $MachineData.CpuCount
-					Line 1 "Memory`t`t`t`t`t: " "$($MachineData.MemoryMB) MB"
-					Line 1 "Hard disk`t`t`t`t: " "$($MachineData.DiskSize) GB"
+					Line 1 "Temporary memory cache size`t`t: " $TempMemoryCacheSize
 				}
-				ElseIf($Null -eq $MachineData)
-				{
-					Line 1 "Master VM`t`t`t`t: " $MasterVM
-					Line 1 "Disk Image`t`t`t`t: " $xDiskImage
-					Line 1 "Virtual CPUs`t`t`t`t: " "Unable to retrieve details"
-					Line 1 "Memory`t`t`t`t`t: " "Unable to retrieve details"
-					Line 1 "Hard disk`t`t`t`t: " "Unable to retrieve details"
-				}
-				
-				If(($Catalog.MinimumFunctionalLevel -eq "L7_9" -or 
-					$Catalog.MinimumFunctionalLevel -eq "L7_20" -or 
-					$Catalog.MinimumFunctionalLevel -eq "L7_25") -and 
-				(($xAllocationType -eq "Random") -or 
-				($xAllocationType -eq "Permanent" -and $xPersistType -eq "Discard" )))
-				{
-					Line 1 "Temporary memory cache size`t`t: " "$($TempMemoryCacheSize) MB"
-					Line 1 "Temporary disk cache size`t`t: " "$($MachineData.WriteBackCacheDiskSize) GB"
-				}
-
-				If(($Catalog.MinimumFunctionalLevel -eq "L7_9" -or 
-					$Catalog.MinimumFunctionalLevel -eq "L7_20" -or 
-					$Catalog.MinimumFunctionalLevel -eq "L7_25") -and 
-				($xAllocationType -eq "Permanent" -and $xPersistType -eq "On local disk" ) -and 
-				((Get-ConfigEnabledFeature -EA 0) -contains "DedicatedFullDiskClone"))
+				Line 1 "User data`t`t`t`t: " $xPersistType
+				Line 1 "Virtual CPUs`t`t`t`t: " $CPUCount
+				If(Test-Path variable:VMCopyMode)
 				{
 					Line 1 "VM copy mode`t`t`t`t: " $VMCopyMode
 				}
-				
-				If($Null -ne $Machines)
-				{
-					If($Machines -is [array] -and $Machines.Count)
-					{
-						If([String]::IsNullOrEmpty($Machines[0].AgentVersion))
-						{
-							Line 1 "Installed VDA version`t`t`t: " "-"
-							Line 1 "Operating System`t`t`t: " "-"
-						}
-						Else
-						{
-							Line 1 "Installed VDA version`t`t`t: " $Machines[0].AgentVersion
-							Line 1 "Operating System`t`t`t: " $Machines[0].OSType
-						}
-					}
-					Else
-					{
-						Line 1 "Installed VDA version`t`t`t: " "Unable to retrieve details"
-						Line 1 "Operating System`t`t`t: " "Unable to retrieve details"
-					}
-				}
-				ElseIf($Null -eq $Machines)
-				{
-					Line 1 "Installed VDA version`t`t`t: " "Unable to retrieve details"
-					Line 1 "Operating System`t`t`t: " "Unable to retrieve details"
-				}
+				Line 1 "Windows Activation Type`t`t`t: " $WindowsActivationType #added in 1.26
+				Line 1 "Zone`t`t`t`t`t: " $Catalog.ZoneName
+				Line 1 "Zone Healthy?`t`t`t`t: " $Catalog.ZoneHealthy.ToString()
 			}
 			ElseIf($Catalog.ProvisioningType -eq "PVS")
 			{
-				Line 1 "Description`t`t`t`t: " $Catalog.Description
+				Line 1 "Allocation type`t`t`t`t: " $xAllocationType
+				Line 1 "Description`t`t`t`t: " $Description
+				Line 1 "Installed VDA version`t`t`t: " $InstalledVDAVersion
 				Line 1 "Machine type`t`t`t`t: " $xCatalogType
+				Line 1 "Operating System`t`t`t: " $OperatingSystem
 				Line 1 "Provisioning method`t`t`t: " $xProvisioningType
 				Line 1 "PVS address`t`t`t`t: " $Catalog.PvsAddress
-				Line 1 "Allocation type`t`t`t`t: " $xAllocationType
 				Line 1 "Set to VDA version`t`t`t: " $xVDAVersion
 				Line 1 "Zone`t`t`t`t`t: " $Catalog.ZoneName
-				
-				If($Null -ne $Machines)
-				{
-					If($Machines -is [array] -and $Machines.Count)
-					{
-						If([String]::IsNullOrEmpty($Machines[0].AgentVersion))
-						{
-							Line 1 "Installed VDA version`t`t`t: " "-"
-							Line 1 "Operating System`t`t`t: " "-"
-						}
-						Else
-						{
-							Line 1 "Installed VDA version`t`t`t: " $Machines[0].AgentVersion
-							Line 1 "Operating System`t`t`t: " $Machines[0].OSType
-						}
-					}
-					Else
-					{
-						Line 1 "Installed VDA version`t`t`t: " "Unable to retrieve details"
-						Line 1 "Operating System`t`t`t: " "Unable to retrieve details"
-					}
-				}
-				ElseIf($Null -eq $Machines)
-				{
-					Line 1 "Installed VDA version`t`t`t`t: " "Unable to retrieve details"
-					Line 1 "Operating System`t`t`t: " "Unable to retrieve details"
-				}
+				Line 1 "Zone Healthy?`t`t`t`t: " $Catalog.ZoneHealthy.ToString()
 			}
 			ElseIf($Catalog.ProvisioningType -eq "Manual" -and $Catalog.IsRemotePC -eq $True)
 			{
-				Line 1 "Description`t`t`t`t: " $Catalog.Description
+				Line 1 "Allocated machines`t`t`t: " $Catalog.UsedCount.ToString()
+				Line 1 "Description`t`t`t`t: " $Description
+				Line 1 "Installed VDA version`t`t`t: " $InstalledVDAVersion
+				Line 1 "Machine type`t`t`t`t: " $xCatalogType
+				Line 1 "No. of machines`t`t`t`t: " $NumberOfMachines
+				Line 1 "Operating System`t`t`t: " $OperatingSystem
 
 				If($RemotePCAccounts -is [array])
 				{
@@ -5926,80 +8023,43 @@ Function OutputMachines
 					Line 2 "Allow subfolder matches`t`t: " $RemotePCSubOU
 				}
 
-				Line 1 "Machine type`t`t`t`t: " $xCatalogType
-				Line 1 "No. of machines`t`t`t`t: "$NumberOfMachines.ToString()
-				Line 1 "Allocated machines`t`t`t: " $Catalog.UsedCount.ToString()
 				Line 1 "Set to VDA version`t`t`t: " $xVDAVersion
 				Line 1 "Zone`t`t`t`t`t: " $Catalog.ZoneName
-				
-				If($Null -ne $Machines)
-				{
-					If($Machines -is [array] -and $Machines.Count)
-					{
-						If([String]::IsNullOrEmpty($Machines[0].AgentVersion))
-						{
-							Line 1 "Installed VDA version`t`t`t: " "-"
-							Line 1 "Operating System`t`t`t: " "-"
-						}
-						Else
-						{
-							Line 1 "Installed VDA version`t`t`t: " $Machines[0].AgentVersion
-							Line 1 "Operating System`t`t`t: " $Machines[0].OSType
-						}
-					}
-					Else
-					{
-						Line 1 "Installed VDA version`t`t`t: " "Unable to retrieve details"
-						Line 1 "Operating System`t`t`t: " "Unable to retrieve details"
-					}
-				}
-				ElseIf($Null -eq $Machines)
-				{
-					Line 1 "Installed VDA version`t`t`t`t: " "Unable to retrieve details"
-					Line 1 "Operating System`t`t`t: " "Unable to retrieve details"
-				}
+				Line 1 "Zone Healthy?`t`t`t`t: " $Catalog.ZoneHealthy.ToString()
 			}
 			ElseIf($Catalog.ProvisioningType -eq "Manual" -and $Catalog.IsRemotePC -ne $True)
 			{
-				Line 1 "Description`t`t`t`t: " $Catalog.Description
-				Line 1 "Machine type`t`t`t`t: " $xCatalogType
-				Line 1 "No. of machines`t`t`t`t: "$NumberOfMachines.ToString()
 				Line 1 "Allocated machines`t`t`t: " $Catalog.UsedCount.ToString()
 				Line 1 "Allocation type`t`t`t`t: " $xAllocationType
-				Line 1 "User data`t`t`t`t: " $xPersistType
+				Line 1 "Description`t`t`t`t: " $Description
+				Line 1 "Installed VDA version`t`t`t: " $InstalledVDAVersion
+				Line 1 "Machine type`t`t`t`t: " $xCatalogType
+				Line 1 "No. of machines`t`t`t`t: " $NumberOfMachines
+				Line 1 "Operating System`t`t`t: " $OperatingSystem
 				Line 1 "Provisioning method`t`t`t: " $xProvisioningType
 				Line 1 "Set to VDA version`t`t`t: " $xVDAVersion
+				Line 1 "User data`t`t`t`t: " $xPersistType
 				Line 1 "Zone`t`t`t`t`t: " $Catalog.ZoneName
-				
-				If($Null -ne $Machines)
-				{
-					If($Machines -is [array] -and $Machines.Count)
-					{
-						If([String]::IsNullOrEmpty($Machines[0].AgentVersion))
-						{
-							Line 1 "Installed VDA version`t`t`t: " "-"
-							Line 1 "Operating System`t`t`t: " "-"
-						}
-						Else
-						{
-							Line 1 "Installed VDA version`t`t`t: " $Machines[0].AgentVersion
-							Line 1 "Operating System`t`t`t: " $Machines[0].OSType
-						}
-					}
-					Else
-					{
-						Line 1 "Installed VDA version`t`t`t: " "Unable to retrieve details"
-						Line 1 "Operating System`t`t`t: " "Unable to retrieve details"
-					}
-				}
-				ElseIf($Null -eq $Machines)
-				{
-					Line 1 "Installed VDA version`t`t`t: " "Unable to retrieve details"
-					Line 1 "Operating System`t`t`t: " "Unable to retrieve details"
-				}
+				Line 1 "Zone Healthy?`t`t`t`t: " $Catalog.ZoneHealthy.ToString()
 			}
 
-			If($SessionSupport -eq "MultiSession")
+			If($Null -ne $MachineData)
+			{
+				$itemKeys = $MachineData.MetadataMap.Keys
+
+				ForEach( $itemKey in $itemKeys )
+				{
+					$value = $MachineData.MetadataMap[ $itemKey ]
+					
+					If($value -eq "")
+					{
+						$value = "Not set"
+					}
+					Line 1 "$($itemKey)`t: " $value
+				}
+			}
+			
+			If($Catalog.SessionSupport -eq "MultiSession")
 			{
 				$itemKeys = $Catalog.MetadataMap.Keys
 
@@ -6028,135 +8088,76 @@ Function OutputMachines
 		}
 		If($HTML)
 		{
-			WriteHTMLLine 2 0 "Machine Catalog: $($Catalog.Name)"
+			WriteHTMLLine 2 0 "Machine Catalog: $AdminFolderName$($Catalog.CatalogName)"
 			$rowdata = @()
-			$columnHeaders = @("Machine type",($global:htmlsb),$xCatalogType,$htmlwhite)
+			$columnHeaders = @("Description",($global:htmlsb),$Description,$htmlwhite)
 			If($Catalog.ProvisioningType -eq "MCS")
 			{
-				$rowdata += @(,('Description',($global:htmlsb),$Catalog.Description,$htmlwhite))
-				$rowdata += @(,('Machine Type',($global:htmlsb),$xCatalogType,$htmlwhite))
-				$rowdata += @(,('No. of machines',($global:htmlsb),$NumberOfMachines.ToString(),$htmlwhite))
-				$rowdata += @(,('Allocated machines',($global:htmlsb),$Catalog.UsedCount.ToString(),$htmlwhite))
-				$rowdata += @(,('Allocation type',($global:htmlsb),$xAllocationType,$htmlwhite))
-				$rowdata += @(,('User data',($global:htmlsb),$xPersistType,$htmlwhite))
-				$rowdata += @(,('Provisioning method',($global:htmlsb),$xProvisioningType,$htmlwhite))
 				$rowdata += @(,("Account naming scheme",($global:htmlsb),$IdentityNamingScheme,$htmlwhite))
-				$rowdata += @(,("Naming scheme type",($global:htmlsb),$IdentityNamingSchemeType,$htmlwhite))
 				$rowdata += @(,("AD Domain",($global:htmlsb),$IdentityDomain,$htmlwhite))
 				$rowdata += @(,("AD Location",($global:htmlsb),$IdentityOU,$htmlwhite))
+				$rowdata += @(,('Allocated machines',($global:htmlsb),$Catalog.UsedCount.ToString(),$htmlwhite))
+				$rowdata += @(,('Allocation type',($global:htmlsb),$xAllocationType,$htmlwhite))
+				$rowdata += @(,("Clean on Boot",($global:htmlsb),$CleanOnBoot,$htmlwhite))
+				$rowdata += @(,("Dedicated Tenancy",($global:htmlsb),$DedicatedTenancy,$htmlwhite))
+				$rowdata += @(,("Description",($global:htmlsb),$Description,$htmlwhite)) #added in 1.26
+				$rowdata += @(,("Device Management Type",($global:htmlsb),$DeviceManagementType,$htmlwhite)) #added in 1.26
+				$rowdata += @(,('Disk Image',($global:htmlsb),$xDiskImage,$htmlwhite))
+				$rowdata += @(,('Hard disk',($global:htmlsb),$DiskSize,$htmlwhite))
+				$rowdata += @(,("Identity Pool Name",($global:htmlsb),$IdentityPoolName,$htmlwhite))
+				$rowdata += @(,("Identity Type",($global:htmlsb),$IdentityType,$htmlwhite)) #added in 1.26
+				$rowdata += @(,('Installed VDA version',($global:htmlsb),$InstalledVDAVersion,$htmlwhite))
+				$rowdata += @(,('Machine Type',($global:htmlsb),$xCatalogType,$htmlwhite))
+				$rowdata += @(,('Master Image VM',($global:htmlsb),$MasterVM,$htmlwhite))
+				$rowdata += @(,("Master Image VM Date",($global:htmlsb),$MasterImageVMDate,$htmlwhite)) #added in 1.26
+				$rowdata += @(,("MDM Enrollment",($global:htmlsb),$MDMEnrollment,$htmlwhite)) #added in 1.26
+				$rowdata += @(,('Memory',($global:htmlsb),$MemoryMB,$htmlwhite))
+				$rowdata += @(,("Naming scheme type",($global:htmlsb),$IdentityNamingSchemeType,$htmlwhite))
+				$rowdata += @(,('No. of machines',($global:htmlsb),$NumberOfMachines,$htmlwhite))
+				$rowdata += @(,('Operating System',($global:htmlsb),$OperatingSystem,$htmlwhite))
+				$rowdata += @(,("Prepared Image Definition Name",($global:htmlsb),$PreparedImageDefinitionName,$htmlwhite)) #added in 1.26
+				$rowdata += @(,("Prepared Image Version Number",($global:htmlsb),$PreparedImageVersionNumber,$htmlwhite)) #added in 1.26
+				$rowdata += @(,('Provisioning method',($global:htmlsb),$xProvisioningType,$htmlwhite))
+				$rowdata += @(,("Reset Administrator Passwords",($global:htmlsb),$ResetAdministratorPasswords,$htmlwhite))
+				$rowdata += @(,('Resources',($global:htmlsb),$HostingUnitName,$htmlwhite))
 				$rowdata += @(,('Set to VDA version',($global:htmlsb),$xVDAVersion,$htmlwhite))
-				If($Null -ne $MachineData)
+				If(Test-Path variable:TempDiskCacheSize)
 				{
-					If( $MachineData.PSObject.Properties[ 'HostingUnitName' ] )
-					{
-						## GRL - The property 'HostingUnitName' cannot be found on this object. Verify that the property exists
-						$rowdata += @(,('Resources',($global:htmlsb),$MachineData.HostingUnitName,$htmlwhite))
-					}
+					$rowdata += @(,('Temporary disk cache size',($global:htmlsb),$TempDiskCacheSize,$htmlwhite))
 				}
-				$rowdata += @(,('Zone',($global:htmlsb),$Catalog.ZoneName,$htmlwhite))
-				
-				If($Null -ne $MachineData)
+				If(Test-Path variable:TempMemoryCacheSize)
 				{
-					$rowdata += @(,('Master VM',($global:htmlsb),$MasterVM,$htmlwhite))
-					$rowdata += @(,('Disk Image',($global:htmlsb),$xDiskImage,$htmlwhite))
-					$rowdata += @(,('Virtual CPUs',($global:htmlsb),$MachineData.CpuCount,$htmlwhite))
-					$rowdata += @(,('Memory',($global:htmlsb),"$($MachineData.MemoryMB) MB",$htmlwhite))
-					$rowdata += @(,('Hard disk',($global:htmlsb),"$($MachineData.DiskSize) GB",$htmlwhite))
+					$rowdata += @(,('Temporary memory cache size',($global:htmlsb),$TempMemoryCacheSize,$htmlwhite))
 				}
-				ElseIf($Null -eq $MachineData)
-				{
-					$rowdata += @(,('Master VM',($global:htmlsb),$MasterVM,$htmlwhite))
-					$rowdata += @(,('Disk Image',($global:htmlsb),$xDiskImage,$htmlwhite))
-					$rowdata += @(,('Virtual CPUs',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-					$rowdata += @(,('Memory',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-					$rowdata += @(,('Hard disk',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-				}
-				
-				If(($Catalog.MinimumFunctionalLevel -eq "L7_9" -or 
-					$Catalog.MinimumFunctionalLevel -eq "L7_20" -or 
-					$Catalog.MinimumFunctionalLevel -eq "L7_25") -and 
-				(($xAllocationType -eq "Random") -or 
-				($xAllocationType -eq "Permanent" -and $xPersistType -eq "Discard" )))
-				{
-					$rowdata += @(,('Temporary memory cache size',($global:htmlsb),"$($TempMemoryCacheSize) MB",$htmlwhite))
-					$rowdata += @(,('Temporary disk cache size',($global:htmlsb), "$($TempDiskCacheSize) GB",$htmlwhite))
-				}
-
-				If(($Catalog.MinimumFunctionalLevel -eq "L7_9" -or 
-					$Catalog.MinimumFunctionalLevel -eq "L7_20" -or 
-					$Catalog.MinimumFunctionalLevel -eq "L7_25") -and 
-				($xAllocationType -eq "Permanent" -and $xPersistType -eq "On local disk" ) -and 
-				((Get-ConfigEnabledFeature -EA 0) -contains "DedicatedFullDiskClone"))
+				$rowdata += @(,('User data',($global:htmlsb),$xPersistType,$htmlwhite))
+				$rowdata += @(,('Virtual CPUs',($global:htmlsb),$CPUCount,$htmlwhite))
+				If(Test-Path variable:VMCopyMode)
 				{
 					$rowdata += @(,('VM copy mode',($global:htmlsb),$VMCopyMode,$htmlwhite))
 				}
-				
-				If($Null -ne $Machines)
-				{
-					If($Machines -is [array] -and $Machines.Count)
-					{
-						If([String]::IsNullOrEmpty($Machines[0].AgentVersion))
-						{
-							$rowdata += @(,('Installed VDA version',($global:htmlsb),"-",$htmlwhite))
-							$rowdata += @(,('Operating System',($global:htmlsb),"-",$htmlwhite))
-						}
-						Else
-						{
-							$rowdata += @(,('Installed VDA version',($global:htmlsb),$Machines[0].AgentVersion,$htmlwhite))
-							$rowdata += @(,('Operating System',($global:htmlsb),$Machines[0].OSType,$htmlwhite))
-						}
-					}
-					Else
-					{
-						$rowdata += @(,('Installed VDA version',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-						$rowdata += @(,('Operating System',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-					}
-				}
-				ElseIf($Null -eq $Machines)
-				{
-					$rowdata += @(,('Installed VDA version',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-					$rowdata += @(,('Operating System',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-				}
+				$rowdata += @(,("Windows Activation Type",($global:htmlsb),$WindowsActivationType,$htmlwhite)) #added in 1.26
+				$rowdata += @(,('Zone',($global:htmlsb),$Catalog.ZoneName,$htmlwhite))
+				$rowdata += @(,('Zone Healthy?',($global:htmlsb),$Catalog.ZoneHealthy.ToString(),$htmlwhite))
 			}
 			ElseIf($Catalog.ProvisioningType -eq "PVS")
 			{
-				$rowdata += @(,('Description',($global:htmlsb),$Catalog.Description,$htmlwhite))
+				$rowdata += @(,('Allocation type',($global:htmlsb),$xAllocationType,$htmlwhite))
+				$rowdata += @(,('Installed VDA version',($global:htmlsb),$InstalledVDAVersion,$htmlwhite))
 				$rowdata += @(,('Machine Type',($global:htmlsb),$xCatalogType,$htmlwhite))
+				$rowdata += @(,('Operating System',($global:htmlsb),$OperatingSystem,$htmlwhite))
 				$rowdata += @(,('Provisioning method',($global:htmlsb),$xProvisioningType,$htmlwhite))
 				$rowdata += @(,('PVS address',($global:htmlsb),$Catalog.PvsAddress,$htmlwhite))
-				$rowdata += @(,('Allocation type',($global:htmlsb),$xAllocationType,$htmlwhite))
 				$rowdata += @(,('Set to VDA version',($global:htmlsb),$xVDAVersion,$htmlwhite))
 				$rowdata += @(,('Zone',($global:htmlsb),$Catalog.ZoneName,$htmlwhite))
-				
-				If($Null -ne $Machines)
-				{
-					If($Machines -is [array] -and $Machines.Count)
-					{
-						If([String]::IsNullOrEmpty($Machines[0].AgentVersion))
-						{
-							$rowdata += @(,('Installed VDA version',($global:htmlsb),"-",$htmlwhite))
-							$rowdata += @(,('Operating System',($global:htmlsb),"-",$htmlwhite))
-						}
-						Else
-						{
-							$rowdata += @(,('Installed VDA version',($global:htmlsb),$Machines[0].AgentVersion,$htmlwhite))
-							$rowdata += @(,('Operating System',($global:htmlsb),$Machines[0].OSType,$htmlwhite))
-						}
-					}
-					Else
-					{
-						$rowdata += @(,('Installed VDA version',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-						$rowdata += @(,('Operating System',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-					}
-				}
-				ElseIf($Null -eq $Machines)
-				{
-					$rowdata += @(,('Installed VDA version',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-					$rowdata += @(,('Operating System',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-				}
+				$rowdata += @(,('Zone Healthy?',($global:htmlsb),$Catalog.ZoneHealthy.ToString(),$htmlwhite))
 			}
 			ElseIf($Catalog.ProvisioningType -eq "Manual" -and $Catalog.IsRemotePC -eq $True)
 			{
+				$rowdata += @(,('Allocated machines',($global:htmlsb),$Catalog.UsedCount.ToString(),$htmlwhite))
+				$rowdata += @(,('Installed VDA version',($global:htmlsb),$InstalledVDAVersion,$htmlwhite))
+				$rowdata += @(,('Machine Type',($global:htmlsb),$xCatalogType,$htmlwhite))
+				$rowdata += @(,('No. of machines',($global:htmlsb),$NumberOfMachines,$htmlwhite))
+				$rowdata += @(,('Operating System',($global:htmlsb),$OperatingSystem,$htmlwhite))
 				If($RemotePCAccounts -is [array])
 				{
 					ForEach($RemotePCAccount in $RemotePCAccounts)
@@ -6213,76 +8214,38 @@ Function OutputMachines
 					$rowdata += @(,("Organizational Units",($global:htmlsb),$RemotePCOU,$htmlwhite))
 					$rowdata += @(,("     Allow subfolder matches",($global:htmlsb),$RemotePCSubOU,$htmlwhite))
 				}
-
-				$rowdata += @(,('Machine Type',($global:htmlsb),$xCatalogType,$htmlwhite))
-				$rowdata += @(,('No. of machines',($global:htmlsb),$NumberOfMachines.ToString(),$htmlwhite))
-				$rowdata += @(,('Allocated machines',($global:htmlsb),$Catalog.UsedCount.ToString(),$htmlwhite))
 				$rowdata += @(,('Set to VDA version',($global:htmlsb),$xVDAVersion,$htmlwhite))
 				$rowdata += @(,('Zone',($global:htmlsb),$Catalog.ZoneName,$htmlwhite))
-				
-				If($Null -ne $Machines)
-				{
-					If($Machines -is [array] -and $Machines.Count)
-					{
-						If([String]::IsNullOrEmpty($Machines[0].AgentVersion))
-						{
-							$rowdata += @(,('Installed VDA version',($global:htmlsb),"-",$htmlwhite))
-							$rowdata += @(,('Operating System',($global:htmlsb),"-",$htmlwhite))
-						}
-						Else
-						{
-							$rowdata += @(,('Installed VDA version',($global:htmlsb),$Machines[0].AgentVersion,$htmlwhite))
-							$rowdata += @(,('Operating System',($global:htmlsb),$Machines[0].OSType,$htmlwhite))
-						}
-					}
-					Else
-					{
-						$rowdata += @(,('Installed VDA version',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-						$rowdata += @(,('Operating System',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-					}
-				}
-				ElseIf($Null -eq $Machines)
-				{
-					$rowdata += @(,('Installed VDA version',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-					$rowdata += @(,('Operating System',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-				}
+				$rowdata += @(,('Zone Healthy?',($global:htmlsb),$Catalog.ZoneHealthy.ToString(),$htmlwhite))
 			}
 			ElseIf($Catalog.ProvisioningType -eq "Manual" -and $Catalog.IsRemotePC -ne $True)
 			{
-				$rowdata += @(,('Machine Type',($global:htmlsb),$xCatalogType,$htmlwhite))
-				$rowdata += @(,('No. of machines',($global:htmlsb),$NumberOfMachines.ToString(),$htmlwhite))
 				$rowdata += @(,('Allocated machines',($global:htmlsb),$Catalog.UsedCount.ToString(),$htmlwhite))
 				$rowdata += @(,('Allocation type',($global:htmlsb),$xAllocationType,$htmlwhite))
-				$rowdata += @(,('User data',($global:htmlsb),$xPersistType,$htmlwhite))
+				$rowdata += @(,('Installed VDA version',($global:htmlsb),$InstalledVDAVersion,$htmlwhite))
+				$rowdata += @(,('Machine Type',($global:htmlsb),$xCatalogType,$htmlwhite))
+				$rowdata += @(,('No. of machines',($global:htmlsb),$NumberOfMachines,$htmlwhite))
+				$rowdata += @(,('Operating System',($global:htmlsb),$OperatingSystem,$htmlwhite))
 				$rowdata += @(,('Provisioning method',($global:htmlsb),$xProvisioningType,$htmlwhite))
+				$rowdata += @(,('User data',($global:htmlsb),$xPersistType,$htmlwhite))
 				$rowdata += @(,('Set to VDA version',($global:htmlsb),$xVDAVersion,$htmlwhite))
 				$rowdata += @(,('Zone',($global:htmlsb),$Catalog.ZoneName,$htmlwhite))
-				
-				If($Null -ne $Machines)
+				$rowdata += @(,('Zone Healthy?',($global:htmlsb),$Catalog.ZoneHealthy.ToString(),$htmlwhite))
+			}
+			
+			If($Null -ne $MachineData)
+			{
+				$itemKeys = $MachineData.MetadataMap.Keys
+
+				ForEach( $itemKey in $itemKeys )
 				{
-					If($Machines -is [array] -and $Machines.Count)
+					$value = $MachineData.MetadataMap[ $itemKey ]
+					
+					If($value -eq "")
 					{
-						If([String]::IsNullOrEmpty($Machines[0].AgentVersion))
-						{
-							$rowdata += @(,('Installed VDA version',($global:htmlsb),"-",$htmlwhite))
-							$rowdata += @(,('Operating System',($global:htmlsb),"-",$htmlwhite))
-						}
-						Else
-						{
-							$rowdata += @(,('Installed VDA version',($global:htmlsb),$Machines[0].AgentVersion,$htmlwhite))
-							$rowdata += @(,('Operating System',($global:htmlsb),$Machines[0].OSType,$htmlwhite))
-						}
+						$value = "Not set"
 					}
-					Else
-					{
-						$rowdata += @(,('Installed VDA version',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-						$rowdata += @(,('Operating System',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-					}
-				}
-				ElseIf($Null -eq $Machines)
-				{
-					$rowdata += @(,('Installed VDA version',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
-					$rowdata += @(,('Operating System',($global:htmlsb),"Unable to retrieve details",$htmlwhite))
+					$rowdata += @(,($itemKey,($global:htmlsb),$value,$htmlwhite))
 				}
 			}
 			
@@ -6316,6 +8279,564 @@ Function OutputMachines
 			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
 		}
 			
+		#Added in 1.15, get the custom properties for the catalog
+		#Added new properties in 1.18
+		If($Null -ne $Catalog.ProvisioningSchemeID)
+		{
+			<#For script version 1.15, these are the custom properties documented at
+				https://developer-docs.citrix.com/projects/citrix-virtual-apps-desktops-service-sdk/en/latest/MachineCreation/about_Prov_CustomProperties/
+				
+				Custom Properties For Azure
+					BackupVmConfiguration #new in 1.27
+					DedicatedHostGroupId
+					DiskEncryptionSetId
+					EnableIntuneEnroll
+					IdentityDiskStorageType
+					InitialPageFileSizeInMB
+					LicenseType
+					MachinesPerStorageAccount
+					MaxPageFileSizeInMB
+					OsType
+					PageFileDiskDriveLetter
+					PageFileDiskDriveLetterOverride #new in 2212
+					PersistOsDisk
+					PersistVm
+					PersistWBC
+					ResourceGroups
+					SchemaVersion
+					SharedImageGalleryReplicaMaximum
+					SharedImageGalleryReplicaRatio
+					SharedImageGalleryStorageAccountType (not documented but found in testing)
+					StorageAccountsPerResourceGroup
+					StorageAccountType
+					StorageTypeAtShutdown #new in 2212
+					StorageType
+					UseEphemeralOsDisk
+					UseManagedDisks
+					UseSharedImageGallery
+					UseTempDiskForWBC
+					WBCDiskStorageType
+					Zones
+
+				Custom Properties For Aws
+					AwsCaptureInstanceProperties
+					AwsOperationalResourcesTagging
+
+				Custom Properties For Gcp
+					CatalogZones
+					CryptoKeyId
+					IdentityDiskStorageType
+					PersistOsDisk
+					PersistWBC
+					StorageType
+					WBCDiskStorageType
+					
+				Custom Properties For VMware #new in 1.26
+					FolderId
+					
+				Custom Properties For Scvmm #new in 1.27
+					AzureArcRegion
+					AzureArcResourceGroup
+					AzureArcSubscriptionId
+					EnableAzureArcOnboarding
+					
+			#>
+			
+			$ProvScheme = Get-ProvScheme -ProvisioningSchemeUid $Catalog.ProvisioningSchemeID @CCParams2
+			
+			If(!$? -or $Null -eq $ProvScheme)
+			{
+				#error or nothing retrieve
+			}
+			ElseIf($? -and $Null -ne $ProvScheme -and $Null -ne $ProvScheme.CustomProperties) #in 1.27 ignore if CustomProperties is null
+			{
+				[xml]$XML = $ProvScheme.CustomProperties
+				
+				If($Null -ne $XML)
+				{
+					If($MSWord -or $PDF)
+					{
+						WriteWordLine 4 0 "Custom Properties"
+						[System.Collections.Hashtable[]] $WordTable = @();
+					}
+					If($Text)
+					{
+						Line 1 "Custom Properties"
+						Line 2 "                                                                                             "
+						Line 2 "Custom Property Name                       Custom Property Value                             "
+						Line 2 "============================================================================================="
+						#       1234567890123456789012345678901234567890SSS12345678901234567890123456789012345678901234567890
+						#       SharedImageGalleryStorageAccountType       CW-CW-Citrix-Cloud-EphemeralDisk-Demo
+					}
+					If($HTML)
+					{
+						WriteHTMLLine 4 0 "Custom Properties"
+						$rowdata = @()
+					}
+				
+					ForEach($Item in $XML)
+					{
+						If( $item.CustomProperties.PSObject.Properties[ 'Property' ] )
+						{
+							ForEach($Property in $item.CustomProperties.Property)
+							{
+								If($MSWord -or $PDF)
+								{
+									$WordTable += @{
+										CustomPropertyName  = $Property.Name; 
+										CustomPropertyValue = $Property.Value;
+									}
+								}
+								If($Text)
+								{
+									Line 2 ( "{0,-40}   {1,-50}" -f `
+									$Property.Name, $Property.Value)
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+										$Property.Name,$htmlwhite,
+										$Property.Value,$htmlwhite)
+									)
+								}
+							}
+						}
+						ElseIf( $item.CustomProperties.PSObject.Properties[ 'StringProperty' ] )
+						{
+							ForEach($Property in $item.CustomProperties.StringProperty)
+							{
+								If($MSWord -or $PDF)
+								{
+									$WordTable += @{
+										CustomPropertyName  = $Property.Name; 
+										CustomPropertyValue = $Property.Value;
+									}
+								}
+								If($Text)
+								{
+									Line 2 ( "{0,-40}   {1,-50}" -f `
+									$Property.Name, $Property.Value)
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+										$Property.Name,$htmlwhite,
+										$Property.Value,$htmlwhite)
+									)
+								}
+							}
+						}
+					}
+
+					If($MSWord -or $PDF)
+					{
+						If($WordTable.Count -eq 0)
+						{
+							$WordTable += @{
+								CustomPropertyName  = "None found"; 
+								CustomPropertyValue = "";
+							}
+						}
+						
+						$Table = AddWordTable -Hashtable $WordTable `
+						-Columns  CustomPropertyName, CustomPropertyValue `
+						-Headers  "Custom Property Name", "Custom Property Value" `
+						-Format $wdTableGrid `
+						-AutoFit $wdAutoFitFixed;
+
+						SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+						$Table.Columns.Item(1).Width = 225;
+						$Table.Columns.Item(2).Width = 275;
+
+						$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+						FindWordDocumentEnd
+						$Table = $Null
+						WriteWordLine 0 0 ""
+					}
+					If($Text)
+					{
+						Line 0 ""
+					}
+					If($HTML)
+					{
+						$columnHeaders = @(
+							'Custom Property Name',($global:htmlsb),
+							'Custom Property Value',($global:htmlsb)
+						)
+
+						$columnWidths = @("250","250")
+						$msg = ""
+						FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
+					}
+				}
+				
+				#Added in 1.15, add VM Image History
+				Write-Verbose "$(Get-Date -Format G): `t`t`tAdding catalog image history"
+				$ImageHistory = Get-ProvSchemeMasterVMImageHistory `
+								-ProvisioningSchemeUid $Catalog.ProvisioningSchemeID `
+								-ShowAll `
+								-SortBy 'provisioningschemename,date' `
+								@CCParams2
+				
+				If($? -and $Null -eq $ImageHistory)
+				{
+					$txt = "There was no Image History found for Machine Catalog $($Catalog.CatalogName) Provisioning Scheme $($Catalog.ProvisioningSchemeID)"
+					OutputNotice $txt
+				}
+				ElseIf($? -and $Null -ne $ImageHistory)
+				{
+					If($MSWord -or $PDF)
+					{
+						WriteWordLine 4 0 "Image History"
+					}
+					If($Text)
+					{
+						Line 1 "Image History"
+					}
+					If($HTML)
+					{
+						WriteHTMLLine 4 0 "Image History"
+					}
+
+					ForEach($Image in $ImageHistory)
+					{
+						If([String]::IsNullOrEmpty($Image.MasterImageNote))
+						{
+							$MasterImageNote = "-"
+						}
+						Else
+						{
+							$MasterImageNote = $Image.MasterImageNote
+						}
+
+						$Image.MasterImageNote
+						Switch ($Image.FunctionalLevel)
+						{
+							"" 		{$tmp = "No Functional Level set"; Break}
+							"L5" 	{$tmp = "5.6 FP1 (Windows XP and Windows Vista)"; Break}
+							"L7"	{$tmp = "7.0 (or newer)"; Break}
+							"L7_6"	{$tmp = "7.6 (or newer)"; Break}
+							"L7_7"	{$tmp = "7.7 (or newer)"; Break}
+							"L7_8"	{$tmp = "7.8 (or newer)"; Break}
+							"L7_9"	{$tmp = "7.9 (or newer)"; Break}
+							"L7_20"	{$tmp = "1811 (or newer)"; Break}
+							"L7_25"	{$tmp = "2003 (or newer)"; Break}
+							"L7_30"	{$tmp = "2106 (or newer)"; Break}
+							"L7_34"	{$tmp = "2206 (or newer)"; Break}
+							Default {$tmp = "Unable to determine Image Functional Level: $($Image.FunctionalLevel)"; Break}
+						}
+
+						If($MSWord -or $PDF)
+						{
+							[System.Collections.Hashtable[]] $ScriptInformation = @()
+							$ScriptInformation += @{Data = "Provisioning Scheme Name"; Value = $Image.ProvisioningSchemeName; }
+							$ScriptInformation += @{Data = "Date"; Value = $Image.Date.ToString(); }
+							$ScriptInformation += @{Data = "Master Image VM"; Value = $Image.MasterImageVM; }
+							$ScriptInformation += @{Data = "Master Image Note"; Value = $MasterImageNote; }
+							$ScriptInformation += @{Data = "Functional Level"; Value = $tmp; }
+							$ScriptInformation += @{Data = "Image Status"; Value = $Image.ImageStatus; }
+
+							$Table = AddWordTable -Hashtable $ScriptInformation `
+							-Columns Data,Value `
+							-List `
+							-Format $wdTableGrid `
+							-AutoFit $wdAutoFitFixed;
+
+							SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+							$Table.Columns.Item(1).Width = 125;
+							$Table.Columns.Item(2).Width = 375;
+
+							$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+							FindWordDocumentEnd
+							$Table = $Null
+							WriteWordLine 0 0 ""
+						}
+						If($Text)
+						{
+							Line 2 "Provisioning Scheme Name: " $Image.ProvisioningSchemeName
+							Line 2 "Date`t`t`t: " $Image.Date.ToString()
+							Line 2 "Master Image VM`t`t: " $Image.MasterImageVM
+							Line 2 "Master Image Note`t: " $MasterImageNote
+							Line 2 "Functional Level`t: " $tmp
+							Line 2 "Image Status`t`t: " $Image.ImageStatus
+							Line 0 ""
+						}
+						If($HTML)
+						{
+							$rowdata = @()
+
+							$columnHeaders = @("Provisioning Scheme Name",($global:htmlsb),$Image.ProvisioningSchemeName,$htmlwhite)
+							$rowdata += @(,('Date',($global:htmlsb),$Image.Date.ToString(),$htmlwhite))
+							$rowdata += @(,('Master Image VM',($global:htmlsb),$Image.MasterImageVM,$htmlwhite))
+							$rowdata += @(,('Master Image Note',($global:htmlsb),$MasterImageNote,$htmlwhite))
+							$rowdata += @(,('Functional Level',($global:htmlsb),$tmp,$htmlwhite))
+							$rowdata += @(,('Image Status',($global:htmlsb),$Image.ImageStatus,$htmlwhite))
+
+							$msg = ""
+							$columnWidths = @("150px","550px")
+							FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+							WriteHTMLLine 0 0 ""
+						}
+				
+						<#
+						ProvisioningSchemeName : JCW-OnPrem-Win10
+						Date                   : 10/5/2021 10:36:59 AM
+						MasterImageVM          : XDHyp:\HostingUnits\WebstersLab\CVD-CC-BUILD-05102021-1718.vm\CVD-CC-BUILD-05102021-1732.snapshot
+						MasterImageNote        :
+						FunctionalLevel        : L7_30
+						ImageStatus            : Current
+						#>
+						
+						#Additional Data - added in 1.18
+						Write-Verbose "$(Get-Date -Format G): `t`t`tAdding catalog additional data (if any)"
+						
+						#The AdditionalData property is a hashtable and is neither null nor empty. 
+						#If there is nothing in the hashtable, the count value is 0
+						try
+						{
+							If(Test-Path $Image.MasterImageVM 4>$Null)
+							{
+								$TmpData = Get-Item $Image.MasterImageVM -ea 0 4>$Null
+
+								If($? -and (validObject $TmpData AdditionalData))
+								{
+									$AdditionalData = $TmpData.AdditionalData
+								}
+								Else
+								{
+									$AdditionalData = @{}
+								}
+							}
+							Else
+							{
+								$AdditionalData = @{}
+							}
+						}
+						
+						catch
+						{
+							$AdditionalData = @{}
+						}
+						
+						If($AdditionalData.Count -eq 0)
+						{
+							#There is no additional data, so nothing to do
+						}
+						ElseIf($AdditionalData.Count -gt 0)
+						{
+							If($MSWord -or $PDF)
+							{
+								WriteWordLine 4 0 "Additional Data"
+								$AdditionalDataWordTable = @()
+							}
+							If($Text)
+							{
+								Line 1 "Additional Data"
+
+								Line 2 'Additional Property Name                  Value                    '
+								Line 2 '==================================================================='
+								#       ServiceOfferingWithTemporaryDiskSizeInMbSS1234567890123456789012345
+								#       1234567890123456789012345678901234567890
+							}
+							If($HTML)
+							{
+								WriteHTMLLine 4 0 "Additional Data"
+								$rowdata = @()
+							}
+
+							ForEach($Item in $AdditionalData.Keys)
+							{
+								If($MSWord -or $PDF)
+								{
+									$AdditionalDataWordTable += @{ 
+										PropertyName  = $Item;
+										PropertyValue = $AdditionalData.$Item;
+									}
+								}
+								If($Text)
+								{
+									Line 2 ( "{0,-40}  {1,-25}" -f $Item, $AdditionalData.$Item )
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+										$Item,$htmlwhite,
+										$AdditionalData.$Item,$htmlwhite)
+									)
+								}
+							}
+							
+							If($MSWord -or $PDF)
+							{
+								If($AdditionalDataWordTable.Count -eq 0)
+								{
+									$AdditionalDataWordTable += @{ 
+										PropertyName  = "None found";
+										PropertyValue = "";
+									}
+								}
+								
+								$Table = AddWordTable -Hashtable $AdditionalDataWordTable `
+								-Columns PropertyName, PropertyValue `
+								-Headers "Additional Property Name", "Value" `
+								-Format $wdTableGrid `
+								-AutoFit $wdAutoFitContent;
+
+								SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+								$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+								FindWordDocumentEnd
+								$Table = $Null
+								WriteWordLine 0 0 ""
+							}
+							If($Text)
+							{
+								Line 0 ""
+							}
+							If($HTML)
+							{
+								$columnHeaders = @(
+									'Additional Property Name',($global:htmlsb),
+									'Value',($global:htmlsb)
+								)
+
+								$msg = ""
+								FormatHTMLTable $msg "auto" -rowArray $rowdata -columnArray $columnHeaders
+								WriteHTMLLine 0 0 ""
+							}
+						}
+						Else
+						{
+							#Could not retrieve additional data, so nothing to do
+						}
+					}
+				}
+				Else
+				{
+					$txt = "Unable to retrieve Image History for Machine Catalog $($Catalog.CatalogName) Provisioning Scheme $($Catalog.ProvisioningSchemeID)"
+					OutputWarning $txt
+				}
+			}
+			Else
+			{
+				#oops shouldn't be here
+			}
+		}
+
+		#added in 1.23
+		#is there a reboot schedule configured for this catalog
+		#new for 2212
+		#to prevent the "Get-BrokerCatalogRebootSchedule : Object does not exist" error
+		#get all the reboot schedules
+		
+		$CatalogRebootSchedules = Get-BrokerCatalogRebootSchedule -EA 0
+		
+		If($? -and $Null -ne $CatalogRebootSchedules)
+		{
+			#see if the $CatalogRebootSchedules object contains this catalog's Uid
+			If($CatalogRebootSchedules.CatalogUid -Contains $Catalog.Uid)
+			{
+				$CatalogRebootSchedule = $CatalogRebootSchedules | Where-Object {$_.CatalogUid -eq $Catalog.Uid}
+				<#
+					Active                : False
+					CatalogName           : Win10 Random
+					CatalogUid            : 1
+					Description           :
+					Enabled               : True
+					MaxOvertimeStartMins  : 0
+					Name                  : Update reboot
+					RebootDuration        : 240 [minutes]
+					StartDate             : 2022-02-03
+					StartTime             : 01:00:00
+					Uid                   : 1
+					WarningDuration       : 10 [minutes]
+					WarningMessage        : Save your work
+					WarningRepeatInterval : 0 [minutes]
+					WarningTitle          : WARNING: Reboot pending
+				#>
+				
+				If($MSWord -or $PDF)
+				{
+					WriteWordLine 4 0 "Catalog Reboot Schedule"
+					[System.Collections.Hashtable[]] $CatalogInformation = @()
+					$CatalogInformation += @{Data = "Reboot schedule name"; Value = $CatalogRebootSchedule.Name; }
+					$CatalogInformation += @{Data = "Description"; Value = $CatalogRebootSchedule.Description; }
+					$CatalogInformation += @{Data = "Active"; Value = $CatalogRebootSchedule.Active.ToString(); }
+					$CatalogInformation += @{Data = "Enabled"; Value = $CatalogRebootSchedule.Enabled.ToString(); }
+					$CatalogInformation += @{Data = "Max Overtime Start Minutes"; Value = $CatalogRebootSchedule.MaxOvertimeStartMins.ToString(); }
+					$CatalogInformation += @{Data = "Reboot duration in Minutes"; Value = $CatalogRebootSchedule.RebootDuration.ToString(); }
+					$CatalogInformation += @{Data = "Start Date"; Value = $CatalogRebootSchedule.StartDate.ToString(); }
+					$CatalogInformation += @{Data = "Start Time"; Value = $CatalogRebootSchedule.StartTime.ToString(); }
+					$CatalogInformation += @{Data = "Warning Duration in Minutes"; Value = $CatalogRebootSchedule.WarningDuration.ToString(); }
+					$CatalogInformation += @{Data = "Warning Message"; Value = $CatalogRebootSchedule.WarningMessage; }
+					$CatalogInformation += @{Data = "Warning Repeat Interval in Minutes"; Value = $CatalogRebootSchedule.WarningRepeatInterval.ToString(); }
+					$CatalogInformation += @{Data = "Warning Title"; Value = $CatalogRebootSchedule.WarningTitle; }
+			
+					$Table = AddWordTable -Hashtable $CatalogInformation `
+					-Columns Data,Value `
+					-List `
+					-Format $wdTableGrid `
+					-AutoFit $wdAutoFitFixed;
+
+					SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+					$Table.Columns.Item(1).Width = 225;
+					$Table.Columns.Item(2).Width = 275;
+
+					$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+					FindWordDocumentEnd
+					$Table = $Null
+					WriteWordLine 0 0 ""
+				}
+				If($Text)
+				{
+					Line 1 "Catalog Reboot Schedule"
+					Line 2 "Reboot schedule name`t`t`t: " $CatalogRebootSchedule.Name
+					Line 2 "Description`t`t`t`t: " $CatalogRebootSchedule.Description
+					Line 2 "Active`t`t`t`t`t: " $CatalogRebootSchedule.Active.ToString()
+					Line 2 "Enabled`t`t`t`t`t: " $CatalogRebootSchedule.Enabled.ToString()
+					Line 2 "Max Overtime Start Minutes`t`t: " $CatalogRebootSchedule.MaxOvertimeStartMins.ToString()
+					Line 2 "Reboot duration in Minutes`t`t: " $CatalogRebootSchedule.RebootDuration.ToString()
+					Line 2 "Start Date`t`t`t`t: " $CatalogRebootSchedule.StartDate.ToString()
+					Line 2 "Start Time`t`t`t`t: " $CatalogRebootSchedule.StartTime.ToString()
+					Line 2 "Warning Duration in Minutes`t`t: " $CatalogRebootSchedule.WarningDuration.ToString()
+					Line 2 "Warning Message`t`t`t`t: " $CatalogRebootSchedule.WarningMessage
+					Line 2 "Warning Repeat Interval in Minutes`t: " $CatalogRebootSchedule.WarningRepeatInterval.ToString()
+					Line 2 "Warning Title`t`t`t`t: " $CatalogRebootSchedule.WarningTitle
+					Line 0 ""
+				}
+				If($HTML)
+				{
+					WriteHTMLLine 4 0 "Catalog Reboot Schedule"
+					$rowdata = @()
+					$columnHeaders = @("Description",($global:htmlsb),$Catalog.Description,$htmlwhite)
+					$rowdata += @(,( "Reboot schedule name",($global:htmlsb), $CatalogRebootSchedule.Name,$htmlwhite))
+					$rowdata += @(,( "Description",($global:htmlsb), $CatalogRebootSchedule.Description,$htmlwhite))
+					$rowdata += @(,( "Active",($global:htmlsb), $CatalogRebootSchedule.Active.ToString(),$htmlwhite))
+					$rowdata += @(,( "Enabled",($global:htmlsb), $CatalogRebootSchedule.Enabled.ToString(),$htmlwhite))
+					$rowdata += @(,( "Max Overtime Start Minutes",($global:htmlsb), $CatalogRebootSchedule.MaxOvertimeStartMins.ToString(),$htmlwhite))
+					$rowdata += @(,( "Reboot duration in Minutes",($global:htmlsb), $CatalogRebootSchedule.RebootDuration.ToString(),$htmlwhite))
+					$rowdata += @(,( "Start Date",($global:htmlsb), $CatalogRebootSchedule.StartDate.ToString(),$htmlwhite))
+					$rowdata += @(,( "Start Time",($global:htmlsb), $CatalogRebootSchedule.StartTime.ToString(),$htmlwhite))
+					$rowdata += @(,( "Warning Duration in Minutes",($global:htmlsb), $CatalogRebootSchedule.WarningDuration.ToString(),$htmlwhite))
+					$rowdata += @(,( "Warning Message",($global:htmlsb), $CatalogRebootSchedule.WarningMessage,$htmlwhite))
+					$rowdata += @(,( "Warning Repeat Interval in Minutes",($global:htmlsb), $CatalogRebootSchedule.WarningRepeatInterval.ToString(),$htmlwhite))
+					$rowdata += @(,( "Warning Title",($global:htmlsb), $CatalogRebootSchedule.WarningTitle,$htmlwhite))
+
+					$msg = ""
+					$columnWidths = @("200","500")
+					FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+					WriteHTMLLine 0 0 ""
+				}
+			}
+		}
+		
 		#scopes
 		$Scopes = (Get-BrokerCatalog -Name $Catalog.Name @CCParams2).Scopes
 		
@@ -6425,7 +8946,7 @@ Function OutputMachines
 		}
 		Else
 		{
-			$txt = "Unable to retrieve Scopes for Machine Catalog $($Catalog.Name)"
+			$txt = "Unable to retrieve Scopes for Machine Catalog $($Catalog.CatalogName)"
 			OutputWarning $txt
 		}
 		
@@ -6433,7 +8954,7 @@ Function OutputMachines
 		{
 			If($Null -ne $Machines)
 			{
-				Write-Verbose "$(Get-Date -Format G): `t`tProcessing Machines in $($Catalog.Name)"
+				Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing Machines in $($Catalog.CatalogName)"
 				
 				If($MSWord -or $PDF)
 				{
@@ -6455,7 +8976,7 @@ Function OutputMachines
 					If($MSWord -or $PDF)
 					{
 						$MachinesWordTable += @{
-						MachineName = $Machine.MachineName;
+							MachineName = $Machine.MachineName;
 						}
 					}
 					If($Text)
@@ -6473,7 +8994,7 @@ Function OutputMachines
 					If($MachinesWordTable.Count -eq 0)
 					{
 						$MachinesWordTable += @{
-						MachineName = "None found";
+							MachineName = "None found";
 						}
 					}
 					
@@ -6507,7 +9028,7 @@ Function OutputMachines
 					FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "225"
 				}
 				
-				Write-Verbose "$(Get-Date -Format G): `t`tProcessing administrators for Machines in $($Catalog.Name)"
+				Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing administrators for Machines in $($Catalog.CatalogName)"
 				$Admins = GetAdmins "Catalog" $Catalog.Name
 				
 				If($? -and ($Null -ne $Admins))
@@ -6516,18 +9037,23 @@ Function OutputMachines
 				}
 				ElseIf($? -and ($Null -eq $Admins))
 				{
-					$txt = "There are no administrators for Machines in $($Catalog.Name)"
+					$txt = "There are no administrators for Machines in $($Catalog.CatalogName)"
 					OutputNotice $txt
 				}
 				Else
 				{
-					$txt = "Unable to retrieve administrators for Machines in $($Catalog.Name)"
+					$txt = "Unable to retrieve administrators for Machines in $($Catalog.CatalogName)"
 					OutputWarning $txt
 				}
 				
+				$TrustedDomain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain().Name
+				$context = New-Object System.DirectoryServices.ActiveDirectory.DirectoryContext( "domain", $TrustedDomain )
+				$domain = [System.DirectoryServices.ActiveDirectory.Domain]::GetDomain( $context )
+				$ADSearchBase = $domain.GetDirectoryEntry().DistinguishedName.Value
+
 				ForEach($Machine in $Machines)
 				{
-					OutputMachineDetails $Machine
+					OutputMachineDetails $Machine $ADSearchBase "Machine" $Catalog $xAllocationType
 				}
 			}
 		}
@@ -6539,41 +9065,45 @@ Function OutputMachines
 Function GetVDARegistryKeys
 {
 	Param([string]$ComputerName, [string]$xType)
+	#1.15 alpha sorted the registry paths
 
 	#Get-VDARegKeyToObject "HKLM:\" "" $ComputerName
 
 	If($xType -eq "Server")
 	{
-		Get-VDARegKeyToObject "HKLM:\Software\Citrix\Graphics" "BTLLossyThreshold" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Services\CtxDNDSvc" "Enabled" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\Software\Citrix\AppV" "Features" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\Software\Citrix\Reconnect" "DisableGPCalculation" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\Software\Citrix\Reconnect" "FastReconnect" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix" "CtxKlMap" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\AppV" "Features" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\Citrix Virtual Desktop Agent" "DisableLogonUISuppression" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\Citrix Virtual Desktop Agent" "DisableLogonUISuppressionForSmartCardPublishedApps" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\CtxHook" "ExcludedImageNames" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\CtxHook\AppInit_Dlls\SHAppBarHook" "FilePathName" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\CtxHook\AppInit_Dlls\SHAppBarHook" "Flag" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\CtxHook\AppInit_Dlls\SHAppBarHook" "Settings" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\CtxKlMap" "DisableWindowHook" $ComputerName $xType #CVAD2009
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\Graphics" "BTLLossyThreshold" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\HDX3D\BitmapRemotingConfig" "EnableDDAPICursor" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\ICA" "DisableAppendMouse" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\ICA\Thinwire" "EnableDrvTw2NotifyMonitorOrigin" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\ClientAudio" "EchoCancellation" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\ICAClient\GenericUSB" "EnableBloombergHID" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\Reconnect" "DisableGPCalculation" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\Reconnect" "FastReconnect" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\SmartCard" "EnableReaderInsertCountReporting" $ComputerName $xType #added for CVAD2009
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\SmartCard" "EnableSCardHookVcResponseTimeout" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\StreamingHook" "EnableReadImageFileExecOptionsExclusionList" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\UniversalPrintDrivers\PDF" "EnablePostscriptSimulation" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\UniversalPrintDrivers\PDF" "EnableFullFontEmbedding" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\VirtualDesktopAgent" "SupportMultipleForest" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\VirtualDesktopAgent" "ListOfSIDs" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Explorer.exe" "DontUseDesktopChangeRouter" $ComputerName $xType #CVAD2103
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Policies\Citrix\VirtualDesktopAgent" "SupportMultipleForestDdcLookup" $ComputerName $xType #CVAD2009
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Wow6432Node\Citrix\CtxHook" "ExcludedImageNames" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Wow6432Node\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\GfxRender" "UseDirect3D" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Wow6432Node\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\GfxRender" "PresentDevice" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Wow6432Node\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\GfxRender" "MaxNumRefFrames" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\System\Currentcontrolset\services\picadm\Parameters" "DisableFullStreamWrite" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\SCMConfig" "EnableSvchostMitigationPolicy" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\ICA" "DisableAppendMouse" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\Citrix Virtual Desktop Agent" "DisableLogonUISuppression" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\SmartCard" "EnableSCardHookVcResponseTimeout" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\Citrix Virtual Desktop Agent" "DisableLogonUISuppressionForSmartCardPublishedApps" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\HDX3D\BitmapRemotingConfig" "EnableDDAPICursor" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\Software\Citrix\VirtualDesktopAgent" "SupportMultipleForest" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\Software\Citrix\VirtualDesktopAgent" "ListOfSIDs" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix" "CtxKlMap" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\TerminalServer" "fSingleSessionPerUser" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\ICAClient\GenericUSB" "EnableBloombergHID" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\ClientAudio" "EchoCancellation" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Wow6432Node\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\ClientAudio" "EchoCancellation" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\ica-tcp\AudioConfig" "MaxPolicyAge" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\ica-tcp\AudioConfig" "PolicyTimeout" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\Ica\Thinwire" "EnableDrvTw2NotifyMonitorOrigin" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\Citrix" "EnableVisualEffect" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\StreamingHook" "EnableReadImageFileExecOptionsExclusionList" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Wow6432Node\Citrix\StreamingHook" "EnableReadImageFileExecOptionsExclusionList" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\Citrix" "EnableVisualEffect" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\Citrix\wfshell\TWI" "ApplicationLaunchWaitTimeoutMS" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\Citrix\wfshell\TWI" "LogoffCheckerStartupDelayInSeconds" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\Citrix\wfshell\TWI" "LogoffCheckSysModules" $ComputerName $xType
@@ -6581,47 +9111,52 @@ Function GetVDARegistryKeys
 		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\Citrix\wfshell\TWI" "WorkerWaitInterval" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\Citrix\wfshell\TWI" "WorkerFullCheckInterval" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\Citrix\wfshell\TWI" "AAHookFlags" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\CtxHook\AppInit_Dlls\SHAppBarHook" "FilePathName" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\CtxHook\AppInit_Dlls\SHAppBarHook" "Flag" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\CtxHook\AppInit_Dlls\SHAppBarHook" "Settings" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\CtxHook" "ExcludedImageNames" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Wow6432Node\Citrix\CtxHook" "ExcludedImageNames" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\services\CtxUvi" "UviProcessExcludes" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\SCMConfig" "EnableSvchostMitigationPolicy" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\TerminalServer" "fSingleSessionPerUser" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\ica-tcp\AudioConfig" "MaxPolicyAge" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\ica-tcp\AudioConfig" "PolicyTimeout" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\Wds\icawd" "MtuDiscovery" $ComputerName $xType #CVAD2009
+		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Services\CtxDNDSvc" "Enabled" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Services\CtxUvi" "UviProcessExcludes" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Services\CtxUvi" "UviEnabled" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SYSTEM\Currentcontrolset\Services\picadm\Parameters" "DisableFullStreamWrite" $ComputerName $xType
 	}
 	ElseIf($xType -eq "Desktop")
 	{
-		Get-VDARegKeyToObject "HKLM:\Software\Citrix\Graphics" "BTLLossyThreshold" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Services\CtxDNDSvc" "Enabled" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\Software\Citrix\AppV" "Features" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\Software\Citrix\Reconnect" "DisableGPCalculation" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\Software\Citrix\Reconnect" "FastReconnect" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\UniversalPrintDrivers\PDF" "EnablePostscriptSimulation" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\UniversalPrintDrivers\PDF" "EnableFullFontEmbedding" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Wow6432Node\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\GfxRender" "UseDirect3D" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Wow6432Node\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\GfxRender" "PresentDevice" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Wow6432Node\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\GfxRender" "MaxNumRefFrames" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\Citrix Virtual Desktop Agent" "DisableLogonUISuppression" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\SmartCard" "EnableSCardHookVcResponseTimeout" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\ICA" "DisableAppendMouse" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\Audio" "CleanMappingWhenDisconnect" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\HDX3D\BitmapRemotingConfig" "EnableDDAPICursor" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\Software\Citrix\VirtualDesktopAgent" "SupportMultipleForest" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\Software\Citrix\VirtualDesktopAgent" "ListOfSIDs" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix" "CtxKlMap" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\AppV" "Features" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\Audio" "CleanMappingWhenDisconnect" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\Citrix Virtual Desktop Agent" "DisableLogonUISuppression" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\CtxHook" "ExcludedImageNames" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\CtxKlMap" "DisableWindowHook" $ComputerName $xType #CVAD2009
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\Graphics" "BTLLossyThreshold" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\HDX3D\BitmapRemotingConfig" "EnableDDAPICursor" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\HDX3D\BitmapRemotingConfig" "HKLM_DisableMontereyFBCOnInit" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\ICA" "DisableAppendMouse" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\ICA\Thinwire" "EnableDrvTw2NotifyMonitorOrigin" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\ClientAudio" "EchoCancellation" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\ICAClient\GenericUSB" "EnableBloombergHID" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\PortICA" "DisableRemotePCSleepPreventer" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\PortICA\RemotePC" "RpcaMode" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\PortICA\RemotePC" "RpcaTimeout" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\Software\Citrix\DesktopServer" "AllowMultipleRemotePCAssignments" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\ICAClient\GenericUSB" "EnableBloombergHID" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\ClientAudio" "EchoCancellation" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Wow6432Node\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\ClientAudio" "EchoCancellation" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\HDX3D\BitmapRemotingConfig" "HKLM_DisableMontereyFBCOnInit" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\Ica\Thinwire" "EnableDrvTw2NotifyMonitorOrigin" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\Citrix\wfshell\TWI" "LogoffCheckSysModules" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\CtxHook" "ExcludedImageNames" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\Reconnect" "DisableGPCalculation" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\Reconnect" "FastReconnect" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\SmartCard" "EnableReaderInsertCountReporting" $ComputerName $xType #added for CVAD2009
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\SmartCard" "EnableSCardHookVcResponseTimeout" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\UniversalPrintDrivers\PDF" "EnablePostscriptSimulation" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\UniversalPrintDrivers\PDF" "EnableFullFontEmbedding" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\VirtualDesktopAgent" "SupportMultipleForest" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Citrix\VirtualDesktopAgent" "ListOfSIDs" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Policies\Citrix\VirtualDesktopAgent" "SupportMultipleForestDdcLookup" $ComputerName $xType #CVAD2009
 		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Wow6432Node\Citrix\CtxHook" "ExcludedImageNames" $ComputerName $xType
-		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\services\CtxUvi" "UviProcessExcludes" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Wow6432Node\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\GfxRender" "UseDirect3D" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Wow6432Node\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\GfxRender" "PresentDevice" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Wow6432Node\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\GfxRender" "MaxNumRefFrames" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SOFTWARE\Wow6432Node\Citrix\ICAClient\Engine\Configuration\Advanced\Modules\ClientAudio" "EchoCancellation" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\Citrix\wfshell\TWI" "LogoffCheckSysModules" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\Wds\icawd" "MtuDiscovery" $ComputerName $xType #CVAD2009
+		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Services\CtxDNDSvc" "Enabled" $ComputerName $xType
+		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Services\CtxUvi" "UviProcessExcludes" $ComputerName $xType
 		Get-VDARegKeyToObject "HKLM:\SYSTEM\CurrentControlSet\Services\CtxUvi" "UviEnabled" $ComputerName $xType
 	}
 }
@@ -6651,18 +9186,100 @@ Function Get-VDARegKeyToObject
 		ComputerName = $ComputerName	
 		Value        = $tmp
 	}
-	$null = $Script:VDARegistryItems.Add($obj1)
+	$Null = $Script:VDARegistryItems.Add($obj1)
+}
+
+function getObject
+{
+	#from Michael B. Smith
+	Param
+	(
+		[String] $dn
+	)
+
+	$obj = [adsi]( 'LDAP://' + $dn )
+
+	$obj
+}
+
+function __simpleSearch
+{
+	#from Michael B. Smith
+	Param
+	(
+		[String] $ldapQuery,
+		[String] $searchBase,
+		[String[]] $Properties = $null,
+		[String] $searchScope = 'Subtree',
+		[Switch] $findOne,
+		[Int32] $PageSize  = 1000,
+	[Int32] $SizeLimit = 1000000
+	)
+
+	$adSearcher             = [adsisearcher] $ldapQuery
+	$adSearcher.SearchRoot  = getObject $searchBase
+	$adSearcher.PageSize    = $PageSize
+	$adSearcher.SizeLimit   = $SizeLimit
+	$adSearcher.SearchScope = $searchScope
+
+	if( $Properties ) 
+	{
+		foreach( $ADProperty in $Properties ) 
+		{
+			$null = $adSearcher.PropertiesToLoad.Add( $ADProperty )
+		}
+	}
+
+	if( $findOne )
+	{
+		$r = $adSearcher.FindOne()
+	}
+	else
+	{
+		$r = $adSearcher.FindAll()
+	}
+
+	$adSearcher.SearchRoot = $null
+	$adSearcher = $null
+
+	$r
 }
 
 Function OutputMachineDetails
 {
-	Param([object] $Machine)
+	Param(
+		[object] $Machine,
+		[string] $ADSearchBase,
+		[string] $WhatType,
+		[object] $Catalog,
+		[string] $xAllocationType
+	)
 	
 	#if HostedMachineName is empty, like for RemotePC and unregistered machines, use the first part of DNSName
-	$tmp = $Machine.DNSName.Split(".")
-	$xMachineName = $tmp[0]
-	$tmp = $Null
-	Write-Verbose "$(Get-Date -Format G): `t`tOutput Machine $xMachineName"
+	
+	#updated in V1.15
+	If($Machine.DNSName)	# is there anything in the DNSName property
+	{
+		$tmp = $Machine.DNSName.Split(".")
+		$xMachineName = $tmp[0]
+		$tmp = $Null
+	}
+	ElseIf($Machine.MachineName)	# is there anything in the MachineName property
+	{
+		$tmp = $Machine.MachineName.Split("\")
+		$xMachineName = $tmp[1]
+		$tmp = $Null
+	}
+	ElseIf($Machine.HostedMachineName)	# is there anything in the HostedMachineName property
+	{
+		$xMachineName = $Machine.HostedMachineName
+	}
+	Else	# error, there is no name for the machine
+	{
+		$xMachineName = "error, there was no name found for the machine"
+	}
+
+	Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tOutput $WhatType $xMachineName"
 	
 	#first see if VDA is Linux
 	If($Machine.OSType -Like "*linux*")
@@ -6673,27 +9290,49 @@ Function OutputMachineDetails
 	Else
 	{
 		$LinuxVDA = $False
-		If($VDARegistryKeys)
+		If($VDARegistryKeys -and $xMachineName -ne "error, there was no name found for the machine")
 		{
-			Write-Verbose "$(Get-Date -Format G): `t`t`tTesting $($xMachineName)"
+			Write-Verbose "$(Get-Date -Format G): `t`t`t`tTesting $($xMachineName)"
 			$MachineIsOnline = $False
 			
-			If(Resolve-DnsName -Name $xMachineName -EA 0 4>$Null)
+			$Result = __simpleSearch -ldapQuery "(&(|(dnsHostName=$xMachineName)(name=$xMachineName))(objectCategory=Computer))" -searchBase $ADSearchBase
+			
+			If($Result)
 			{
-				$results = Test-NetConnection -ComputerName $xMachineName -InformationLevel Quiet -EA 0 3>$Null
-				If($results)
+				$ok = $True
+				
+				try
 				{
-					Write-Verbose "$(Get-Date -Format G): `t`t`t`t$($xMachineName) is online"
-					$MachineIsOnline = $True
+					$null = Resolve-DnsName -Name $xMachineName -Type A -NoHostsFile -DnsOnly -EA Stop
+				}
+				
+				catch
+				{
+					$ok = $False
+				}
+				
+				#If(Resolve-DnsName -Name $xMachineName -EA 0 4>$Null)
+				If($ok)
+				{
+					$results = Test-NetConnection -ComputerName $xMachineName -InformationLevel Quiet -EA 0 3>$Null
+					If($results)
+					{
+						Write-Verbose "$(Get-Date -Format G): `t`t`t`t`t$($xMachineName) is online"
+						$MachineIsOnline = $True
+					}
+					Else
+					{
+						Write-Verbose "$(Get-Date -Format G): `t`t`t`t`t$($xMachineName) is offline. VDA Registry Key data cannot be gathered."
+					}
 				}
 				Else
 				{
-					Write-Verbose "$(Get-Date -Format G): `t`t`t`t$($xMachineName) is offline. VDA Registry Key data cannot be gathered."
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`t`t$($xMachineName) was not found in DNS. VDA Registry Key data cannot be gathered."
 				}
 			}
 			Else
 			{
-				Write-Verbose "$(Get-Date -Format G): `t`t`t`t$($xMachineName) was not found in DNS. VDA Registry Key data cannot be gathered."
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`t`t$($xMachineName) was not found in AD. VDA Registry Key data cannot be gathered."
 			}
 		}
 	}
@@ -6747,6 +9386,15 @@ Function OutputMachineDetails
 		$xInMaintenanceMode ="Off"
 	}
 
+	$MaintModeReason = ""
+	Switch($Machine.MaintenanceModeReason)
+	{
+		"Administrator"				{$MaintModeReason = "Machine was manually placed in maintenance mode by an administrator"; Break}
+		"MaxFailedRegistrations"	{$MaintModeReason = "Machine was automatically placed in maintenance mode due to reaching the maximum failed registration limit"; Break}
+		"None"						{$MaintModeReason = "Machine is not in maintenance mode"; Break}
+		Default						{$MaintModeReason = "Unable to determine Maintenance Mode Reason: $($Machine.MaintenanceModeReason)"; Break}
+	}
+	
 	$xWindowsConnectionSetting = ""
 	If($Machine.SessionSupport -eq "MultiSession")
 	{
@@ -6855,7 +9503,7 @@ Function OutputMachineDetails
 		"SingleMultiSessionMismatch"			{$xLastDeregistrationReason = "Single Multi Session Mismatch"; Break}
 		"UnknownError"							{$xLastDeregistrationReason = "Unknown Error"; Break}
 		"UnsupportedCredentialSecurityVersion"	{$xLastDeregistrationReason = "Unsupported Credential Security Version"; Break} 
-		Default {$xLastDeregistrationReason = "Unable to determine LastDeregistrationReason: $($Machine.LastDeregistrationReason)"; Break}
+		Default									{$xLastDeregistrationReason = "Unable to determine LastDeregistrationReason: $($Machine.LastDeregistrationReason)"; Break}
 	}
 
 	$xPersistUserChanges = ""
@@ -6876,6 +9524,16 @@ Function OutputMachineDetails
 		$xWillShutdownAfterUse = "No"
 	}
 
+	$WillShutdownAfterUseReason = ""
+	Switch($Machine.WillShutdownAfterUseReason)
+	{
+		"None"						{$WillShutdownAfterUseReason = "Machine will not shutdown after use"; Break}
+		"ResetDiskImage"			{$WillShutdownAfterUseReason = "Machine will shutdown after use to reset its disk image"; Break}
+		"ScheduledNaturalReboot"	{$WillShutdownAfterUseReason = "Machine will shutdown after use as part of the scheduled natural reboot Process"; Break}
+		"OnDemandNaturalReboot"		{$WillShutdownAfterUseReason = "Machine will shutdown after use as part of an on-demand natural reboot Process"; Break}
+		Default						{$WillShutdownAfterUseReason = "Unable to determine Will Shutdown After Use Reason: $($Machine.WillShutdownAfterUseReason)"; Break}
+	}
+	
 	$xSessionSmartAccessTags = @()
 	ForEach($value in $Machine.SessionSmartAccessTags)
 	{
@@ -6889,11 +9547,11 @@ Function OutputMachineDetails
 	
 	Switch($Machine.FaultState)
 	{
-		"None"			{$xMachineFaultState = "None"}
-		"FailedToStart"	{$xMachineFaultState = "Failed to start"}
-		"StuckOnBoot"	{$xMachineFaultState = "Stuck on boot"}
-		"Unregistered"	{$xMachineFaultState = "Unregistered"}
-		"MaxCapacity"	{$xMachineFaultState = "Maximum capacity"}
+		"None"			{$xMachineFaultState = "No fault; machine is healthy"; Break}
+		"FailedToStart"	{$xMachineFaultState = "Last power-on operation for machine failed"; Break}
+		"StuckOnBoot"	{$xMachineFaultState = "Machine does not seem to have booted following power on"; Break}
+		"Unregistered"	{$xMachineFaultState = "Machine has failed to register within expected period, or its registration has been rejected"; Break}
+		"MaxCapacity"	{$xMachineFaultState = "Machine is reporting itself at maximum capacity"; Break}
 		Default			{$xMachineFaultState = "Unable to determine the value of FaultState: $($Machine.FaultState)"; Break}
 	}
 
@@ -7063,7 +9721,7 @@ Function OutputMachineDetails
 		"Unavailable"	{$xPowerState = "Unavailable"; Break}
 		"Unknown"		{$xPowerState = "Unknown"; Break}
 		"Unmanaged"		{$xPowerState = "Unmanaged"; Break}
-		Default			{$xPowerState = "Unabled to determine machine Power State: $($Machine.PowerState)"; Break}
+		Default			{$xPowerState = "Unable to determine machine Power State: $($Machine.PowerState)"; Break}
 	}
 	
 	If([String]::IsNullOrEmpty($Machine.IPAddress))
@@ -7101,22 +9759,60 @@ Function OutputMachineDetails
 	{
 		$xAgentVersion = $Machine.AgentVersion
 	}
+	
+	$LastConnectionFailure = ""
+	Switch($Machine.LastConnectionFailure)
+	{
+		"None"					{$LastConnectionFailure = "None"; Break}
+		"SessionPreparation"	{$LastConnectionFailure = "Session preparation"; Break}
+		"RegistrationTimeout"	{$LastConnectionFailure = "Registration timeout"; Break}
+		"ConnectionTimeout"		{$LastConnectionFailure = "Connection Timeout"; Break}
+		"Licensing"				{$LastConnectionFailure = "Licensing"; Break}
+		"Ticketing"				{$LastConnectionFailure = "Ticketing"; Break}
+		"Other"					{$LastConnectionFailure = "Other"; Break}
+		Default					{$LastConnectionFailure = "Unable to determine Last Connection Failure reason: $($Machine.LastConnectionFailure)"; Break}
+	}
 
+	$ScheduledReboot = ""
+	Switch($Machine.ScheduledReboot)
+	{
+		"None"			{$ScheduledReboot = "No reboot is scheduled"; Break}
+		"Pending"		{$ScheduledReboot = "Machine is awaiting reboot but is available for us"; Break}
+		"Draining"		{$ScheduledReboot = "Machine is awaiting reboot and is unavailable for new sessions; reconnections to existing connections are still allowed, however"; Break}
+		"InProgress"	{$ScheduledReboot = "Machine is actively undergoing a scheduled reboot"; Break}
+		"Natural"		{$ScheduledReboot = "Natural reboot in progress. Machine is awaiting a restart"; Break}
+		Default			{$ScheduledReboot = "Unable to determine Scheduled Reboot reason: $($Machine.ScheduledReboot)"; Break}
+	}
+	
+	If([String]::IsNullOrEmpty($Machine.DesktopGroupName))
+	{
+		$MachineDesktopGroupName = "-"
+	}
+	Else
+	{
+		$MachineDesktopGroupName = $Machine.DesktopGroupName
+	}
+	
 	If($MSWord -or $PDF)
 	{
 		$Selection.InsertNewPage()
-		WriteWordLine 3 0 $Machine.DNSName
+		WriteWordLine 3 0 $xMachineName
 		If($Machine.SessionSupport -eq "MultiSession")
 		{
 			WriteWordLine 4 0 "Machine"
 			[System.Collections.Hashtable[]] $ScriptInformation = @()
-			$ScriptInformation += @{Data = "Name"; Value = $Machine.DNSName; }
+			$ScriptInformation += @{Data = "Name"; Value = $xMachineName; }
 			$ScriptInformation += @{Data = "Machine Catalog"; Value = $Machine.CatalogName; }
-			$ScriptInformation += @{Data = "Delivery Group"; Value = $Machine.DesktopGroupName; }
+			$ScriptInformation += @{Data = "Delivery Group"; Value = $MachineDesktopGroupName; }
 			If($NoSessions -eq $False)
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
+				If([String]::IsNullOrEmpty($name))
+				{
+					$name = "-"
+				}
+				
 				$ScriptInformation += @{Data = "User Display Name"; Value = $name; }
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserFullNames)
@@ -7127,9 +9823,15 @@ Function OutputMachineDetails
 						$ScriptInformation += @{Data = ""; Value = $tmp; }
 					}
 				}
-                ## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
+                ## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
+				If([String]::IsNullOrEmpty($name))
+				{
+					$name = "-"
+				}
+				
 				$ScriptInformation += @{Data = "User"; Value = $name; }
+
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserNames)
 				{
@@ -7139,8 +9841,14 @@ Function OutputMachineDetails
 						$ScriptInformation += @{Data = ""; Value = $tmp; }
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
+
+                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
+				If([String]::IsNullOrEmpty($upn))
+				{
+					$upn = "-"
+				}
+				
 				$ScriptInformation += @{Data = "UPN"; Value = $upn; }
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserUPNs)
@@ -7165,11 +9873,13 @@ Function OutputMachineDetails
 			}
 			$ScriptInformation += @{Data = "Allocation Type"; Value = $xAllocationType; }
 			$ScriptInformation += @{Data = "Maintenance Mode"; Value = $xInMaintenanceMode; }
+			$ScriptInformation += @{Data = "Maintenance Mode Reason"; Value = $MaintModeReason; }
 			$ScriptInformation += @{Data = "Windows Connection Setting"; Value = $xWindowsConnectionSetting; }
 			$ScriptInformation += @{Data = "Is Assigned"; Value = $Machine.IsAssigned.ToString(); }
 			$ScriptInformation += @{Data = "Is Physical"; Value = $xIsPhysical; }
 			$ScriptInformation += @{Data = "Provisioning Type"; Value = $Machine.ProvisioningType.ToString(); }
-			$ScriptInformation += @{Data = "Scheduled Reboot"; Value = $Machine.ScheduledReboot; }
+			$ScriptInformation += @{Data = "Scheduled Reboot"; Value = $ScheduledReboot; }
+			$ScriptInformation += @{Data = "Draining Until Shutdown"; Value = $Machine.DrainingUntilShutdown.ToString(); }
 			$ScriptInformation += @{Data = "Zone"; Value = $Machine.ZoneName; }
 			$ScriptInformation += @{Data = "Summary State"; Value = $xSummaryState; }
             [string]$TagName = $(If( $xTags -is [array] -and $xTags.Count ) { $xTags[0] } Else { '-' } )
@@ -7205,12 +9915,12 @@ Function OutputMachineDetails
 			If((!$LinuxVDA) -and $VDARegistryKeys -and $MachineIsOnline)
 			{
 				#First test if the Remote Registry service is enabled. If not skip the VDA registry keys
-				$results = Get-Service -ComputerName $Machine.DNSName -Name "RemoteRegistry" -EA 0
+				$results = Get-Service -ComputerName $xMachineName -Name "RemoteRegistry" -EA 0
 				If($? -and $Null -ne $results)
 				{
 					If($results.Status -eq "Running")
 					{
-						GetVDARegistryKeys $Machine.DNSName "Server"
+						GetVDARegistryKeys $xMachineName "Server"
 						$Script:WordAllVDARegistryItems += $Script:VDARegistryItems
 						$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 					}
@@ -7220,10 +9930,10 @@ Function OutputMachineDetails
 							RegKey       = "N/A"
 							RegValue     = "N/A"
 							VDAType      = "Server"
-							ComputerName = $Machine.DNSName	
+							ComputerName = $xMachineName	
 							Value        = "The Remote Registry service is not running"
 						}
-						$null = $Script:VDARegistryItems.Add($obj1)
+						$Null = $Script:VDARegistryItems.Add($obj1)
 						$Script:WordAllVDARegistryItems += $Script:VDARegistryItems
 						$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 					}
@@ -7234,10 +9944,10 @@ Function OutputMachineDetails
 						RegKey       = "N/A"
 						RegValue     = "N/A"
 						VDAType      = "Server"
-						ComputerName = $Machine.DNSName	
+						ComputerName = $xMachineName	
 						Value        = "The Remote Registry service is not running"
 					}
-					$null = $Script:VDARegistryItems.Add($obj1)
+					$Null = $Script:VDARegistryItems.Add($obj1)
 					$Script:WordAllVDARegistryItems += $Script:VDARegistryItems
 					$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 				}
@@ -7371,6 +10081,7 @@ Function OutputMachineDetails
 				[System.Collections.Hashtable[]] $ScriptInformation = @()
 				$ScriptInformation += @{Data = "Last Connection Time"; Value = $xLastConnectionTime ; }
 				$ScriptInformation += @{Data = "Last Connection User"; Value = $xLastConnectionUser; }
+				$ScriptInformation += @{Data = "Last Connection Failure"; Value = $LastConnectionFailure; }
 				$ScriptInformation += @{Data = "Secure ICA Active"; Value = $xSessionSecureIcaActive ; }
 
 				$Table = AddWordTable -Hashtable $ScriptInformation `
@@ -7448,13 +10159,18 @@ Function OutputMachineDetails
 		{
 			WriteWordLine 4 0 "Machine"
 			[System.Collections.Hashtable[]] $ScriptInformation = @()
-			$ScriptInformation += @{Data = "Name"; Value = $Machine.DNSName; }
+			$ScriptInformation += @{Data = "Name"; Value = $xMachineName; }
 			$ScriptInformation += @{Data = "Machine Catalog"; Value = $Machine.CatalogName; }
-			$ScriptInformation += @{Data = "Delivery Group"; Value = $Machine.DesktopGroupName; }
+			$ScriptInformation += @{Data = "Delivery Group"; Value = $MachineDesktopGroupName; }
 			If($NoSessions -eq $False)
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
+ 				If([String]::IsNullOrEmpty($name))
+				{
+					$name = "-"
+				}
+				
 				$ScriptInformation += @{Data = "User Display Name"; Value = $name; }
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserFullNames)
@@ -7465,8 +10181,13 @@ Function OutputMachineDetails
 						$ScriptInformation += @{Data = ""; Value = $tmp; }
 					}
 				}
-                ## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
+                ## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
+ 				If([String]::IsNullOrEmpty($name))
+				{
+					$name = "-"
+				}
+				
 				$ScriptInformation += @{Data = "User"; Value = $name; }
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserNames)
@@ -7477,8 +10198,13 @@ Function OutputMachineDetails
 						$ScriptInformation += @{Data = ""; Value = $tmp; }
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
+                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
+ 				If([String]::IsNullOrEmpty($upn))
+				{
+					$upn = "-"
+				}
+				
 				$ScriptInformation += @{Data = "UPN"; Value = $upn; }
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserUPNs)
@@ -7503,11 +10229,12 @@ Function OutputMachineDetails
 			}
 			$ScriptInformation += @{Data = "Allocation Type"; Value = $xAllocationType; }
 			$ScriptInformation += @{Data = "Maintenance Mode"; Value = $xInMaintenanceMode; }
+			$ScriptInformation += @{Data = "Maintenance Mode Reason"; Value = $MaintModeReason; }
 			$ScriptInformation += @{Data = "Is Assigned"; Value = $Machine.IsAssigned.ToString(); }
 			$ScriptInformation += @{Data = "Is Physical"; Value = $xIsPhysical; }
 			$ScriptInformation += @{Data = "Provisioning Type"; Value = $Machine.ProvisioningType.ToString(); }
 			$ScriptInformation += @{Data = "Zone"; Value = $Machine.ZoneName; }
-			$ScriptInformation += @{Data = "Scheduled Reboot"; Value = $Machine.ScheduledReboot; }
+			$ScriptInformation += @{Data = "Scheduled Reboot"; Value = $ScheduledReboot; }
 			$ScriptInformation += @{Data = "Summary State"; Value = $xSummaryState; }
             [string]$TagName = $(If( $xTags -is [array] -and $xTags.Count ) { $xTags[0] } Else { '-' } )
 			$ScriptInformation += @{Data = "Tags"; Value = $TagName; }
@@ -7541,12 +10268,12 @@ Function OutputMachineDetails
 			If((!$LinuxVDA) -and $VDARegistryKeys -and $MachineIsOnline)
 			{
 				#First test if the Remote Registry service is enabled. If not skip the VDA registry keys
-				$results = Get-Service -ComputerName $Machine.DNSName -Name "RemoteRegistry" -EA 0
+				$results = Get-Service -ComputerName $xMachineName -Name "RemoteRegistry" -EA 0
 				If($? -and $Null -ne $results)
 				{
 					If($results.Status -eq "Running")
 					{
-						GetVDARegistryKeys $Machine.DNSName "Desktop"
+						GetVDARegistryKeys $xMachineName "Desktop"
 						$Script:WordAllVDARegistryItems += $Script:VDARegistryItems
 						$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 					}
@@ -7556,10 +10283,10 @@ Function OutputMachineDetails
 							RegKey       = "N/A"
 							RegValue     = "N/A"
 							VDAType      = "Desktop"
-							ComputerName = $Machine.DNSName	
+							ComputerName = $xMachineName	
 							Value        = "The Remote Registry service is not running"
 						}
-						$null = $Script:VDARegistryItems.Add($obj1)
+						$Null = $Script:VDARegistryItems.Add($obj1)
 						$Script:WordAllVDARegistryItems += $Script:VDARegistryItems
 						$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 					}
@@ -7570,10 +10297,10 @@ Function OutputMachineDetails
 						RegKey       = "N/A"
 						RegValue     = "N/A"
 						VDAType      = "Desktop"
-						ComputerName = $Machine.DNSName	
+						ComputerName = $xMachineName	
 						Value        = "The Remote Registry service is not running"
 					}
-					$null = $Script:VDARegistryItems.Add($obj1)
+					$Null = $Script:VDARegistryItems.Add($obj1)
 					$Script:WordAllVDARegistryItems += $Script:VDARegistryItems
 					$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 				}
@@ -7661,6 +10388,7 @@ Function OutputMachineDetails
 				$ScriptInformation += @{Data = "Connected Via (IP)"; Value = $xSessionConnectedViaIP; }
 				$ScriptInformation += @{Data = "Last Connection Time"; Value = $xLastConnectionTime ; }
 				$ScriptInformation += @{Data = "Last Connection User"; Value = $xLastConnectionUser; }
+				$ScriptInformation += @{Data = "Last Connection Failure"; Value = $LastConnectionFailure; }
 				$ScriptInformation += @{Data = "Connection Type"; Value = $xSessionProtocol; }
 				$ScriptInformation += @{Data = "Secure ICA Active"; Value = $xSessionSecureIcaActive ; }
 
@@ -7717,6 +10445,7 @@ Function OutputMachineDetails
 			$ScriptInformation += @{Data = "Power Action Pending"; Value = $Machine.PowerActionPending.ToString(); }
 			$ScriptInformation += @{Data = "Power State"; Value = $xPowerState; }
 			$ScriptInformation += @{Data = "Will Shutdown After Use"; Value = $xWillShutdownAfterUse; }
+			$ScriptInformation += @{Data = "Will Shutdown After Use Reason"; Value = $WillShutdownAfterUseReason; }
 
 			$Table = AddWordTable -Hashtable $ScriptInformation `
 			-Columns Data,Value `
@@ -7802,13 +10531,18 @@ Function OutputMachineDetails
 		If($Machine.SessionSupport -eq "MultiSession")
 		{
 			Line 1 "Machine"
-			Line 2 "Name`t`t`t`t: " $Machine.DNSName
+			Line 2 "Name`t`t`t`t: " $xMachineName
 			Line 2 "Machine Catalog`t`t`t: " $Machine.CatalogName
-			Line 2 "Delivery Group`t`t`t: " $Machine.DesktopGroupName
+			Line 2 "Delivery Group`t`t`t: " $MachineDesktopGroupName
 			If($NoSessions -eq $False)
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
+ 				If([String]::IsNullOrEmpty($name))
+				{
+					$name = "-"
+				}
+				
 				Line 2 "User Display Name`t`t: " $name
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserFullNames)
@@ -7819,8 +10553,13 @@ Function OutputMachineDetails
 						Line 6 "  " $tmp
 					}
 				}
-                ## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
+                ## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
+ 				If([String]::IsNullOrEmpty($name))
+				{
+					$name = "-"
+				}
+				
 				Line 2 "User`t`t`t`t: " $name
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserNames)
@@ -7831,8 +10570,13 @@ Function OutputMachineDetails
 						Line 6 "  " $tmp
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
+                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
+ 				If([String]::IsNullOrEmpty($upn))
+				{
+					$upn = "-"
+				}
+				
 				Line 2 "UPN`t`t`t`t: " $upn
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserUPNs)
@@ -7857,11 +10601,13 @@ Function OutputMachineDetails
 			}
 			Line 2 "Allocation Type`t`t`t: " $xAllocationType
 			Line 2 "Maintenance Mode`t`t: " $xInMaintenanceMode
+			Line 2 "Maintenance Mode Reason`t`t: " $MaintModeReason
 			Line 2 "Windows Connection Setting`t: " $xWindowsConnectionSetting
 			Line 2 "Is Assigned`t`t`t: " $Machine.IsAssigned.ToString()
 			Line 2 "Is Physical`t`t`t: " $xIsPhysical
 			Line 2 "Provisioning Type`t`t: " $Machine.ProvisioningType.ToString()
-			Line 2 "Scheduled Reboot`t`t: " $Machine.ScheduledReboot
+			Line 2 "Scheduled Reboot`t`t: " $ScheduledReboot
+			Line 2 "Draining Until Shutdown`t`t: " $Machine.DrainingUntilShutdown.ToString()
 			Line 2 "Zone`t`t`t`t: " $Machine.ZoneName
 			Line 2 "Summary State`t`t`t: " $xSummaryState
             [string]$TagName = $(If( $xTags -is [array] -and $xTags.Count ) { $xTags[0] } Else { '-' } )
@@ -7881,12 +10627,12 @@ Function OutputMachineDetails
 			If((!$LinuxVDA) -and $VDARegistryKeys -and $MachineIsOnline)
 			{
 				#First test if the Remote Registry service is enabled. If not skip the VDA registry keys
-				$results = Get-Service -ComputerName $Machine.DNSName -Name "RemoteRegistry" -EA 0
+				$results = Get-Service -ComputerName $xMachineName -Name "RemoteRegistry" -EA 0
 				If($? -and $Null -ne $results)
 				{
 					If($results.Status -eq "Running")
 					{
-						GetVDARegistryKeys $Machine.DNSName "Server"
+						GetVDARegistryKeys $xMachineName "Server"
 						$Script:TextAllVDARegistryItems += $Script:VDARegistryItems
 						$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 					}
@@ -7896,10 +10642,10 @@ Function OutputMachineDetails
 							RegKey       = "N/A"
 							RegValue     = "N/A"
 							VDAType      = "Server"
-							ComputerName = $Machine.DNSName	
+							ComputerName = $xMachineName	
 							Value        = "The Remote Registry service is not running"
 						}
-						$null = $Script:VDARegistryItems.Add($obj1)
+						$Null = $Script:VDARegistryItems.Add($obj1)
 						$Script:TextAllVDARegistryItems += $Script:VDARegistryItems
 						$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 					}
@@ -7910,10 +10656,10 @@ Function OutputMachineDetails
 						RegKey       = "N/A"
 						RegValue     = "N/A"
 						VDAType      = "Server"
-						ComputerName = $Machine.DNSName	
+						ComputerName = $xMachineName	
 						Value        = "The Remote Registry service is not running"
 					}
-					$null = $Script:VDARegistryItems.Add($obj1)
+					$Null = $Script:VDARegistryItems.Add($obj1)
 					$Script:TextAllVDARegistryItems += $Script:VDARegistryItems
 					$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 				}
@@ -7977,6 +10723,7 @@ Function OutputMachineDetails
 				Line 1 "Connection"
 				Line 2 "Last Connection Time`t`t: " $xLastConnectionTime 
 				Line 2 "Last Connection User`t`t: " $xLastConnectionUser
+				Line 2 "Last Connection Failure`t`t: " $LastConnectionFailure
 				Line 2 "Secure ICA Active`t`t: " $xSessionSecureIcaActive 
 				Line 0 ""
 				
@@ -8004,13 +10751,18 @@ Function OutputMachineDetails
 		ElseIf($Machine.SessionSupport -eq "SingleSession")
 		{
 			Line 1 "Machine"
-			Line 2 "Name`t`t`t`t: " $Machine.DNSName
+			Line 2 "Name`t`t`t`t: " $xMachineName
 			Line 2 "Machine Catalog`t`t`t: " $Machine.CatalogName
-			Line 2 "Delivery Group`t`t`t: " $Machine.DesktopGroupName
+			Line 2 "Delivery Group`t`t`t: " $MachineDesktopGroupName
 			If($NoSessions -eq $False)
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
+ 				If([String]::IsNullOrEmpty($name))
+				{
+					$name = "-"
+				}
+				
 				Line 2 "User Display Name`t`t: " $name
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserFullNames)
@@ -8021,8 +10773,13 @@ Function OutputMachineDetails
 						Line 6 "  " $tmp
 					}
 				}
-                ## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
+                ## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
+ 				If([String]::IsNullOrEmpty($name))
+				{
+					$name = "-"
+				}
+				
 				Line 2 "User`t`t`t`t: " $name
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserNames)
@@ -8033,8 +10790,13 @@ Function OutputMachineDetails
 						Line 6 "  " $tmp
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
+                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
+ 				If([String]::IsNullOrEmpty($upn))
+				{
+					$upn = "-"
+				}
+				
 				Line 2 "UPN`t`t`t`t: " $upn
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserUPNs)
@@ -8059,11 +10821,12 @@ Function OutputMachineDetails
 			}
 			Line 2 "Allocation Type`t`t`t: " $xAllocationType
 			Line 2 "Maintenance Mode`t`t: " $xInMaintenanceMode
+			Line 2 "Maintenance Mode Reason`t`t: " $MaintModeReason
 			Line 2 "Is Assigned`t`t`t: " $Machine.IsAssigned.ToString()
 			Line 2 "Is Physical`t`t`t: " $xIsPhysical
 			Line 2 "Provisioning Type`t`t: " $Machine.ProvisioningType.ToString()
 			Line 2 "Zone`t`t`t`t: " $Machine.ZoneName
-			Line 2 "Scheduled Reboot`t`t: " $Machine.ScheduledReboot
+			Line 2 "Scheduled Reboot`t`t: " $ScheduledReboot
 			Line 2 "Summary State`t`t`t: " $xSummaryState
             [string]$TagName = $(If( $xTags -is [array] -and $xTags.Count ) { $xTags[0] } Else { '-' } )
 			Line 2 "Tags`t`t`t`t: " $TagName
@@ -8081,12 +10844,12 @@ Function OutputMachineDetails
 			If((!$LinuxVDA) -and $VDARegistryKeys -and $MachineIsOnline)
 			{
 				#First test if the Remote Registry service is enabled. If not skip the VDA registry keys
-				$results = Get-Service -ComputerName $Machine.DNSName -Name "RemoteRegistry" -EA 0
+				$results = Get-Service -ComputerName $xMachineName -Name "RemoteRegistry" -EA 0
 				If($? -and $Null -ne $results)
 				{
 					If($results.Status -eq "Running")
 					{
-						GetVDARegistryKeys $Machine.DNSName "Desktop"
+						GetVDARegistryKeys $xMachineName "Desktop"
 						$Script:TextAllVDARegistryItems += $Script:VDARegistryItems
 						$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 					}
@@ -8096,10 +10859,10 @@ Function OutputMachineDetails
 							RegKey       = "N/A"
 							RegValue     = "N/A"
 							VDAType      = "Desktop"
-							ComputerName = $Machine.DNSName	
+							ComputerName = $xMachineName	
 							Value        = "The Remote Registry service is not running"
 						}
-						$null = $Script:VDARegistryItems.Add($obj1)
+						$Null = $Script:VDARegistryItems.Add($obj1)
 						$Script:TextAllVDARegistryItems += $Script:VDARegistryItems
 						$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 					}
@@ -8110,10 +10873,10 @@ Function OutputMachineDetails
 						RegKey       = "N/A"
 						RegValue     = "N/A"
 						VDAType      = "Desktop"
-						ComputerName = $Machine.DNSName	
+						ComputerName = $xMachineName	
 						Value        = "The Remote Registry service is not running"
 					}
-					$null = $Script:VDARegistryItems.Add($obj1)
+					$Null = $Script:VDARegistryItems.Add($obj1)
 					$Script:TextAllVDARegistryItems += $Script:VDARegistryItems
 					$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 				}
@@ -8165,6 +10928,7 @@ Function OutputMachineDetails
 				Line 2 "Connect Via (IP)`t`t: " $xSessionConnectedViaIP
 				Line 2 "Last Connection Time`t`t: " $xLastConnectionTime 
 				Line 2 "Last Connection User`t`t: " $xLastConnectionUser
+				Line 2 "Last Connection Failure`t`t: " $LastConnectionFailure
 				Line 2 "Connection Type`t`t`t: " $xSessionProtocol
 				Line 2 "Secure ICA Active`t`t: " $xSessionSecureIcaActive 
 				Line 0 ""
@@ -8187,6 +10951,7 @@ Function OutputMachineDetails
 			Line 2 "Power Action Pending`t`t: " $Machine.PowerActionPending.ToString()
 			Line 2 "Power State`t`t`t: " $xPowerState
 			Line 2 "Will Shutdown After Use`t`t: " $xWillShutdownAfterUse
+			Line 2 "Will Shutdown After Use Reason`t: " $WillShutdownAfterUseReason
 			Line 0 ""
 			
 			If($NoSessions -eq $False)
@@ -8223,13 +10988,18 @@ Function OutputMachineDetails
 			WriteHTMLLine 4 0 "Machine"
 			$rowdata = @()
 
-			$columnHeaders = @("Name",($global:htmlsb),$Machine.DNSName,$htmlwhite)
+			$columnHeaders = @("Name",($global:htmlsb),$xMachineName,$htmlwhite)
 			$rowdata += @(,('Machine Catalog',($global:htmlsb),$Machine.CatalogName,$htmlwhite))
-			$rowdata += @(,('Delivery Group',($global:htmlsb),$Machine.DesktopGroupName,$htmlwhite))
+			$rowdata += @(,('Delivery Group',($global:htmlsb),$MachineDesktopGroupName,$htmlwhite))
 			If($NoSessions -eq $False)
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
+ 				If([String]::IsNullOrEmpty($name))
+				{
+					$name = "-"
+				}
+				
 				$rowdata += @(,('User Display Name',($global:htmlsb),$name,$htmlwhite))
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserFullNames)
@@ -8240,8 +11010,13 @@ Function OutputMachineDetails
 						$rowdata += @(,('',($global:htmlsb),$tmp,$htmlwhite))
 					}
 				}
-                ## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
+                ## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
+ 				If([String]::IsNullOrEmpty($name))
+				{
+					$name = "-"
+				}
+				
 				$rowdata += @(,('User',($global:htmlsb),$name,$htmlwhite))
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserNames)
@@ -8252,8 +11027,13 @@ Function OutputMachineDetails
 						$rowdata += @(,('',($global:htmlsb),$tmp,$htmlwhite))
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
+                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
+ 				If([String]::IsNullOrEmpty($upn))
+				{
+					$upn = "-"
+				}
+				
 				$rowdata += @(,('UPN',($global:htmlsb),$upn,$htmlwhite))
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserUPNs)
@@ -8278,11 +11058,13 @@ Function OutputMachineDetails
 			}
 			$rowdata += @(,('Allocation Type',($global:htmlsb),$xAllocationType,$htmlwhite))
 			$rowdata += @(,('Maintenance Mode',($global:htmlsb),$xInMaintenanceMode,$htmlwhite))
+			$rowdata += @(,('Maintenance Mode Reason',($global:htmlsb),$MaintModeReason,$htmlwhite))
 			$rowdata += @(,('Windows Connection Setting',($global:htmlsb),$xWindowsConnectionSetting,$htmlwhite))
 			$rowdata += @(,('Is Assigned',($global:htmlsb),$Machine.IsAssigned.ToString(),$htmlwhite))
 			$rowdata += @(,('Is Physical',($global:htmlsb),$xIsPhysical,$htmlwhite))
 			$rowdata += @(,('Provisioning Type',($global:htmlsb),$Machine.ProvisioningType.ToString(),$htmlwhite))
-			$rowdata += @(,('Scheduled Reboot',($global:htmlsb),$Machine.ScheduledReboot.ToString(),$htmlwhite))
+			$rowdata += @(,('Scheduled Reboot',($global:htmlsb),$ScheduledReboot,$htmlwhite))
+			$rowdata += @(,("Draining Until Shutdown",($global:htmlsb),$Machine.DrainingUntilShutdown.ToString(),$htmlwhite))
 			$rowdata += @(,('Zone',($global:htmlsb),$Machine.ZoneName,$htmlwhite))
 			$rowdata += @(,('Summary State',($global:htmlsb),$xSummaryState,$htmlwhite))
             [string]$TagName = $(If( $xTags -is [array] -and $xTags.Count ) { $xTags[0] } Else { '-' } )
@@ -8305,12 +11087,12 @@ Function OutputMachineDetails
 			If((!$LinuxVDA) -and $VDARegistryKeys -and $MachineIsOnline)
 			{
 				#First test if the Remote Registry service is enabled. If not skip the VDA registry keys
-				$results = Get-Service -ComputerName $Machine.DNSName -Name "RemoteRegistry" -EA 0
+				$results = Get-Service -ComputerName $xMachineName -Name "RemoteRegistry" -EA 0
 				If($? -and $Null -ne $results)
 				{
 					If($results.Status -eq "Running")
 					{
-						GetVDARegistryKeys $Machine.DNSName "Server"
+						GetVDARegistryKeys $xMachineName "Server"
 						$Script:HTMLAllVDARegistryItems += $Script:VDARegistryItems
 						$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 					}
@@ -8320,10 +11102,10 @@ Function OutputMachineDetails
 							RegKey       = "N/A"
 							RegValue     = "N/A"
 							VDAType      = "Server"
-							ComputerName = $Machine.DNSName	
+							ComputerName = $xMachineName	
 							Value        = "The Remote Registry service is not running"
 						}
-						$null = $Script:VDARegistryItems.Add($obj1)
+						$Null = $Script:VDARegistryItems.Add($obj1)
 						$Script:HTMLAllVDARegistryItems += $Script:VDARegistryItems
 						$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 					}
@@ -8334,10 +11116,10 @@ Function OutputMachineDetails
 						RegKey       = "N/A"
 						RegValue     = "N/A"
 						VDAType      = "Server"
-						ComputerName = $Machine.DNSName	
+						ComputerName = $xMachineName	
 						Value        = "The Remote Registry service is not running"
 					}
-					$null = $Script:VDARegistryItems.Add($obj1)
+					$Null = $Script:VDARegistryItems.Add($obj1)
 					$Script:HTMLAllVDARegistryItems += $Script:VDARegistryItems
 					$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 				}
@@ -8418,6 +11200,7 @@ Function OutputMachineDetails
 				$rowdata = @()
 				$columnHeaders = @("Last Connection Time",($global:htmlsb),$xLastConnectionTime,$htmlwhite)
 				$rowdata += @(,('Last Connection User',($global:htmlsb),$xLastConnectionUser,$htmlwhite))
+				$rowdata += @(,('Last Connection Failure',($global:htmlsb),$LastConnectionFailure,$htmlwhite))
 				$rowdata += @(,('Secure ICA Active',($global:htmlsb),$xSessionSecureIcaActive,$htmlwhite))
 
 				$msg = ""
@@ -8458,13 +11241,18 @@ Function OutputMachineDetails
 			WriteHTMLLine 4 0 "Machine"
 			$rowdata = @()
 
-			$columnHeaders = @("Name",($global:htmlsb),$Machine.DNSName,$htmlwhite)
+			$columnHeaders = @("Name",($global:htmlsb),$xMachineName,$htmlwhite)
 			$rowdata += @(,('Machine Catalog',($global:htmlsb),$Machine.CatalogName,$htmlwhite))
-			$rowdata += @(,('Delivery Group',($global:htmlsb),$Machine.DesktopGroupName,$htmlwhite))
+			$rowdata += @(,('Delivery Group',($global:htmlsb),$MachineDesktopGroupName,$htmlwhite))
 			If($NoSessions -eq $False)
 			{
-                ## GRL $xAssociatedUserFullNames can have a count of zero soÂ $xAssociatedUserFullNames[0] isn't valid.
+                ## GRL $xAssociatedUserFullNames can have a count of zero so $xAssociatedUserFullNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserFullNames -is [array] -and $xAssociatedUserFullNames.Count ) { $xAssociatedUserFullNames[0] } Else { '-' } )
+ 				If([String]::IsNullOrEmpty($name))
+				{
+					$name = "-"
+				}
+				
 				$rowdata += @(,('User Display Name',($global:htmlsb),$name,$htmlwhite))
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserFullNames)
@@ -8475,8 +11263,13 @@ Function OutputMachineDetails
 						$rowdata += @(,('',($global:htmlsb),$tmp,$htmlwhite))
 					}
 				}
-                ## GRL $xAssociatedUserNames can have a count of zero soÂ $xAssociatedUserNames[0] isn't valid.
+                ## GRL $xAssociatedUserNames can have a count of zero so $xAssociatedUserNames[0] isn't valid.
                 [string]$name = $(If( $xAssociatedUserNames -is [array] -and $xAssociatedUserNames.Count ) { $xAssociatedUserNames[0] } Else { '-' } )
+ 				If([String]::IsNullOrEmpty($name))
+				{
+					$name = "-"
+				}
+				
 				$rowdata += @(,('User',($global:htmlsb),$name,$htmlwhite))
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserNames)
@@ -8487,8 +11280,13 @@ Function OutputMachineDetails
 						$rowdata += @(,('',($global:htmlsb),$tmp,$htmlwhite))
 					}
 				}
-                ## GRL $xAssociatedUserUPNs can have a count of zero soÂ $xAssociatedUserUPNs[0] isn't valid.
+                ## GRL $xAssociatedUserUPNs can have a count of zero so $xAssociatedUserUPNs[0] isn't valid.
                 [string]$upn = $(If( $xAssociatedUserUPNs -is [array] -and $xAssociatedUserUPNs.Count ) { $xAssociatedUserUPNs[0] } Else { '-' } )
+ 				If([String]::IsNullOrEmpty($upn))
+				{
+					$upn = "-"
+				}
+				
 				$rowdata += @(,('UPN',($global:htmlsb),$upn,$htmlwhite))
 				$cnt = -1
 				ForEach($tmp in $xAssociatedUserUPNs)
@@ -8513,11 +11311,12 @@ Function OutputMachineDetails
 			}
 			$rowdata += @(,('Allocation Type',($global:htmlsb),$xAllocationType,$htmlwhite))
 			$rowdata += @(,('Maintenance Mode',($global:htmlsb),$xInMaintenanceMode,$htmlwhite))
+			$rowdata += @(,('Maintenance Mode Reason',($global:htmlsb),$MaintModeReason,$htmlwhite))
 			$rowdata += @(,('Is Assigned',($global:htmlsb),$Machine.IsAssigned.ToString(),$htmlwhite))
 			$rowdata += @(,('Is Physical',($global:htmlsb),$xIsPhysical,$htmlwhite))
 			$rowdata += @(,('Provisioning Type',($global:htmlsb),$Machine.ProvisioningType.ToString(),$htmlwhite))
 			$rowdata += @(,('Zone',($global:htmlsb),$Machine.ZoneName,$htmlwhite))
-			$rowdata += @(,('Scheduled Reboot',($global:htmlsb),$Machine.ScheduledReboot.ToString(),$htmlwhite))
+			$rowdata += @(,('Scheduled Reboot',($global:htmlsb),$ScheduledReboot,$htmlwhite))
 			$rowdata += @(,('Summary State',($global:htmlsb),$xSummaryState,$htmlwhite))
             [string]$TagName = $(If( $xTags -is [array] -and $xTags.Count ) { $xTags[0] } Else { '-' } )
 			$rowdata += @(,('Tags',($global:htmlsb),$TagName,$htmlwhite))
@@ -8538,12 +11337,12 @@ Function OutputMachineDetails
 			If((!$LinuxVDA) -and $VDARegistryKeys -and $MachineIsOnline)
 			{
 				#First test if the Remote Registry service is enabled. If not skip the VDA registry keys
-				$results = Get-Service -ComputerName $Machine.DNSName -Name "RemoteRegistry" -EA 0
+				$results = Get-Service -ComputerName $xMachineName -Name "RemoteRegistry" -EA 0
 				If($? -and $Null -ne $results)
 				{
 					If($results.Status -eq "Running")
 					{
-						GetVDARegistryKeys $Machine.DNSName "Desktop"
+						GetVDARegistryKeys $xMachineName "Desktop"
 						$Script:HTMLAllVDARegistryItems += $Script:VDARegistryItems
 						$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 					}
@@ -8553,10 +11352,10 @@ Function OutputMachineDetails
 							RegKey       = "N/A"
 							RegValue     = "N/A"
 							VDAType      = "Desktop"
-							ComputerName = $Machine.DNSName	
+							ComputerName = $xMachineName	
 							Value        = "The Remote Registry service is not running"
 						}
-						$null = $Script:VDARegistryItems.Add($obj1)
+						$Null = $Script:VDARegistryItems.Add($obj1)
 						$Script:HTMLAllVDARegistryItems += $Script:VDARegistryItems
 						$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 					}
@@ -8567,10 +11366,10 @@ Function OutputMachineDetails
 						RegKey       = "N/A"
 						RegValue     = "N/A"
 						VDAType      = "Desktop"
-						ComputerName = $Machine.DNSName	
+						ComputerName = $xMachineName	
 						Value        = "The Remote Registry service is not running"
 					}
-					$null = $Script:VDARegistryItems.Add($obj1)
+					$Null = $Script:VDARegistryItems.Add($obj1)
 					$Script:HTMLAllVDARegistryItems += $Script:VDARegistryItems
 					$Script:VDARegistryItems = New-Object System.Collections.ArrayList
 				}
@@ -8631,6 +11430,7 @@ Function OutputMachineDetails
 				$rowdata += @(,('Connect Via (IP)',($global:htmlsb),$xSessionConnectedViaIP,$htmlwhite))
 				$rowdata += @(,('Last Connection Time',($global:htmlsb),$xLastConnectionTime,$htmlwhite))
 				$rowdata += @(,('Last Connection User',($global:htmlsb),$xLastConnectionUser,$htmlwhite))
+				$rowdata += @(,('Last Connection Failure',($global:htmlsb),$LastConnectionFailure,$htmlwhite))
 				$rowdata += @(,('Connection Type',($global:htmlsb),$xSessionProtocol,$htmlwhite))
 				$rowdata += @(,('Secure ICA Active',($global:htmlsb),$xSessionSecureIcaActive,$htmlwhite))
 
@@ -8661,6 +11461,7 @@ Function OutputMachineDetails
 			$rowdata += @(,('Power Action Pending',($global:htmlsb),$Machine.PowerActionPending.ToString(),$htmlwhite))
 			$rowdata += @(,('Power State',($global:htmlsb),$xPowerState,$htmlwhite))
 			$rowdata += @(,('Will Shutdown After Use',($global:htmlsb),$xWillShutdownAfterUse,$htmlwhite))
+			$rowdata += @(,('Will Shutdown After Use Reason',($global:htmlsb),$WillShutdownAfterUseReason,$htmlwhite))
 
 			$msg = ""
 			$columnWidths = @("200px","250px")
@@ -8763,7 +11564,7 @@ Function OutputDeliveryGroupTable
 	{
 		Line 1 "                                                                                                           No. of   Sessions Machine                                                                "
 		Line 1 "Delivery Group                                                                   Delivering                Machines in use   type                                          Unregistered Disconnected"
-		Line 1 "============================================================================================================================================================================================================="
+		Line 1 "===================================================================================================================================================================================================="
 		#       12345678901234567890123456789012345678901234567890123456789012345678901234567890S1234567890123456789012345S12345678S12345678S123456789012345678901234567890123456789012345S123456789012S123456789012
 		#                                                                                        Applications and Desktops 99999999 99999999 Single-session OS (Static machine assignment) 999999999999 999999999999
 	}
@@ -8823,6 +11624,21 @@ Function OutputDeliveryGroupTable
 			$xDeliveryType = "Applications and Desktops"
 			$Script:TotalAppsAndDesktopGroups++
 		}
+		ElseIf($Group.DeliveryType -eq "AppsOnly")
+		{
+			$xDeliveryType = "Applications"
+			$Script:TotalApplicationGroups++
+		}
+		ElseIf($Group.DeliveryType -eq "DesktopsOnly")
+		{
+			$xDeliveryType = "Desktops"
+			$Script:TotalDesktopGroups++
+		}
+		ElseIf($Group.DeliveryType -eq "DesktopsAndApps")
+		{
+			$xDeliveryType = "Applications and Desktops"
+			$Script:TotalAppsAndDesktopGroups++
+		}
 		Else
 		{
 			$xDeliveryType = "Delivery type could not be determined: Apps($NumApps) AppGroups($NumAppGroups) Desktops($NumDesktops)"
@@ -8836,13 +11652,13 @@ Function OutputDeliveryGroupTable
 		If($MSWord -or $PDF)
 		{
 			$WordTable += @{
-			DeliveryGroupName = $xGroupName; 
-			DeliveryType = $xDeliveryType
-			NoOfMachines = $Group.TotalDesktops; 
-			SessionsInUse = $Group.Sessions; 
-			MachineType = $SessionSupport; 
-			Unregistered = $Group.DesktopsUnregistered; 
-			Disconnected = $Group.DesktopsDisconnected; 
+				DeliveryGroupName = $xGroupName; 
+				DeliveryType = $xDeliveryType
+				NoOfMachines = $Group.TotalDesktops; 
+				SessionsInUse = $Group.Sessions; 
+				MachineType = $SessionSupport; 
+				Unregistered = $Group.DesktopsUnregistered; 
+				Disconnected = $Group.DesktopsDisconnected; 
 			}
 		}
 		If($Text)
@@ -8854,18 +11670,32 @@ Function OutputDeliveryGroupTable
 		If($HTML)
 		{
 			$rowdata += @(,(
-			$xGroupName,$htmlwhite,
-			$xDeliveryType,$htmlwhite,
-			$Group.TotalDesktops.ToString(),$htmlwhite,
-			$Group.Sessions.ToString(),$htmlwhite,
-			$SessionSupport,$htmlwhite,
-			$Group.DesktopsUnregistered.ToString(),$htmlwhite,
-			$Group.DesktopsDisconnected.ToString(),$htmlwhite))
+				$xGroupName,$htmlwhite,
+				$xDeliveryType,$htmlwhite,
+				$Group.TotalDesktops.ToString(),$htmlwhite,
+				$Group.Sessions.ToString(),$htmlwhite,
+				$SessionSupport,$htmlwhite,
+				$Group.DesktopsUnregistered.ToString(),$htmlwhite,
+				$Group.DesktopsDisconnected.ToString(),$htmlwhite)
+			)
 		}
 	}
 	
 	If($MSWord -or $PDF)
 	{
+		If($WordTable.Count -eq 0)
+		{
+			$WordTable += @{
+				DeliveryGroupName = "None found"; 
+				DeliveryType = "";
+				NoOfMachines = ""; 
+				SessionsInUse = ""; 
+				MachineType = ""; 
+				Unregistered = ""; 
+				Disconnected = ""; 
+			}
+		}
+		
 		$Table = AddWordTable -Hashtable $WordTable `
 		-Columns  DeliveryGroupName, DeliveryType, NoOfMachines, SessionsInUse, MachineType, Unregistered, Disconnected `
 		-Headers  "Delivery Group", "Delivering", "No. of machines", "Sessions in use", "Machine type", "Unregistered", "Disconnected" `
@@ -8895,13 +11725,13 @@ Function OutputDeliveryGroupTable
 	If($HTML)
 	{
 		$columnHeaders = @(
-		'Delivery Group',($global:htmlsb),
-		'Delivering',($global:htmlsb),
-		'No. of machines',($global:htmlsb),
-		'Sessions in use',($global:htmlsb),
-		'Machine type',($global:htmlsb),
-		'Unregistered',($global:htmlsb),
-		'Disconnected',($global:htmlsb)
+			'Delivery Group',($global:htmlsb),
+			'Delivering',($global:htmlsb),
+			'No. of machines',($global:htmlsb),
+			'Sessions in use',($global:htmlsb),
+			'Machine type',($global:htmlsb),
+			'Unregistered',($global:htmlsb),
+			'Disconnected',($global:htmlsb)
 		)
 
 		$columnWidths = @("150","165","50","45","165","60","65")
@@ -9022,7 +11852,7 @@ Function OutputDeliveryGroup
 	
 	If($DeliveryGroups)
 	{
-		Write-Verbose "$(Get-Date -Format G): `t`tProcessing details"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing details"
 		$txt = "Delivery Group Details: "
 		If($MSWord -or $PDF)
 		{
@@ -9038,7 +11868,7 @@ Function OutputDeliveryGroup
 		}
 		OutputDeliveryGroupDetails $Group
 		
-		Write-Verbose "$(Get-Date -Format G): `t`tProcessing applications"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing applications"
 		OutputDeliveryGroupApplicationDetails $Group
 
 		#retrieve machines in delivery group
@@ -9052,6 +11882,7 @@ Function OutputDeliveryGroup
 			}
 			ElseIf($DeliveryGroups -and -not $MachineCatalogs)
 			{
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing desktops"
 				If($MSWord -or $PDF)
 				{
 					WriteWordLine 4 0 "Desktops"
@@ -9065,9 +11896,14 @@ Function OutputDeliveryGroup
 					WriteHTMLLine 4 0 "Desktops"
 				}
 				
+				$TrustedDomain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain().Name
+				$context = New-Object System.DirectoryServices.ActiveDirectory.DirectoryContext( "domain", $TrustedDomain )
+				$domain = [System.DirectoryServices.ActiveDirectory.Domain]::GetDomain( $context )
+				$ADSearchBase = $domain.GetDirectoryEntry().DistinguishedName.Value
+
 				ForEach($Machine in $Machines)
 				{
-					OutputMachineDetails $Machine
+					OutputMachineDetails $Machine $ADSearchBase "Desktop"
 				}
 			}
 			ElseIf(-not $DeliveryGroups -and $MachineCatalogs)
@@ -9094,22 +11930,22 @@ Function OutputDeliveryGroup
 			OutputWarning $txt
 		}
 
-		Write-Verbose "$(Get-Date -Format G): `t`tProcessing machine catalogs"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing machine catalogs"
 		OutputDeliveryGroupCatalogs $Group
 
 		If($DeliveryGroupsUtilization)
 		{
-			Write-Verbose "$(Get-Date -Format G): `t`t`tCreating Delivery Group Utilization report"
+			Write-Verbose "$(Get-Date -Format G): `t`t`t`tCreating Delivery Group Utilization report"
 			OutputDeliveryGroupUtilization $Group
 		}
 
-		Write-Verbose "$(Get-Date -Format G): `t`tProcessing Tags"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Tags"
 		OutputDeliveryGroupTags $Group
 
-		Write-Verbose "$(Get-Date -Format G): `t`tProcessing Application Groups"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Application Groups"
 		OutputDeliveryGroupApplicationGroups $Group
 
-		Write-Verbose "$(Get-Date -Format G): `t`tProcessing administrators"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing administrators"
 		$Admins = GetAdmins "DesktopGroup" $Group.Name
 		
 		If($? -and ($Null -ne $Admins))
@@ -9130,7 +11966,7 @@ Function OutputDeliveryGroup
 	
 	If($DeliveryGroupsUtilization)
 	{
-		Write-Verbose "$(Get-Date -Format G): `t`t`tCreating Delivery Group Utilization report"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tCreating Delivery Group Utilization report"
 		OutputDeliveryGroupUtilization $Group
 	}
 }
@@ -9231,6 +12067,8 @@ Function OutputDeliveryGroupDetails
 		"L7_9"	{$xVDAVersion = "7.9 (or newer)"; Break}
 		"L7_20"	{$xVDAVersion = "1811 (or newer)"; Break}
 		"L7_25"	{$xVDAVersion = "2003 (or newer)"; Break}
+		"L7_30"	{$xVDAVersion = "2106 (or newer)"; Break}
+		"L7_34"	{$xVDAVersion = "2206 (or newer)"; Break}
 		Default {$xVDAVersion = "Unable to determine VDA version: $($Group.MinimumFunctionalLevel)"; Break}
 	}
 	
@@ -9259,25 +12097,41 @@ Function OutputDeliveryGroupDetails
 	}
 	$DGScopes += "All"
 	
-	ForEach($Server in $Group.MachineConfigurationNames)
+	#see if there is any machine configuration data 
+	$TestResults = Get-BrokerMachineConfiguration @CCParams2
+	
+	If($Null -ne $TestResults)
 	{
-		$SFTmp = Get-BrokerMachineConfiguration -Name $Server
-		If($? -and $Null -ne $SFTmp)
+		#only get the delivery group's SF data, if any, if there is machine configuration data
+		ForEach($Server in $Group.MachineConfigurationNames)
 		{
-			$SFByteArray = $SFTmp.Policy
-			## GRL add Try/Catch
-            try
-            {
-			    $SFServer = Get-SFStoreFrontAddress -ByteArray $SFByteArray -ErrorAction SilentlyContinue 4>$Null
-			    If($? -and $Null -ne $SFServer)
-			    {
-				    $DGSFServers += $SFServer.Url
-			    }
-            }
-            catch
-            {
-                Write-Warning -Message "Failed call to Get-SFStoreFrontAddress for $server"
-            }
+			try
+			{
+				$SFTmp = Get-BrokerMachineConfiguration -Name $Server @CCParams2
+				
+				If($? -and $Null -ne $SFTmp)
+				{
+					$SFByteArray = $SFTmp.Policy
+					## GRL add Try/Catch
+					try
+					{
+						$SFServer = Get-SFStoreFrontAddress -ByteArray $SFByteArray -ErrorAction SilentlyContinue 4>$Null
+						If($? -and $Null -ne $SFServer)
+						{
+							$DGSFServers += $SFServer.Url
+						}
+					}
+					catch
+					{
+						Write-Warning -Message "Failed call to Get-SFStoreFrontAddress for $server"
+					}
+				}
+			}
+			
+			catch
+			{
+				#do nothing
+			}
 		}
 	}
 	
@@ -9286,8 +12140,8 @@ Function OutputDeliveryGroupDetails
 		$DGSFServers += "-"
 	}
 
-	$test = Get-BrokerSessionPreLaunch -EA 0
-	If($? -and $null -ne $test)
+	$test = Get-BrokerSessionPreLaunch @CCParams2
+	If($? -and $Null -ne $test)
 	{
 		$SPLUIDs = @()
 		ForEach($SPL in $test)
@@ -9335,8 +12189,8 @@ Function OutputDeliveryGroupDetails
 		}
 	}
 	
-	$test = Get-BrokerSessionLinger -EA 0
-	If($? -and $null -ne $test)
+	$test = Get-BrokerSessionLinger @CCParams2
+	If($? -and $Null -ne $test)
 	{
 		$SLUIDs = @()
 		ForEach($SL in $test)
@@ -9571,8 +12425,8 @@ Function OutputDeliveryGroupDetails
 			}
 			Else
 			{
-				$xAllConnections = ""
-				$xNSConnection = ""
+				$xAllConnections = "-"
+				$xNSConnection = "-"
 				$xAGFilters = @()
 			}
 		}
@@ -9617,12 +12471,21 @@ Function OutputDeliveryGroupDetails
 	{
 		$xTimeZone = $Group.TimeZone
 	}
+
+	If([String]::IsNullOrEmpty($Group.Description))
+	{
+		$GroupDescription = "-"
+	}
+	Else
+	{
+		$GroupDescription = $Group.Description
+	}
 	
 	If($MSWord -or $PDF)
 	{
-		WriteWordLine 4 0 "Details: " $Group.Name
+		WriteWordLine 3 0 "Details: " $Group.Name
 		[System.Collections.Hashtable[]] $ScriptInformation = @()
-		$ScriptInformation += @{Data = "Description"; Value = $Group.Description; }
+		$ScriptInformation += @{Data = "Description"; Value = $GroupDescription; }
 		If(![String]::IsNullOrEmpty($Group.PublishedName))
 		{
 			$ScriptInformation += @{Data = "Display Name"; Value = $Group.PublishedName; }
@@ -9682,6 +12545,24 @@ Function OutputDeliveryGroupDetails
 			{
 				ForEach($DesktopSetting in $DesktopSettings)
 				{
+					If([String]::IsNullOrEmpty($DesktopSetting.Description))
+					{
+						$DesktopSettingDescription = "-"
+					}
+					Else
+					{
+						$DesktopSettingDescription = $DesktopSetting.Description
+					}
+					
+					If([String]::IsNullOrEmpty($DesktopSetting.SecureIcaRequired))
+					{
+						$DesktopSettingSecureIcaRequired = "-"
+					}
+					Else
+					{
+						$DesktopSettingSecureIcaRequired = $DesktopSetting.SecureIcaRequired.ToString()
+					}
+					
 					$DesktopSettingIncludedUsers = @()
 					$DesktopSettingExcludedUsers = @()
 					
@@ -9722,7 +12603,7 @@ Function OutputDeliveryGroupDetails
 						"Always" 			{$xSessionReconnection = "Always"; Break}
 						"DisconnectedOnly"	{$xSessionReconnection = "Disconnected Only"; Break}
 						"SameEndpointOnly"	{$xSessionReconnection = "Same Endpoint Only"; Break}
-						Default {$xSessionReconnection = "Unable to determine Session Reconnection value: $($DesktopSetting.SessionReconnection)"; Break}
+						Default				{$xSessionReconnection = "Unable to determine Session Reconnection value: $($DesktopSetting.SessionReconnection)"; Break}
 					}
 					If($Null -ne $DesktopSetting.SecureIcaRequired)
 					{
@@ -9730,7 +12611,7 @@ Function OutputDeliveryGroupDetails
 					}
 					$ScriptInformation += @{Data = "Desktop Entitlement"; Value = ""; }
 					$ScriptInformation += @{Data = "     Display name"; Value = $DesktopSetting.PublishedName; }
-					$ScriptInformation += @{Data = "     Description"; Value = $DesktopSetting.Description; }
+					$ScriptInformation += @{Data = "     Description"; Value = $DesktopSettingDescription; }
 					$ScriptInformation += @{Data = "     Restrict launches to machines with tag"; Value = $RestrictedToTag; }
 					[string]$DSIU = $(If( $DesktopSettingIncludedUsers -is [array] -and $DesktopSettingIncludedUsers.Count ) { $DesktopSettingIncludedUsers[0] } Else { '-' } )
 					$ScriptInformation += @{Data = "     Included Users"; Value = $DSIU; }
@@ -9744,7 +12625,7 @@ Function OutputDeliveryGroupDetails
 						}
 					}
 					
-					If($DesktopSettingExcludedUsers.Count -gt 0)
+					If((validObject $DesktopSettingExcludedUsers Count) -and $DesktopSettingExcludedUsers.Count -gt 0) #fixed in 1.25
 					{
 						$ScriptInformation += @{Data = "     Excluded Users"; Value = $DesktopSettingExcludedUsers[0]; }
 						$cnt = -1
@@ -9760,7 +12641,7 @@ Function OutputDeliveryGroupDetails
 					$ScriptInformation += @{Data = "     Enable desktop"; Value = $DesktopSetting.Enabled; }
 					$ScriptInformation += @{Data = "     Leasing behavior"; Value = $DesktopSetting.LeasingBehavior; }
 					$ScriptInformation += @{Data = "     Maximum concurrent instances"; Value = $DesktopSetting.MaxPerEntitlementInstances; }
-					$ScriptInformation += @{Data = "     SecureICA required"; Value = $DesktopSetting.SecureIcaRequired; }
+					$ScriptInformation += @{Data = "     SecureICA required"; Value = $DesktopSettingSecureIcaRequired; }
 					$ScriptInformation += @{Data = "     Session reconnection"; Value = $xSessionReconnection; }
 				}
 			}
@@ -9824,14 +12705,29 @@ Function OutputDeliveryGroupDetails
 
 		$ScriptInformation += @{Data = "Launch in user's home zone"; Value = $xUsersHomeZone; }
 		
-		If($Group.SessionSupport -eq "MultiSession")
-		{
-			$RestartSchedules = Get-BrokerRebootScheduleV2 -EA 0 -DesktopGroupUid $Group.Uid
+		#The June 2022 update to Citrix Cloud added support for single-session
+		#https://docs.citrix.com/en-us/citrix-daas/whats-new.html#june-2022
+		#Restart schedule support for single-session OS machines. Previously, 
+		#the restart schedule feature was available only for multi-session OS machines. 
+		#It’s now also available for single-session OS machines. You can now create 
+		#restart schedules for delivery groups containing single-session OS machines.
+		#If($Group.SessionSupport -eq "MultiSession") 
+		#{
+			$RestartSchedules = Get-BrokerRebootScheduleV2 @CCParams2 -DesktopGroupUid $Group.Uid
 			
 			If($? -and $Null -ne $RestartSchedules)
 			{
 				ForEach($RestartSchedule in $RestartSchedules)
 				{
+					If($Null -eq $RestartSchedule.RestrictToTag)
+					{
+						$RestrictToTag = "-"
+					}
+					Else
+					{
+						$RestrictToTag = $RestartSchedule.RestrictToTag
+					}
+					
 					$ScriptInformation += @{Data = "Restart Schedule"; Value = ""; }
 					Switch($RestartSchedule.WarningRepeatInterval)
 					{
@@ -9842,7 +12738,7 @@ Function OutputDeliveryGroupDetails
 				
 					$ScriptInformation += @{Data = "     Restart machines automatically"; Value = "Yes"; }
 
-					$ScriptInformation += @{Data = "     Restrict to tag"; Value = $RestartSchedule.RestrictToTag; }
+					$ScriptInformation += @{Data = "     Restrict to tag"; Value = $RestrictToTag; }
 					
 					$tmp = ""
 					If($RestartSchedule.Frequency -eq "Daily")
@@ -9889,18 +12785,35 @@ Function OutputDeliveryGroupDetails
 						$ScriptInformation += @{Data = "     Notification message"; Value = $RestartSchedule.WarningMessage; }
 					}
 					$ScriptInformation += @{Data = "     Notification frequency"; Value = $RestartScheduleWarningRepeatInterval; }
+
+					If(validObject $RestartSchedule UseNaturalReboot)
+					{
+						$ScriptInformation += @{Data = "     Use natural reboot"; Value = $RestartSchedule.UseNaturalReboot.ToString(); }
+					}
+					If(validObject $RestartSchedule IgnoreMaintenanceMode)
+					{
+						$ScriptInformation += @{Data = "     Ignore maintenance mode"; Value = $RestartSchedule.IgnoreMaintenanceMode.ToString(); }
+					}
+					If(validObject $RestartSchedule MaxOvertimeStartMins)
+					{
+						$ScriptInformation += @{Data = "     Maximum Overtime Start Minutes"; Value = $RestartSchedule.MaxOvertimeStartMins.ToString(); }
+					}
 				}
 			}
 			Else
 			{
 				$ScriptInformation += @{Data = "Restart machines automatically"; Value = "No"; }
 			}
-		}
+		#}
 
 		$ScriptInformation += @{Data = "License model"; Value = $LicenseModel; }
 		$ScriptInformation += @{Data = "Product code"; Value = $ProductCode; }
 		$ScriptInformation += @{Data = "App Protection Key Logging Required"; Value = $Group.AppProtectionKeyLoggingRequired; }
 		$ScriptInformation += @{Data = "App Protection Screen Capture Required"; Value = $Group.AppProtectionScreenCaptureRequired; }
+		If(validObject $Group AllowReconnectInMaintenanceMode)
+		{
+			$ScriptInformation += @{Data = "Allow session reconnect in maintenance mode"; Value = $Group.AllowReconnectInMaintenanceMode.ToString(); }
+		}
 		$ScriptInformation += @{ Data = "Off Peak Buffer Size Percent"; Value = $xOffPeakBufferSizePercent; }
 		$ScriptInformation += @{ Data = "Off Peak Disconnect Timeout (Minutes)"; Value = $xOffPeakDisconnectTimeout; }
 		$ScriptInformation += @{ Data = "Off Peak Extended Disconnect Timeout (Minutes)"; Value = $xOffPeakExtendedDisconnectTimeout; }
@@ -10209,7 +13122,7 @@ Function OutputDeliveryGroupDetails
 
 		$ScriptInformation += @{Data = "Automatic power on for assigned"; Value = $xAutoPowerOnForAssigned; }
 		$ScriptInformation += @{Data = "Automatic power on for assigned during peak"; Value = $xAutoPowerOnForAssignedDuringPeak; }
-
+		$ScriptInformation += @{Data = "Automatic Restart for Untagged Machines"; Value = $Group.AutomaticRestartForUntaggedMachines.ToString(); }
 		If($Group.ReuseMachinesWithoutShutdownInOutage -eq $Script:CCSite1.ReuseMachinesWithoutShutdownInOutageAllowed)
 		{
 			$ScriptInformation += @{Data = "Reuse Machines Without Shutdown in Outage"; Value = $Group.ReuseMachinesWithoutShutdownInOutage; }
@@ -10242,18 +13155,308 @@ Function OutputDeliveryGroupDetails
 		SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
 		$Table.Columns.Item(1).Width = 250;
-		$Table.Columns.Item(2).Width = 200;
+		$Table.Columns.Item(2).Width = 250;
 
 		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
 		FindWordDocumentEnd
 		$Table = $Null
 		WriteWordLine 0 0 ""
+
+		If($Group.AutoscalingEnabled)
+		{
+			If([String]::IsNullOrEmpty($Group.AutoscaleLogOffWarningMessage))
+			{
+				$GroupAutoscaleLogOffWarningMessage = "-"
+			}
+			Else
+			{
+				$GroupAutoscaleLogOffWarningMessage = $Group.AutoscaleLogOffWarningMessage
+			}
+			If([String]::IsNullOrEmpty($Group.AutoscaleLogOffWarningTitle))
+			{
+				$GroupAutoscaleLogOffWarningTitle = "-"
+			}
+			Else
+			{
+				$GroupAutoscaleLogOffWarningTitle = $Group.AutoscaleLogOffWarningTitle
+			}
+
+			WriteWordLine 3 0 "Manage Autoscale"
+			WriteWordLine 4 0 "General"
+			[System.Collections.Hashtable[]] $ScriptInformation = @()
+			$ScriptInformation += @{Data = "Autoscale Enabled"; Value = $Group.AutoscalingEnabled.ToString(); }
+			$ScriptInformation += @{Data = "Delay powering off machines by"; Value = "$($Group.PowerOffDelay.ToString()) minutes"; }
+			$ScriptInformation += @{Data = "Machine instance cost per hour ($)"; Value = $Group.MachineCost.ToString(); }
+		
+			$Table = AddWordTable -Hashtable $ScriptInformation `
+			-Columns Data,Value `
+			-List `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
+
+			SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+			$Table.Columns.Item(1).Width = 300;
+			$Table.Columns.Item(2).Width = 200;
+
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ""
+
+			WriteWordLine 4 0 "Schedule and Peak Times"
+			[System.Collections.Hashtable[]] $ScriptInformation = @()
+			$AutoScalePwrMgmts = Get-BrokerPowerTimeScheme @CCParams2 -DesktopGroupUid $Group.Uid
+			
+			If(!$?)
+			{
+				WriteWordLine 0 0 "Unable to retrieve Schedule and Peak Times"
+			}
+			ElseIf($Null -eq $AutoScalePwrMgmts)
+			{
+				WriteWordLine 0 0 "Successfully retrieved Schedule and Peak Times, but none were found"
+			}
+			Else
+			{
+				$val = 0
+				ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+				{
+					For($i=0;$i -le 23;$i++)
+					{
+						If($AutoScalePwrMgmt.PoolSize[$i] -gt 0)
+						{
+							$val++
+						}
+					}
+				}
+
+				If($val -eq 0 )
+				{
+					$ScriptInformation += @{Data = "There are no autoscale schedule and peak times"; Value = ""; }
+				}
+				Else
+				{
+					ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+					{
+						$val = 0
+						For($i=0;$i -le 23;$i++)
+						{
+							If($AutoScalePwrMgmt.PoolSize[$i] -gt 0)
+							{
+								If($val -eq 0)
+								{
+									$ScriptInformation += @{Data = "For schedule $($AutoScalePwrMgmt.DaysOfWeek) - number machines powered on, and when"; Value = "$($AutoScalePwrMgmt.PoolSize[$i].ToString("####0")) - $($i.ToString("00")):00"; }
+								}
+								Else
+								{
+									$ScriptInformation += @{Data = ""; Value = "$($AutoScalePwrMgmt.PoolSize[$i].ToString("####0")) - $($i.ToString("00")):00"; }
+								}
+								$val++
+							}
+						}
+						If($val -eq 0 )
+						{
+							$ScriptInformation += @{Data = "For schedule $($AutoScalePwrMgmt.DaysOfWeek) there are no autoscale schedule and peak times"; Value = ""; }
+						}
+					}
+
+					$ScriptInformation += @{Data = ""; Value = ""; }
+
+					ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+					{
+						$val = 0
+						For($i=0;$i -le 23;$i++)
+						{
+							If($AutoScalePwrMgmt.PeakHours[$i])
+							{
+								If($val -eq 0)
+								{
+									$ScriptInformation += @{Data = "For schedule $($AutoScalePwrMgmt.DaysOfWeek) - Peak hours"; Value = "$($i.ToString("00")):00"; }
+								}
+								Else
+								{
+									$ScriptInformation += @{Data = ""; Value = "$($i.ToString("00")):00"; }
+								}
+								$val++
+							}
+						}
+						If($val -eq 0 )
+						{
+							$ScriptInformation += @{Data = "For schedule $($AutoScalePwrMgmt.DaysOfWeek) there are no Peak hours"; Value = ""; }
+						}
+					}
+				}
+			
+				$Table = AddWordTable -Hashtable $ScriptInformation `
+				-Columns Data,Value `
+				-List `
+				-Format $wdTableGrid `
+				-AutoFit $wdAutoFitFixed;
+
+				SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+				$Table.Columns.Item(1).Width = 300;
+				$Table.Columns.Item(2).Width = 200;
+
+				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+				FindWordDocumentEnd
+				$Table = $Null
+				WriteWordLine 0 0 ""
+			}
+
+			WriteWordLine 4 0 "Load-based Settings"
+			[System.Collections.Hashtable[]] $ScriptInformation = @()
+			$ScriptInformation += @{Data = "During peak times capacity buffer (%)"; Value = $Group.PeakBufferSizePercent.ToString(); }
+			$ScriptInformation += @{Data = "During off-peak times capacity buffer (%)"; Value = $Group.OffPeakBufferSizePercent.ToString(); }
+		
+			$Table = AddWordTable -Hashtable $ScriptInformation `
+			-Columns Data,Value `
+			-List `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
+
+			SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+			$Table.Columns.Item(1).Width = 300;
+			$Table.Columns.Item(2).Width = 200;
+
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ""
+
+			WriteWordLine 4 0 "Dynamic Session Timeout"
+			[System.Collections.Hashtable[]] $ScriptInformation = @()
+			If($Group.DisconnectPeakIdleSessionAfterSeconds -eq 0)
+			{
+				$ScriptInformation += @{Data = "During peak times idle session timeout (seconds)"; Value = "Disabled"; }
+			}
+			Else
+			{
+				$ScriptInformation += @{Data = "During peak times idle session timeout (seconds)"; Value = $Group.DisconnectPeakIdleSessionAfterSeconds.ToString(); }
+			}
+			If($Group.DisconnectOffPeakIdleSessionAfterSeconds -eq 0)
+			{
+				$ScriptInformation += @{Data = "During off-peak times idle session timeout (seconds)"; Value = "Disabled"; }
+			}
+			Else
+			{
+				$ScriptInformation += @{Data = "During off-peak times idle session timeout (seconds)"; Value = $Group.DisconnectOffPeakIdleSessionAfterSeconds.ToString(); }
+			}
+			If($Group.LogoffPeakDisconnectedSessionAfterSeconds -eq 0)
+			{
+				$ScriptInformation += @{Data = "During peak times disconnected session timeout (seconds)"; Value = "Disabled"; }
+			}
+			Else
+			{
+				$ScriptInformation += @{Data = "During peak times disconnected session timeout (seconds)"; Value = $Group.LogoffPeakDisconnectedSessionAfterSeconds.ToString(); }
+			}
+			If($Group.LogoffOffPeakDisconnectedSessionAfterSeconds -eq 0)
+			{
+				$ScriptInformation += @{Data = "During off-peak times disconnected session timeout (seconds)"; Value = "Disabled"; }
+			}
+			Else
+			{
+				$ScriptInformation += @{Data = "During off-peak times disconnected session timeout (seconds)"; Value = $Group.LogoffOffPeakDisconnectedSessionAfterSeconds.ToString(); }
+			}
+		
+			$Table = AddWordTable -Hashtable $ScriptInformation `
+			-Columns Data,Value `
+			-List `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
+
+			SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+			$Table.Columns.Item(1).Width = 300;
+			$Table.Columns.Item(2).Width = 200;
+
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ""
+
+			WriteWordLine 4 0 "Force User Logoff"
+			[System.Collections.Hashtable[]] $ScriptInformation = @()
+			$ScriptInformation += @{Data = "Max Seconds Before Forced LogOff During Peak"; Value = $Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringPeak.ToString(); }
+			$ScriptInformation += @{Data = "Max Seconds Before Forced LogOff During Off-Peak"; Value = $Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringOffPeak.ToString(); }
+			$ScriptInformation += @{Data = "LogOff Notification title"; Value = $GroupAutoscaleLogOffWarningTitle; }
+			$ScriptInformation += @{Data = "LogOff Notification message"; Value = $GroupAutoscaleLogOffWarningMessage; }
+		
+			$Table = AddWordTable -Hashtable $ScriptInformation `
+			-Columns Data,Value `
+			-List `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
+
+			SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+			$Table.Columns.Item(1).Width = 300;
+			$Table.Columns.Item(2).Width = 200;
+
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ""
+			
+			WriteWordLine 4 0 "Autoscaling Tagged Machines"
+			[System.Collections.Hashtable[]] $ScriptInformation = @()
+			
+			If($Null -eq $Group.RestrictAutoscaleTagUid)
+			{
+				WriteWordLine 0 0 "Enable Autoscale for machines with tag is not used"
+			}
+			Else
+			{
+				$ScriptInformation += @{Data = "Enable Autoscale for machines with tag"; Value = "Enabled"; }
+				$ScriptInformation += @{Data = "Tag"; Value = (Get-BrokerTag -Uid $Group.RestrictAutoscaleTagUid).Name; }
+				If($Group.RestrictAutoscaleMinIdleUntaggedPercentDuringPeak -eq -1 -and $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringOffPeak -eq -1)
+				{
+					#Do nothing
+				}
+				Else
+				{
+					$ScriptInformation += @{Data = "Control when Autoscale starts powering on tagged machines"; Value = "Enabled"; }
+					$ScriptInformation += @{Data = "When usage of untagged machines reaches (%)"; Value = ""; }
+					$ScriptInformation += @{Data = "     During peak times"; Value = $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringPeak.ToString(); }
+					$ScriptInformation += @{Data = "     During off-peak times"; Value = $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringOffPeak.ToString(); }
+				}
+			
+				$Table = AddWordTable -Hashtable $ScriptInformation `
+				-Columns Data,Value `
+				-List `
+				-Format $wdTableGrid `
+				-AutoFit $wdAutoFitFixed;
+
+				SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+				$Table.Columns.Item(1).Width = 300;
+				$Table.Columns.Item(2).Width = 200;
+
+				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+				FindWordDocumentEnd
+				$Table = $Null
+			}
+			WriteWordLine 0 0 ""
+		}
+		Else
+		{
+			WriteWordLine 4 0 "Manage Autoscale"
+			WriteWordLIne 0 0 "Autoscale Enabled: " $Group.AutoscalingEnabled.ToString()
+			WriteWordLine 0 0 ""
+		}
 	}
 	If($Text)
 	{
 		Line 0 "Details: " $Group.Name
-		Line 1 "Description`t`t`t`t`t`t: " $Group.Description
+		Line 1 "Description`t`t`t`t`t`t: " $GroupDescription
 		If(![String]::IsNullOrEmpty($Group.PublishedName))
 		{
 			Line 1 "Display Name`t`t`t`t`t`t: " $Group.PublishedName
@@ -10313,6 +13516,24 @@ Function OutputDeliveryGroupDetails
 			{
 				ForEach($DesktopSetting in $DesktopSettings)
 				{
+					If([String]::IsNullOrEmpty($DesktopSetting.Description))
+					{
+						$DesktopSettingDescription = "-"
+					}
+					Else
+					{
+						$DesktopSettingDescription = $DesktopSetting.Description
+					}
+					
+					If([String]::IsNullOrEmpty($DesktopSetting.SecureIcaRequired))
+					{
+						$DesktopSettingSecureIcaRequired = "-"
+					}
+					Else
+					{
+						$DesktopSettingSecureIcaRequired = $DesktopSetting.SecureIcaRequired.ToString()
+					}
+					
 					$DesktopSettingIncludedUsers = @()
 					$DesktopSettingExcludedUsers = @()
 					
@@ -10353,7 +13574,7 @@ Function OutputDeliveryGroupDetails
 						"Always" 			{$xSessionReconnection = "Always"; Break}
 						"DisconnectedOnly"	{$xSessionReconnection = "Disconnected Only"; Break}
 						"SameEndpointOnly"	{$xSessionReconnection = "Same Endpoint Only"; Break}
-						Default {$xSessionReconnection = "Unable to determine Session Reconnection value: $($DesktopSetting.SessionReconnection)"; Break}
+						Default				{$xSessionReconnection = "Unable to determine Session Reconnection value: $($DesktopSetting.SessionReconnection)"; Break}
 					}
 					If($Null -ne $DesktopSetting.SecureIcaRequired)
 					{
@@ -10361,7 +13582,7 @@ Function OutputDeliveryGroupDetails
 					}
 					Line 1 "Desktop Entitlement" ""
 					Line 2 "Display name`t`t`t`t`t: " $DesktopSetting.PublishedName
-					Line 2 "Description`t`t`t`t`t: " $DesktopSetting.Description
+					Line 2 "Description`t`t`t`t`t: " $DesktopSettingDescription
 					Line 2 "Restrict launches to machines with tag`t`t: " $RestrictedToTag
 					[string]$DSIU = $(If( $DesktopSettingIncludedUsers -is [array] -and $DesktopSettingIncludedUsers.Count ) { $DesktopSettingIncludedUsers[0] } Else { '-' } )
 					Line 2 "Included Users`t`t`t`t`t: " $DSIU
@@ -10375,23 +13596,26 @@ Function OutputDeliveryGroupDetails
 						}
 					}
 					
-					If($DesktopSettingExcludedUsers.Count -gt 0)
+					If($DesktopSettingExcludedUsers -is [array]) #fixed in 1.25
 					{
-						Line 2 "Excluded Users`t`t`t`t`t: " $DesktopSettingExcludedUsers[0]
-						$cnt = -1
-						ForEach($tmp in $DesktopSettingExcludedUsers)
+						If($DesktopSettingExcludedUsers.Count -gt 0)
 						{
-							$cnt++
-							If($cnt -gt 0)
+							Line 2 "Excluded Users`t`t`t`t`t: " $DesktopSettingExcludedUsers[0]
+							$cnt = -1
+							ForEach($tmp in $DesktopSettingExcludedUsers)
 							{
-								Line 9 "  " $tmp
+								$cnt++
+								If($cnt -gt 0)
+								{
+									Line 9 "  " $tmp
+								}
 							}
 						}
 					}
 					Line 2 "Enable desktop`t`t`t`t`t: " $DesktopSetting.Enabled
 					Line 2 "Leasing behavior`t`t`t`t: " $DesktopSetting.LeasingBehavior
 					Line 2 "Maximum concurrent instances`t`t`t: " $DesktopSetting.MaxPerEntitlementInstances
-					Line 2 "SecureICA required`t`t`t`t: " $DesktopSetting.SecureIcaRequired
+					Line 2 "SecureICA required`t`t`t`t: " $DesktopSettingSecureIcaRequired
 					Line 2 "Session reconnection`t`t`t`t: " $xSessionReconnection
 				}
 			}
@@ -10455,14 +13679,29 @@ Function OutputDeliveryGroupDetails
 
 		Line 1 "Launch in user's home zone`t`t`t`t: " $xUsersHomeZone
 		
-		If($Group.SessionSupport -eq "MultiSession")
-		{
-			$RestartSchedules = Get-BrokerRebootScheduleV2 -EA 0 -DesktopGroupUid $Group.Uid
+		#The June 2022 update to Citrix Cloud added support for single-session
+		#https://docs.citrix.com/en-us/citrix-daas/whats-new.html#june-2022
+		#Restart schedule support for single-session OS machines. Previously, 
+		#the restart schedule feature was available only for multi-session OS machines. 
+		#It’s now also available for single-session OS machines. You can now create 
+		#restart schedules for delivery groups containing single-session OS machines.
+		#If($Group.SessionSupport -eq "MultiSession") 
+		#{
+			$RestartSchedules = Get-BrokerRebootScheduleV2 @CCParams2 -DesktopGroupUid $Group.Uid
 			
 			If($? -and $Null -ne $RestartSchedules)
 			{
 				ForEach($RestartSchedule in $RestartSchedules)
 				{
+					If($Null -eq $RestartSchedule.RestrictToTag)
+					{
+						$RestrictToTag = "-"
+					}
+					Else
+					{
+						$RestrictToTag = $RestartSchedule.RestrictToTag
+					}
+					
 					Line 1 "Restart Schedule"
 					Switch($RestartSchedule.WarningRepeatInterval)
 					{
@@ -10471,9 +13710,9 @@ Function OutputDeliveryGroupDetails
 						Default {$RestartScheduleWarningRepeatInterval = "Notification frequency could not be determined: $($RestartSchedule.WarningRepeatInterval) "}
 					}
 
-					Line 2 "Restart machines automatically`t`t`t: " "Yes"
+					Line 2 "Restart machines automatically`t`t`t`t: " "Yes"
 
-					Line 2 "Restrict to tag`t`t`t`t`t: " $RestartSchedule.RestrictToTag
+					Line 2 "Restrict to tag`t`t`t`t`t: " $RestrictToTag
 					
 					$tmp = ""
 					If($RestartSchedule.Frequency -eq "Daily")
@@ -10520,18 +13759,35 @@ Function OutputDeliveryGroupDetails
 						Line 2 "Notification message`t`t`t`t: " $RestartSchedule.WarningMessage
 					}
 					Line 2 "Notification frequency`t`t`t`t: " $RestartScheduleWarningRepeatInterval
+
+					If(validObject $RestartSchedule UseNaturalReboot)
+					{
+						Line 2 "Use natural reboot`t`t`t`t: " $RestartSchedule.UseNaturalReboot.ToString()
+					}
+					If(validObject $RestartSchedule IgnoreMaintenanceMode)
+					{
+						Line 2 "Ignore maintenance mode`t`t`t`t: " $RestartSchedule.IgnoreMaintenanceMode.ToString()
+					}
+					If(validObject $RestartSchedule MaxOvertimeStartMins)
+					{
+						Line 2 "Maximum Overtime Start Minutes`t`t`t: " $RestartSchedule.MaxOvertimeStartMins.ToString()
+					}
 				}
 			}
 			Else
 			{
-				Line 1 "Restart machines automatically`t`t`t: " "No"
+				Line 1 "Restart machines automatically`t`t`t`t: " "No"
 			}
-		}
+		#}
 		
 		Line 1 "License model`t`t`t`t`t`t: " $LicenseModel
 		Line 1 "Product code`t`t`t`t`t`t: " $ProductCode
 		Line 1 "App Protection Key Logging Required`t`t`t: " $Group.AppProtectionKeyLoggingRequired
 		Line 1 "App Protection Screen Capture Required`t`t`t: " $Group.AppProtectionScreenCaptureRequired
+		If(validObject $Group AllowReconnectInMaintenanceMode)
+		{
+			Line 1 "Allow session reconnect in maintenance mode`t`t: " $Group.AllowReconnectInMaintenanceMode.ToString()
+		}
 		Line 1 "Off Peak Buffer Size Percent`t`t`t`t: " $xOffPeakBufferSizePercent
 		Line 1 "Off Peak Disconnect Timeout (Minutes)`t`t`t: " $xOffPeakDisconnectTimeout
 		Line 1 "Off Peak Extended Disconnect Timeout (Minutes)`t`t: " $xOffPeakExtendedDisconnectTimeout
@@ -10840,7 +14096,7 @@ Function OutputDeliveryGroupDetails
 
 		Line 1 "Automatic power on for assigned`t`t`t`t: " $xAutoPowerOnForAssigned
 		Line 1 "Automatic power on for assigned during peak`t`t: " $xAutoPowerOnForAssignedDuringPeak
-
+		Line 1 "Automatic Restart for Untagged Machines`t`t`t: " $Group.AutomaticRestartForUntaggedMachines.ToString()
 		If($Group.ReuseMachinesWithoutShutdownInOutage -eq $Script:CCSite1.ReuseMachinesWithoutShutdownInOutageAllowed)
 		{
 			Line 1 "Reuse Machines Without Shutdown in Outage`t`t: " $Group.ReuseMachinesWithoutShutdownInOutage
@@ -10864,12 +14120,201 @@ Function OutputDeliveryGroupDetails
 			}
 		}
 		Line 0 ""
+		If($Group.AutoscalingEnabled)
+		{
+			If([String]::IsNullOrEmpty($Group.AutoscaleLogOffWarningMessage))
+			{
+				$GroupAutoscaleLogOffWarningMessage = "-"
+			}
+			Else
+			{
+				$GroupAutoscaleLogOffWarningMessage = $Group.AutoscaleLogOffWarningMessage
+			}
+			If([String]::IsNullOrEmpty($Group.AutoscaleLogOffWarningTitle))
+			{
+				$GroupAutoscaleLogOffWarningTitle = "-"
+			}
+			Else
+			{
+				$GroupAutoscaleLogOffWarningTitle = $Group.AutoscaleLogOffWarningTitle
+			}
+
+			Line 0 "Manage Autoscale"
+			Line 1 "General"
+			Line 2 "Autoscale Enabled`t`t`t: " $Group.AutoscalingEnabled.ToString()
+			Line 2 "Delay powering off machines by`t`t: " "$($Group.PowerOffDelay.ToString()) minutes"
+			Line 2 "Machine instance cost per hour ($)`t: " $Group.MachineCost.ToString()
+			Line 0 ""
+
+			Line 1 "Schedule and Peak Times"
+			$AutoScalePwrMgmts = Get-BrokerPowerTimeScheme @CCParams2 -DesktopGroupUid $Group.Uid
+			
+			If(!$?)
+			{
+				Line 0 "Unable to retrieve Schedule and Peak Times"
+			}
+			ElseIf($Null -eq $AutoScalePwrMgmts)
+			{
+				Line 0 "Successfully retrieved Schedule and Peak Times, but none were found"
+			}
+			Else
+			{
+				$val = 0
+				ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+				{
+					For($i=0;$i -le 23;$i++)
+					{
+						If($AutoScalePwrMgmt.PoolSize[$i] -gt 0)
+						{
+							$val++
+						}
+					}
+				}
+
+				If($val -eq 0 )
+				{
+					Line 2 "There are no autoscale schedule and peak times"
+					Line 0 ""
+				}
+				Else
+				{
+					ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+					{
+						$val = 0
+						For($i=0;$i -le 23;$i++)
+						{
+							If($AutoScalePwrMgmt.PoolSize[$i] -gt 0)
+							{
+								If($val -eq 0)
+								{
+									Line 2 "For schedule $($AutoScalePwrMgmt.DaysOfWeek)"
+									Line 3 "Number machines powered on, and when: " "$($AutoScalePwrMgmt.PoolSize[$i].ToString("####0")) - $($i.ToString("00")):00"
+								}
+								Else
+								{
+									Line 7 "      $($AutoScalePwrMgmt.PoolSize[$i].ToString("####0")) - $($i.ToString("00")):00"
+								}
+								$val++
+							}
+						}
+						If($val -eq 0 )
+						{
+							Line 2 "For schedule $($AutoScalePwrMgmt.DaysOfWeek) there are no autoscale schedule and peak times"
+						}
+						Line 0 ""
+					}
+
+					ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+					{
+						$val = 0
+						For($i=0;$i -le 23;$i++)
+						{
+							If($AutoScalePwrMgmt.PeakHours[$i])
+							{
+								If($val -eq 0)
+								{
+									Line 2 "For schedule $($AutoScalePwrMgmt.DaysOfWeek)"
+									Line 3 "Peak hours: " "$($i.ToString("00")):00"
+								}
+								Else
+								{
+									Line 4 "    $($i.ToString("00")):00"
+								}
+								$val++
+							}
+						}
+						If($val -eq 0 )
+						{
+							Line 2 "For schedule $($AutoScalePwrMgmt.DaysOfWeek) there are no Peak hours"
+						}
+						Line 0 ""
+					}
+				}
+			}
+
+			Line 1 "Load-based Settings"
+			Line 2 "During peak times capacity buffer (%)`t : " $Group.PeakBufferSizePercent.ToString()
+			Line 2 "During off-peak times capacity buffer (%): " $Group.OffPeakBufferSizePercent.ToString()
+			Line 0 ""
+
+			Line 1 "Dynamic Session Timeout"
+			If($Group.DisconnectPeakIdleSessionAfterSeconds -eq 0)
+			{
+				Line 2 "During peak times idle session timeout (seconds)`t`t: " "Disabled"
+			}
+			Else
+			{
+				Line 2 "During peak times idle session timeout (seconds)`t`t: " $Group.DisconnectPeakIdleSessionAfterSeconds.ToString()
+			}
+			If($Group.DisconnectOffPeakIdleSessionAfterSeconds -eq 0)
+			{
+				Line 2 "During off-peak times idle session timeout (seconds)`t`t: " "Disabled"
+			}
+			Else
+			{
+				Line 2 "During off-peak times idle session timeout (seconds)`t`t: " $Group.DisconnectOffPeakIdleSessionAfterSeconds.ToString()
+			}
+			If($Group.LogoffPeakDisconnectedSessionAfterSeconds -eq 0)
+			{
+				Line 2 "During peak times disconnected session timeout (seconds)`t: " "Disabled"
+			}
+			Else
+			{
+				Line 2 "During peak times disconnected session timeout (seconds)`t: " $Group.LogoffPeakDisconnectedSessionAfterSeconds.ToString()
+			}
+			If($Group.LogoffOffPeakDisconnectedSessionAfterSeconds -eq 0)
+			{
+				Line 2 "During off-peak times disconnected session timeout (seconds)`t: " "Disabled"
+			}
+			Else
+			{
+				Line 2 "During off-peak times disconnected session timeout (seconds)`t: " $Group.LogoffOffPeakDisconnectedSessionAfterSeconds.ToString()
+			}
+			Line 0 ""
+
+			Line 1 "Force User Logoff"
+			Line 2 "Max Seconds Before Forced LogOff During Peak`t: " $Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringPeak.ToString()
+			Line 2 "Max Seconds Before Forced LogOff During Off-Peak: " $Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringOffPeak.ToString()
+			Line 2 "LogOff Notification title`t`t`t: " $GroupAutoscaleLogOffWarningTitle
+			Line 2 "LogOff Notification message`t`t`t: " $GroupAutoscaleLogOffWarningMessage
+			Line 0 ""
+			
+			Line 1 "Autoscaling Tagged Machines"
+			If($Null -eq $Group.RestrictAutoscaleTagUid)
+			{
+				Line 2 "Enable Autoscale for machines with tag is not used"
+			}
+			Else
+			{
+				Line 2 "Enable Autoscale for machines with tag`t`t`t : " "Enabled"
+				Line 2 "Tag`t`t`t`t`t`t`t : " (Get-BrokerTag -Uid $Group.RestrictAutoscaleTagUid).Name
+				If($Group.RestrictAutoscaleMinIdleUntaggedPercentDuringPeak -eq -1 -and $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringOffPeak -eq -1)
+				{
+					#Do nothing
+				}
+				Else
+				{
+					Line 2 "Control when Autoscale starts powering on tagged machines: Enabled"
+					Line 2 "When usage of untagged machines reaches (%)"
+					Line 2 "     During peak times`t`t: " $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringPeak.ToString()
+					Line 2 "     During off-peak times`t: " $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringOffPeak.ToString()
+				}
+			}
+			Line 0 ""
+		}
+		Else
+		{
+			Line 0 "Manage Autoscale"
+			Line 1 "General"
+			Line 2 "Autoscale Enabled: " $Group.AutoscalingEnabled.ToString()
+			Line 0 ""
+		}
 	}
 	If($HTML)
 	{
-		WriteHTMLLine 4 0 "Details: " $Group.Name
+		WriteHTMLLine 3 0 "Details: " $Group.Name
 		$rowdata = @()
-		$columnHeaders = @("Description",($global:htmlsb),$Group.Description,$htmlwhite)
+		$columnHeaders = @("Description",($global:htmlsb),$GroupDescription,$htmlwhite)
 		If(![String]::IsNullOrEmpty($Group.PublishedName))
 		{
 			$rowdata += @(,('Display Name',($global:htmlsb),$Group.PublishedName,$htmlwhite))
@@ -10929,6 +14374,24 @@ Function OutputDeliveryGroupDetails
 			{
 				ForEach($DesktopSetting in $DesktopSettings)
 				{
+					If([String]::IsNullOrEmpty($DesktopSetting.Description))
+					{
+						$DesktopSettingDescription = "-"
+					}
+					Else
+					{
+						$DesktopSettingDescription = $DesktopSetting.Description
+					}
+					
+						If([String]::IsNullOrEmpty($DesktopSetting.SecureIcaRequired))
+					{
+						$DesktopSettingSecureIcaRequired = "-"
+					}
+					Else
+					{
+						$DesktopSettingSecureIcaRequired = $DesktopSetting.SecureIcaRequired.ToString()
+					}
+					
 					$DesktopSettingIncludedUsers = @()
 					$DesktopSettingExcludedUsers = @()
 					
@@ -10969,15 +14432,11 @@ Function OutputDeliveryGroupDetails
 						"Always" 			{$xSessionReconnection = "Always"; Break}
 						"DisconnectedOnly"	{$xSessionReconnection = "Disconnected Only"; Break}
 						"SameEndpointOnly"	{$xSessionReconnection = "Same Endpoint Only"; Break}
-						Default {$xSessionReconnection = "Unable to determine Session Reconnection value: $($DesktopSetting.SessionReconnection)"; Break}
-					}
-					If($Null -ne $DesktopSetting.SecureIcaRequired)
-					{
-						$xSecureIcaRequired = $DesktopSetting.SecureIcaRequired.ToString()
+						Default				{$xSessionReconnection = "Unable to determine Session Reconnection value: $($DesktopSetting.SessionReconnection)"; Break}
 					}
 					$rowdata += @(,("Desktop Entitlement",($global:htmlsb),"",$htmlwhite))
 					$rowdata += @(,("     Display name",($global:htmlsb),$DesktopSetting.PublishedName,$htmlwhite))
-					$rowdata += @(,("     Description",($global:htmlsb),$DesktopSetting.Description,$htmlwhite))
+					$rowdata += @(,("     Description",($global:htmlsb),$DesktopSettingDescription,$htmlwhite))
 					$rowdata += @(,("     Restrict launches to machines with tag",($global:htmlsb),$RestrictedToTag,$htmlwhite))
 					[string]$DSIU = $(If( $DesktopSettingIncludedUsers -is [array] -and $DesktopSettingIncludedUsers.Count ) { $DesktopSettingIncludedUsers[0] } Else { '-' } )
 					$rowdata += @(,("     Included Users",($global:htmlsb),$DSIU,$htmlwhite))
@@ -10991,23 +14450,26 @@ Function OutputDeliveryGroupDetails
 						}
 					}
 					
-					If($DesktopSettingExcludedUsers.Count -gt 0)
+					If($DesktopSettingExcludedUsers -is [array]) #fixed in 1.25
 					{
-						$rowdata += @(,("     Excluded Users",($global:htmlsb),$DesktopSettingExcludedUsers[0],$htmlwhite))
-						$cnt = -1
-						ForEach($tmp in $DesktopSettingExcludedUsers)
+						If($DesktopSettingExcludedUsers.Count -gt 0)
 						{
-							$cnt++
-							If($cnt -gt 0)
+							$rowdata += @(,("     Excluded Users",($global:htmlsb),$DesktopSettingExcludedUsers[0],$htmlwhite))
+							$cnt = -1
+							ForEach($tmp in $DesktopSettingExcludedUsers)
 							{
-								$rowdata += @(,("",($global:htmlsb),$tmp,$htmlwhite))
+								$cnt++
+								If($cnt -gt 0)
+								{
+									$rowdata += @(,("",($global:htmlsb),$tmp,$htmlwhite))
+								}
 							}
 						}
 					}
 					$rowdata += @(,("     Enable desktop",($global:htmlsb),$DesktopSetting.Enabled.ToString(),$htmlwhite))
 					$rowdata += @(,("     Leasing behavior",($global:htmlsb),$DesktopSetting.LeasingBehavior.ToString(),$htmlwhite))
 					$rowdata += @(,("     Maximum concurrent instances",($global:htmlsb),$DesktopSetting.MaxPerEntitlementInstances.ToString(),$htmlwhite))
-					$rowdata += @(,("     SecureICA required",($global:htmlsb),$xSecureIcaRequired,$htmlwhite))
+					$rowdata += @(,("     SecureICA required",($global:htmlsb),$DesktopSettingSecureIcaRequired,$htmlwhite))
 					$rowdata += @(,("     Session reconnection",($global:htmlsb),$xSessionReconnection,$htmlwhite))
 				}
 			}
@@ -11071,14 +14533,29 @@ Function OutputDeliveryGroupDetails
 		
 		$rowdata += @(,("Launch in user's home zone",($global:htmlsb),$xUsersHomeZone,$htmlwhite)) 
 			
-		If($Group.SessionSupport -eq "MultiSession")
-		{
-			$RestartSchedules = Get-BrokerRebootScheduleV2 -EA 0 -DesktopGroupUid $Group.Uid
+		#The June 2022 update to Citrix Cloud added support for single-session
+		#https://docs.citrix.com/en-us/citrix-daas/whats-new.html#june-2022
+		#Restart schedule support for single-session OS machines. Previously, 
+		#the restart schedule feature was available only for multi-session OS machines. 
+		#It’s now also available for single-session OS machines. You can now create 
+		#restart schedules for delivery groups containing single-session OS machines.
+		#If($Group.SessionSupport -eq "MultiSession") 
+		#{
+			$RestartSchedules = Get-BrokerRebootScheduleV2 -DesktopGroupUid $Group.Uid -EA 0
 			
 			If($? -and $Null -ne $RestartSchedules)
 			{
 				ForEach($RestartSchedule in $RestartSchedules)
 				{
+					If($Null -eq $RestartSchedule.RestrictToTag)
+					{
+						$RestrictToTag = "-"
+					}
+					Else
+					{
+						$RestrictToTag = $RestartSchedule.RestrictToTag
+					}
+					
 					$rowdata += @(,('Restart Schedule',($global:htmlsb),"",$htmlwhite))
 					Switch($RestartSchedule.WarningRepeatInterval)
 					{
@@ -11089,7 +14566,7 @@ Function OutputDeliveryGroupDetails
 
 					$rowdata += @(,('     Restart machines automatically',($global:htmlsb),"Yes",$htmlwhite))
 
-					$rowdata += @(,('     Restrict to tag',($global:htmlsb),$RestartSchedule.RestrictToTag,$htmlwhite))
+					$rowdata += @(,('     Restrict to tag',($global:htmlsb),$RestrictToTag,$htmlwhite))
 					
 					$tmp = ""
 					If($RestartSchedule.Frequency -eq "Daily")
@@ -11136,18 +14613,35 @@ Function OutputDeliveryGroupDetails
 						$rowdata += @(,('     Notification message',($global:htmlsb),$RestartSchedule.WarningMessage,$htmlwhite))
 					}
 					$rowdata += @(,('     Notification frequency',($global:htmlsb),$RestartScheduleWarningRepeatInterval,$htmlwhite))
+
+					If(validObject $RestartSchedule UseNaturalReboot)
+					{
+						$rowdata += @(,("     Use natural reboot",($global:htmlsb),$RestartSchedule.UseNaturalReboot.ToString(),$htmlwhite))
+					}
+					If(validObject $RestartSchedule IgnoreMaintenanceMode)
+					{
+						$rowdata += @(,("     Ignore maintenance mode",($global:htmlsb),$RestartSchedule.IgnoreMaintenanceMode.ToString(),$htmlwhite))
+					}
+					If(validObject $RestartSchedule MaxOvertimeStartMins)
+					{
+						$rowdata += @(,("     Maximum Overtime Start Minutes",($global:htmlsb),$RestartSchedule.MaxOvertimeStartMins.ToString(),$htmlwhite))
+					}
 				}
 			}
 			Else
 			{
 				$rowdata += @(,('Restart machines automatically',($global:htmlsb),"No",$htmlwhite))
 			}
-		}
+		#}
 		
 		$rowdata += @(,('License model',($global:htmlsb),$LicenseModel,$htmlwhite))
 		$rowdata += @(,('Product code',($global:htmlsb),$ProductCode,$htmlwhite))
 		$rowdata += @(,("App Protection Key Logging Required",($global:htmlsb),$Group.AppProtectionKeyLoggingRequired.ToString(),$htmlwhite))
 		$rowdata += @(,("App Protection Screen Capture Required",($global:htmlsb),$Group.AppProtectionScreenCaptureRequired.ToString(),$htmlwhite))
+		If(validObject $Group AllowReconnectInMaintenanceMode)
+		{
+			$rowdata += @(,("Allow session reconnect in maintenance mode",($global:htmlsb),$Group.AllowReconnectInMaintenanceMode.ToString(),$htmlwhite))
+		}
 		$rowdata += @(,( "Off Peak Buffer Size Percent",($global:htmlsb),$xOffPeakBufferSizePercent.ToString(),$htmlwhite))
 		$rowdata += @(,( "Off Peak Disconnect Timeout (Minutes)",($global:htmlsb),$xOffPeakDisconnectTimeout.ToString(),$htmlwhite))
 		$rowdata += @(,( "Off Peak Extended Disconnect Timeout (Minutes)",($global:htmlsb),$xOffPeakExtendedDisconnectTimeout.ToString(),$htmlwhite))
@@ -11454,8 +14948,9 @@ Function OutputDeliveryGroupDetails
 			$rowdata += @(,("During off-peak extended hours, when disconnected $($Group.OffPeakExtendedDisconnectTimeout) mins",($global:htmlsb),$xOffPeakExtendedDisconnectAction,$htmlwhite))
 		}
 		
-		$rowdata += @(,("Automatic power on for assigned",($global:htmlsb), $xAutoPowerOnForAssigned,$htmlwhite))
-		$rowdata += @(,("Automatic power on for assigned during peak",($global:htmlsb), $xAutoPowerOnForAssignedDuringPeak,$htmlwhite))
+		$rowdata += @(,("Automatic power on for assigned",($global:htmlsb),$xAutoPowerOnForAssigned,$htmlwhite))
+		$rowdata += @(,("Automatic power on for assigned during peak",($global:htmlsb),$xAutoPowerOnForAssignedDuringPeak,$htmlwhite))
+		$rowdata += @(,("Automatic Restart for Untagged Machines",($global:htmlsb),$Group.AutomaticRestartForUntaggedMachines.ToString(),$htmlwhite))
 		If($Group.ReuseMachinesWithoutShutdownInOutage -eq $Script:CCSite1.ReuseMachinesWithoutShutdownInOutageAllowed)
 		{
 			$rowdata += @(,("Reuse Machines Without Shutdown in Outage",($global:htmlsb),$Group.ReuseMachinesWithoutShutdownInOutage.ToString(),$htmlwhite))
@@ -11482,6 +14977,215 @@ Function OutputDeliveryGroupDetails
 		$msg = ""
 		$columnWidths = @("350","350")
 		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+
+		If($Group.AutoscalingEnabled)
+		{
+			WriteHTMLLine 3 0 "Manage Autoscale"
+			WriteHTMLLine 4 0 "General"
+			$rowdata = @()
+			$columnHeaders = @("Autoscale Enabled",($global:htmlsb),$Group.AutoscalingEnabled.ToString(),$htmlwhite)
+			$rowdata += @(,("Delay powering off machines by",($global:htmlsb),"$($Group.PowerOffDelay.ToString()) minutes",$htmlwhite))
+			$rowdata += @(,("Machine instance cost per hour ($)",($global:htmlsb),$Group.MachineCost.ToString(),$htmlwhite))
+			If([String]::IsNullOrEmpty($Group.AutoscaleLogOffWarningMessage))
+			{
+				$GroupAutoscaleLogOffWarningMessage = "-"
+			}
+			Else
+			{
+				$GroupAutoscaleLogOffWarningMessage = $Group.AutoscaleLogOffWarningMessage
+			}
+			If([String]::IsNullOrEmpty($Group.AutoscaleLogOffWarningTitle))
+			{
+				$GroupAutoscaleLogOffWarningTitle = "-"
+			}
+			Else
+			{
+				$GroupAutoscaleLogOffWarningTitle = $Group.AutoscaleLogOffWarningTitle
+			}
+
+			$msg = ""
+			$columnWidths = @("350","350")
+			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+
+			WriteHTMLLine 4 0 "Schedule and Peak Times"
+			[System.Collections.Hashtable[]] $ScriptInformation = @()
+			$AutoScalePwrMgmts = Get-BrokerPowerTimeScheme @CCParams2 -DesktopGroupUid $Group.Uid
+			
+			If(!$?)
+			{
+				WriteHTMLLine 0 0 "Unable to retrieve Schedule and Peak Times"
+			}
+			ElseIf($Null -eq $AutoScalePwrMgmts)
+			{
+				WriteHTMLLine 0 0 "Successfully retrieved Schedule and Peak Times, but none were found"
+			}
+			Else
+			{
+				$val = 0
+				ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+				{
+					For($i=0;$i -le 23;$i++)
+					{
+						If($AutoScalePwrMgmt.PoolSize[$i] -gt 0)
+						{
+							$val++
+						}
+					}
+				}
+
+				If($val -eq 0 )
+				{
+					$rowdata += @(,("There are no autoscale schedule and peak times",($global:htmlsb), "",$htmlwhite))
+				}
+				Else
+				{
+					ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+					{
+						$val = 0
+						For($i=0;$i -le 23;$i++)
+						{
+							If($AutoScalePwrMgmt.PoolSize[$i] -gt 0)
+							{
+								If($val -eq 0)
+								{
+									$rowdata += @(,("For schedule $($AutoScalePwrMgmt.DaysOfWeek) - number machines powered on, and when",($global:htmlsb), "$($AutoScalePwrMgmt.PoolSize[$i].ToString("####0")) - $($i.ToString("00")):00",$htmlwhite))
+								}
+								Else
+								{
+									$rowdata += @(,("",($global:htmlsb), "$($AutoScalePwrMgmt.PoolSize[$i].ToString("####0")) - $($i.ToString("00")):00",$htmlwhite))
+								}
+								$val++
+							}
+						}
+						If($val -eq 0 )
+						{
+							$rowdata += @(,("For schedule $($AutoScalePwrMgmt.DaysOfWeek) there are no autoscale schedule and peak times",($global:htmlsb), "",$htmlwhite))
+						}
+					}
+
+					$rowdata += @(,("",($global:htmlsb), "",$htmlwhite))
+
+					ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+					{
+						$val = 0
+						For($i=0;$i -le 23;$i++)
+						{
+							If($AutoScalePwrMgmt.PeakHours[$i])
+							{
+								If($val -eq 0)
+								{
+									$rowdata += @(,("For schedule $($AutoScalePwrMgmt.DaysOfWeek) - Peak hours",($global:htmlsb), "$($i.ToString("00")):00",$htmlwhite))
+								}
+								Else
+								{
+									$rowdata += @(,("",($global:htmlsb), "$($i.ToString("00")):00",$htmlwhite))
+								}
+								$val++
+							}
+						}
+						If($val -eq 0 )
+						{
+							$rowdata += @(,("For schedule $($AutoScalePwrMgmt.DaysOfWeek) there are no Peak hours",($global:htmlsb), "",$htmlwhite))
+						}
+					}
+				}
+				$msg = ""
+				$columnWidths = @("350","350")
+				FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+			}
+
+			WriteHTMLLine 4 0 "Load-based Settings"
+			$rowdata = @()
+			$columnHeaders = @("During peak times capacity buffer (%)",($global:htmlsb),$Group.PeakBufferSizePercent.ToString(),$htmlwhite)
+			$rowdata += @(,("During off-peak times capacity buffer (%)",($global:htmlsb),$Group.OffPeakBufferSizePercent.ToString(),$htmlwhite))
+
+			$msg = ""
+			$columnWidths = @("350","350")
+			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+
+			WriteHTMLLine 4 0 "Dynamic Session Timeout"
+			$rowdata = @()
+			If($Group.DisconnectPeakIdleSessionAfterSeconds -eq 0)
+			{
+				$columnHeaders = @("During peak times idle session timeout (seconds)",($global:htmlsb),"Disabled",$htmlwhite)
+			}
+			Else
+			{
+				$columnHeaders = @("During peak times idle session timeout (seconds)",($global:htmlsb),$Group.DisconnectPeakIdleSessionAfterSeconds.ToString(),$htmlwhite)
+			}
+			If($Group.DisconnectOffPeakIdleSessionAfterSeconds -eq 0)
+			{
+				$rowdata += @(,("During off-peak times idle session timeout (seconds)",($global:htmlsb),"Disabled",$htmlwhite))
+			}
+			Else
+			{
+				$rowdata += @(,("During off-peak times idle session timeout (seconds)",($global:htmlsb),$Group.DisconnectOffPeakIdleSessionAfterSeconds.ToString(),$htmlwhite))
+			}
+			If($Group.LogoffPeakDisconnectedSessionAfterSeconds -eq 0)
+			{
+				$rowdata += @(,("During peak times disconnected session timeout (seconds)",($global:htmlsb),"Disabled",$htmlwhite))
+			}
+			Else
+			{
+				$rowdata += @(,("During peak times disconnected session timeout (seconds)",($global:htmlsb),$Group.LogoffPeakDisconnectedSessionAfterSeconds.ToString(),$htmlwhite))
+			}
+			If($Group.LogoffOffPeakDisconnectedSessionAfterSeconds -eq 0)
+			{
+				$rowdata += @(,("During off-peak times disconnected session timeout (seconds)",($global:htmlsb),"Disabled",$htmlwhite))
+			}
+			Else
+			{
+				$rowdata += @(,("During off-peak times disconnected session timeout (seconds)",($global:htmlsb),$Group.LogoffOffPeakDisconnectedSessionAfterSeconds.ToString(),$htmlwhite))
+			}
+
+			$msg = ""
+			$columnWidths = @("350","350")
+			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+
+			WriteHTMLLine 4 0 "Force User Logoff"
+			$rowdata = @()
+			$columnHeaders = @("Max Seconds Before Forced LogOff During Peak",($global:htmlsb),$Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringPeak.ToString(),$htmlwhite)
+			$rowdata += @(,("Max Seconds Before Forced LogOff During Off-Peak",($global:htmlsb),$Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringOffPeak.ToString(),$htmlwhite))
+			$rowdata += @(,("LogOff Notification title",($global:htmlsb),$GroupAutoscaleLogOffWarningTitle,$htmlwhite))
+			$rowdata += @(,("LogOff Notification message",($global:htmlsb),$GroupAutoscaleLogOffWarningMessage,$htmlwhite))
+
+			$msg = ""
+			$columnWidths = @("350","350")
+			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+			
+			WriteHTMLLine 4 0 "Autoscaling Tagged Machines"
+			$rowdata = @()
+			
+			If($Null -eq $Group.RestrictAutoscaleTagUid)
+			{
+				WriteHTMLLine 0 0 "Enable Autoscale for machines with tag is not used"
+			}
+			Else
+			{
+				$columnHeaders = @("Enable Autoscale for machines with tag",($global:htmlsb),"Enabled",$htmlwhite)
+				$rowdata += @(,("Tag",($global:htmlsb), (Get-BrokerTag -Uid $Group.RestrictAutoscaleTagUid).Name,$htmlwhite))
+				If($Group.RestrictAutoscaleMinIdleUntaggedPercentDuringPeak -eq -1 -and $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringOffPeak -eq -1)
+				{
+					#Do nothing
+				}
+				Else
+				{
+					$rowdata += @(,("Control when Autoscale starts powering on tagged machines",($global:htmlsb), "Enabled",$htmlwhite))
+					$rowdata += @(,("When usage of untagged machines reaches (%)",($global:htmlsb), "",$htmlwhite))
+					$rowdata += @(,("     During peak times",($global:htmlsb), $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringPeak.ToString(),$htmlwhite))
+					$rowdata += @(,("     During off-peak times",($global:htmlsb), $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringOffPeak.ToString(),$htmlwhite))
+				}
+
+				$msg = ""
+				$columnWidths = @("350","350")
+				FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+			}
+		}
+		Else
+		{
+			WriteHTMLLine 4 0 "Manage Autoscale"
+			WriteHTMLLine 0 0 "Autoscale Enabled: " $Group.AutoscalingEnabled.ToString()
+		}
 	}
 }
 
@@ -11519,7 +15223,7 @@ Function OutputDeliveryGroupApplicationDetails
 
 		ForEach($Application in $AllApplications)
 		{
-			Write-Verbose "$(Get-Date -Format G): `t`t`tAdding Application $($Application.ApplicationName)"
+			Write-Verbose "$(Get-Date -Format G): `t`t`t`tAdding Application $($Application.ApplicationName)"
 
 			$xEnabled = "Enabled"
 			If($Application.Enabled -eq $False)
@@ -11532,20 +15236,29 @@ Function OutputDeliveryGroupApplicationDetails
 			{
 				$xLocation = "App-V"
 			}
+
+			If([String]::IsNullOrEmpty($Application.Description))
+			{
+				$ApplicationDescription = "-"
+			}
+			Else
+			{
+				$ApplicationDescription = $Application.Description
+			}
 			
 			If($MSWord -or $PDF)
 			{
 				$AllApplicationsWordTable += @{
-				ApplicationName = $Application.ApplicationName; 
-				Description = $Application.Description; 
-				Location = $xLocation;
-				Enabled = $xEnabled; 
+					ApplicationName = $Application.ApplicationName; 
+					Description = $ApplicationDescription; 
+					Location = $xLocation;
+					Enabled = $xEnabled; 
 				}
 			}
 			If($Text)
 			{
 				Line 1 "Name`t`t: " $Application.ApplicationName
-				Line 1 "Description`t: " $Application.Description
+				Line 1 "Description`t: " $ApplicationDescription
 				Line 1 "Location`t: " $xLocation
 				Line 1 "State`t`t: " $xEnabled
 				Line 0 ""
@@ -11553,15 +15266,26 @@ Function OutputDeliveryGroupApplicationDetails
 			If($HTML)
 			{
 				$rowdata += @(,(
-				$Application.ApplicationName,$htmlwhite,
-				$Application.Description,$htmlwhite,
-				$xLocation,$htmlwhite,
-				$xEnabled,$htmlwhite))
+					$Application.ApplicationName,$htmlwhite,
+					$ApplicationDescription,$htmlwhite,
+					$xLocation,$htmlwhite,
+					$xEnabled,$htmlwhite)
+				)
 			}
 		}
 
 		If($MSWord -or $PDF)
 		{
+			If($AllApplicationsWordTable.Count -eq 0)
+			{
+				$AllApplicationsWordTable += @{
+					ApplicationName = "None found"; 
+					Description = ""; 
+					Location = "";
+					Enabled = ""; 
+				}
+			}
+			
 			$Table = AddWordTable -Hashtable $AllApplicationsWordTable `
 			-Columns  ApplicationName,Description,Location,Enabled `
 			-Headers  "Name","Description","Location","State" `
@@ -11584,10 +15308,11 @@ Function OutputDeliveryGroupApplicationDetails
 		If($HTML)
 		{
 			$columnHeaders = @(
-			'Name',($global:htmlsb),
-			'Description',($global:htmlsb),
-			'Location',($global:htmlsb),
-			'State',($global:htmlsb))
+				'Name',($global:htmlsb),
+				'Description',($global:htmlsb),
+				'Location',($global:htmlsb),
+				'State',($global:htmlsb)
+			)
 
 			$msg = ""
 			$columnWidths = @("175","170","100","55")
@@ -11604,7 +15329,7 @@ Function OutputDeliveryGroupCatalogs
 	
 	If($? -and $Null -ne $MCs)
 	{
-		If($MCs.Count -gt 1)
+		If($MCs.Count -ge 1)
 		{
 			#Adding -Property CatalogName was needed to get the full unique array Returned
 			[array]$MCs = $MCs | Sort-Object -Property CatalogName -Unique
@@ -11627,7 +15352,7 @@ Function OutputDeliveryGroupCatalogs
 			$rowdata = @()
 		}
 
-		If($MCs.Count -gt 1)
+		If($MCs.Count -ge 1)
 		{
 			ForEach($MC in $MCs)
 			{
@@ -11647,15 +15372,15 @@ Function OutputDeliveryGroupCatalogs
 					If($MSWord -or $PDF)
 					{
 						$CatalogsWordTable += @{
-						Name = $Catalog.Name; 
-						Type = $xAllocationType; 
-						DesktopsTotal = $Catalog.AssignedCount;
-						DesktopsFree = $Catalog.AvailableCount; 
+							Name = $Catalog.CatalogName; 
+							Type = $xAllocationType; 
+							DesktopsTotal = $Catalog.AssignedCount;
+							DesktopsFree = $Catalog.AvailableCount; 
 						}
 					}
 					If($Text)
 					{
-						Line 1 "Machine Catalog name`t: " $Catalog.Name
+						Line 1 "Machine Catalog name`t: " $Catalog.CatalogName
 						Line 1 "Machine Catalog type`t: " $xAllocationType
 						Line 1 "Desktops total`t`t: " $Catalog.AssignedCount
 						Line 1 "Desktops free`t`t: " $Catalog.AvailableCount
@@ -11664,16 +15389,27 @@ Function OutputDeliveryGroupCatalogs
 					If($HTML)
 					{
 						$rowdata += @(,(
-						$Catalog.Name,$htmlwhite,
-						$xAllocationType,$htmlwhite,
-						$Catalog.AssignedCount.ToString(),$htmlwhite,
-						$Catalog.AvailableCount.ToString(),$htmlwhite))
+							$Catalog.CatalogName,$htmlwhite,
+							$xAllocationType,$htmlwhite,
+							$Catalog.AssignedCount.ToString(),$htmlwhite,
+							$Catalog.AvailableCount.ToString(),$htmlwhite)
+						)
 					}
 				}
 			}
 
 			If($MSWord -or $PDF)
 			{
+				If($CatalogsWordTable.Count -eq 0)
+				{
+					$CatalogsWordTable += @{
+						Name = "None found"; 
+						Type = ""; 
+						DesktopsTotal = "";
+						DesktopsFree = ""; 
+					}
+				}
+				
 				$Table = AddWordTable -Hashtable $CatalogsWordTable `
 				-Columns  Name,Type,DesktopsTotal,DesktopsFree `
 				-Headers  "Machine Catalog name","Machine Catalog type","Desktops total","Desktops free" `
@@ -11696,10 +15432,11 @@ Function OutputDeliveryGroupCatalogs
 			If($HTML)
 			{
 				$columnHeaders = @(
-				'Machine Catalog name',($global:htmlsb),
-				'Machine Catalog type',($global:htmlsb),
-				'Desktops total',($global:htmlsb),
-				'Desktops free',($global:htmlsb))
+					'Machine Catalog name',($global:htmlsb),
+					'Machine Catalog type',($global:htmlsb),
+					'Desktops total',($global:htmlsb),
+					'Desktops free',($global:htmlsb)
+				)
 
 				$msg = ""
 				$columnWidths = @("175","150","100","100")
@@ -11843,8 +15580,8 @@ Function OutputDeliveryGroupUtilization
 			$chart = $worksheet.Shapes.AddChart().Chart 
 
 			$chart.chartType = $excelChart::xlXYScatterLines
-			$chart.HasLegend = $false
-			$chart.HasTitle = $true
+			$chart.HasLegend = $False
+			$chart.HasTitle = $True
 			$chart.ChartTitle.Text = "$($Group.Name) utilization"
 
 			#Work with the X axis for the Date Stamp 
@@ -11852,13 +15589,13 @@ Function OutputDeliveryGroupUtilization
 			$xaxis.HasTitle = $False
 			$xaxis.CategoryType = $excelCategoryScale::xlCategoryScale
 			$xaxis.MajorTickMark = $excelTickMark::xlTickMarkCross
-			$xaxis.HasMajorGridLines = $true
+			$xaxis.HasMajorGridLines = $True
 			$xaxis.TickLabels.NumberFormat = "m/d/yyyy"
 			$xaxis.TickLabels.Orientation = 48 #degrees to rotate text
 
 			#Work with the Y axis for the number of desktops in use                                               
 			$yaxis = $chart.Axes($excelAxes::XlValue)
-			$yaxis.HasTitle = $true                                                       
+			$yaxis.HasTitle = $True                                                       
 			$yaxis.AxisTitle.Text = "Desktops in use"
 			$yaxis.AxisTitle.Font.Size = 12
 
@@ -11866,7 +15603,7 @@ Function OutputDeliveryGroupUtilization
 			$word.Selection.PasteAndFormat(13)  #Pastes an Excel chart as a picture
 
 			Write-Verbose "$(Get-Date -Format G): `t`t`tClosing excel for $($Group.Name)"
-			$excel.Workbooks.Close($false)
+			$excel.Workbooks.Close($False)
 			$excel.Quit()
 
 			FindWordDocumentEnd
@@ -11883,7 +15620,7 @@ Function OutputDeliveryGroupUtilization
 				Remove-Variable -Name excel 4>$Null
 			}
 
-			#If the Excel.exe process is still running for the user's sessionID, kill it
+			#If the Excel.exe Process is still running for the user's sessionID, kill it
 			$SessionID = (Get-Process -PID $PID).SessionId
 			(Get-Process 'Excel' -ea 0 | Where-Object {$_.sessionid -eq $Sessionid}) | Stop-Process 4>$Null
 			
@@ -11941,7 +15678,7 @@ Function OutputDeliveryGroupTags
 					Description = $Result.Description				
 					AppliedTo   = "Delivery Group"				
 				}
-				$null = $Tags.Add($obj)
+				$Null = $Tags.Add($obj)
 			}
 		}
 		
@@ -11954,9 +15691,9 @@ Function OutputDeliveryGroupTags
 			If($MSWord -or $PDF)
 			{
 				$CatalogsWordTable += @{
-				Name = $Tag.Name; 
-				Description = $Tag.Description; 
-				AppliedTo = $Tag.AppliedTo;
+					Name = $Tag.Name; 
+					Description = $Tag.Description; 
+					AppliedTo = $Tag.AppliedTo;
 				}
 			}
 			If($Text)
@@ -11969,14 +15706,24 @@ Function OutputDeliveryGroupTags
 			If($HTML)
 			{
 				$rowdata += @(,(
-				$Tag.Name,$htmlwhite,
-				$Tag.Description,$htmlwhite,
-				$Tag.AppliedTo,$htmlwhite))
+					$Tag.Name,$htmlwhite,
+					$Tag.Description,$htmlwhite,
+					$Tag.AppliedTo,$htmlwhite)
+				)
 			}
 		}
 
 		If($MSWord -or $PDF)
 		{
+			If($CatalogsWordTable.Count -eq 0)
+			{
+				$CatalogsWordTable += @{
+					Name = "None found"; 
+					Description = ""; 
+					AppliedTo = "";
+				}
+			}
+				
 			$Table = AddWordTable -Hashtable $CatalogsWordTable `
 			-Columns  Name,Description,AppliedTo `
 			-Headers  "Name","Description","Applied to" `
@@ -11998,9 +15745,10 @@ Function OutputDeliveryGroupTags
 		If($HTML)
 		{
 			$columnHeaders = @(
-			'Name',($global:htmlsb),
-			'Description',($global:htmlsb),
-			'Applied to',($global:htmlsb))
+				'Name',($global:htmlsb),
+				'Description',($global:htmlsb),
+				'Applied to',($global:htmlsb)
+			)
 
 			$msg = ""
 			$columnWidths = @("150","150","150")
@@ -12046,9 +15794,9 @@ Function OutputDeliveryGroupApplicationGroups
 			If($MSWord -or $PDF)
 			{
 				$CatalogsWordTable += @{
-				Name = $ApplicationGroup.Name; 
-				Description = $ApplicationGroup.Description; 
-				Applications = $ApplicationGroup.TotalApplications.ToString();
+					Name = $ApplicationGroup.Name; 
+					Description = $ApplicationGroup.Description; 
+					Applications = $ApplicationGroup.TotalApplications.ToString();
 				}
 			}
 			If($Text)
@@ -12061,14 +15809,24 @@ Function OutputDeliveryGroupApplicationGroups
 			If($HTML)
 			{
 				$rowdata += @(,(
-				$ApplicationGroup.Name,$htmlwhite,
-				$ApplicationGroup.Description,$htmlwhite,
-				$ApplicationGroup.TotalApplications.ToString(),$htmlwhite))
+					$ApplicationGroup.Name,$htmlwhite,
+					$ApplicationGroup.Description,$htmlwhite,
+					$ApplicationGroup.TotalApplications.ToString(),$htmlwhite)
+				)
 			}
 		}
 
 		If($MSWord -or $PDF)
 		{
+			If($CatalogsWordTable.Count -eq 0)
+			{
+				$CatalogsWordTable += @{
+					Name = "None found"; 
+					Description = ""; 
+					Applications = "";
+				}
+			}
+			
 			$Table = AddWordTable -Hashtable $CatalogsWordTable `
 			-Columns  Name,Description,Applications `
 			-Headers  "Name","Description","Applications" `
@@ -12090,9 +15848,10 @@ Function OutputDeliveryGroupApplicationGroups
 		If($HTML)
 		{
 			$columnHeaders = @(
-			'Name',($global:htmlsb),
-			'Description',($global:htmlsb),
-			'Applications',($global:htmlsb))
+				'Name',($global:htmlsb),
+				'Description',($global:htmlsb),
+				'Applications',($global:htmlsb)
+			)
 
 			$msg = ""
 			$columnWidths = @("150","150","150")
@@ -12112,7 +15871,7 @@ Function OutputDeliveryGroupApplicationGroups
 }
 #endregion
 
-#region process application functions
+#region Process application functions
 Function ProcessApplications
 {
 	Write-Verbose "$(Get-Date -Format G): Retrieving Applications"
@@ -12190,22 +15949,40 @@ Function OutputApplications
 		{
 			$Script:TotalAppvApplications++
 		}
+
+		If([String]::IsNullOrEmpty($Application.AdminFolderName))
+		{
+			$ApplicationAdminFolderName = "-"
+		}
+		Else
+		{
+			$ApplicationAdminFolderName = $Application.AdminFolderName
+		}
+		
+		If([String]::IsNullOrEmpty($Application.Description))
+		{
+			$ApplicationDescription = "-"
+		}
+		Else
+		{
+			$ApplicationDescription = $Application.Description
+		}
 		
 		If($MSWord -or $PDF)
 		{
 			$AllApplicationsWordTable += @{
-			FolderName = $Application.AdminFolderName;
-			ApplicationName = $Application.ApplicationName; 
-			Description = $Application.Description; 
-			Location = $xLocation;
-			Enabled = $xEnabled; 
+				FolderName = $ApplicationAdminFolderName;
+				ApplicationName = $Application.ApplicationName; 
+				Description = $ApplicationDescription; 
+				Location = $xLocation;
+				Enabled = $xEnabled; 
 			}
 		}
 		If($Text)
 		{
-			Line 1 "Folder`t`t: " $Application.AdminFolderName
+			Line 1 "Folder`t`t: " $ApplicationAdminFolderName
 			Line 1 "Name`t`t: " $Application.ApplicationName
-			Line 1 "Description`t: " $Application.Description
+			Line 1 "Description`t: " $ApplicationDescription
 			Line 1 "Location`t: " $xLocation
 			Line 1 "State`t`t: " $xEnabled
 			Line 0 ""
@@ -12213,16 +15990,28 @@ Function OutputApplications
 		If($HTML)
 		{
 			$rowdata += @(,(
-			$Application.AdminFolderName,$htmlwhite,
-			$Application.ApplicationName,$htmlwhite,
-			$Application.Description,$htmlwhite,
-			$xLocation,$htmlwhite,
-			$xEnabled,$htmlwhite))
+				$ApplicationAdminFolderName,$htmlwhite,
+				$Application.ApplicationName,$htmlwhite,
+				$ApplicationDescription,$htmlwhite,
+				$xLocation,$htmlwhite,
+				$xEnabled,$htmlwhite)
+			)
 		}
 	}
 
 	If($MSWord -or $PDF)
 	{
+		If($AllApplicationsWordTable.Count -eq 0)
+		{
+			$AllApplicationsWordTable += @{
+				FolderName = "";
+				ApplicationName = "None found"; 
+				Description = ""; 
+				Location = "";
+				Enabled = ""; 
+			}
+		}
+		
 		$Table = AddWordTable -Hashtable $AllApplicationsWordTable `
 		-Columns  FolderName,ApplicationName,Description,Location,Enabled `
 		-Headers  "Folder","Name","Description","Location","State" `
@@ -12246,11 +16035,12 @@ Function OutputApplications
 	If($HTML)
 	{
 		$columnHeaders = @(
-		'Folder',($global:htmlsb),
-		'Name',($global:htmlsb),
-		'Description',($global:htmlsb),
-		'Location',($global:htmlsb),
-		'State',($global:htmlsb))
+			'Folder',($global:htmlsb),
+			'Name',($global:htmlsb),
+			'Description',($global:htmlsb),
+			'Location',($global:htmlsb),
+			'State',($global:htmlsb)
+		)
 
 		$msg = ""
 		$columnWidths = @("200","200","125","80","50")
@@ -12334,7 +16124,7 @@ Function OutputApplicationDetails
 		ForEach($DGUid in $Application.AssociatedDesktopGroupUids)
 		{
 			$cnt++
-			$Results = Get-BrokerDesktopGroup -EA 0 -Uid $DGUid
+			$Results = Get-BrokerDesktopGroup -Uid $DGUid -EA 0
 			If($? -and $Null -ne $Results)
 			{
 				$DeliveryGroups += "$($Results.Name) Priority: $($Application.AssociatedDesktopGroupPriorities[$cnt])"
@@ -12345,7 +16135,7 @@ Function OutputApplicationDetails
 	{
 		ForEach($DGUid in $Application.AssociatedDesktopGroupUids)
 		{
-			$Results = Get-BrokerDesktopGroup -EA 0 -Uid $DGUid
+			$Results = Get-BrokerDesktopGroup -Uid $DGUid -EA 0
 			If($? -and $Null -ne $Results)
 			{
 				$DeliveryGroups += $Results.Name
@@ -12391,13 +16181,58 @@ Function OutputApplicationDetails
 	{
 		$xHomeZoneName = $Application.HomeZoneName
 	}
+
+	If([String]::IsNullOrEmpty($Application.Description))
+	{
+		$ApplicationDescription = "-"
+	}
+	Else
+	{
+		$ApplicationDescription = $Application.Description
+	}
+	
+	If([String]::IsNullOrEmpty($Application.AdminFolderName))
+	{
+		$ApplicationAdminFolderName = "-"
+	}
+	Else
+	{
+		$ApplicationAdminFolderName = $Application.AdminFolderName
+	}
+	
+	If([String]::IsNullOrEmpty($Application.ClientFolder))
+	{
+		$ApplicationClientFolder = "-"
+	}
+	Else
+	{
+		$ApplicationClientFolder = $Application.ClientFolder
+	}
+	
+	If([String]::IsNullOrEmpty($Application.CommandLineArguments))
+	{
+		$ApplicationCommandLineArguments = "-"
+	}
+	Else
+	{
+		$ApplicationCommandLineArguments = $Application.CommandLineArguments
+	}
+	
+	If([String]::IsNullOrEmpty($Application.WorkingDirectory))
+	{
+		$ApplicationWorkingDirectory = "-"
+	}
+	Else
+	{
+		$ApplicationWorkingDirectory = $Application.WorkingDirectory
+	}
 	
 	If($MSWord -or $PDF)
 	{
 		[System.Collections.Hashtable[]] $ScriptInformation = @()
 		$ScriptInformation += @{Data = "Name (for administrator)"; Value = $Application.Name; }
 		$ScriptInformation += @{Data = "Name (for user)"; Value = $Application.PublishedName; }
-		$ScriptInformation += @{Data = "Description and keywords"; Value = $Application.Description; }
+		$ScriptInformation += @{Data = "Description and keywords"; Value = $ApplicationDescription; }
 		[string]$xDGs = $(If( $DeliveryGroups -is [array] -and $DeliveryGroups.Count ) { $DeliveryGroups[0] } Else { '-' } )
 		$ScriptInformation += @{Data = "Delivery Group"; Value = $xDGs; }
 		$cnt = -1
@@ -12409,8 +16244,8 @@ Function OutputApplicationDetails
 				$ScriptInformation += @{Data = ""; Value = $Group; }
 			}
 		}
-		$ScriptInformation += @{Data = "Folder (for administrators)"; Value = $Application.AdminFolderName; }
-		$ScriptInformation += @{Data = "Application category (optional)"; Value = $Application.ClientFolder; }
+		$ScriptInformation += @{Data = "Folder (for administrators)"; Value = $ApplicationAdminFolderName; }
+		$ScriptInformation += @{Data = "Application category (optional)"; Value = $ApplicationClientFolder; }
 		[string]$xVis = $(If( $xVisibility -is [array] -and $xVisibility.Count ) { $xVisibility[0] } Else { '-' } )
 		$ScriptInformation += @{Data = "Visibility"; Value = $xVis; }
 		$cnt = -1
@@ -12423,8 +16258,8 @@ Function OutputApplicationDetails
 			}
 		}
 		$ScriptInformation += @{Data = "Application Path"; Value = $Application.CommandLineExecutable; }
-		$ScriptInformation += @{Data = "Command line arguments"; Value = $Application.CommandLineArguments; }
-		$ScriptInformation += @{Data = "Working directory"; Value = $Application.WorkingDirectory; }
+		$ScriptInformation += @{Data = "Command line arguments"; Value = $ApplicationCommandLineArguments; }
+		$ScriptInformation += @{Data = "Working directory"; Value = $ApplicationWorkingDirectory; }
 
 		If([String]::IsNullOrEmpty($RedirectedFileTypes))
 		{
@@ -12490,7 +16325,7 @@ Function OutputApplicationDetails
 		$ScriptInformation += @{Data = "Home Zone Name"; Value = $xHomeZoneName; }
 		$ScriptInformation += @{Data = "Home Zone Only"; Value = $Application.HomeZoneOnly.ToString(); }
 		$ScriptInformation += @{Data = "Ignore User Home Zone"; Value = $Application.IgnoreUserHomeZone.ToString(); }
-		$ScriptInformation += @{Data = "Icon from Client"; Value = $Application.IconFromClient; }
+		$ScriptInformation += @{Data = "Icon from Client"; Value = $Application.IconFromClient.ToString(); }
 		$ScriptInformation += @{Data = "Local Launch Disabled"; Value = $Application.LocalLaunchDisabled.ToString(); }
 		$ScriptInformation += @{Data = "Secure Command Line Arguments Enabled"; Value = $Application.SecureCmdLineArgumentsEnabled.ToString(); }
 		$ScriptInformation += @{Data = "Add shortcut to user's desktop"; Value = $Application.ShortcutAddedToDesktop.ToString(); }
@@ -12522,7 +16357,7 @@ Function OutputApplicationDetails
 	{
 		Line 1 "Name (for administrator)`t`t: " $Application.Name
 		Line 1 "Name (for user)`t`t`t`t: " $Application.PublishedName
-		Line 1 "Description and keywords`t`t: " $Application.Description
+		Line 1 "Description and keywords`t`t: " $ApplicationDescription
 		[string]$xDGs = $(If( $DeliveryGroups -is [array] -and $DeliveryGroups.Count ) { $DeliveryGroups[0] } Else { '-' } )
 		Line 1 "Delivery Group`t`t`t`t: " $xDGs
 		$cnt = -1
@@ -12534,8 +16369,8 @@ Function OutputApplicationDetails
 				Line 5 "  " $Group
 			}
 		}
-		Line 1 "Folder (for administrators)`t`t: " $Application.AdminFolderName
-		Line 1 "Application category (optional)`t`t: " $Application.ClientFolder
+		Line 1 "Folder (for administrators)`t`t: " $ApplicationAdminFolderName
+		Line 1 "Application category (optional)`t`t: " $ApplicationClientFolder
 		[string]$xVis = $(If( $xVisibility -is [array] -and $xVisibility.Count ) { $xVisibility[0] } Else { '-' } )
 		Line 1 "Visibility`t`t`t`t: " $xVis
 		$cnt = -1
@@ -12548,8 +16383,8 @@ Function OutputApplicationDetails
 			}
 		}
 		Line 1 "Application Path`t`t`t: " $Application.CommandLineExecutable
-		Line 1 "Command line arguments`t`t`t: " $Application.CommandLineArguments
-		Line 1 "Working directory`t`t`t: " $Application.WorkingDirectory
+		Line 1 "Command line arguments`t`t`t: " $ApplicationCommandLineArguments
+		Line 1 "Working directory`t`t`t: " $ApplicationWorkingDirectory
 
 		If([String]::IsNullOrEmpty($RedirectedFileTypes))
 		{
@@ -12616,7 +16451,7 @@ Function OutputApplicationDetails
 		Line 1 "Home Zone Name`t`t`t`t: " $xHomeZoneName
 		Line 1 "Home Zone Only`t`t`t`t: " $Application.HomeZoneOnly.ToString()
 		Line 1 "Ignore User Home Zone`t`t`t: " $Application.IgnoreUserHomeZone.ToString()
-		Line 1 "Icon from Client`t`t`t: " $Application.IconFromClient
+		Line 1 "Icon from Client`t`t`t: " $Application.IconFromClient.ToString()
 		Line 1 "Local Launch Disabled`t`t`t: " $Application.LocalLaunchDisabled.ToString()
 		Line 1 "Secure Command Line Arguments Enabled`t: " $Application.SecureCmdLineArgumentsEnabled.ToString()
 		Line 1 "Add shortcut to user's desktop`t`t: " $Application.ShortcutAddedToDesktop.ToString()
@@ -12633,7 +16468,7 @@ Function OutputApplicationDetails
 		$rowdata = @()
 		$columnHeaders = @("Name (for administrator)",($global:htmlsb),$Application.Name,$htmlwhite)
 		$rowdata += @(,('Name (for user)',($global:htmlsb),$Application.PublishedName,$htmlwhite))
-		$rowdata += @(,('Description and keywords',($global:htmlsb),$Application.Description,$htmlwhite))
+		$rowdata += @(,('Description and keywords',($global:htmlsb),$ApplicationDescription,$htmlwhite))
 		[string]$xDGs = $(If( $DeliveryGroups -is [array] -and $DeliveryGroups.Count ) { $DeliveryGroups[0] } Else { '-' } )
 		$rowdata += @(,('Delivery Group',($global:htmlsb),$xDGs,$htmlwhite))
 		$cnt = -1
@@ -12645,8 +16480,8 @@ Function OutputApplicationDetails
 				$rowdata += @(,('',($global:htmlsb),$Group,$htmlwhite))
 			}
 		}
-		$rowdata += @(,('Folder (for administrators)',($global:htmlsb),$Application.AdminFolderName,$htmlwhite))
-		$rowdata += @(,('Application category (optional)',($global:htmlsb),$Application.ClientFolder,$htmlwhite))
+		$rowdata += @(,('Folder (for administrators)',($global:htmlsb),$ApplicationAdminFolderName,$htmlwhite))
+		$rowdata += @(,('Application category (optional)',($global:htmlsb),$ApplicationClientFolder,$htmlwhite))
 		[string]$xVis = $(If( $xVisibility -is [array] -and $xVisibility.Count ) { $xVisibility[0] } Else { '-' } )
 		$rowdata += @(,('Visibility',($global:htmlsb),$xVis,$htmlwhite))
 		$cnt = -1
@@ -12659,8 +16494,8 @@ Function OutputApplicationDetails
 			}
 		}
 		$rowdata += @(,('Application Path',($global:htmlsb),$Application.CommandLineExecutable,$htmlwhite))
-		$rowdata += @(,('Command Line arguments',($global:htmlsb),$Application.CommandLineArguments,$htmlwhite))
-		$rowdata += @(,('Working directory',($global:htmlsb),$Application.WorkingDirectory,$htmlwhite))
+		$rowdata += @(,('Command Line arguments',($global:htmlsb),$ApplicationCommandLineArguments,$htmlwhite))
+		$rowdata += @(,('Working directory',($global:htmlsb),$ApplicationWorkingDirectory,$htmlwhite))
 
 		If([String]::IsNullOrEmpty($RedirectedFileTypes))
 		{
@@ -12726,7 +16561,7 @@ Function OutputApplicationDetails
 		$rowdata += @(,("Home Zone Name",($global:htmlsb),$xHomeZoneName,$htmlwhite))
 		$rowdata += @(,("Home Zone Only",($global:htmlsb),$Application.HomeZoneOnly.ToString(),$htmlwhite))
 		$rowdata += @(,("Ignore User Home Zone",($global:htmlsb),$Application.IgnoreUserHomeZone.ToString(),$htmlwhite))
-		$rowdata += @(,("Icon from Client",($global:htmlsb),$Application.IconFromClient,$htmlwhite))
+		$rowdata += @(,("Icon from Client",($global:htmlsb),$Application.IconFromClient.ToString(),$htmlwhite))
 		$rowdata += @(,("Local Launch Disabled",($global:htmlsb),$Application.LocalLaunchDisabled.ToString(),$htmlwhite))
 		$rowdata += @(,("Secure Command Line Arguments Enabled",($global:htmlsb),$Application.SecureCmdLineArgumentsEnabled.ToString(),$htmlwhite))
 		$rowdata += @(,("Add shortcut to user's desktop",($global:htmlsb),$Application.ShortcutAddedToDesktop.ToString(),$htmlwhite))
@@ -12798,34 +16633,38 @@ Function OutputApplicationSessions
 				}
 			}
 			
-			#$RecordingStatus = "Not supported"
-			#$result = Get-BrokerSessionRecordingStatus -Session $Session.Uid
+			$RecordingStatus = "Not supported"
+			$result = Get-BrokerSessionRecordingStatus -Session $Session.Uid -EA 0
 			
-			#If($?)
-			#{
-			#	Switch ($result)
-			#	{
-			#		"SessionBeingRecorded"	{$RecordingStatus = "Session is being recorded"}
-			#		"SessionNotRecorded"	{$RecordingStatus = "Session is not being recorded"}
-			#		Default					{$RecordingStatus = "Unable to determine session recording status: $($result)"}
-			#	}
-			#}
-			#Else
-			#{
-			#	$RecordingStatus = "Unknown"
-			#}
+			If($? -and $Null -ne $result)
+			{
+				Switch ($result)
+				{
+					"SessionBeingRecorded"	{$RecordingStatus = "Session is being recorded"}
+					"SessionNotRecorded"	{$RecordingStatus = "Session is not being recorded"}
+					Default					{$RecordingStatus = "Unable to determine session recording status: $($result)"}
+				}
+			}
+			ElseIf($? -and $Null -eq $result)
+			{
+				$RecordingStatus = "No recording status found"
+			}
+			Else
+			{
+				$RecordingStatus = "Unable to determine session recording status: $($result)"
+			}
 			
 			If($MSWord -or $PDF)
 			{
 				$SessionsWordTable += @{
-				UserName = $Session.UserName;
-				ClientName= $Session.ClientName;
-				MachineName = $xMachineName;
-				State = $Session.SessionState;
-				ApplicationState = $Session.AppState;
-				Protocol = $Session.Protocol
+					UserName = $Session.UserName;
+					ClientName= $Session.ClientName;
+					MachineName = $xMachineName;
+					State = $Session.SessionState;
+					ApplicationState = $Session.AppState;
+					Protocol = $Session.Protocol;
+					RecordingStatus = $RecordingStatus;
 				}
-				#RecordingStatus = $RecordingStatus
 			}
 			If($Text)
 			{
@@ -12835,30 +16674,41 @@ Function OutputApplicationSessions
 				Line 2 "State`t`t`t: " $Session.SessionState
 				Line 2 "Application State`t: " $Session.AppState
 				Line 2 "Protocol`t`t: " $Session.Protocol
-				#Line 2 "Recording Status`t: " $RecordingStatus
+				Line 2 "Recording Status`t: " $RecordingStatus
 				Line 0 ""
 			}
 			If($HTML)
 			{
 				$rowdata += @(,(
-				$Session.UserName,$htmlwhite,
-				$Session.ClientName,$htmlwhite,
-				$xMachineName,$htmlwhite,
-				$Session.SessionState,$htmlwhite,
-				$Session.AppState,$htmlwhite,
-				$Session.Protocol,$htmlwhite
-				))
-				#$RecordingStatus,$htmlwhite
+					$Session.UserName,$htmlwhite,
+					$Session.ClientName,$htmlwhite,
+					$xMachineName,$htmlwhite,
+					$Session.SessionState,$htmlwhite,
+					$Session.AppState,$htmlwhite,
+					$Session.Protocol,$htmlwhite,
+					$RecordingStatus,$htmlwhite)
+				)
 			}
 		}
 		
 		If($MSWord -or $PDF)
 		{
-			#-Columns  UserName,ClientName,MachineName,State,ApplicationState,Protocol,RecordingStatus `
-			#-Headers  "User Name","Client Name","Machine Name","State","Application State","Protocol","Recording Status" `
+			If($SessionsWordTable.Count -eq 0)
+			{
+				$SessionsWordTable += @{
+					UserName = "None found";
+					ClientName= "";
+					MachineName = "";
+					State = "";
+					ApplicationState = "";
+					Protocol = "";
+					RecordingStatus = "";
+				}
+			}
+			
 			$Table = AddWordTable -Hashtable $SessionsWordTable `
-			-Columns  UserName,ClientName,MachineName,State,ApplicationState,Protocol `
-			-Headers  "User Name","Client Name","Machine Name","State","Application State","Protocol" `
+			-Columns  UserName,ClientName,MachineName,State,ApplicationState,Protocol,RecordingStatus `
+			-Headers  "User Name","Client Name","Machine Name","State","Application State","Protocol","Recording Status" `
 			-Format $wdTableGrid `
 			-AutoFit $wdAutoFitFixed;
 
@@ -12871,7 +16721,7 @@ Function OutputApplicationSessions
 			$Table.Columns.Item(4).Width = 35;
 			$Table.Columns.Item(5).Width = 55;
 			$Table.Columns.Item(6).Width = 45;
-			#$Table.Columns.Item(6).Width = 50; #recording status column
+			$Table.Columns.Item(6).Width = 50; #recording status column
 
 			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -12881,20 +16731,18 @@ Function OutputApplicationSessions
 		If($HTML)
 		{
 			$columnHeaders = @(
-			'User Name',($global:htmlsb),
-			'Client Name',($global:htmlsb),
-			'Machine Name',($global:htmlsb),
-			'State',($global:htmlsb),
-			'Application State',($global:htmlsb),
-			'Protocol',($global:htmlsb)
+				'User Name',($global:htmlsb),
+				'Client Name',($global:htmlsb),
+				'Machine Name',($global:htmlsb),
+				'State',($global:htmlsb),
+				'Application State',($global:htmlsb),
+				'Protocol',($global:htmlsb),
+				'Recording Status',($global:htmlsb)
 			)
-			#'Recording Status',($global:htmlsb)
 
-			#$columnWidths = @("135","85","135","50","50","55","55")
-			#FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "510"
 			$msg = ""
-			$columnWidths = @("135","85","135","50","50","55")
-			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "455"
+			$columnWidths = @("135","85","135","50","50","55","55")
+			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "510"
 			WriteHTMLLine 0 0 ""
 		}
 	}
@@ -12934,7 +16782,7 @@ Function OutputApplicationAdministrators
 	$DeliveryGroups = @()
 	ForEach($DGUid in $Application.AssociatedDesktopGroupUids)
 	{
-		$Results = Get-BrokerDesktopGroup -EA 0 -Uid $DGUid
+		$Results = Get-BrokerDesktopGroup -Uid $DGUid -EA 0
 		If($? -and $Null -ne $Results)
 		{
 			$DeliveryGroups += $Results.Name
@@ -12978,9 +16826,9 @@ Function OutputApplicationAdministrators
 			If($MSWord -or $PDF)
 			{
 				$AdminsWordTable += @{ 
-				AdminName = $Admin.Name;
-				Role = $Admin.Rights[0].RoleName;
-				Status = $Tmp;
+					AdminName = $Admin.Name;
+					Role = $Admin.Rights[0].RoleName;
+					Status = $Tmp;
 				}
 			}
 			If($Text)
@@ -12993,9 +16841,10 @@ Function OutputApplicationAdministrators
 			If($HTML)
 			{
 				$rowdata += @(,(
-				$Admin.Name,$htmlwhite,
-				$Admin.Rights[0].RoleName,$htmlwhite,
-				$tmp,$htmlwhite))
+					$Admin.Name,$htmlwhite,
+					$Admin.Rights[0].RoleName,$htmlwhite,
+					$tmp,$htmlwhite)
+				)
 			}
 		}
 		
@@ -13004,9 +16853,9 @@ Function OutputApplicationAdministrators
 			If($AdminsWordTable.Count -eq 0)
 			{
 				$AdminsWordTable += @{ 
-				AdminName = "No admins found";
-				Role = "N/A";
-				Status = "N/A";
+					AdminName = "No admins found";
+					Role = "N/A";
+					Status = "N/A";
 				}
 			}
 
@@ -13016,10 +16865,11 @@ Function OutputApplicationAdministrators
 			-Format $wdTableGrid `
 			-AutoFit $wdAutoFitFixed;
 
+			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-			$Table.Columns.Item(1).Width = 275;
-			$Table.Columns.Item(2).Width = 200;
+			$Table.Columns.Item(1).Width = 220;
+			$Table.Columns.Item(2).Width = 220;
 			$Table.Columns.Item(3).Width = 60;
 
 			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
@@ -13030,9 +16880,10 @@ Function OutputApplicationAdministrators
 		If($HTML)
 		{
 			$columnHeaders = @(
-			'Administrator Name',($global:htmlsb),
-			'Role',($global:htmlsb),
-			'Status',($global:htmlsb))
+				'Administrator Name',($global:htmlsb),
+				'Role',($global:htmlsb),
+				'Status',($global:htmlsb)
+			)
 
 			$msg = ""
 			$columnWidths = @("275","200","60")
@@ -13103,7 +16954,7 @@ Function ProcessApplicationGroupDetails
 			$DGs = @()
 			ForEach($DGUid in $AppGroup.AssociatedDesktopGroupUids)
 			{
-				$results = Get-BrokerDesktopGroup -EA 0 -Uid $DGUid
+				$results = Get-BrokerDesktopGroup -Uid $DGUid -EA 0
 				
 				If($? -and $Null -ne $results)
 				{
@@ -13112,12 +16963,30 @@ Function ProcessApplicationGroupDetails
 			}
 			
 			[array]$xTags = $AppGroup.Tags
-			
+
+			If([String]::IsNullOrEmpty($AppGroup.Description))
+			{
+				$AppGroupDescription = "-"
+			}
+			Else
+			{
+				$AppGroupDescription = $AppGroup.Description
+			}
+
+			If([String]::IsNullOrEmpty($AppGroup.RestrictToTag))
+			{
+				$RestrictedToTag = "-"
+			}
+			Else
+			{
+				$RestrictedToTag = $AppGroup.RestrictToTag
+			}
+					
 			If($MSWord -or $PDF)
 			{
 				$ScriptInformation = New-Object System.Collections.ArrayList
 				$ScriptInformation.Add(@{Data = "Name"; Value = $AppGroup.Name; }) > $Null
-				$ScriptInformation.Add(@{Data = "Description"; Value = $AppGroup.Description; }) > $Null
+				$ScriptInformation.Add(@{Data = "Description"; Value = $AppGroupDescription; }) > $Null
 				$ScriptInformation.Add(@{Data = "Applications"; Value = $AppGroup.TotalApplications.ToString(); }) > $Null
 				
 				If([String]::IsNullOrEmpty($AppGroup.Scopes))
@@ -13137,7 +17006,7 @@ Function ProcessApplicationGroupDetails
 				$ScriptInformation.Add(@{Data = "Enabled"; Value = $xEnabled; }) > $Null
 				$ScriptInformation.Add(@{Data = "Session sharing"; Value = $xSessionSharing; }) > $Null
 				$ScriptInformation.Add(@{Data = "Single application per session"; Value = $xSingleSession; }) > $Null
-				$ScriptInformation.Add(@{Data = "Restrict launches to machines with tag"; Value = $AppGroup.RestrictToTag; }) > $Null
+				$ScriptInformation.Add(@{Data = "Restrict launches to machines with tag"; Value = $RestrictedToTag; }) > $Null
 
 				[string]$xxDGs = $(If( $DGs -is [array] -and $DGs.Count ) { $DGs[0] } Else { '-' } )
 				$ScriptInformation.Add(@{Data = "Delivery Groups"; Value = $xxDGs; }) > $Null
@@ -13183,7 +17052,7 @@ Function ProcessApplicationGroupDetails
 			If($Text)
 			{
 				Line 1 "Name`t`t`t`t`t: " $AppGroup.Name
-				Line 1 "Description`t`t`t`t: " $AppGroup.Description
+				Line 1 "Description`t`t`t`t: " $AppGroupDescription
 				Line 1 "Applications`t`t`t`t: " $AppGroup.TotalApplications.ToString()
 				
 				If([String]::IsNullOrEmpty($AppGroup.Scopes))
@@ -13203,7 +17072,7 @@ Function ProcessApplicationGroupDetails
 				Line 1 "Enabled`t`t`t`t`t: " $xEnabled
 				Line 1 "Session sharing`t`t`t`t: " $xSessionSharing
 				Line 1 "Single application per session`t`t: " $xSingleSession
-				Line 1 "Restrict launches to machines with tag`t: " $AppGroup.RestrictToTag
+				Line 1 "Restrict launches to machines with tag`t: " $RestrictedToTag
 
 				[string]$xxDGs = $(If( $DGs -is [array] -and $DGs.Count ) { $DGs[0] } Else { '-' } )
 				Line 1 "Delivery Groups`t`t`t`t: " $xxDGs
@@ -13234,7 +17103,7 @@ Function ProcessApplicationGroupDetails
 			{
 				$rowdata = @()
 				$columnHeaders = @("Name",($global:htmlsb),$AppGroup.Name,$htmlwhite)
-				$rowdata += @(,('Description',($global:htmlsb),$AppGroup.Description,$htmlwhite))
+				$rowdata += @(,('Description',($global:htmlsb),$AppGroupDescription,$htmlwhite))
 				$rowdata += @(,('Applications',($global:htmlsb),$AppGroup.TotalApplications.ToString(),$htmlwhite))
 				
 				If([String]::IsNullOrEmpty($AppGroup.Scopes))
@@ -13254,7 +17123,7 @@ Function ProcessApplicationGroupDetails
 				$rowdata += @(,('Enabled',($global:htmlsb),$xEnabled,$htmlwhite))
 				$rowdata += @(,('Session sharing',($global:htmlsb),$xSessionSharing,$htmlwhite))
 				$rowdata += @(,('Single application per session',($global:htmlsb),$xSingleSession,$htmlwhite))
-				$rowdata += @(,('Restrict launches to machines with tag',($global:htmlsb),$AppGroup.RestrictToTag,$htmlwhite))
+				$rowdata += @(,('Restrict launches to machines with tag',($global:htmlsb),$RestrictedToTag,$htmlwhite))
 				
 				[string]$xxDGs = $(If( $DGs -is [array] -and $DGs.Count ) { $DGs[0] } Else { '-' } )
 				$rowdata += @(,('Delivery Groups',($global:htmlsb),$xxDGs,$htmlwhite))
@@ -13296,10 +17165,210 @@ Function ProcessApplicationGroupDetails
 		$txt = "Unable to retrieve Application Groups"
 		OutputWarning $txt
 	}
+	Write-Verbose "$(Get-Date -Format G):"
 }
 #endregion
 
 #region policy functions
+Function CreateDictionary
+{
+	#taken from citrix.grouppolicy.commands.psm1 and cleaned up
+
+    Return New-Object "System.Collections.Generic.Dictionary``2[System.String,System.Object]"
+}
+
+Function CreateObject
+{
+    Param([System.Collections.IDictionary]$props, [string]$name)
+	#taken from citrix.grouppolicy.commands.psm1 and cleaned up
+
+    $obj = New-Object PSObject
+    ForEach ($prop in $props.Keys)
+    {
+        $obj | Add-Member NoteProperty -Name $prop -Value $props.$prop
+    }
+    if ($name)
+    {
+        $obj | Add-Member ScriptMethod -Name "ToString" -Value $executioncontext.invokecommand.NewScriptBlock('"{0}"' -f $name) -Force
+    }
+    Return $obj
+}
+
+Function FilterString
+{
+    Param([string] $value, [string[]] $wildcards)
+	#taken from citrix.grouppolicy.commands.psm1 and cleaned up
+
+    $wildcards | Where-Object { $value -like $_ }
+}
+
+Function Get-CitrixGroupPolicy
+{
+	[CmdletBinding()]
+	Param(
+		[Parameter(Position=0, ValueFromPipelineByPropertyName=$True)]
+		[string[]] $PolicyName = "*",
+		[Parameter(Position=1, ValueFromPipelineByPropertyName=$True)]
+		[string] [ValidateSet("Computer", "User", $Null)] $Type,
+		[Parameter()]
+		[string] $DriveName = "LocalFarmGPO"
+	)
+	#taken from citrix.grouppolicy.commands.psm1, renamed, and cleaned up
+
+	Process
+	{
+		$types = If(!$Type) { @("Computer", "User") } Else { @($Type) }
+
+		ForEach($polType in $types)
+		{
+			$pols = @(Get-ChildItem "$($DriveName):\$polType" | Where-Object { FilterString $_.Name $PolicyName })
+
+			If($Pols.Count -eq 0)
+			{
+				If($PolicyName -eq "*")
+				{
+					Write-Error "
+		`n`n
+	FATAL ERROR.
+	The $polType node is missing for the PSDrive named $DriveName. Try immediately rerunning the script.
+		`n`n
+	Script cannot Continue.
+		`n`n
+		"
+					AbortScript
+				}
+				Else
+				{
+					Write-Error "
+		`n`n
+	FATAL ERROR.
+	For the policy named $PolicyName, the $polType node is missing for the PSDrive named $DriveName. Try immediately rerunning the script.
+		`n`n
+	Script cannot Continue.
+		`n`n
+		"
+					AbortScript
+				}
+			}
+			
+			ForEach($pol in $pols)
+			{
+				$props             = CreateDictionary
+				$props.PolicyName  = $pol.Name
+				$props.Type        = $poltype
+				$props.Description = $pol.Description
+				$props.Enabled     = $pol.Enabled
+				$props.Priority    = $pol.Priority
+				CreateObject $props $pol.Name
+			}
+		}
+	}
+}
+
+Function Get-CitrixGroupPolicyConfiguration
+{
+	[CmdletBinding()]
+	Param(
+		[Parameter(Position=0, ValueFromPipelineByPropertyName=$True)]
+		[String[]] $PolicyName = "*",
+		[Parameter(Position=1, ValueFromPipelineByPropertyName=$True)]
+		[ValidateSet("Computer", "User", $Null)] [String] $Type,
+		[Parameter()]
+		[Switch] $ConfiguredOnly,
+		[Parameter()]
+		[string] $DriveName = "LocalFarmGPO"
+	)
+	#taken from citrix.grouppolicy.commands.psm1, renamed, and cleaned up
+
+	Process
+	{
+		$types = If(!$Type) { @("Computer", "User") } Else { @($Type) }
+
+		ForEach($poltype in $types)
+		{
+			$pols = @(Get-ChildItem "$($DriveName):\$poltype" | Where-Object { FilterString $_.Name $PolicyName })
+			ForEach($pol in $pols)
+			{
+				$props = CreateDictionary
+				$props.PolicyName = $pol.Name
+				$props.Type = $poltype
+
+				ForEach($setting in @(Get-ChildItem "$($DriveName):\$poltype\$($pol.Name)\Settings" -Recurse | `
+					Where-Object { $_.PSObject.Properties[ 'State' ] -and  $Null -ne $_.State }))
+				{
+					If(!$ConfiguredOnly -or $setting.State -ne "NotConfigured")
+					{
+						$setname = $setting.PSChildName
+						$config = CreateDictionary
+						$config.State = $setting.State.ToString()
+						If( $setting.PSObject.Properties[ 'Values' ] )
+						{
+							If($Null -ne $setting.Values) { $config.Values = ([array]($setting.Values)) }
+						}
+						If( $setting.PSObject.Properties[ 'Value' ] )
+						{
+							If($Null -ne $setting.Value) { $config.Value = ([string]($setting.Value)) }
+						}
+						$config.Path = $setting.PSPath.Substring($setting.PSPath.IndexOf("\Settings\")+10)
+						$props.$setname = CreateObject $config
+					}
+				}
+				CreateObject $props $pol.Name
+			}
+		}
+	}
+}
+
+Function Get-CitrixGroupPolicyFilter
+{
+	[CmdletBinding()]
+	Param(
+		[Parameter(Position=0, ValueFromPipelineByPropertyName=$True)]
+		[String[]] $PolicyName = "*",
+		[Parameter(Position=1, ValueFromPipelineByPropertyName=$True)]
+		[ValidateSet("Computer", "User", $Null)] [String] $Type,
+		[Parameter(Position=2, ValueFromPipelineByPropertyName=$True)]
+		[String[]] $FilterName = "*",
+		[Parameter(Position=3, ValueFromPipelineByPropertyName=$True)]
+		[string] $FilterType = "*",
+		[Parameter()]
+		[string] $DriveName = "LocalFarmGPO"
+	)
+	#taken from citrix.grouppolicy.commands.psm1, renamed, and cleaned up
+
+	Process
+	{
+		$types = If(!$Type) { @("Computer", "User") } Else { @($Type) }
+
+		ForEach($poltype in $types)
+		{
+			$pols = @(Get-ChildItem "$($DriveName):\$poltype" | Where-Object { ($_.Name -ne "Unfiltered") -and (FilterString $_.Name $PolicyName) })
+			ForEach($pol in $pols)
+			{
+				ForEach($filter in @(Get-ChildItem "$($DriveName):\$poltype\$($pol.Name)\Filters" -Recurse |
+					Where-Object { ($_.PSObject.Properties[ 'FilterType' ] -and  $Null -ne $_.FilterType) -and (FilterString $_.Name $FilterName) -and (FilterString $_.FilterType $FilterType)}))
+				{
+					$props             = CreateDictionary
+					$props.PolicyName  = $pol.Name
+					$props.Type        = $poltype
+					$props.FilterName  = $filter.Name
+					$props.FilterType  = $filter.FilterType
+					$props.Enabled     = $filter.Enabled
+					$props.Mode        = [string]($filter.Mode)
+					$props.FilterValue = $filter.FilterValue
+					If($filter.FilterType -eq "AccessControl")
+					{
+						$props.ConnectionType    = $filter.ConnectionType
+						$props.AccessGatewayFarm = $filter.AccessGatewayFarm
+						$props.AccessCondition   = $filter.AccessCondition
+					}
+					CreateObject $props $filter.Name
+				}
+			}
+		}
+	}
+}
+
 Function ProcessPolicies
 {
 	$txt = "Policies"
@@ -13324,67 +17393,49 @@ Function ProcessPolicies
 		WriteHTMLLine 0 0 $txt1 "" "Calibri" 1
 		WriteHTMLLine 0 0 $txt2
 	}
-	Write-Verbose "$(Get-Date -Format G): Processing CC Policies"
+	Write-Verbose "$(Get-Date -Format G): Processing Citrix Cloud (now DaaS) Policies"
 	
 	ProcessPolicySummary 
 	
 	If($Policies)
 	{
-	
-		Write-Verbose "$(Get-Date -Format G): `tDoes localfarmgpo PSDrive already exist?"
-		If(Test-Path localfarmgpo:)
+		If(Test-Path LocalSiteGPO: 4>$Null)
 		{
-			Write-Verbose "$(Get-Date -Format G): `tRemoving the current localfarmgpo PSDrive"
-			Remove-PSDrive -Name localfarmgpo -EA 0 4>$Null
-		}
-		
-		Write-Verbose "$(Get-Date -Format G): Creating localfarmgpo PSDrive for Computer policies"
-		New-PSDrive -Name localfarmgpo -psprovider citrixgrouppolicy -root \ -controller LocalHost -Scope Global *>$Null
-		
-		#using Citrix policy stuff and new-psdrive breaks transcript logging so restart transcript logging
-		TranscriptLogging
-		If(Test-Path localfarmgpo:)
-		{
-			ProcessCitrixPolicies "localfarmgpo" "Computer" ""
+			ProcessCitrixPolicies "LocalSiteGPO" "Computer" ""
 			Write-Verbose "$(Get-Date -Format G): Finished Processing Citrix Site Computer Policies"
 			Write-Verbose "$(Get-Date -Format G): "
 		}
 		Else
 		{
-			Write-Warning "Unable to create the LocalFarmGPO PSDrive"
+			Write-Warning "The LocalSiteGPO PSDrive does not exist (1)"
 		}
 
-		Write-Verbose "$(Get-Date -Format G): Creating localfarmgpo PSDrive for User policies"
-		New-PSDrive -Name localfarmgpo -psprovider citrixgrouppolicy -root \ -controller LocalHost -Scope Global *>$Null
-		
-		#using Citrix policy stuff and new-psdrive breaks transcript logging so restart transcript logging
-		TranscriptLogging
-		If(Test-Path localfarmgpo:)
+		If(Test-Path LocalSiteGPO: 4>$Null)
 		{
-			ProcessCitrixPolicies "localfarmgpo" "User" ""
+			ProcessCitrixPolicies "LocalSiteGPO" "User" ""
 			Write-Verbose "$(Get-Date -Format G): Finished Processing Citrix Site User Policies"
 			Write-Verbose "$(Get-Date -Format G): "
 		}
 		Else
 		{
-			Write-Warning "Unable to create the LocalFarmGPO PSDrive"
+			Write-Warning "The LocalSiteGPO PSDrive does not exist (2)"
 		}
 		
 		If($NoADPolicies)
 		{
-			#don't process AD policies
+			#don't Process AD policies
 		}
 		Else
 		{
-			#thanks to the Citrix Engineering Team for helping me solve processing Citrix AD based Policies
+			#thanks to the Citrix Engineering Team for helping me solve Processing Citrix AD-based Policies
 			Write-Verbose "$(Get-Date -Format G): "
-			Write-Verbose "$(Get-Date -Format G): `tSee if there are any Citrix AD-based policies to process"
+			Write-Verbose "$(Get-Date -Format G): `tSee if there are any Citrix AD-based policies to Process"
 			$CtxGPOArray = @()
 			$CtxGPOArray = GetCtxGPOsInAD
 			If($CtxGPOArray -is [Array] -and $CtxGPOArray.Count -gt 0)
 			{
 				Write-Verbose "$(Get-Date -Format G): "
-				Write-Verbose "$(Get-Date -Format G): `tThere are $($CtxGPOArray.Count) Citrix AD-based policies to process"
+				Write-Verbose "$(Get-Date -Format G): `tThere are $($CtxGPOArray.Count) Citrix AD-based policies to Process"
 				Write-Verbose "$(Get-Date -Format G): "
 
 				[array]$CtxGPOArray = $CtxGPOArray | Sort-Object -unique
@@ -13396,7 +17447,7 @@ Function ProcessPolicies
 					
 					#using Citrix policy stuff and new-psdrive breaks transcript logging so restart transcript logging
 					TranscriptLogging
-					If(Test-Path ADGpoDrv:)
+					If(Test-Path ADGpoDrv: 4>$Null)
 					{
 						Write-Verbose "$(Get-Date -Format G): `tProcessing Citrix AD Policy $($CtxGPO)"
 					
@@ -13416,7 +17467,7 @@ Function ProcessPolicies
 					
 					#using Citrix policy stuff and new-psdrive breaks transcript logging so restart transcript logging
 					TranscriptLogging
-					If(Test-Path ADGpoDrv:)
+					If(Test-Path ADGpoDrv: 4>$Null)
 					{
 						Write-Verbose "$(Get-Date -Format G): `tProcessing Citrix AD Policy $($CtxGPO)"
 					
@@ -13436,7 +17487,7 @@ Function ProcessPolicies
 			}
 			Else
 			{
-				Write-Verbose "$(Get-Date -Format G): There are no Citrix AD based policies to process"
+				Write-Verbose "$(Get-Date -Format G): There are no Citrix AD-based policies to Process"
 				Write-Verbose "$(Get-Date -Format G): "
 			}
 		}
@@ -13447,48 +17498,42 @@ Function ProcessPolicies
 
 Function ProcessPolicySummary
 {
-	Write-Verbose "$(Get-Date -Format G): `tDoes localfarmgpo PSDrive already exist?"
-	If(Test-Path localfarmgpo:)
+	If(Test-Path LocalSiteGPO: 4>$Null)
 	{
-		Write-Verbose "$(Get-Date -Format G): `tRemoving the current localfarmgpo PSDrive"
-		Remove-PSDrive -Name localfarmgpo -EA 0 4>$Null
-	}
-	Write-Verbose "$(Get-Date -Format G): `tRetrieving Site Policies"
-	Write-Verbose "$(Get-Date -Format G): `t`tCreating localfarmgpo PSDrive"
-	New-PSDrive -Name localfarmgpo -psprovider citrixgrouppolicy -root \ -controller LocalHost -Scope Global *>$Null
-	
-	#using Citrix policy stuff and new-psdrive breaks transcript logging so restart transcript logging
-	TranscriptLogging
-
-	If(Test-Path localfarmgpo:)
-	{
-		$HDXPolicies = Get-CtxGroupPolicy -DriveName localfarmgpo -EA 0 `
+		$HDXPolicies = @()
+		$HDXPolicies += Get-CitrixGroupPolicy -DriveName LocalSiteGPO -PolicyName "*" -Type "Computer" -EA 0 `
 		| Select-Object PolicyName, Type, Description, Enabled, Priority `
 		| Sort-Object Type, Priority
 		
-		OutputSummaryPolicyTable $HDXPolicies "localfarmgpo"
+		$HDXPolicies += Get-CitrixGroupPolicy -DriveName LocalSiteGPO -PolicyName "*" -Type "User" -EA 0 `
+		| Select-Object PolicyName, Type, Description, Enabled, Priority `
+		| Sort-Object Type, Priority
+		
+		OutputSummaryPolicyTable $HDXPolicies "LocalSiteGPO"
+
+		Write-Verbose "$(Get-Date -Format G): Finished Processing Site Policies for Summary"
+		Write-Verbose "$(Get-Date -Format G): "
 	}
 	Else
 	{
-		#Write-Warning "Unable to create the LocalFarmGPO PSDrive on the CC Controller $($AdminAddress)"
-		Write-Warning "Unable to create the LocalFarmGPO PSDrive"
+		Write-Warning "The LocalSiteGPO PSDrive does not exist (3)"
 	}
 	
 	If($NoADPolicies)
 	{
-		#don't process AD policies
+		#don't Process AD policies
 	}
 	Else
 	{
 		Write-Verbose "$(Get-Date -Format G): "
-		Write-Verbose "$(Get-Date -Format G): See if there are any Citrix AD based policies to process"
+		Write-Verbose "$(Get-Date -Format G): See if there are any Citrix AD-based policies to Process for Summary"
 		$CtxGPOArray = @()
 		$CtxGPOArray = GetCtxGPOsInAD
 		If($CtxGPOArray -is [Array] -and $CtxGPOArray.Count -gt 0)
 		{
 			[array]$CtxGPOArray = $CtxGPOArray | Sort-Object -unique
 			Write-Verbose "$(Get-Date -Format G): "
-			Write-Verbose "$(Get-Date -Format G): `tThere are $($CtxGPOArray.Count) Citrix AD based policies to process"
+			Write-Verbose "$(Get-Date -Format G): `tThere are $($CtxGPOArray.Count) Citrix AD-based policies to Process for Summary"
 			Write-Verbose "$(Get-Date -Format G): "
 			
 			ForEach($CtxGPO in $CtxGPOArray)
@@ -13498,18 +17543,23 @@ Function ProcessPolicySummary
 				
 				#using Citrix policy stuff and new-psdrive breaks transcript logging so restart transcript logging
 				TranscriptLogging
-				If(Test-Path ADGpoDrv:)
+				If(Test-Path ADGpoDrv: 4>$Null)
 				{
-					Write-Verbose "$(Get-Date -Format G): `tProcessing Citrix AD Policy $($CtxGPO)"
+					Write-Verbose "$(Get-Date -Format G): `tProcessing Citrix AD Policy $($CtxGPO) for Summary"
 				
-					Write-Verbose "$(Get-Date -Format G): `tRetrieving AD Policy $($CtxGPO)"
-					$HDXPolicies = Get-CtxGroupPolicy -DriveName ADGpoDrv -EA 0 `
+					Write-Verbose "$(Get-Date -Format G): `tRetrieving AD Policy $($CtxGPO) for Summary"
+					$HDXPolicies = @()
+					$HDXPolicies += Get-CitrixGroupPolicy -DriveName ADGpoDrv -PolicyName "*" -Type "Computer" -EA 0 `
 					| Select-Object PolicyName, Type, Description, Enabled, Priority `
 					| Sort-Object Type, Priority
 			
+					$HDXPolicies += Get-CitrixGroupPolicy -DriveName ADGpoDrv -PolicyName "*" -Type "User" -EA 0 `
+					| Select-Object PolicyName, Type, Description, Enabled, Priority `
+					| Sort-Object Type, Priority
+					
 					OutputSummaryPolicyTable $HDXPolicies "AD" $CtxGPO
 					
-					Write-Verbose "$(Get-Date -Format G): Finished Processing Citrix AD Policy $($CtxGPO)"
+					Write-Verbose "$(Get-Date -Format G): Finished Processing Citrix AD Policy $($CtxGPO) for Summary"
 					Write-Verbose "$(Get-Date -Format G): "
 				}
 				Else
@@ -13519,12 +17569,12 @@ Function ProcessPolicySummary
 				}
 				Remove-PSDrive -Name ADGpoDrv -EA 0 4>$Null
 			}
-			Write-Verbose "$(Get-Date -Format G): Finished Processing Citrix AD Policies"
+			Write-Verbose "$(Get-Date -Format G): Finished Processing Citrix AD Policies for Summary"
 			Write-Verbose "$(Get-Date -Format G): "
 		}
 		Else
 		{
-			Write-Verbose "$(Get-Date -Format G): There are no Citrix AD based policies to process"
+			Write-Verbose "$(Get-Date -Format G): There are no Citrix AD-based policies to Process for Summary"
 			Write-Verbose "$(Get-Date -Format G): "
 		}
 	}
@@ -13534,9 +17584,9 @@ Function OutputSummaryPolicyTable
 {
 	Param([object] $HDXPolicies, [string] $xLocation, [string] $ADGPOName = "")
 	
-	If($xLocation -eq "localfarmgpo")
+	If($xLocation -eq "LocalSiteGPO")
 	{
-		$txt = "Site Policies"
+		$txt = "Site Policies Summary"
 		If($MSWord -or $PDF)
 		{
 			WriteWordLine 3 0 $txt
@@ -13552,7 +17602,7 @@ Function OutputSummaryPolicyTable
 	}
 	ElseIf($xLocation -eq "AD")
 	{
-		$txt = "Active Directory Policies ($($ADGpoName))"
+		$txt = "Active Directory Policies ($($ADGpoName)) Summary"
 		If($MSWord -or $PDF)
 		{
 			WriteWordLine 3 0 $txt
@@ -13569,7 +17619,15 @@ Function OutputSummaryPolicyTable
 
 	If($Null -ne $HDXPolicies)
 	{
-		Write-Verbose "$(Get-Date -Format G): `t`t`tPolicies"
+		If($xLocation -eq "LocalSiteGPO")
+		{
+			Write-Verbose "$(Get-Date -Format G): `t`tSite Policies Summary Table"
+		}
+		ElseIf($xLocation -eq "AD")
+		{
+			Write-Verbose "$(Get-Date -Format G): `t`tAD Policies Summary Table"
+		}
+
 		If($MSWord -or $PDF)
 		{
 			[System.Collections.Hashtable[]] $PoliciesWordTable = @();
@@ -13581,20 +17639,29 @@ Function OutputSummaryPolicyTable
 
 		ForEach($Policy in $HDXPolicies)
 		{
+			If([String]::IsNullOrEmpty($Policy.Description))
+			{
+				$PolicyDescription = "-"
+			}
+			Else
+			{
+				$PolicyDescription = $Policy.Description
+			}
+			
 			If($MSWord -or $PDF)
 			{
 				$PoliciesWordTable += @{
-				Name = $Policy.PolicyName;
-				Description = $Policy.Description;
-				Enabled= $Policy.Enabled;
-				Type = $Policy.Type;
-				Priority = $Policy.Priority;
+					Name = $Policy.PolicyName;
+					Description = $PolicyDescription;
+					Enabled= $Policy.Enabled;
+					Type = $Policy.Type;
+					Priority = $Policy.Priority;
 				}
 			}
 			If($Text)
 			{
 				Line 2 "Name`t`t: " $Policy.PolicyName
-				Line 2 "Description`t: " $Policy.Description
+				Line 2 "Description`t: " $PolicyDescription
 				Line 2 "Enabled`t`t: " $Policy.Enabled
 				Line 2 "Type`t`t: " $Policy.Type
 				Line 2 "Priority`t: " $Policy.Priority
@@ -13603,47 +17670,62 @@ Function OutputSummaryPolicyTable
 			If($HTML)
 			{
 				$rowdata += @(,(
-				$Policy.PolicyName,$htmlwhite,
-				$Policy.Description,$htmlwhite,
-				$Policy.Enabled.ToString(),$htmlwhite,
-				$Policy.Type,$htmlwhite,
-				$Policy.Priority,$htmlwhite))
+					$Policy.PolicyName,$htmlwhite,
+					$PolicyDescription,$htmlwhite,
+					$Policy.Enabled.ToString(),$htmlwhite,
+					$Policy.Type,$htmlwhite,
+					$Policy.Priority,$htmlwhite)
+				)
 			}
 		}
 		
 		If($MSWord -or $PDF)
 		{
+			If($PoliciesWordTable.Count -eq 0)
+			{
+				$PoliciesWordTable += @{
+					Name = "None found";
+					Description = "";
+					Enabled = "";
+					Type = "";
+					Priority = "";
+				}
+			}
+			
 			$Table = AddWordTable -Hashtable $PoliciesWordTable `
 			-Columns  Name,Description,Enabled,Type,Priority `
 			-Headers  "Name","Description","Enabled","Type","Priority" `
 			-Format $wdTableGrid `
 			-AutoFit $wdAutoFitFixed;
 
+			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-			$Table.Columns.Item(1).Width = 155
-			$Table.Columns.Item(2).Width = 185
-			$Table.Columns.Item(3).Width = 55;
-			$Table.Columns.Item(4).Width = 60;
-			$Table.Columns.Item(5).Width = 45;
+			$Table.Columns.Item(1).Width = 147;
+			$Table.Columns.Item(2).Width = 180;
+			$Table.Columns.Item(3).Width = 58;
+			$Table.Columns.Item(4).Width = 65;
+			$Table.Columns.Item(5).Width = 50;
 
 			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
 			FindWordDocumentEnd
 			$Table = $Null
+			WriteWordLine 0 0 ""
 		}
 		If($HTML)
 		{
 			$columnHeaders = @(
-			'Name',($global:htmlsb),
-			'Description',($global:htmlsb),
-			'Enabled',($global:htmlsb),
-			'Type',($global:htmlsb),
-			'Priority',($global:htmlsb))
+				'Name',($global:htmlsb),
+				'Description',($global:htmlsb),
+				'Enabled',($global:htmlsb),
+				'Type',($global:htmlsb),
+				'Priority',($global:htmlsb)
+			)
 
 			$msg = ""
-			$columnWidths = @("155","185","55","60","45")
-			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
+			$columnWidths = @("200","240","55","60","45")
+			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "600"
 		}
 	}
 	ElseIf($Null -eq $HDXPolicies)
@@ -13693,7 +17775,7 @@ Function ProcessCitrixPolicies
 
 	Write-Verbose "$(Get-Date -Format G): `tRetrieving all $($xPolicyType) policy names"
 
-	$CtxPolicies = Get-CtxGroupPolicy -Type $xPolicyType `
+	$CtxPolicies = Get-CitrixGroupPolicy -Type $xPolicyType `
 	-DriveName $xDriveName -EA 0 `
 	| Select-Object PolicyName, Type, Description, Enabled, Priority `
 	| Sort-Object Priority
@@ -13704,7 +17786,7 @@ Function ProcessCitrixPolicies
 		{
 			Write-Verbose "$(Get-Date -Format G): `tStarted $($Policy.PolicyName) "
 			
-			If($xDriveName -eq "localfarmgpo")
+			If($xDriveName -eq "LocalSiteGPO")
 			{
 				$Script:TotalSitePolicies++
 			}
@@ -13721,11 +17803,20 @@ Function ProcessCitrixPolicies
 				$Script:TotalUserPolicies++
 			}
 			$Script:TotalPolicies++
+
+			If([String]::IsNullOrEmpty($Policy.Description))
+			{
+				$PolicyDescription = "-"
+			}
+			Else
+			{
+				$PolicyDescription = $Policy.Description
+			}
 			
 			If($MSWord -or $PDF)
 			{
 				$selection.InsertNewPage()
-				If($xDriveName -eq "localfarmgpo")
+				If($xDriveName -eq "LocalSiteGPO")
 				{
 					WriteWordLine 2 0 "$($Policy.PolicyName) (Site, $($xPolicyType))"
 				}
@@ -13735,7 +17826,7 @@ Function ProcessCitrixPolicies
 				}
 				[System.Collections.Hashtable[]] $ScriptInformation = @()
 			
-				$ScriptInformation += @{Data = "Description"; Value = $Policy.Description; }
+				$ScriptInformation += @{Data = "Description"; Value = $PolicyDescription; }
 				$ScriptInformation += @{Data = "Enabled"; Value = $Policy.Enabled; }
 				$ScriptInformation += @{Data = "Type"; Value = $Policy.Type; }
 				$ScriptInformation += @{Data = "Priority"; Value = $Policy.Priority; }
@@ -13746,19 +17837,21 @@ Function ProcessCitrixPolicies
 				-Format $wdTableGrid `
 				-AutoFit $wdAutoFitFixed;
 
+				SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 				SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-				$Table.Columns.Item(1).Width = 90;
-				$Table.Columns.Item(2).Width = 200;
+				$Table.Columns.Item(1).Width = 100;
+				$Table.Columns.Item(2).Width = 400;
 
 				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
 				FindWordDocumentEnd
 				$Table = $Null
+				WriteWordLine 0 0 ""
 			}
 			If($Text)
 			{
-				If($xDriveName -eq "localfarmgpo")
+				If($xDriveName -eq "LocalSiteGPO")
 				{
 					Line 0 "$($Policy.PolicyName) (Site, $($xPolicyType))"
 				}
@@ -13766,17 +17859,15 @@ Function ProcessCitrixPolicies
 				{
 					Line 0 "$($Policy.PolicyName) (AD, $($xPolicyType), GPO: $($ADGpoName))"
 				}
-				If(![String]::IsNullOrEmpty($Policy.Description))
-				{
-					Line 1 "Description`t: " $Policy.Description
-				}
+				Line 1 "Description`t: " $PolicyDescription
 				Line 1 "Enabled`t`t: " $Policy.Enabled
 				Line 1 "Type`t`t: " $Policy.Type
 				Line 1 "Priority`t: " $Policy.Priority
+				Line 0 ""
 			}
 			If($HTML)
 			{
-				If($xDriveName -eq "localfarmgpo")
+				If($xDriveName -eq "LocalSiteGPO")
 				{
 					WriteHTMLLine 2 0 "$($Policy.PolicyName) (Site, $($xPolicyType))"
 				}
@@ -13785,18 +17876,18 @@ Function ProcessCitrixPolicies
 					WriteHTMLLine 2 0 "$($Policy.PolicyName) (AD, $($xPolicyType), GPO: $($ADGpoName))"
 				}
 				$rowdata = @()
-				$columnHeaders = @("Description",($global:htmlsb),$Policy.Description,$htmlwhite)
+				$columnHeaders = @("Description",($global:htmlsb),$PolicyDescription,$htmlwhite)
 				$rowdata += @(,('Enabled',($global:htmlsb),$Policy.Enabled.ToString(),$htmlwhite))
 				$rowdata += @(,('Type',($global:htmlsb),$Policy.Type,$htmlwhite))
 				$rowdata += @(,('Priority',($global:htmlsb),$Policy.Priority,$htmlwhite))
 
 				$msg = ""
-				$columnWidths = @("90","200")
+				$columnWidths = @("100","400")
 				FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "290"
 			}
 
 			Write-Verbose "$(Get-Date -Format G): `t`tRetrieving all filters"
-			$filters = Get-CtxGroupPolicyFilter -PolicyName $Policy.PolicyName `
+			$filters = Get-CitrixGroupPolicyFilter -PolicyName $Policy.PolicyName `
 			-Type $xPolicyType `
 			-DriveName $xDriveName -EA 0 `
 			| Sort-Object FilterType, FilterName -Unique
@@ -13849,11 +17940,11 @@ Function ProcessCitrixPolicies
 						If($MSWord -or $PDF)
 						{
 							$FiltersWordTable += @{
-							Name = $filter.FilterName;
-							Type= $tmp;
-							Enabled = $filter.Enabled;
-							Mode = $filter.Mode;
-							Value = $filter.FilterValue;
+								Name    = $filter.FilterName;
+								Type    = $tmp;
+								Enabled = $filter.Enabled;
+								Mode    = $filter.Mode;
+								Value   = $filter.FilterValue;
 							}
 						}
 						If($Text)
@@ -13878,24 +17969,37 @@ Function ProcessCitrixPolicies
 					$tmp = $Null
 					If($MSWord -or $PDF)
 					{
+						If($FiltersWordTable.Count -eq 0)
+						{
+							$FiltersWordTable += @{
+								Name    = "None found";
+								Type    = "";
+								Enabled = "";
+								Mode    = "";
+								Value   = "";
+							}
+						}
+						
 						$Table = AddWordTable -Hashtable $FiltersWordTable `
 						-Columns  Name,Type,Enabled,Mode,Value `
 						-Headers  "Name","Type","Enabled","Mode","Value" `
 						-Format $wdTableGrid `
 						-AutoFit $wdAutoFitFixed;
 
+						SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 						SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-						$Table.Columns.Item(1).Width = 115;
-						$Table.Columns.Item(2).Width = 125;
-						$Table.Columns.Item(3).Width = 50;
-						$Table.Columns.Item(4).Width = 40;
-						$Table.Columns.Item(5).Width = 170;
+						$Table.Columns.Item(1).Width = 132;
+						$Table.Columns.Item(2).Width = 140;
+						$Table.Columns.Item(3).Width = 53;
+						$Table.Columns.Item(4).Width = 43;
+						$Table.Columns.Item(5).Width = 132;
 
 						$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
 						FindWordDocumentEnd
 						$Table = $Null
+						WriteWordLine 0 0 ""
 					}
 					If($HTML)
 					{
@@ -13907,8 +18011,8 @@ Function ProcessCitrixPolicies
 						'Value',($global:htmlsb))
 
 						$msg = ""
-						$columnWidths = @("115","125","50","40","170")
-						FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
+						$columnWidths = @("185","140","50","40","185")
+						FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "600"
 					}
 				}
 				Else
@@ -13916,6 +18020,7 @@ Function ProcessCitrixPolicies
 					If($MSWord -or $PDF)
 					{
 						WriteWordLine 0 1 "Assigned to: None"
+						WriteWordLine 0 0 ""
 					}
 					If($Text)
 					{
@@ -13934,11 +18039,13 @@ Function ProcessCitrixPolicies
 				{
 					WriteWordLine 3 0 "Assigned to"
 					WriteWordLine 0 1 $txt
+					WriteWordLine 0 0 ""
 				}
 				If($Text)
 				{
 					Line 0 "Assigned to"
 					Line 1 $txt
+					Line 0 ""
 				}
 				If($HTML)
 				{
@@ -13958,6 +18065,7 @@ Function ProcessCitrixPolicies
 				{
 					Line 0 "Assigned to"
 					Line 1 $txt
+					Line 0 ""
 				}
 				If($HTML)
 				{
@@ -13983,8 +18091,9 @@ Function ProcessCitrixPolicies
 			}
 			
 			Write-Verbose "$(Get-Date -Format G): `t`tRetrieving all policy settings"
-			$Settings = Get-CtxGroupPolicyConfiguration -PolicyName $Policy.PolicyName `
+			$Settings = Get-CitrixGroupPolicyConfiguration -PolicyName $Policy.PolicyName `
 			-Type $Policy.Type `
+			-ConfiguredOnly `
 			-DriveName $xDriveName -EA 0
 				
 			If($? -and $Null -ne $Settings)
@@ -14387,6 +18496,30 @@ Function ProcessCitrixPolicies
 						}
 					}
 					
+					Write-Verbose "$(Get-Date -Format G): `t`t`tHDX Analytics"
+					If((validStateProp $Setting EnableHDXInsight State ) -and ($Setting.EnableHDXInsight.State -ne "NotConfigured"))
+					{
+						#added in 2112
+						$txt = "HDX Analytics\HDX Insight for SD-WAN"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableHDXInsight.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableHDXInsight.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableHDXInsight.State
+						}
+					}
+
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA"
 					If((validStateProp $Setting ApplicationLaunchWaitTimeout State ) -and ($Setting.ApplicationLaunchWaitTimeout.State -ne "NotConfigured"))
 					{
@@ -14483,7 +18616,7 @@ Function ProcessCitrixPolicies
 									}
 									If($Text)
 									{
-										OutputPolicySetting "" $tmp
+										OutputPolicySetting "`t`t`t`t`t  " $tmp
 									}
 								}
 								$txt = ""
@@ -14566,6 +18699,197 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.DesktopLaunchForNonAdmins.State 
 						}
 					}
+					If((validStateProp $Setting DragDrop State ) -and ($Setting.DragDrop.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Drag and Drop"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.DragDrop.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.DragDrop.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.DragDrop.State 
+						}
+					}
+					If((validStateProp $Setting RemoteCredentialGuard State ) -and ($Setting.RemoteCredentialGuard.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Enhanced domain passthrough for single sign on"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.RemoteCredentialGuard.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.RemoteCredentialGuard.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.RemoteCredentialGuard.State 
+						}
+					}
+					If((validStateProp $Setting AllowFidoRedirection State ) -and ($Setting.AllowFidoRedirection.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\FIDO2 Redirection"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.AllowFidoRedirection.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.AllowFidoRedirection.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.AllowFidoRedirection.State 
+						}
+					}
+					If((validStateProp $Setting HDXDirect State ) -and ($Setting.HDXDirect.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\HDX Direct"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.HDXDirect.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.HDXDirect.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.HDXDirect.State 
+						}
+					}
+					If((validStateProp $Setting HDXDirectMode State ) -and ($Setting.HDXDirectMode.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "ICA\HDX Direct mode"
+						$tmp = ""
+						Switch ($Setting.HDXDirectMode.Value)
+						{
+							"InternalOnly"		{$tmp = "Internal only"; Break}
+							"InternalAndExternal"	{$tmp = "Internal and external"; Break}
+							Default			{$tmp = "HDX Direct mode: $($Setting.HDXDirectMode.Value)"; Break}
+						}
+						
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}
+						$tmp = $Null
+					}
+					If((validStateProp $Setting HDXDirectPortRange State ) -and ($Setting.HDXDirectPortRange.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "ICA\HDX Direct port range"
+						$array = $Setting.HDXDirectPortRange.Value.Split(',')
+						$tmp = $array[0]
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}
+
+						$txt = ""
+						$cnt = -1
+						ForEach($element in $array)
+						{
+							$cnt++
+							
+							If($cnt -ne 0)
+							{
+								$tmp = "$($element) "
+								If($MSWord -or $PDF)
+								{
+									$SettingsWordTable += @{
+									Text = "";
+									Value = $tmp;
+									}
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+									"",$htmlbold,
+									$tmp,$htmlwhite))
+								}
+								If($Text)
+								{
+									OutputPolicySetting "`t`t`t`t`t`t" $tmp
+								}
+							}
+						}
+						$array = $Null
+						$tmp = $Null
+					}
+					If((validStateProp $Setting AllowWIARedirection State ) -and ($Setting.AllowWIARedirection.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\WIA Redirection"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.AllowWIARedirection.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.AllowWIARedirection.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.AllowWIARedirection.State 
+						}
+					}
 					If((validStateProp $Setting HDXAdaptiveTransport State ) -and ($Setting.HDXAdaptiveTransport.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\HDX Adaptive Transport"
@@ -14575,7 +18899,7 @@ Function ProcessCitrixPolicies
 							"DiagnosticMode"	{$tmp = "Diagnostic mode"; Break}
 							"Off"				{$tmp = "Off"; Break}
 							"Preferred"			{$tmp = "Preferred"; Break}
-							Default {$tmp = "HDX Adaptive Transport: $($Setting.HDXAdaptiveTransport.Value)"; Break}
+							Default				{$tmp = "HDX Adaptive Transport: $($Setting.HDXAdaptiveTransport.Value)"; Break}
 						}
 						
 						If($MSWord -or $PDF)
@@ -14660,6 +18984,48 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.NonPublishedProgramLaunching.State
 						}
 					}
+					If((validStateProp $Setting LimitClipboardTransferC2H State ) -and ($Setting.LimitClipboardTransferC2H.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Limit clipboard client to session transfer size (KB)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.LimitClipboardTransferC2H.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.LimitClipboardTransferC2H.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.LimitClipboardTransferC2H.Value 
+						}
+					}
+					If((validStateProp $Setting LimitClipboardTransferH2C State ) -and ($Setting.LimitClipboardTransferH2C.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Limit clipboard session to client transfer size (KB)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.LimitClipboardTransferH2C.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.LimitClipboardTransferH2C.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.LimitClipboardTransferH2C.Value 
+						}
+					}
 					If((validStateProp $Setting LogoffCheckerStartupDelay State ) -and ($Setting.LogoffCheckerStartupDelay.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Logoff Checker Startup Delay (seconds)"
@@ -14712,7 +19078,7 @@ Function ProcessCitrixPolicies
 							"AllUpdatesDenied"		{$tmp = "Select changes are not updated on neither client nor host"; Break}
 							"UpdateToClientDenied"	{$tmp = "Host selection changes are not updated to client"; Break}
 							"UpdateToHostDenied"	{$tmp = "Client selection changes are not updated to host"; Break}
-							Default					{$tmp = "Clipboard selection update mode: $($Setting.PrimarySelectionUpdateMode.Value)"; Break}
+							Default					{$tmp = "Primary selection update mode: $($Setting.PrimarySelectionUpdateMode.Value)"; Break}
 						}
 						
 						If($MSWord -or $PDF)
@@ -14734,6 +19100,28 @@ Function ProcessCitrixPolicies
 						}
 						$tmp = $Null
 					}
+					If((validStateProp $Setting RemoteCredentialGuard State ) -and ($Setting.RemoteCredentialGuard.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "ICA\Remote Credential Guard mode"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.RemoteCredentialGuard.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.RemoteCredentialGuard.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.RemoteCredentialGuard.State 
+						}
+					}
 					If((validStateProp $Setting RendezvousProtocol State ) -and ($Setting.RendezvousProtocol.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Rendezvous Protocol"
@@ -14753,6 +19141,50 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.RendezvousProtocol.State 
+						}
+					}
+					If((validStateProp $Setting RendezvousProxy State ) -and ($Setting.RendezvousProxy.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Rendezvous proxy configuration" #added in 2103
+						If($Setting.RendezvousProxy.State -eq "Enabled" -and $Setting.RendezvousProxy.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $Setting.RendezvousProxy.Value;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.RendezvousProxy.Value,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.RendezvousProxy.Value 
+							}
 						}
 					}
 					If((validStateProp $Setting RestrictClientClipboardWrite State ) -and ($Setting.RestrictClientClipboardWrite.State -ne "NotConfigured"))
@@ -14795,6 +19227,50 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.RestrictSessionClipboardWrite.State 
+						}
+					}
+					If((validStateProp $Setting AllowScannerSANERedirection State ) -and ($Setting.AllowScannerSANERedirection.State -ne "NotConfigured"))
+					{
+						#added in 2407
+						$txt = "ICA\SANE scanner redirection"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.AllowScannerSANERedirection.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.AllowScannerSANERedirection.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.AllowScannerSANERedirection.State 
+						}
+					}
+					If((validStateProp $Setting SecureHDX State ) -and ($Setting.SecureHDX.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "ICA\Secure HDX"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.SecureHDX.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.SecureHDX.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.SecureHDX.State 
 						}
 					}
 					If((validStateProp $Setting SessionClipboardWriteAllowedFormats State ) -and ($Setting.SessionClipboardWriteAllowedFormats.State -ne "NotConfigured"))
@@ -14850,7 +19326,7 @@ Function ProcessCitrixPolicies
 									}
 									If($Text)
 									{
-										OutputPolicySetting "" $tmp
+										OutputPolicySetting "`t`t`t`t`t   " $tmp
 									}
 								}
 								$txt = ""
@@ -14880,9 +19356,60 @@ Function ProcessCitrixPolicies
 							}
 						}
 					}
+					If((validStateProp $Setting UsageDataCollectionThroughClient State ) -and ($Setting.UsageDataCollectionThroughClient.State -ne "NotConfigured"))
+					{
+						#added in 2402 and renamed in 2407
+						If($CCSiteVersion.Major -eq 7 -and $CCSiteVersion.Minor -eq 41) #cvad 2402
+						{
+							$txt = "ICA\Usage data collection through client"	#2402 text
+						}
+						Else
+						{
+							$txt = "ICA\Session metrics collection"	#renamed in 2407
+						}
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.UsageDataCollectionThroughClient.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.UsageDataCollectionThroughClient.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.UsageDataCollectionThroughClient.State 
+						}
+					}
+					If((validStateProp $Setting VdaUpgradeProxy State ) -and ($Setting.VdaUpgradeProxy.State -ne "NotConfigured"))
+					{
+						#added in 2311
+						$txt = "ICA\VDA upgrade proxy configuration"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.VdaUpgradeProxy.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.VdaUpgradeProxy.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.VdaUpgradeProxy.Value 
+						}
+					}
 					If((validStateProp $Setting VirtualChannelWhiteList State ) -and ($Setting.VirtualChannelWhiteList.State -ne "NotConfigured"))
 					{
-						$txt = "ICA\Virtual channel white list"
+						$txt = "ICA\Virtual channel allow list" #renamed in 2103
 						If(validStateProp $Setting VirtualChannelWhiteList Values )
 						{
 							$tmpArray = $Setting.VirtualChannelWhiteList.Values
@@ -14933,7 +19460,7 @@ Function ProcessCitrixPolicies
 									}
 									If($Text)
 									{
-										OutputPolicySetting "" $tmp
+										OutputPolicySetting "`t`t`t      " $tmp
 									}
 								}
 								$txt = ""
@@ -14942,8 +19469,314 @@ Function ProcessCitrixPolicies
 							$tmp = $Null
 						}
 					}
+					If((validStateProp $Setting DynamicVirtualChannelAllowList State ) -and ($Setting.DynamicVirtualChannelAllowList.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Virtual channel allow list for DVC" #2407
+						If(validStateProp $Setting DynamicVirtualChannelAllowList Values )
+						{
+							$tmpArray = $Setting.DynamicVirtualChannelAllowList.Values
+							$tmp = ""
+							$cnt = 0
+							ForEach($Thing in $TmpArray)
+							{
+								If($Null -eq $Thing)
+								{
+									$Thing = ''
+								}
+								$cnt++
+								$tmp = "$($Thing) "
+								If($cnt -eq 1)
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = $txt;
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										$txt,$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting $txt $tmp
+									}
+								}
+								Else
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = "";
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t      " $tmp
+									}
+								}
+								$txt = ""
+							}
+							$TmpArray = $Null
+							$tmp = $Null
+						}
+					}
+					If((validStateProp $Setting VirtualChannelWhiteListLogThrottling State ) -and ($Setting.VirtualChannelWhiteListLogThrottling.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "ICA\Virtual channel allow list log throttling (hours)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.VirtualChannelWhiteListLogThrottling.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.VirtualChannelWhiteListLogThrottling.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.VirtualChannelWhiteListLogThrottling.Value 
+						}
+					}
+					If((validStateProp $Setting VirtualChannelWhiteListLogging State ) -and ($Setting.VirtualChannelWhiteListLogging.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "ICA\Virtual channel allow list logging"
+						$tmp = ""
+						Switch ($Setting.VirtualChannelWhiteListLogging.Value)
+						{
+							"LogWarningsOnly"	{$tmp = "Log Warnings Only"; Break}
+							"Disabled"		{$tmp = "Disabled"; Break}
+							"LogAllEvents"		{$tmp = "Log All Events"; Break}
+							Default			{$tmp = "Virtual channel allow list logging: $($Setting.VirtualChannelWhiteListLogging.Value)"; Break}
+						}
+						
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}
+						$tmp = $Null
+					}
+					If((validStateProp $Setting VirtualChannelPluginManager State ) -and ($Setting.VirtualChannelPluginManager.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Virtual channel plugin manager"
+						If(validStateProp $Setting VirtualChannelPluginManager Values )
+						{
+							$tmpArray = $Setting.VirtualChannelPluginManager.Values
+							$tmp = ""
+							$cnt = 0
+							ForEach($Thing in $TmpArray)
+							{
+								If($Null -eq $Thing)
+								{
+									$Thing = ''
+								}
+								$cnt++
+								$tmp = "$($Thing) "
+								If($cnt -eq 1)
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = $txt;
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										$txt,$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting $txt $tmp
+									}
+								}
+								Else
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = "";
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t  " $tmp
+									}
+								}
+								$txt = ""
+							}
+							$TmpArray = $Null
+							$tmp = $Null
+						}
+						Else
+						{
+							$tmp = "No Virtual channel plugin managers were found"
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $tmp;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp
+							}
+						}
+					}
 					
+					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\App Protection"
+					If((validStateProp $Setting AppProtectionPostureCheck State ) -and ($Setting.AppProtectionPostureCheck.State -ne "NotConfigured"))
+					{
+						#new in CVAD 2308
+						$txt = "ICA\App Protection\Posture check for Citrix Workspace App"
+						If(validStateProp $Setting AppProtectionPostureCheck Values )
+						{
+							$tmpArray = $Setting.AppProtectionPostureCheck.Values
+							$tmp = ""
+							$cnt = 0
+							ForEach($Thing in $TmpArray)
+							{
+								If($Null -eq $Thing)
+								{
+									$Thing = ''
+								}
+								$cnt++
+								$tmp = "$($Thing) "
+								If($cnt -eq 1)
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = $txt;
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										$txt,$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting $txt $tmp
+									}
+								}
+								Else
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = "";
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t`t       " $tmp
+									}
+								}
+							}
+							$TmpArray = $Null
+							$tmp = $Null
+						}
+						Else
+						{
+							$tmp = "No Posture check for Citrix Workspace App list were found"
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $tmp;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp
+							}
+						}
+					}
+
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Audio"
+					If((validStateProp $Setting EnableAdaptiveAudio State ) -and ($Setting.EnableAdaptiveAudio.State -ne "NotConfigured"))
+					{
+						#new in CVAD 2109
+						$txt = "ICA\Audio\Adaptive audio"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableAdaptiveAudio.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableAdaptiveAudio.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableAdaptiveAudio.State 
+						}
+					}
 					If((validStateProp $Setting AllowRtpAudio State ) -and ($Setting.AllowRtpAudio.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Audio\Audio over UDP real-time transport"
@@ -15059,6 +19892,28 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.MicrophoneRedirection.State 
 						}
 					}
+					If((validStateProp $Setting LossTolerantAudio State ) -and ($Setting.LossTolerantAudio.State -ne "NotConfigured"))
+					{
+						#added in 2402
+						$txt = "ICA\Audio\Loss tolerant mode for audio"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.LossTolerantAudio.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.LossTolerantAudio.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.LossTolerantAudio.State 
+						}
+					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Auto Client Reconnect"
 					If((validStateProp $Setting AutoClientReconnect State ) -and ($Setting.AutoClientReconnect.State -ne "NotConfigured"))
@@ -15088,9 +19943,9 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.AutoClientReconnectAuthenticationRequired.Value)
 						{
-							"DoNotRequireAuthentication" {$tmp = "Do not require authentication"; Break}
-							"RequireAuthentication"      {$tmp = "Require authentication"; Break}
-							Default {$tmp = "Auto client reconnect authentication could not be determined: $($Setting.AutoClientReconnectAuthenticationRequired.Value)"; Break}
+							"DoNotRequireAuthentication"	{$tmp = "Do not require authentication"; Break}
+							"RequireAuthentication"			{$tmp = "Require authentication"; Break}
+							Default							{$tmp = "Auto client reconnect authentication could not be determined: $($Setting.AutoClientReconnectAuthenticationRequired.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -15117,9 +19972,9 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.AutoClientReconnectLogging.Value)
 						{
-							"DoNotLogAutoReconnectEvents" {$tmp = "Do Not Log auto-reconnect events"; Break}
-							"LogAutoReconnectEvents"      {$tmp = "Log auto-reconnect events"; Break}
-							Default {$tmp = "Auto client reconnect logging could not be determined: $($Setting.AutoClientReconnectLogging.Value)"; Break}
+							"DoNotLogAutoReconnectEvents"	{$tmp = "Do Not Log auto-reconnect events"; Break}
+							"LogAutoReconnectEvents"		{$tmp = "Log auto-reconnect events"; Break}
+							Default							{$tmp = "Auto client reconnect logging could not be determined: $($Setting.AutoClientReconnectLogging.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -15584,6 +20439,158 @@ Function ProcessCitrixPolicies
 						}
 					}
 
+					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Bidirectional Content Redirection"
+					If((validStateProp $Setting AllowURLRedirection State ) -and ($Setting.AllowURLRedirection.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Bidirectional Content Redirection\Allow Bidirectional Content Redirection"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.AllowURLRedirection.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.AllowURLRedirection.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.AllowURLRedirection.State 
+						}
+					}
+					If((validStateProp $Setting AllowedClientURLs State ) -and ($Setting.AllowedClientURLs.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Bidirectional Content Redirection\Allowed URLs to be redirected to Client"
+						$array = $Setting.AllowedClientURLs.Value.Split(';')
+						$tmp = $array[0]
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}
+
+						$txt = ""
+						$cnt = -1
+						ForEach($element in $array)
+						{
+							$cnt++
+							
+							If($cnt -ne 0)
+							{
+								$tmp = "$($element) "
+								If($MSWord -or $PDF)
+								{
+									$SettingsWordTable += @{
+									Text = "";
+									Value = $tmp;
+									}
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+									"",$htmlbold,
+									$tmp,$htmlwhite))
+								}
+								If($Text)
+								{
+									OutputPolicySetting "`t`t`t`t`t`t" $tmp
+								}
+							}
+						}
+						$array = $Null
+						$tmp = $Null
+					}
+					If((validStateProp $Setting AllowedVDAURLs State ) -and ($Setting.AllowedVDAURLs.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Bidirectional Content Redirection\Allowed URLs to be redirected to VDA"
+						$array = $Setting.AllowedVDAURLs.Value.Split(';')
+						$tmp = $array[0]
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}
+
+						$txt = ""
+						$cnt = -1
+						ForEach($element in $array)
+						{
+							$cnt++
+							
+							If($cnt -ne 0)
+							{
+								$tmp = "$($element) "
+								If($MSWord -or $PDF)
+								{
+									$SettingsWordTable += @{
+									Text = "";
+									Value = $tmp;
+									}
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+									"",$htmlbold,
+									$tmp,$htmlwhite))
+								}
+								If($Text)
+								{
+									OutputPolicySetting "`t`t`t`t`t`t" $tmp
+								}
+							}
+						}
+						$array = $Null
+						$tmp = $Null
+					}
+					If((validStateProp $Setting BidirectionalRedirectionConfig State ) -and ($Setting.BidirectionalRedirectionConfig.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Bidirectional Content Redirection\Bidirectional content redirection configuration"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.BidirectionalRedirectionConfig.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.BidirectionalRedirectionConfig.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.BidirectionalRedirectionConfig.Value 
+						}
+					}
+
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Client Sensors\Location"
 					If((validStateProp $Setting AllowLocationServices State ) -and ($Setting.AllowLocationServices.State -ne "NotConfigured"))
 					{
@@ -15715,6 +20722,27 @@ Function ProcessCitrixPolicies
 					}
 			
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\End User Monitoring"
+					If((validStateProp $Setting EndpointMetricsCheckPeriod State ) -and ($Setting.EndpointMetricsCheckPeriod.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\End User Monitoring\Client statistics interval"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EndpointMetricsCheckPeriod.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EndpointMetricsCheckPeriod.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EndpointMetricsCheckPeriod.Value 
+						}	
+					}
 					If((validStateProp $Setting IcaRoundTripCalculation State ) -and ($Setting.IcaRoundTripCalculation.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\End User Monitoring\ICA round trip calculation"
@@ -15803,25 +20831,28 @@ Function ProcessCitrixPolicies
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\File Redirection"
-					If((validStateProp $Setting AllowFileTransfer State ) -and ($Setting.AllowFileTransfer.State -ne "NotConfigured"))
+					If($Script:CCSiteVersion.Minor -lt 37)
 					{
-						$txt = "ICA\File Redirection\Allow file transfer between desktop and client"
-						If($MSWord -or $PDF)
+						If((validStateProp $Setting AllowFileTransfer State ) -and ($Setting.AllowFileTransfer.State -ne "NotConfigured"))
 						{
-							$SettingsWordTable += @{
-							Text = $txt;
-							Value = $Setting.AllowFileTransfer.State;
+							$txt = "ICA\File Redirection\Allow file transfer between desktop and client"
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $Setting.AllowFileTransfer.State;
+								}
 							}
-						}
-						If($HTML)
-						{
-							$rowdata += @(,(
-							$txt,$htmlbold,
-							$Setting.AllowFileTransfer.State,$htmlwhite))
-						}
-						If($Text)
-						{
-							OutputPolicySetting $txt $Setting.AllowFileTransfer.State 
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.AllowFileTransfer.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.AllowFileTransfer.State 
+							}
 						}
 					}
 					If((validStateProp $Setting AutoConnectDrives State ) -and ($Setting.AutoConnectDrives.State -ne "NotConfigured"))
@@ -15971,25 +21002,94 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.ClientRemoveableDrives.State 
 						}
 					}
-					If((validStateProp $Setting AllowFileDownload State ) -and ($Setting.AllowFileDownload.State -ne "NotConfigured"))
+					If($Script:CCSiteVersion.Minor -lt 37)
 					{
-						$txt = "ICA\File Redirection\Download file from desktop"
-						If($MSWord -or $PDF)
+						If((validStateProp $Setting AllowFileDownload State ) -and ($Setting.AllowFileDownload.State -ne "NotConfigured"))
 						{
-							$SettingsWordTable += @{
-							Text = $txt;
-							Value = $Setting.AllowFileDownload.State;
+							$txt = "ICA\File Redirection\Download file from desktop"
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $Setting.AllowFileDownload.State;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.AllowFileDownload.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.AllowFileDownload.State 
 							}
 						}
-						If($HTML)
+					}
+					If($Script:CCSiteVersion.Minor -ge 37)
+					{
+						If((validStateProp $Setting AllowFileDownload State ) -and ($Setting.AllowFileDownload.State -ne "NotConfigured"))
 						{
-							$rowdata += @(,(
-							$txt,$htmlbold,
-							$Setting.AllowFileDownload.State,$htmlwhite))
+							$txt = "ICA\File Redirection\Download file for Citrix Workspace app for Chrome OS/HTML5"
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $Setting.AllowFileDownload.State;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.AllowFileDownload.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.AllowFileDownload.State 
+							}
 						}
-						If($Text)
+						If((validStateProp $Setting AllowFileTransfer State ) -and ($Setting.AllowFileTransfer.State -ne "NotConfigured"))
 						{
-							OutputPolicySetting $txt $Setting.AllowFileDownload.State 
+							$txt = "ICA\File Redirection\File transfer for Citrix Workspace app for Chrome OS/HTML5"
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $Setting.AllowFileTransfer.State;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.AllowFileTransfer.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.AllowFileTransfer.State 
+							}
+						}
+						If((validStateProp $Setting AllowFileUpload State ) -and ($Setting.AllowFileUpload.State -ne "NotConfigured"))
+						{
+							$txt = "ICA\File Redirection\Upload file for Citrix Workspace app for Chrome OS/HTML5"
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $Setting.AllowFileUpload.State;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.AllowFileUpload.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.AllowFileUpload.State 
+							}
 						}
 					}
 					If((validStateProp $Setting HostToClientRedirection State ) -and ($Setting.HostToClientRedirection.State -ne "NotConfigured"))
@@ -16076,27 +21176,6 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.SpecialFolderRedirection.State 
 						}
 					}
-					If((validStateProp $Setting AllowFileUpload State ) -and ($Setting.AllowFileUpload.State -ne "NotConfigured"))
-					{
-						$txt = "ICA\File Redirection\Upload file to desktop"
-						If($MSWord -or $PDF)
-						{
-							$SettingsWordTable += @{
-							Text = $txt;
-							Value = $Setting.AllowFileUpload.State;
-							}
-						}
-						If($HTML)
-						{
-							$rowdata += @(,(
-							$txt,$htmlbold,
-							$Setting.AllowFileUpload.State,$htmlwhite))
-						}
-						If($Text)
-						{
-							OutputPolicySetting $txt $Setting.AllowFileUpload.State 
-						}
-					}
 					If((validStateProp $Setting AsynchronousWrites State ) -and ($Setting.AsynchronousWrites.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\File Redirection\Use asynchronous writes"
@@ -16141,6 +21220,27 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.AllowVisuallyLosslessCompression.State 
 						}
 					}
+					If((validStateProp $Setting AllowWindowsScreenLock State ) -and ($Setting.AllowWindowsScreenLock.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Graphics\Allow windows screen lock"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.AllowWindowsScreenLock.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.AllowWindowsScreenLock.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.AllowWindowsScreenLock.State 
+						}
+					}
 					If((validStateProp $Setting DisplayMemoryLimit State ) -and ($Setting.DisplayMemoryLimit.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Graphics\Display memory limit (KB)"
@@ -16181,6 +21281,27 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.DynamicPreview.State 
+						}	
+					}
+					If((validStateProp $Setting DisplayLosslessIndicator State ) -and ($Setting.DisplayLosslessIndicator.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Graphics\Graphic status indicator"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.DisplayLosslessIndicator.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.DisplayLosslessIndicator.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.DisplayLosslessIndicator.State 
 						}	
 					}
 					If((validStateProp $Setting MaximumColorDepth State ) -and ($Setting.MaximumColorDepth.State -ne "NotConfigured"))
@@ -16236,6 +21357,28 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.OptimizeFor3dWorkload.State 
 						}
 					}
+					If((validStateProp $Setting ScreenSharing State ) -and ($Setting.ScreenSharing.State -ne "NotConfigured"))
+					{
+						#added in 2112
+						$txt = "ICA\Graphics\Screen sharing"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.ScreenSharing.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.ScreenSharing.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.ScreenSharing.State 
+						}
+					}
 					If((validStateProp $Setting UseHardwareEncodingForVideoCodec State ) -and ($Setting.UseHardwareEncodingForVideoCodec.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Graphics\Use hardware encoding for video codec"
@@ -16267,7 +21410,7 @@ Function ProcessCitrixPolicies
 							"DoNotUseVideoCodec"		{$tmp = "Do not use video codec"; Break}
 							"UseVideoCodecIfPreferred"	{$tmp = "Use when preferred"; Break}
 							"ActivelyChangingRegions"	{$tmp = "For actively changing regions"; Break}
-							Default {$tmp = "Use video codec for compression could not be determined: $($Setting.UseVideoCodecForCompression.Value)"; Break}
+							Default						{$tmp = "Use video codec for compression could not be determined: $($Setting.UseVideoCodecForCompression.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -16317,9 +21460,9 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.IcaKeepAlives.Value)
 						{
-							"DoNotSendKeepAlives" {$tmp = "Do not send ICA keep alive messages"; Break}
-							"SendKeepAlives"      {$tmp = "Send ICA keep alive messages"; Break}
-							Default {$tmp = "ICA keep alives could not be determined: $($Setting.IcaKeepAlives.Value)"; Break}
+							"DoNotSendKeepAlives"	{$tmp = "Do not send ICA keep alive messages"; Break}
+							"SendKeepAlives"		{$tmp = "Send ICA keep alive messages"; Break}
+							Default					{$tmp = "ICA keep alives could not be determined: $($Setting.IcaKeepAlives.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -16348,6 +21491,7 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.ClientKeyboardLayoutSyncAndIME.Value)
 						{
+							"NotSupport"						{$tmp = "Disabled"; Break}
 							"ClientKeyboardLayoutSync"			{$tmp = "Support dynamic client keyboard layout synchronization"; Break}
 							"ClientKeyboardLayoutSyncAndIME"	{$tmp = "Support dynamic client keyboard layout synchronization and IME improvement"; Break}
 							Default 							{$tmp = "Client keyboard layout synchronization and IME improvement: $($Setting.ClientKeyboardLayoutSyncAndIME.Value)"; Break}
@@ -16438,7 +21582,7 @@ Function ProcessCitrixPolicies
 					}
 					If((validStateProp $Setting URLRedirectionBlackList State ) -and ($Setting.URLRedirectionBlackList.State -ne "NotConfigured"))
 					{
-						$txt = "ICA\Local App Access\URL redirection blacklist"
+						$txt = "ICA\Local App Access\URL redirection black list"
 						If(validStateProp $Setting URLRedirectionBlackList Values )
 						{
 							$tmpArray = $Setting.URLRedirectionBlackList.Values
@@ -16489,7 +21633,7 @@ Function ProcessCitrixPolicies
 									}
 									If($Text)
 									{
-										OutputPolicySetting "" $tmp
+										OutputPolicySetting "`t`t`t`t`t       " $tmp
 									}
 								}
 							}
@@ -16498,7 +21642,7 @@ Function ProcessCitrixPolicies
 						}
 						Else
 						{
-							$tmp = "No URL redirection blacklist were found"
+							$tmp = "No URL redirection black list were found"
 							If($MSWord -or $PDF)
 							{
 								$SettingsWordTable += @{
@@ -16571,7 +21715,7 @@ Function ProcessCitrixPolicies
 									}
 									If($Text)
 									{
-										OutputPolicySetting "" $tmp
+										OutputPolicySetting "`t`t`t`t`t       " $tmp
 									}
 								}
 							}
@@ -16756,7 +21900,7 @@ Function ProcessCitrixPolicies
 								}
 								If($Text)
 								{
-									OutputPolicySetting "" $tmp
+									OutputPolicySetting "`t`t`t`t`t`t" $tmp
 								}
 							}
 						}
@@ -16812,7 +21956,7 @@ Function ProcessCitrixPolicies
 									}
 									If($Text)
 									{
-										OutputPolicySetting "" $tmp
+										OutputPolicySetting "`t`t`t`t`t`t`t       " $tmp
 									}
 								}
 							}
@@ -16824,7 +21968,7 @@ Function ProcessCitrixPolicies
 					{
 						If( $Setting.WebBrowserRedirectionBlacklist.PSObject.Properties[ 'Values' ] )
 						{
-							$txt = "ICA\Multimedia\Browser Content Redirection Blacklist Configuration"
+							$txt = "ICA\Multimedia\Browser Content Redirection Block List Configuration" #renamed in 2103
 							$array = $Setting.WebBrowserRedirectionBlacklist.Values
 							$tmp = $array[0]
 							If($MSWord -or $PDF)
@@ -16869,7 +22013,7 @@ Function ProcessCitrixPolicies
 									}
 									If($Text)
 									{
-										OutputPolicySetting "" $tmp
+										OutputPolicySetting "`t`t`t`t`t`t`t`t   " $tmp
 									}
 								}
 							}
@@ -16877,10 +22021,51 @@ Function ProcessCitrixPolicies
 							$tmp = $Null
 						}
 					}
+					If((validStateProp $Setting WebBrowserRedirectionIwaSupport State ) -and ($Setting.WebBrowserRedirectionIwaSupport.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Multimedia\Browser Content Redirection Integrated Windows Authentication Support"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.WebBrowserRedirectionIwaSupport.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.WebBrowserRedirectionIwaSupport.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.WebBrowserRedirectionIwaSupport.State
+						}
+					}
 					If((validStateProp $Setting WebBrowserRedirectionProxy State ) -and ($Setting.WebBrowserRedirectionProxy.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Multimedia\Browser Content Redirection Proxy Configuration"
-						If($Setting.WebBrowserRedirectionProxy.State -eq "Enabled")
+						If($Setting.WebBrowserRedirectionProxy.State -eq "Enabled" -and $Setting.WebBrowserRedirectionProxy.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -16900,24 +22085,48 @@ Function ProcessCitrixPolicies
 								OutputPolicySetting $txt $Setting.WebBrowserRedirectionProxy.Value 
 							}
 						}
-						Else
+					}
+					If((validStateProp $Setting WebBrowserRedirectionProxyAuth State ) -and ($Setting.WebBrowserRedirectionProxyAuth.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Multimedia\Browser Content Redirection Server Fetch Proxy Auth" #added in 2103
+						If($Setting.WebBrowserRedirectionProxyAuth.State -eq "Enabled")
 						{
 							If($MSWord -or $PDF)
 							{
 								$SettingsWordTable += @{
 								Text = $txt;
-								Value = $Setting.WebBrowserRedirectionProxy.State;
+								Value = $Setting.WebBrowserRedirectionProxyAuth.Value;
 								}
 							}
 							If($HTML)
 							{
 								$rowdata += @(,(
 								$txt,$htmlbold,
-								$Setting.WebBrowserRedirectionProxy.State,$htmlwhite))
+								$Setting.WebBrowserRedirectionProxyAuth.Value,$htmlwhite))
 							}
 							If($Text)
 							{
-								OutputPolicySetting $txt $Setting.WebBrowserRedirectionProxy.State 
+								OutputPolicySetting $txt $Setting.WebBrowserRedirectionProxyAuth.Value 
+							}
+						}
+						Else
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $Setting.WebBrowserRedirectionProxyAuth.State;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.WebBrowserRedirectionProxyAuth.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.WebBrowserRedirectionProxyAuth.State 
 							}
 						}
 					}
@@ -16998,6 +22207,7 @@ Function ProcessCitrixPolicies
 					}
 					If((validStateProp $Setting MSTeamsRedirection State ) -and ($Setting.MSTeamsRedirection.State -ne "NotConfigured"))
 					{
+						#added in 1906
 						$txt = "ICA\Multimedia\Microsoft Teams redirection"
 						If($MSWord -or $PDF)
 						{
@@ -17197,6 +22407,171 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.RtpAudioPortRange.Value 
 						}
 					}
+					If((validStateProp $Setting MultiPortPolicy State ) -and ($Setting.MultiPortPolicy.State -ne "NotConfigured"))
+					{
+						$txt1 = "ICA\Multi-Stream Connections\Multi-Port Policy\CGP default port"
+						$txt2 = "ICA\Multi-Stream Connections\Multi-Port Policy\CGP default port priority"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt1;
+							Value = "Default Port";
+							}
+
+							$SettingsWordTable += @{
+							Text = $txt2;
+							Value = "High";
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt1,$htmlbold,
+							"Default Port",$htmlwhite))
+
+							$rowdata += @(,(
+							$txt2,$htmlbold,
+							"High",$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt1 "Default Port"
+							OutputPolicySetting $txt2 "High"
+						}
+						$txt1 = $Null
+						$txt2 = $Null
+						[string]$Tmp = $Setting.MultiPortPolicy.Value
+						If($Tmp.Length -gt 0)
+						{
+							$Port1Priority = ""
+							$Port2Priority = ""
+							$Port3Priority = ""
+							$TmpArray      = $Tmp.Split(";")
+							$TmpArray2                = $TmpArray[0].Split(",")
+							[string]$cgpport1         = $TmpArray2[0]
+							[string]$cgpport1priority = $TmpArray2[1]
+
+							$TmpArray2                = $TmpArray[1].Split(",")
+							[string]$cgpport2         = $TmpArray2[0]
+							[string]$cgpport2priority = $TmpArray2[1]
+
+							$TmpArray2                = $TmpArray[2].Split(",")
+							[string]$cgpport3         = $TmpArray2[0]
+							[string]$cgpport3priority = $TmpArray2[1]
+							
+							Switch ($cgpport1priority)
+							{
+								"0"		{$Port1Priority = "Very High"; Break}
+								"2"		{$Port1Priority = "Medium"; Break}
+								"3"		{$Port1Priority = "Low"; Break}
+								Default	{$Port1Priority = "Unknown"; Break}
+							}
+							Switch ($cgpport2priority)
+							{
+								"0"		{$Port2Priority = "Very High"; Break}
+								"2"		{$Port2Priority = "Medium"; Break}
+								"3"		{$Port2Priority = "Low"; Break}
+								Default	{$Port2Priority = "Unknown"; Break}
+							}
+							Switch ($cgpport3priority)
+							{
+								"0"		{$Port3Priority = "Very High"; Break}
+								"2"		{$Port3Priority = "Medium"; Break}
+								"3"		{$Port3Priority = "Low"; Break}
+								Default	{$Port3Priority = "Unknown"; Break}
+							}
+
+							$txt1 = "ICA\Multi-Stream Connections\Multi-Port Policy\CGP port1"
+							$txt2 = "ICA\Multi-Stream Connections\Multi-Port Policy\CGP port1 priority"
+							$txt3 = "ICA\Multi-Stream Connections\Multi-Port Policy\CGP port2"
+							$txt4 = "ICA\Multi-Stream Connections\Multi-Port Policy\CGP port2 priority"
+							$txt5 = "ICA\Multi-Stream Connections\Multi-Port Policy\CGP port3"
+							$txt6 = "ICA\Multi-Stream Connections\Multi-Port Policy\CGP port3 priority"
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt1;
+								Value = $cgpport1;
+								}
+
+								$SettingsWordTable += @{
+								Text = $txt2;
+								Value = $port1priority;
+								}
+
+								$SettingsWordTable += @{
+								Text = $txt3;
+								Value = $cgpport2;
+								}
+
+								$SettingsWordTable += @{
+								Text = $txt4;
+								Value = $port2priority;
+								}
+
+								$SettingsWordTable += @{
+								Text = $txt5;
+								Value = $cgpport3;
+								}
+
+								$SettingsWordTable += @{
+								Text = $txt6;
+								Value = $port3priority;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt1,$htmlbold,
+								$cgpport1,$htmlwhite))
+								
+								$rowdata += @(,(
+								$txt2,$htmlbold,
+								$port1priority,$htmlwhite))
+								
+								$rowdata += @(,(
+								$txt3,$htmlbold,
+								$cgpport2,$htmlwhite))
+								
+								$rowdata += @(,(
+								$txt4,$htmlbold,
+								$port2priority,$htmlwhite))
+								
+								$rowdata += @(,(
+								$txt5,$htmlbold,
+								$cgpport3,$htmlwhite))
+								
+								$rowdata += @(,(
+								$txt6,$htmlbold,
+								$port3priority,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt1 $cgpport1
+								OutputPolicySetting $txt2 $port1priority
+								OutputPolicySetting $txt3 $cgpport2
+								OutputPolicySetting $txt4 $port2priority
+								OutputPolicySetting $txt5 $cgpport3
+								OutputPolicySetting $txt6 $port3priority
+							}	
+						}
+						$Tmp = $Null
+						$cgpport1 = $Null
+						$cgpport2 = $Null
+						$cgpport3 = $Null
+						$cgpport1priority = $Null
+						$cgpport2priority = $Null
+						$cgpport3priority = $Null
+						$Port1Priority = $Null
+						$Port2Priority = $Null
+						$Port3Priority = $Null
+						$txt1 = $Null
+						$txt2 = $Null
+						$txt3 = $Null
+						$txt4 = $Null
+						$txt5 = $Null
+						$txt6 = $Null
+					}
 					If((validStateProp $Setting MultiStreamPolicy State ) -and ($Setting.MultiStreamPolicy.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Multi-Stream Connections\Multi-Stream computer setting"
@@ -17255,7 +22630,7 @@ Function ProcessCitrixPolicies
 						CTXSENS,1;	Sensor and Location                         1
 						CTXSCRD,1;	Smart Card                                  1
 						CTXTW,1;	Thinwire Graphics                           1
-						CTXDND,1;	CTXDND                                      1
+						CTXDND,1;	Drag and Drop                               1 #updated in 2112
 						CTXNSAP,2;	App Flow                                    2
 						CTXCSB,2;	Browser Content Redirection                 2
 						CTXCDM,2;	Client Drive Mapping                        2
@@ -17365,11 +22740,11 @@ Function ProcessCitrixPolicies
 									}
 								"CTXDND"	
 									{
-										$tmp = "Virtual Channel: CTXDND - Stream Number: $StreamNumber"; Break
+										$tmp = "Virtual Channel: Drag and Drop - Stream Number: $StreamNumber"; Break #updated in 2112
 									}
 								"CTXNSAP"	
 									{
-										$tmp = "Virtual Channel: App Flow - Stream Number: $StreamNumber"; Break
+										$tmp = "Virtual Channel: App Flow - Stream Number: $StreamNumber"; Break #removed in 2206
 									}
 								"CTXCSB"	
 									{
@@ -17464,7 +22839,7 @@ Function ProcessCitrixPolicies
 							}
 							If($Text)
 							{
-								OutputPolicySetting "`t`t`t`t`t`t" $tmp
+								OutputPolicySetting "`t`t`t`t`t`t`t`t`t   " $tmp
 							}
 						}
 						$tmp = $Null
@@ -17585,9 +22960,9 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.DefaultClientPrinter.Value)
 						{
-							"ClientDefault" {$tmp = "Set Default printer to the client's main printer"; Break}
-							"DoNotAdjust"   {$tmp = "Do not adjust the user's Default printer"; Break}
-							Default {$tmp = "Default printer could not be determined: $($Setting.DefaultClientPrinter.Value)"; Break}
+							"ClientDefault"	{$tmp = "Set Default printer to the client's main printer"; Break}
+							"DoNotAdjust"	{$tmp = "Do not adjust the user's Default printer"; Break}
+							Default			{$tmp = "Default printer could not be determined: $($Setting.DefaultClientPrinter.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -17718,10 +23093,10 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.AutoCreationEventLogPreference.Value)
 						{
-							"LogErrorsOnly"        {$tmp = "Log errors only"; Break}
-							"LogErrorsAndWarnings" {$tmp = "Log errors and warnings"; Break}
-							"DoNotLog"             {$tmp = "Do not log errors or warnings"; Break}
-							Default {$tmp = "Printer auto-creation event log preference could not be determined: $($Setting.AutoCreationEventLogPreference.Value)"; Break}
+							"LogErrorsOnly"			{$tmp = "Log errors only"; Break}
+							"LogErrorsAndWarnings"	{$tmp = "Log errors and warnings"; Break}
+							"DoNotLog"				{$tmp = "Do not log errors or warnings"; Break}
+							Default					{$tmp = "Printer auto-creation event log preference could not be determined: $($Setting.AutoCreationEventLogPreference.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -17794,7 +23169,7 @@ Function ProcessCitrixPolicies
 											}
 											If($Text)
 											{
-												OutputPolicySetting "" $tmp
+												OutputPolicySetting "`t`t`t     " $tmp
 											}
 											$tmp = "Shared Name: $($share)"
 											If($MSWord -or $PDF)
@@ -17812,7 +23187,7 @@ Function ProcessCitrixPolicies
 											}
 											If($Text)
 											{
-												OutputPolicySetting "" $tmp
+												OutputPolicySetting "`t`t`t     " $tmp
 											}
 										}
 										$index = $Null
@@ -17838,7 +23213,7 @@ Function ProcessCitrixPolicies
 											}
 											If($Text)
 											{
-												OutputPolicySetting "" $tmp
+												OutputPolicySetting "`t`t`t     " $tmp
 											}
 										}
 										$tmp1 = $Null
@@ -17902,11 +23277,11 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.ClientPrinterAutoCreation.Value)
 						{
-							"DoNotAutoCreate"    {$tmp = "Do not auto-create client printers"; Break}
-							"DefaultPrinterOnly" {$tmp = "Auto-create the client's Default printer only"; Break}
-							"LocalPrintersOnly"  {$tmp = "Auto-create local (non-network) client printers only"; Break}
-							"AllPrinters"        {$tmp = "Auto-create all client printers"; Break}
-							Default {$tmp = "Auto-create client printers could not be determined: $($Setting.ClientPrinterAutoCreation.Value)"; Break}
+							"DoNotAutoCreate"		{$tmp = "Do not auto-create client printers"; Break}
+							"DefaultPrinterOnly"	{$tmp = "Auto-create the client's Default printer only"; Break}
+							"LocalPrintersOnly"		{$tmp = "Auto-create local (non-network) client printers only"; Break}
+							"AllPrinters"			{$tmp = "Auto-create all client printers"; Break}
+							Default					{$tmp = "Auto-create client printers could not be determined: $($Setting.ClientPrinterAutoCreation.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -17968,6 +23343,35 @@ Function ProcessCitrixPolicies
 						{
 							OutputPolicySetting $txt $Setting.AutoCreatePDFPrinter.State 
 						}
+					}
+					If((validStateProp $Setting ClientPrinterNames State ) -and ($Setting.ClientPrinterNames.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Printing\Client Printers\Client printer names"
+						$tmp = ""
+						Switch ($Setting.ClientPrinterNames.Value)
+						{
+							"LegacyPrinterNames"	{$tmp = "Legacy printer names"; Break}
+							"StandardPrinterNames"	{$tmp = "Standard printer names"; Break}
+							Default					{$tmp = "Client printer names could not be determined: $($Setting.ClientPrinterNames.Value)"; Break}
+						}
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp
+						}
+						$tmp = $Null
 					}
 					If((validStateProp $Setting DirectConnectionsToPrintServers State ) -and ($Setting.DirectConnectionsToPrintServers.State -ne "NotConfigured"))
 					{
@@ -18205,11 +23609,11 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.PrinterPropertiesRetention.Value)
 						{
-							"SavedOnClientDevice"   {$tmp = "Saved on the client device only"; Break}
-							"RetainedInUserProfile" {$tmp = "Retained in user profile only"; Break}
-							"FallbackToProfile"     {$tmp = "Held in profile only if not saved on client"; Break}
-							"DoNotRetain"           {$tmp = "Do not retain printer properties"; Break}
-							Default {$tmp = "Printer properties retention could not be determined: $($Setting.PrinterPropertiesRetention.Value)"; Break}
+							"SavedOnClientDevice"	{$tmp = "Saved on the client device only"; Break}
+							"RetainedInUserProfile"	{$tmp = "Retained in user profile only"; Break}
+							"FallbackToProfile"		{$tmp = "Held in profile only if not saved on client"; Break}
+							"DoNotRetain"			{$tmp = "Do not retain printer properties"; Break}
+							Default					{$tmp = "Printer properties retention could not be determined: $($Setting.PrinterPropertiesRetention.Value)"; Break}
 						}
 
 						If($MSWord -or $PDF)
@@ -18297,11 +23701,11 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.UniversalPrintDriverUsage.Value)
 						{
-							"SpecificOnly"       {$tmp = "Use only printer model specific drivers"; Break}
-							"UpdOnly"            {$tmp = "Use universal printing only"; Break}
-							"FallbackToUpd"      {$tmp = "Use universal printing only if requested driver is unavailable"; Break}
-							"FallbackToSpecific" {$tmp = "Use printer model specific drivers only if universal printing is unavailable"; Break}
-							Default {$tmp = "Universal print driver usage could not be determined: $($Setting.UniversalPrintDriverUsage.Value)"; Break}
+							"SpecificOnly"			{$tmp = "Use only printer model specific drivers"; Break}
+							"UpdOnly"				{$tmp = "Use universal printing only"; Break}
+							"FallbackToUpd"			{$tmp = "Use universal printing only if requested driver is unavailable"; Break}
+							"FallbackToSpecific"	{$tmp = "Use printer model specific drivers only if universal printing is unavailable"; Break}
+							Default					{$tmp = "Universal print driver usage could not be determined: $($Setting.UniversalPrintDriverUsage.Value)"; Break}
 						}
 
 						If($MSWord -or $PDF)
@@ -18359,9 +23763,9 @@ Function ProcessCitrixPolicies
 						$txt = "ICA\Printing\Universal Print Server\SSL Compliance Mode"
 						Switch ($Setting.UpcSslComplianceMode.Value)
 						{
-							"None"	{$tmp = "None"; Break}
+							"None"		{$tmp = "None"; Break}
 							"SP800_52"	{$tmp = "SP800-52"; Break}
-							Default	{$tmp = "Universal Print Server SSL Compliance Mode value could not be determined: $($Setting.UpcSslComplianceMode.Value)"; Break}
+							Default		{$tmp = "Universal Print Server SSL Compliance Mode value could not be determined: $($Setting.UpcSslComplianceMode.Value)"; Break}
 						}
 						
 						If($MSWord -or $PDF)
@@ -18405,7 +23809,7 @@ Function ProcessCitrixPolicies
 					}
 					If((validStateProp $Setting UpcSslFips State ) -and ($Setting.UpcSslFips.State -ne "NotConfigured"))
 					{
-						$txt = "ICA\Printing\Universal Print Server\SSL FIPS Mode"
+						$txt = "ICA\Printing\Universal Print Server\UPS FIPS Mode" #in 2311 renamed from SSL FIPS mode to UPS FIPS mode
 						If($MSWord -or $PDF)
 						{
 							$SettingsWordTable += @{
@@ -18512,7 +23916,7 @@ Function ProcessCitrixPolicies
 							"UpsEnabledWithFallback"	{$tmp = "Enabled with fallback to Windows' native remote printing"; Break}
 							"UpsOnlyEnabled"			{$tmp = "Enabled with no fallback to Windows' native remote printing"; Break}
 							"UpsDisabled"				{$tmp = "Disabled"; Break}
-							Default	{$tmp = "Universal Print Server enable value could not be determined: $($Setting.UpsEnable.Value)"; Break}
+							Default						{$tmp = "Universal Print Server enable value could not be determined: $($Setting.UpsEnable.Value)"; Break}
 						}
 						
 						If($MSWord -or $PDF)
@@ -18575,6 +23979,28 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.UpsPrintStreamInputBandwidthLimit.Value 
 						}
 					}
+					If((validStateProp $Setting UpcHttpConnectTimeout State ) -and ($Setting.UpcHttpConnectTimeout.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "ICA\Printing\Universal Print Server\Universal Print Server web service (HTTP/SOAP) connect timeout (Seconds)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.UpcHttpConnectTimeout.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.UpcHttpConnectTimeout.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.UpcHttpConnectTimeout.Value 
+						}
+					}
 					If((validStateProp $Setting UpsHttpPort State ) -and ($Setting.UpsHttpPort.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Printing\Universal Print Server\Universal Print Server web service (HTTP/SOAP) port"
@@ -18594,6 +24020,50 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.UpsHttpPort.Value 
+						}
+					}
+					If((validStateProp $Setting UpcHttpReceiveTimeout State ) -and ($Setting.UpcHttpReceiveTimeout.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "ICA\Printing\Universal Print Server\Universal Print Server web service (HTTP/SOAP) receive timeout (Seconds)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.UpcHttpReceiveTimeout.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.UpcHttpReceiveTimeout.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.UpcHttpReceiveTimeout.Value 
+						}
+					}
+					If((validStateProp $Setting UpcHttpSendTimeout State ) -and ($Setting.UpcHttpSendTimeout.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "ICA\Printing\Universal Print Server\Universal Print Server web service (HTTP/SOAP) send timeout (Seconds)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.UpcHttpSendTimeout.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.UpcHttpSendTimeout.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.UpcHttpSendTimeout.Value 
 						}
 					}
 					If((validStateProp $Setting LoadBalancedPrintServers State ) -and ($Setting.LoadBalancedPrintServers.State -ne "NotConfigured"))
@@ -18646,7 +24116,7 @@ Function ProcessCitrixPolicies
 									}
 									If($Text)
 									{
-										OutputPolicySetting "" $tmp
+										OutputPolicySetting "`t`t`t`t`t`t`t`t`t      " $tmp
 									}
 								}
 							}
@@ -18704,9 +24174,9 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.EMFProcessingMode.Value)
 						{
-							"ReprocessEMFsForPrinter" {$tmp = "Reprocess EMFs for printer"; Break}
-							"SpoolDirectlyToPrinter"  {$tmp = "Spool directly to printer"; Break}
-							Default {$tmp = "Universal printing EMF processing mode could not be determined: $($Setting.EMFProcessingMode.Value)"; Break}
+							"ReprocessEMFsForPrinter"	{$tmp = "Reprocess EMFs for printer"; Break}
+							"SpoolDirectlyToPrinter"	{$tmp = "Spool directly to printer"; Break}
+							Default						{$tmp = "Universal printing EMF processing mode could not be determined: $($Setting.EMFProcessingMode.Value)"; Break}
 						}
 						 
 						If($MSWord -or $PDF)
@@ -18734,12 +24204,12 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.ImageCompressionLimit.Value)
 						{
-							"NoCompression"       {$tmp = "No compression"; Break}
-							"LosslessCompression" {$tmp = "Best quality (lossless compression)"; Break}
-							"MinimumCompression"  {$tmp = "High quality"; Break}
-							"MediumCompression"   {$tmp = "Standard quality"; Break}
-							"MaximumCompression"  {$tmp = "Reduced quality (maximum compression)"; Break}
-							Default {$tmp = "Universal printing image compression limit could not be determined: $($Setting.ImageCompressionLimit.Value)"; Break}
+							"NoCompression"			{$tmp = "No compression"; Break}
+							"LosslessCompression"	{$tmp = "Best quality (lossless compression)"; Break}
+							"MinimumCompression"	{$tmp = "High quality"; Break}
+							"MediumCompression"		{$tmp = "Standard quality"; Break}
+							"MaximumCompression"	{$tmp = "Reduced quality (maximum compression)"; Break}
+							Default					{$tmp = "Universal printing image compression limit could not be determined: $($Setting.ImageCompressionLimit.Value)"; Break}
 						}
 						
 						If($MSWord -or $PDF)
@@ -18782,7 +24252,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt "" 
 						}
 						
-						$TmpArray = $Setting.UPDCompressionDefaults.Value.Split(',')
+						$TmpArray = $Setting.UPDCompressionDefaults.Value.Split(';')
 						$tmp = ""
 						ForEach($Thing in $TmpArray)
 						{
@@ -18884,11 +24354,11 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.UniversalPrintingPreviewPreference.Value)
 						{
-							"NoPrintPreview"        {$tmp = "Do not use print preview for auto-created or generic universal printers"; Break}
-							"AutoCreatedOnly"       {$tmp = "Use print preview for auto-created printers only"; Break}
-							"GenericOnly"           {$tmp = "Use print preview for generic universal printers only"; Break}
-							"AutoCreatedAndGeneric" {$tmp = "Use print preview for both auto-created and generic universal printers"; Break}
-							Default {$tmp = "Universal printing preview preference could not be determined: $($Setting.UniversalPrintingPreviewPreference.Value)"; Break}
+							"NoPrintPreview"		{$tmp = "Do not use print preview for auto-created or generic universal printers"; Break}
+							"AutoCreatedOnly"		{$tmp = "Use print preview for auto-created printers only"; Break}
+							"GenericOnly"			{$tmp = "Use print preview for generic universal printers only"; Break}
+							"AutoCreatedAndGeneric"	{$tmp = "Use print preview for both auto-created and generic universal printers"; Break}
+							Default					{$tmp = "Universal printing preview preference could not be determined: $($Setting.UniversalPrintingPreviewPreference.Value)"; Break}
 						}
 						
 						If($MSWord -or $PDF)
@@ -18921,7 +24391,7 @@ Function ProcessCitrixPolicies
 							"MediumResolution"	{$tmp = "Medium Resolution (600 DPI)"; Break}
 							"HighResolution"	{$tmp = "High Resolution (1200 DPI)"; Break}
 							"Unlimited"			{$tmp = "No Limit"; Break}
-							Default {$tmp = "Universal printing print quality limit could not be determined: $($Setting.DPILimit.Value)"; Break}
+							Default				{$tmp = "Universal printing print quality limit could not be determined: $($Setting.DPILimit.Value)"; Break}
 						}
 						
 						If($MSWord -or $PDF)
@@ -18979,6 +24449,50 @@ Function ProcessCitrixPolicies
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Server Limits"
+					If((validStateProp $Setting EnableServerDisconnectionTimer State ) -and ($Setting.EnableServerDisconnectionTimer.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "ICA\Server Limits\Disconnected session timer - Multi-session"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableServerDisconnectionTimer.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableServerDisconnectionTimer.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableServerDisconnectionTimer.State 
+						}
+					}
+					If((validStateProp $Setting ServerDisconnectionTimerInterval State ) -and ($Setting.ServerDisconnectionTimerInterval.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "ICA\Server Limits\Disconnected session timer interval (minutes) - Multi-session"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.ServerDisconnectionTimerInterval.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.ServerDisconnectionTimerInterval.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.ServerDisconnectionTimerInterval.Value 
+						}
+					}
 					If((validStateProp $Setting IdleTimerInterval State ) -and ($Setting.IdleTimerInterval.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Server Limits\Server idle timer interval (milliseconds)"
@@ -18998,6 +24512,94 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.IdleTimerInterval.Value 
+						}
+					}
+					If((validStateProp $Setting EnableServerConnectionTimer State ) -and ($Setting.EnableServerConnectionTimer.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2209
+						$txt = "ICA\Server Limits\Session connection timer - Multi-session"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableServerConnectionTimer.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableServerConnectionTimer.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableServerConnectionTimer.State 
+						}
+					}
+					If((validStateProp $Setting ServerConnectionTimerInterval State ) -and ($Setting.ServerConnectionTimerInterval.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2209
+						$txt = "ICA\Server Limits\Session connection timer interval (minutes) - Multi-session"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.ServerConnectionTimerInterval.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.ServerConnectionTimerInterval.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.ServerConnectionTimerInterval.Value 
+						}
+					}
+					If((validStateProp $Setting EnableServerIdleTimer State ) -and ($Setting.EnableServerIdleTimer.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2209
+						$txt = "ICA\Server Limits\Session idle timer - Multi-session"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableServerIdleTimer.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableServerIdleTimer.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableServerIdleTimer.State 
+						}
+					}
+					If((validStateProp $Setting ServerIdleTimerInterval  State ) -and ($Setting.ServerIdleTimerInterval.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2209
+						$txt = "ICA\Server Limits\Session idle timer interval (minutes) - Multi-session"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.ServerIdleTimerInterval.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.ServerIdleTimerInterval.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.ServerIdleTimerInterval.Value 
 						}
 					}
 					
@@ -19075,7 +24677,7 @@ Function ProcessCitrixPolicies
 							}
 							If($Text)
 							{
-								OutputPolicySetting "`t`t`t`t`t`t" $tmp
+								OutputPolicySetting "`t`t`t`t`t`t       " $tmp
 							}
 						}
 						$tmp = $Null
@@ -19102,6 +24704,27 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.SessionDisconnectTimer.State 
+						}
+					}
+					If((validStateProp $Setting EnableRemotePCDisconnectTimer State ) -and ($Setting.EnableRemotePCDisconnectTimer.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Session Limits\Disconnected session timer for Remote PC Access"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableRemotePCDisconnectTimer.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableRemotePCDisconnectTimer.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableRemotePCDisconnectTimer.State 
 						}
 					}
 					If((validStateProp $Setting SessionDisconnectTimerInterval State ) -and ($Setting.SessionDisconnectTimerInterval.State -ne "NotConfigured"))
@@ -19368,9 +24991,9 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.WatermarkStyle.Value)
 						{
-							"StyleMutiple" {$tmp = "Multiple"; Break}
-							"StyleSingle"   {$tmp = "Single"; Break}
-							Default {$tmp = "Session watermark style could not be determined: $($Setting.WatermarkStyle.Value)"; Break}
+							"StyleMultiple"	{$tmp = "Multiple"; Break}
+							"StyleSingle"	{$tmp = "Single"; Break}
+							Default			{$tmp = "Session watermark style could not be determined: $($Setting.WatermarkStyle.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -19502,6 +25125,7 @@ Function ProcessCitrixPolicies
 					}
 					If((validStateProp $Setting RestoreServerTime State ) -and ($Setting.RestoreServerTime.State -ne "NotConfigured"))
 					{
+						#added in 1906
 						$txt = "ICA\Time Zone Control\Restore Desktop OS time zone on session disconnect or logoff"
 						If($MSWord -or $PDF)
 						{
@@ -19527,9 +25151,9 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.SessionTimeZone.Value)
 						{
-							"UseServerTimeZone" {$tmp = "Use server time zone"; Break}
-							"UseClientTimeZone" {$tmp = "Use client time zone"; Break}
-							Default {$tmp = "Use local time of client could not be determined: $($Setting.SessionTimeZone.Value)"; Break}
+							"UseServerTimeZone"	{$tmp = "Use server time zone"; Break}
+							"UseClientTimeZone"	{$tmp = "Use client time zone"; Break}
+							Default				{$tmp = "Use local time of client could not be determined: $($Setting.SessionTimeZone.Value)"; Break}
 						}
 						
 						If($MSWord -or $PDF)
@@ -19606,138 +25230,67 @@ Function ProcessCitrixPolicies
 						$tmp = $Null
 					}
 
-					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Bidirectional Content Redirection"
-					If((validStateProp $Setting AllowURLRedirection State ) -and ($Setting.AllowURLRedirection.State -ne "NotConfigured"))
-					{
-						$txt = "ICA\Bidirectional Content Redirection\Allow Bidirectional Content Redirection"
-						If($MSWord -or $PDF)
-						{
-							$SettingsWordTable += @{
-							Text = $txt;
-							Value = $Setting.AllowURLRedirection.State;
-							}
-						}
-						If($HTML)
-						{
-							$rowdata += @(,(
-							$txt,$htmlbold,
-							$Setting.AllowURLRedirection.State,$htmlwhite))
-						}
-						If($Text)
-						{
-							OutputPolicySetting $txt $Setting.AllowURLRedirection.State 
-						}
-					}
-					If((validStateProp $Setting AllowedClientURLs State ) -and ($Setting.AllowedClientURLs.State -ne "NotConfigured"))
-					{
-						$txt = "ICA\Bidirectional Content Redirection\Allowed URLs to be redirected to Client"
-						$array = $Setting.AllowedClientURLs.Value.Split(';')
-						$tmp = $array[0]
-						If($MSWord -or $PDF)
-						{
-							$SettingsWordTable += @{
-							Text = $txt;
-							Value = $tmp;
-							}
-						}
-						If($HTML)
-						{
-							$rowdata += @(,(
-							$txt,$htmlbold,
-							$tmp,$htmlwhite))
-						}
-						If($Text)
-						{
-							OutputPolicySetting $txt $tmp 
-						}
-
-						$txt = ""
-						$cnt = -1
-						ForEach($element in $array)
-						{
-							$cnt++
-							
-							If($cnt -ne 0)
-							{
-								$tmp = "$($element) "
-								If($MSWord -or $PDF)
-								{
-									$SettingsWordTable += @{
-									Text = "";
-									Value = $tmp;
-									}
-								}
-								If($HTML)
-								{
-									$rowdata += @(,(
-									"",$htmlbold,
-									$tmp,$htmlwhite))
-								}
-								If($Text)
-								{
-									OutputPolicySetting "" $tmp
-								}
-							}
-						}
-						$array = $Null
-						$tmp = $Null
-					}
-					If((validStateProp $Setting AllowedVDAURLs State ) -and ($Setting.AllowedVDAURLs.State -ne "NotConfigured"))
-					{
-						$txt = "ICA\Bidirectional Content Redirection\Allowed URLs to be redirected to VDA"
-						$array = $Setting.AllowedVDAURLs.Value.Split(';')
-						$tmp = $array[0]
-						If($MSWord -or $PDF)
-						{
-							$SettingsWordTable += @{
-							Text = $txt;
-							Value = $tmp;
-							}
-						}
-						If($HTML)
-						{
-							$rowdata += @(,(
-							$txt,$htmlbold,
-							$tmp,$htmlwhite))
-						}
-						If($Text)
-						{
-							OutputPolicySetting $txt $tmp 
-						}
-
-						$txt = ""
-						$cnt = -1
-						ForEach($element in $array)
-						{
-							$cnt++
-							
-							If($cnt -ne 0)
-							{
-								$tmp = "$($element) "
-								If($MSWord -or $PDF)
-								{
-									$SettingsWordTable += @{
-									Text = "";
-									Value = $tmp;
-									}
-								}
-								If($HTML)
-								{
-									$rowdata += @(,(
-									"",$htmlbold,
-									$tmp,$htmlwhite))
-								}
-								If($Text)
-								{
-									OutputPolicySetting "" $tmp
-								}
-							}
-						}
-						$array = $Null
-						$tmp = $Null
-					}
-
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\USB Devices"
+					If((validStateProp $Setting UsbConnectExistingDevices State ) -and ($Setting.UsbConnectExistingDevices.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "ICA\USB Devices\Allow existing USB devices to be automatically connected"
+						$tmp = ""
+						Switch ($Setting.UsbConnectExistingDevices.Value)
+						{
+							"Ask"		{$tmp = "Ask before redirecting USB Composite device."; Break}
+							"Never"		{$tmp = "Never automatically redirect USB Composite device."; Break}
+							"Always"	{$tmp = "Always allow redirecting USB Composite device."; Break}
+							"Default"	{$tmp = "Allow existing USB devices to be automatically connected could not be determined: $($Setting.UsbConnectExistingDevices.Value)"; Break}
+						}
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}
+					}
+					If((validStateProp $Setting UsbConnectNewDevices State ) -and ($Setting.UsbConnectNewDevices.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "ICA\USB Devices\Allow newly arrived USB devices to be automatically connected"
+						$tmp = ""
+						Switch ($Setting.UsbConnectNewDevices.Value)
+						{
+							"Ask"		{$tmp = "Ask before redirecting USB Composite device."; Break}
+							"Never"		{$tmp = "Never automatically redirect USB Composite device."; Break}
+							"Always"	{$tmp = "Always allow redirecting USB Composite device."; Break}
+							"Default"	{$tmp = "Allow newly arrived USB devices to be automatically connected could not be determined: $($Setting.UsbConnectNewDevices.Value)"; Break}
+						}
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}
+					}
 					If((validStateProp $Setting ClientUsbDeviceOptimizationRules State ) -and ($Setting.ClientUsbDeviceOptimizationRules.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\USB devices\Client USB device optimization rules"
@@ -19787,7 +25340,7 @@ Function ProcessCitrixPolicies
 									}
 									If($Text)
 									{
-										OutputPolicySetting "" $tmp
+										OutputPolicySetting "`t`t`t`t`t`t    " $tmp
 									}
 								}
 							}
@@ -19886,7 +25439,7 @@ Function ProcessCitrixPolicies
 									}
 									If($Text)
 									{
-										OutputPolicySetting "" $tmp
+										OutputPolicySetting "`t`t`t`t`t`t   " $tmp
 									}
 								}
 							}
@@ -19936,6 +25489,85 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.UsbPlugAndPlayRedirection.State 
 						}
 					}
+					If((validStateProp $Setting USBDeviceRulesV2 State ) -and ($Setting.USBDeviceRulesV2.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "ICA\USB devices\USB device redirection rules (Version 2)"
+						If(validStateProp $Setting USBDeviceRulesV2 Values )
+						{
+							$array = $Setting.USBDeviceRulesV2.Values
+							$tmp = $array[0]
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $tmp;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp 
+							}
+
+							$txt = ""
+							$cnt = -1
+							ForEach($element in $array)
+							{
+								$cnt++
+								
+								If($cnt -ne 0)
+								{
+									$tmp = "$($element) "
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = "";
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t`t`t    " $tmp
+									}
+								}
+							}
+							$array = $Null
+							$tmp = $Null
+						}
+						Else
+						{
+							$tmp = "No USB device redirection rules (Version 2) were found"
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $tmp;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp 
+							}
+						}
+					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Visual Display"
 					If((validStateProp $Setting PreferredColorDepthForSimpleGraphics State ) -and ($Setting.PreferredColorDepthForSimpleGraphics.State -ne "NotConfigured"))
@@ -19947,7 +25579,7 @@ Function ProcessCitrixPolicies
 							"ColorDepth24Bit"	{$tmp = "24 bits per pixel"; Break}
 							"ColorDepth16Bit"	{$tmp = "16 bits per pixel"; Break}
 							"ColorDepth8Bit"	{$tmp = "8 bits per pixel"; Break}
-							"Default" {$tmp = "Preferred color depth for simple graphics could not be determined: $($Setting.PreferredColorDepthForSimpleGraphics.Value)"; Break}
+							"Default"			{$tmp = "Preferred color depth for simple graphics could not be determined: $($Setting.PreferredColorDepthForSimpleGraphics.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -19999,7 +25631,7 @@ Function ProcessCitrixPolicies
 							"High"				{$tmp = "High"; Break}
 							"Medium"			{$tmp = "Medium"; Break}
 							"Low"				{$tmp = "Low"; Break}
-							"Default" {$tmp = "Visual quality could not be determined: $($Setting.VisualQuality.Value)"; Break}
+							"Default"			{$tmp = "Visual quality could not be determined: $($Setting.VisualQuality.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -20069,7 +25701,7 @@ Function ProcessCitrixPolicies
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\WebSockets"
 					If((validStateProp $Setting AcceptWebSocketsConnections State ) -and ($Setting.AcceptWebSocketsConnections.State -ne "NotConfigured"))
 					{
-						$txt = "ICA\WebSockets\WebSockes connections"
+						$txt = "ICA\WebSockets\WebSockets connections"
 						If($MSWord -or $PDF)
 						{
 							$SettingsWordTable += @{
@@ -20156,7 +25788,7 @@ Function ProcessCitrixPolicies
 								}
 								If($Text)
 								{
-									OutputPolicySetting "" $tmp
+									OutputPolicySetting "`t`t`t`t`t`t    " $tmp
 								}
 							}
 						}
@@ -20259,7 +25891,7 @@ Function ProcessCitrixPolicies
 							{
 								"BelowNormalOrLow"	{$tmp = "Below Normal or Low"; Break}
 								"Low"				{$tmp = "Low"; Break}
-								Default {$tmp = "CPU usage excluded process priority could not be determined: $($Setting.CPUUsageExcludedProcessPriority.Value)"; Break}
+								Default				{$tmp = "CPU usage excluded process priority could not be determined: $($Setting.CPUUsageExcludedProcessPriority.Value)"; Break}
 							}
 							If($MSWord -or $PDF)
 							{
@@ -20454,7 +26086,51 @@ Function ProcessCitrixPolicies
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management"
+					If((validStateProp $Setting PSForFoldersEnabled State ) -and ($Setting.PSForFoldersEnabled.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Enable profile streaming for folders" #added in 2012
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.PSForFoldersEnabled.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.PSForFoldersEnabled.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.PSForFoldersEnabled.State
+						}
+					}
+
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\Advanced settings"
+					If((validStateProp $Setting EnableVolumeReattach State ) -and ($Setting.EnableVolumeReattach.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "Profile Management\Advanced settings\Automatically reattach VHDX disks in sessions"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableVolumeReattach.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableVolumeReattach.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableVolumeReattach.State
+						}
+					}
 					If((validStateProp $Setting CEIPEnabled State ) -and ($Setting.CEIPEnabled.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Advanced settings\Customer Experience Improvement Program"
@@ -20474,6 +26150,50 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.CEIPEnabled.State
+						}
+					}
+					If((validStateProp $Setting VhdStorePath_Part State ) -and ($Setting.VhdStorePath_Part.State -ne "NotConfigured"))
+					{
+						#added in 2112
+						$txt = "Profile Management\Advanced settings\Customize storage path for VHDX files"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.VhdStorePath_Part.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.VhdStorePath_Part.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.VhdStorePath_Part.State
+						}
+					}
+					If((validStateProp $Setting VhdContainerCapacity_Part State ) -and ($Setting.VhdContainerCapacity_Part.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "Profile Management\Advanced settings\Default capacity of VHD containers (GB)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.VhdContainerCapacity_Part.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.VhdContainerCapacity_Part.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.VhdContainerCapacity_Part.Value 
 						}
 					}
 					If((validStateProp $Setting DisableDynamicConfig State ) -and ($Setting.DisableDynamicConfig.State -ne "NotConfigured"))
@@ -20497,9 +26217,96 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.DisableDynamicConfig.State
 						}
 					}
+					If((validStateProp $Setting NDefrag4Compaction State ) -and ($Setting.NDefrag4Compaction.State -ne "NotConfigured"))
+					{
+						#added in 1.26
+						$txt = "Profile Management\Advanced settings\Disable defragmentation for VHD disk compaction"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.NDefrag4Compaction.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.NDefrag4Compaction.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.NDefrag4Compaction.State
+						}
+					}
+					If((validStateProp $Setting SyncGpoStateEnabled State ) -and ($Setting.SyncGpoStateEnabled.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "Profile Management\Advanced settings\Enable asynchronous processing for user Group Policy on logon"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.SyncGpoStateEnabled.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.SyncGpoStateEnabled.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.SyncGpoStateEnabled.State
+						}
+					}
+					If((validStateProp $Setting OutlookSearchRoamingConcurrentSession State ) -and ($Setting.OutlookSearchRoamingConcurrentSession.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "Profile Management\Advanced settings\Enable concurrent session support for Outlook search data roaming"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.OutlookSearchRoamingConcurrentSession.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.OutlookSearchRoamingConcurrentSession.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.OutlookSearchRoamingConcurrentSession.State
+						}
+					}
+					If((validStateProp $Setting CredBasedAccessEnabled State ) -and ($Setting.CredBasedAccessEnabled.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Advanced settings\Enable credential-based access to user stores"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.CredBasedAccessEnabled.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.CredBasedAccessEnabled.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.CredBasedAccessEnabled.State
+						}
+					}
 					If((validStateProp $Setting FSLogixProfileContainerSupport State ) -and ($Setting.FSLogixProfileContainerSupport.State -ne "NotConfigured"))
 					{
-						$txt = "Profile Management\Advanced settings\Enable multi-session write-back for FSLogix Profile Container"
+						$txt = "Profile Management\Advanced settings\Enable multi-session write-back for profile containers" #renamed in 2103
 						If($MSWord -or $PDF)
 						{
 							$SettingsWordTable += @{
@@ -20539,6 +26346,49 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.OutlookSearchRoamingEnabled.State
 						}
 					}
+					If((validStateProp $Setting UserGroupLevelConfigEnabled State ) -and ($Setting.UserGroupLevelConfigEnabled.State -ne "NotConfigured"))
+					{
+						#added in 1.26
+						$txt = "Profile Management\Advanced settings\Enable user-level policy settings"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.UserGroupLevelConfigEnabled.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.UserGroupLevelConfigEnabled.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.UserGroupLevelConfigEnabled.State
+						}
+					}
+					If((validStateProp $Setting FreeRatio4Compaction_Part State ) -and ($Setting.FreeRatio4Compaction_Part.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Advanced settings\Free space ratio to trigger VHD disk compaction(%)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.FreeRatio4Compaction_Part.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.FreeRatio4Compaction_Part.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.FreeRatio4Compaction_Part.Value 
+						}
+					}
 					If((validStateProp $Setting LogoffRatherThanTempProfile State ) -and ($Setting.LogoffRatherThanTempProfile.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Advanced settings\Log off user if a problem is encountered"
@@ -20558,6 +26408,48 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.LogoffRatherThanTempProfile.State
+						}
+					}
+					If((validStateProp $Setting OutlookSearchRoamingConcurrentSession_Part State ) -and ($Setting.OutlookSearchRoamingConcurrentSession_Part.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Advanced settings\Maximum number of VHDX disks for storing Outlook OST files"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.OutlookSearchRoamingConcurrentSession_Part.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.OutlookSearchRoamingConcurrentSession_Part.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.OutlookSearchRoamingConcurrentSession_Part.Value 
+						}
+					}
+					If((validStateProp $Setting NLogoffs4Compaction_Part State ) -and ($Setting.NLogoffs4Compaction_Part.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Advanced settings\Number of logoffs to trigger VHD disk compaction"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.NLogoffs4Compaction_Part.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.NLogoffs4Compaction_Part.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.NLogoffs4Compaction_Part.Value 
 						}
 					}
 					If((validStateProp $Setting LoadRetries_Part State ) -and ($Setting.LoadRetries_Part.State -ne "NotConfigured"))
@@ -20623,6 +26515,393 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.ProcessCookieFiles.State
 						}
 					}
+					If((validStateProp $Setting VhdAutoExpansionIncrement_Part State ) -and ($Setting.VhdAutoExpansionIncrement_Part.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "Profile Management\Advanced settings\Profile container auto-expansion increment (GB)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.VhdAutoExpansionIncrement_Part.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.VhdAutoExpansionIncrement_Part.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.VhdAutoExpansionIncrement_Part.Value 
+						}
+					}
+					If((validStateProp $Setting VhdAutoExpansionLimit_Part State ) -and ($Setting.VhdAutoExpansionLimit_Part.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "Profile Management\Advanced settings\Profile container auto-expansion limit (GB)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.VhdAutoExpansionLimit_Part.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.VhdAutoExpansionLimit_Part.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.VhdAutoExpansionLimit_Part.Value 
+						}
+					}
+					If((validStateProp $Setting VhdAutoExpansionThreshold_Part State ) -and ($Setting.VhdAutoExpansionThreshold_Part.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "Profile Management\Advanced settings\Profile container auto-expansion threshold (%)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.VhdAutoExpansionThreshold_Part.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.VhdAutoExpansionThreshold_Part.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.VhdAutoExpansionThreshold_Part.Value 
+						}
+					}
+					If((validStateProp $Setting MultiSiteReplication_Part State ) -and ($Setting.MultiSiteReplication_Part.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Advanced settings\Replicate user stores - Paths to replicate a user store"
+						If(validStateProp $Setting MultiSiteReplication_Part Values )
+						{
+							$tmpArray = $Setting.MultiSiteReplication_Part.Values
+							$tmp = ""
+							$cnt = 0
+							ForEach($Thing in $TmpArray)
+							{
+								If($Null -eq $Thing)
+								{
+									$Thing = ''
+								}
+								$cnt++
+								$tmp = "$($Thing) "
+								If($cnt -eq 1)
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = $txt;
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										$txt,$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting $txt $tmp
+									}
+								}
+								Else
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = "";
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t`t`t`t`t`t`t`t    " $tmp
+									}
+								}
+								$txt = ""
+							}
+							$TmpArray = $Null
+							$tmp = $Null
+						}
+						Else
+						{
+							$tmp = "No Paths to replicate a user store were found"
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $tmp;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp
+							}
+						}
+					}
+					If((validStateProp $Setting OrderedGroups_Part State ) -and ($Setting.OrderedGroups_Part.State -ne "NotConfigured"))
+					{
+						#added in 1.26
+						$txt = "Profile Management\Advanced settings\Set priority order for user groups"
+						If(validStateProp $Setting OrderedGroups_Part Value )
+						{
+							$tmpArray = $Setting.OrderedGroups_Part.Value.Split(";")
+							$tmp = ""
+							$cnt = 0
+							ForEach($Thing in $TmpArray)
+							{
+								If($Null -eq $Thing)
+								{
+									$Thing = ''
+								}
+								$cnt++
+								$tmp = "$($Thing) "
+								If($cnt -eq 1)
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = $txt;
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										$txt,$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting $txt $tmp
+									}
+								}
+								Else
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = "";
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t`t`t`t`t       " $tmp
+									}
+								}
+								$txt = ""
+							}
+							$TmpArray = $Null
+							$tmp = $Null
+						}
+						Else
+						{
+							$tmp = "No User Groups were found"
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $tmp;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp
+							}
+						}
+					}
+					If((validStateProp $Setting UserStoreSelection_Part State ) -and ($Setting.UserStoreSelection_Part.State -ne "NotConfigured"))
+					{
+						#added in 2311
+						$txt = "Profile Management\Advanced settings\User store selection method"
+						$tmp = ""
+						Switch ($Setting.UserStoreSelection_Part.Value)
+						{
+							"Config"	{$tmp = "Configuration order"; Break}
+							"AccPerf"	{$tmp = "Access performance"; Break}
+							Default		{$tmp = "User store selection method could not be determined: $($Setting.UserStoreSelection_Part.Value)"; Break}
+						}
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}
+					}
+					If((validStateProp $Setting UwpAppsRoaming State ) -and ($Setting.UwpAppsRoaming.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "Profile Management\Advanced settings\UWP app roaming"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.UwpAppsRoaming.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.UwpAppsRoaming.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.UwpAppsRoaming.State
+						}
+					}
+
+					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\App access control"
+					If((validStateProp $Setting AppAccessControl_Part State ) -and ($Setting.AppAccessControl_Part.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Basic settings\App access control"
+						If($Setting.AppAccessControl_Part.State -eq "Enabled")
+						{
+							If(validStateProp $Setting AppAccessControl_Part Value )
+							{
+								$tmpArray = $Setting.AppAccessControl_Part.Value
+								$tmp = ""
+								$cnt = 0
+								ForEach($Thing in $tmpArray)
+								{
+									$cnt++
+									$tmp = "$($Thing)"
+									If($cnt -eq 1)
+									{
+										If($MSWord -or $PDF)
+										{
+											$SettingsWordTable += @{
+											Text = $txt;
+											Value = $tmp;
+											}
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											$txt,$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting $txt $tmp
+										}
+									}
+									Else
+									{
+										If($MSWord -or $PDF)
+										{
+											$SettingsWordTable += @{
+											Text = "";
+											Value = $tmp;
+											}
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											"",$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting "`t`t`t`t`t`t " $tmp
+										}
+									}
+								}
+								$tmpArray = $Null
+								$tmp = $Null
+							}
+							Else
+							{
+								$tmp = "No Apps were found"
+								If($MSWord -or $PDF)
+								{
+									$SettingsWordTable += @{
+									Text = $txt;
+									Value = $tmp;
+									}
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+									$txt,$htmlbold,
+									$tmp,$htmlwhite))
+								}
+								If($Text)
+								{
+									OutputPolicySetting $txt $tmp
+								}
+							}
+						}
+						Else
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $Setting.AppAccessControl_Part.State;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.AppAccessControl_Part.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.AppAccessControl_Part.State
+							}
+						}
+					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\Basic settings"
 					If((validStateProp $Setting PSMidSessionWriteBack State ) -and ($Setting.PSMidSessionWriteBack.State -ne "NotConfigured"))
@@ -20644,6 +26923,27 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.PSMidSessionWriteBack.State
+						}
+					}
+					If((validStateProp $Setting PSMidSessionWriteBackSessionLock State ) -and ($Setting.PSMidSessionWriteBackSessionLock.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Basic settings\Active write back on session lock and disconnection"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.PSMidSessionWriteBackSessionLock.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.PSMidSessionWriteBackSessionLock.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.PSMidSessionWriteBackSessionLock.State
 						}
 					}
 					If((validStateProp $Setting PSMidSessionWriteBackReg State ) -and ($Setting.PSMidSessionWriteBackReg.State -ne "NotConfigured"))
@@ -20739,7 +27039,7 @@ Function ProcessCitrixPolicies
 										}
 										If($Text)
 										{
-											OutputPolicySetting "" $tmp
+											OutputPolicySetting "`t`t`t`t`t`t " $tmp
 										}
 									}
 								}
@@ -20792,7 +27092,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting MigrateUserStore_Part State ) -and ($Setting.MigrateUserStore_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Basic settings\Migrate user store"
-						If($Setting.MigrateUserStore_Part.State -eq "Enabled")
+						If($Setting.MigrateUserStore_Part.State -eq "Enabled" -and $Setting.MigrateUserStore_Part.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -20810,26 +27130,6 @@ Function ProcessCitrixPolicies
 							If($Text)
 							{
 								OutputPolicySetting $txt $Setting.MigrateUserStore_Part.Value 
-							}
-						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.MigrateUserStore_Part.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.MigrateUserStore_Part.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.MigrateUserStore_Part.State
 							}
 						}
 					}
@@ -20857,7 +27157,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting DATPath_Part State ) -and ($Setting.DATPath_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Basic settings\Path to user store"
-						If($Setting.DATPath_Part.State -eq "Enabled")
+						If($Setting.DATPath_Part.State -eq "Enabled" -and $Setting.DATPath_Part.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -20875,26 +27195,6 @@ Function ProcessCitrixPolicies
 							If($Text)
 							{
 								OutputPolicySetting $txt $Setting.DATPath_Part.Value 
-							}
-						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.DATPath_Part.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.DATPath_Part.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.DATPath_Part.State
 							}
 						}
 					}
@@ -20970,7 +27270,7 @@ Function ProcessCitrixPolicies
 										}
 										If($Text)
 										{
-											OutputPolicySetting "" $tmp
+											OutputPolicySetting "`t`t`t`t`t`t  " $tmp
 										}
 									}
 								}
@@ -21022,6 +27322,71 @@ Function ProcessCitrixPolicies
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\Citrix Virtual Apps Optimization settings"
+					If((validStateProp $Setting XenAppOptimizationEnabled State ) -and ($Setting.XenAppOptimizationEnabled.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Citrix Virtual Apps Optimization settings\Enable Citrix Virtual Apps Optimization"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.XenAppOptimizationEnabled.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.XenAppOptimizationEnabled.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.XenAppOptimizationEnabled.State
+						}
+					}
+					If((validStateProp $Setting XenAppOptimizationDefinitionPathData State ) -and ($Setting.XenAppOptimizationDefinitionPathData.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Citrix Virtual Apps Optimization settings\Path to Citrix Virtual Apps optimization definitions:"
+						If($Setting.XenAppOptimizationDefinitionPathData.State -eq "Enabled" -and $Setting.XenAppOptimizationDefinitionPathData.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $Setting.XenAppOptimizationDefinitionPathData.Value;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.XenAppOptimizationDefinitionPathData.Value,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.XenAppOptimizationDefinitionPathData.Value 
+							}
+						}
+					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\Cross-Platform settings"
 					If((validStateProp $Setting CPUserGroups_Part State ) -and ($Setting.CPUserGroups_Part.State -ne "NotConfigured"))
@@ -21075,7 +27440,7 @@ Function ProcessCitrixPolicies
 										}
 										If($Text)
 										{
-											OutputPolicySetting "" $tmp
+											OutputPolicySetting "`t`t`t`t`t`t" $tmp
 										}
 									}
 								}
@@ -21149,7 +27514,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting CPSchemaPathData State ) -and ($Setting.CPSchemaPathData.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Cross-Platform settings\Path to cross-platform definitions"
-						If($Setting.CPSchemaPathData.State -eq "Enabled")
+						If($Setting.CPSchemaPathData.State -eq "Enabled" -and $Setting.CPSchemaPathData.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -21169,31 +27554,31 @@ Function ProcessCitrixPolicies
 								OutputPolicySetting $txt $Setting.CPSchemaPathData.Value 
 							}
 						}
-						Else
+					}
+					If((validStateProp $Setting CPPathData State ) -and ($Setting.CPPathData.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Cross-Platform settings\Path to cross-platform settings store"
+						If($Setting.CPPathData.State -eq "Enabled" -and $Setting.CPPathData.Value -eq "")
 						{
 							If($MSWord -or $PDF)
 							{
 								$SettingsWordTable += @{
 								Text = $txt;
-								Value = $Setting.CPSchemaPathData.State;
+								Value = "Disabled";
 								}
 							}
 							If($HTML)
 							{
 								$rowdata += @(,(
 								$txt,$htmlbold,
-								$Setting.CPSchemaPathData.State,$htmlwhite))
+								"Disabled",$htmlwhite))
 							}
 							If($Text)
 							{
-								OutputPolicySetting $txt $Setting.CPSchemaPathData.State
+								OutputPolicySetting $txt "Disabled"
 							}
 						}
-					}
-					If((validStateProp $Setting CPPathData State ) -and ($Setting.CPPathData.State -ne "NotConfigured"))
-					{
-						$txt = "Profile Management\Cross-Platform settings\Path to cross-platform settings store"
-						If($Setting.CPPathData.State -eq "Enabled")
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -21211,26 +27596,6 @@ Function ProcessCitrixPolicies
 							If($Text)
 							{
 								OutputPolicySetting $txt $Setting.CPPathData.Value 
-							}
-						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.CPPathData.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.CPPathData.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.CPPathData.State
 							}
 						}
 					}
@@ -21253,6 +27618,233 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.CPMigrationFromBaseProfileToCPStore.State
+						}
+					}
+
+					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\File deduplication"
+					If((validStateProp $Setting SharedStoreFileExclusionList_Part State ) -and ($Setting.SharedStoreFileExclusionList_Part.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2209
+						$txt = "Profile Management\File deduplication\Files to exclude from the shared store"
+						If($Setting.SharedStoreFileExclusionList_Part.State -eq "Enabled")
+						{
+							If(validStateProp $Setting SharedStoreFileExclusionList_Part Values )
+							{
+								$tmpArray = $Setting.SharedStoreFileExclusionList_Part.Values
+								$tmp = ""
+								$cnt = 0
+								ForEach($Thing in $tmpArray)
+								{
+									$cnt++
+									$tmp = "$($Thing)"
+									If($cnt -eq 1)
+									{
+										If($MSWord -or $PDF)
+										{
+											$SettingsWordTable += @{
+											Text = $txt;
+											Value = $tmp;
+											}
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											$txt,$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting $txt $tmp
+										}
+									}
+									Else
+									{
+										If($MSWord -or $PDF)
+										{
+											$SettingsWordTable += @{
+											Text = "";
+											Value = $tmp;
+											}
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											"",$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting "`t`t`t`t`t`t" $tmp
+										}
+									}
+								}
+								$tmpArray = $Null
+								$tmp = $Null
+							}
+							Else
+							{
+								$tmp = "No Files to exclude from the shared store were found"
+								If($MSWord -or $PDF)
+								{
+									$SettingsWordTable += @{
+									Text = $txt;
+									Value = $tmp;
+									}
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+									$txt,$htmlbold,
+									$tmp,$htmlwhite))
+								}
+								If($Text)
+								{
+									OutputPolicySetting $txt $tmp
+								}
+							}
+						}
+						Else
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $Setting.SharedStoreFileExclusionList_Part.State;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.SharedStoreFileExclusionList_Part.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.SharedStoreFileExclusionList_Part.State
+							}
+						}
+					}
+					If((validStateProp $Setting SharedStoreFileInclusionList_Part State ) -and ($Setting.SharedStoreFileInclusionList_Part.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2209
+						$txt = "Profile Management\File deduplication\Files to include from the shared store"
+						If($Setting.SharedStoreFileInclusionList_Part.State -eq "Enabled")
+						{
+							If(validStateProp $Setting SharedStoreFileInclusionList_Part Values )
+							{
+								$tmpArray = $Setting.SharedStoreFileInclusionList_Part.Values
+								$tmp = ""
+								$cnt = 0
+								ForEach($Thing in $tmpArray)
+								{
+									$cnt++
+									$tmp = "$($Thing)"
+									If($cnt -eq 1)
+									{
+										If($MSWord -or $PDF)
+										{
+											$SettingsWordTable += @{
+											Text = $txt;
+											Value = $tmp;
+											}
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											$txt,$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting $txt $tmp
+										}
+									}
+									Else
+									{
+										If($MSWord -or $PDF)
+										{
+											$SettingsWordTable += @{
+											Text = "";
+											Value = $tmp;
+											}
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											"",$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting "`t`t`t`t`t`t" $tmp
+										}
+									}
+								}
+								$tmpArray = $Null
+								$tmp = $Null
+							}
+							Else
+							{
+								$tmp = "No Files to include from the shared store were found"
+								If($MSWord -or $PDF)
+								{
+									$SettingsWordTable += @{
+									Text = $txt;
+									Value = $tmp;
+									}
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+									$txt,$htmlbold,
+									$tmp,$htmlwhite))
+								}
+								If($Text)
+								{
+									OutputPolicySetting $txt $tmp
+								}
+							}
+						}
+						Else
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $Setting.SharedStoreFileInclusionList_Part.State;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.SharedStoreFileInclusionList_Part.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.SharedStoreFileInclusionList_Part.State
+							}
+						}
+					}
+					If((validStateProp $Setting SharedStoreProfileContainerFileSizeLimit_Part State ) -and ($Setting.SharedStoreProfileContainerFileSizeLimit_Part.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\File deduplication\Minimum size of files to deduplicate from profile containers"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.SharedStoreProfileContainerFileSizeLimit_Part.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.SharedStoreProfileContainerFileSizeLimit_Part.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.SharedStoreProfileContainerFileSizeLimit_Part.Value
 						}
 					}
 
@@ -21284,6 +27876,107 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $tmp 
+						}
+					}
+					If((validStateProp $Setting LargeFileHandlingList_Part State ) -and ($Setting.LargeFileHandlingList_Part.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\File system\Large File Handling List - Files to be created as symbolic links"
+						If($Setting.LargeFileHandlingList_Part.State -eq "Enabled")
+						{
+							If(validStateProp $Setting LargeFileHandlingList_Part Values )
+							{
+								$tmpArray = $Setting.LargeFileHandlingList_Part.Values
+								$tmp = ""
+								$cnt = 0
+								ForEach($Thing in $tmpArray)
+								{
+									$cnt++
+									$tmp = "$($Thing)"
+									If($cnt -eq 1)
+									{
+										If($MSWord -or $PDF)
+										{
+											$SettingsWordTable += @{
+											Text = $txt;
+											Value = $tmp;
+											}
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											$txt,$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting $txt $tmp
+										}
+									}
+									Else
+									{
+										If($MSWord -or $PDF)
+										{
+											$SettingsWordTable += @{
+											Text = "";
+											Value = $tmp;
+											}
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											"",$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting "`t`t`t`t`t`t`t`t`t`t`t       " $tmp
+										}
+									}
+								}
+								$tmpArray = $Null
+								$tmp = $Null
+							}
+							Else
+							{
+								$tmp = "No Large File Handling List - Files to be created as symbolic links were found"
+								If($MSWord -or $PDF)
+								{
+									$SettingsWordTable += @{
+									Text = $txt;
+									Value = $tmp;
+									}
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+									$txt,$htmlbold,
+									$tmp,$htmlwhite))
+								}
+								If($Text)
+								{
+									OutputPolicySetting $txt $tmp
+								}
+							}
+						}
+						Else
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $Setting.LargeFileHandlingList_Part.State;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.LargeFileHandlingList_Part.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.LargeFileHandlingList_Part_Part.State
+							}
 						}
 					}
 
@@ -21668,6 +28361,7 @@ Function ProcessCitrixPolicies
 					}
 					If((validStateProp $Setting ExclusionDefaultDir18 State ) -and ($Setting.ExclusionDefaultDir18.State -ne "NotConfigured"))
 					{
+						#fixed 3-Mar-2017 thanks to Esther Barthel
 						$txt = "Profile Management\File system\Default Exclusions\UPM - !ctx_localappdata!\Microsoft\Windows\CD Burning"
 						If($MSWord -or $PDF)
 						{
@@ -21992,7 +28686,7 @@ Function ProcessCitrixPolicies
 										}
 										If($Text)
 										{
-											OutputPolicySetting "" $tmp
+											OutputPolicySetting "`t`t`t`t`t`t`t`t      " $tmp
 										}
 									}
 								}
@@ -22093,7 +28787,7 @@ Function ProcessCitrixPolicies
 										}
 										If($Text)
 										{
-											OutputPolicySetting "" $tmp
+											OutputPolicySetting "`t`t`t`t`t`t`t`t" $tmp
 										}
 									}
 								}
@@ -22145,6 +28839,27 @@ Function ProcessCitrixPolicies
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\File system\Synchronization"
+					If((validStateProp $Setting AccelerateFolderMirroring State ) -and ($Setting.AccelerateFolderMirroring.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\File system\Synchronization\Accelerate folder mirroring"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.AccelerateFolderMirroring.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.AccelerateFolderMirroring.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.AccelerateFolderMirroring.State 
+						}
+					}
 					If((validStateProp $Setting SyncDirList_Part State ) -and ($Setting.SyncDirList_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\File system\Synchronization\Directories to synchronize"
@@ -22196,7 +28911,7 @@ Function ProcessCitrixPolicies
 										}
 										If($Text)
 										{
-											OutputPolicySetting "" $tmp
+											OutputPolicySetting "`t`t`t`t`t`t`t`t`t " $tmp
 										}
 									}
 								}
@@ -22297,7 +29012,7 @@ Function ProcessCitrixPolicies
 										}
 										If($Text)
 										{
-											OutputPolicySetting "" $tmp
+											OutputPolicySetting "`t`t`t`t`t`t" $tmp
 										}
 									}
 								}
@@ -22398,7 +29113,7 @@ Function ProcessCitrixPolicies
 										}
 										If($Text)
 										{
-											OutputPolicySetting "" $tmp
+											OutputPolicySetting "`t`t`t`t`t`t`t`t" $tmp
 										}
 									}
 								}
@@ -22499,7 +29214,7 @@ Function ProcessCitrixPolicies
 										}
 										If($Text)
 										{
-											OutputPolicySetting "" $tmp
+											OutputPolicySetting "`t`t`t`t`t`t`t`t`t`t`t`t`t`t  " $tmp
 										}
 									}
 								}
@@ -22555,7 +29270,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting FRAppDataPath_Part State ) -and ($Setting.FRAppDataPath_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Folder Redirection\AppData(Roaming)\AppData(Roaming) path"
-						If($Setting.FRAppDataPath_Part.State -eq "Enabled")
+						If($Setting.FRAppDataPath_Part.State -eq "Enabled" -and $Setting.FRAppDataPath_Part.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -22575,26 +29310,6 @@ Function ProcessCitrixPolicies
 								OutputPolicySetting $txt $Setting.FRAppDataPath_Part.Value 
 							}
 						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.FRAppDataPath_Part.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.FRAppDataPath_Part.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.FRAppDataPath_Part.State
-							}
-						}
 					}
 					If((validStateProp $Setting FRAppData_Part State ) -and ($Setting.FRAppData_Part.State -ne "NotConfigured"))
 					{
@@ -22602,8 +29317,8 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.FRAppData_Part.Value)
 						{
-							"RedirectUncPath"			{$tmp = "Redirect to the following UNC path"; Break}
-							Default {$tmp = "AppData(Roaming) path cannot be determined: $($Setting.FRAppData_Part.Value)"; Break}
+							"RedirectUncPath"	{$tmp = "Redirect to the following UNC path"; Break}
+							Default 			{$tmp = "Redirection settings for AppData(Roaming) cannot be determined: $($Setting.FRAppData_Part.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -22672,7 +29387,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting FRContactsPath_Part State ) -and ($Setting.FRContactsPath_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Folder Redirection\Contacts\Contacts path"
-						If($Setting.FRContactsPath_Part.State -eq "Enabled")
+						If($Setting.FRContactsPath_Part.State -eq "Enabled" -and $Setting.FRContactsPath_Part.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -22692,26 +29427,6 @@ Function ProcessCitrixPolicies
 								OutputPolicySetting $txt $Setting.FRContactsPath_Part.Value 
 							}
 						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.FRContactsPath_Part.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.FRContactsPath_Part.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.FRContactsPath_Part.State
-							}
-						}
 					}
 					If((validStateProp $Setting FRContacts_Part State ) -and ($Setting.FRContacts_Part.State -ne "NotConfigured"))
 					{
@@ -22720,7 +29435,7 @@ Function ProcessCitrixPolicies
 						Switch ($Setting.FRContacts_Part.Value)
 						{
 							"RedirectUncPath"	{$tmp = "Redirect to the following UNC path"; Break}
-							Default {$tmp = "AppData(Roaming) path cannot be determined: $($Setting.FRContacts_Part.Value)"; Break}
+							Default 			{$tmp = "Redirection settings for Contacts cannot be determined: $($Setting.FRContacts_Part.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -22745,7 +29460,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting FRDesktopPath_Part State ) -and ($Setting.FRDesktopPath_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Folder Redirection\Desktop\Desktop path"
-						If($Setting.FRDesktopPath_Part.State -eq "Enabled")
+						If($Setting.FRDesktopPath_Part.State -eq "Enabled" -and $Setting.FRDesktopPath_Part.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -22765,26 +29500,6 @@ Function ProcessCitrixPolicies
 								OutputPolicySetting $txt $Setting.FRDesktopPath_Part.Value 
 							}
 						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.FRDesktopPath_Part.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.FRDesktopPath_Part.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.FRDesktopPath_Part.State
-							}
-						}
 					}
 					If((validStateProp $Setting FRDesktop_Part State ) -and ($Setting.FRDesktop_Part.State -ne "NotConfigured"))
 					{
@@ -22793,7 +29508,7 @@ Function ProcessCitrixPolicies
 						Switch ($Setting.FRDesktop_Part.Value)
 						{
 							"RedirectUncPath"	{$tmp = "Redirect to the following UNC path"; Break}
-							Default {$tmp = "AppData(Roaming) path cannot be determined: $($Setting.FRDesktop_Part.Value)"; Break}
+							Default 			{$tmp = "Redirection settings for Desktop cannot be determined: $($Setting.FRDesktop_Part.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -22818,7 +29533,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting FRDocumentsPath_Part State ) -and ($Setting.FRDocumentsPath_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Folder Redirection\Documents\Documents path"
-						If($Setting.FRDocumentsPath_Part.State -eq "Enabled")
+						If($Setting.FRDocumentsPath_Part.State -eq "Enabled" -and $Setting.FRDocumentsPath_Part.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -22838,26 +29573,6 @@ Function ProcessCitrixPolicies
 								OutputPolicySetting $txt $Setting.FRDocumentsPath_Part.Value 
 							}
 						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.FRDocumentsPath_Part.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.FRDocumentsPath_Part.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.FRDocumentsPath_Part.State
-							}
-						}
 					}
 					If((validStateProp $Setting FRDocuments_Part State ) -and ($Setting.FRDocuments_Part.State -ne "NotConfigured"))
 					{
@@ -22867,7 +29582,7 @@ Function ProcessCitrixPolicies
 						{
 							"RedirectUncPath"		{$tmp = "Redirect to the following UNC path"; Break}
 							"RedirectRelativeHome"	{$tmp = "Redirect to the users' home directory"; Break}
-							Default {$tmp = "AppData(Roaming) path cannot be determined: $($Setting.FRDocuments_Part.Value)"; Break}
+							Default 				{$tmp = "Redirection settings for Documents cannot be determined: $($Setting.FRDocuments_Part.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -22892,7 +29607,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting FRDownloadsPath_Part State ) -and ($Setting.FRDownloadsPath_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Folder Redirection\Downloads\Downloads path"
-						If($Setting.FRDownloadsPath_Part.State -eq "Enabled")
+						If($Setting.FRDownloadsPath_Part.State -eq "Enabled" -and $Setting.FRDownloadsPath_Part.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -22912,26 +29647,6 @@ Function ProcessCitrixPolicies
 								OutputPolicySetting $txt $Setting.FRDownloadsPath_Part.Value 
 							}
 						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.FRDownloadsPath_Part.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.FRDownloadsPath_Part.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.FRDownloadsPath_Part.State
-							}
-						}
 					}
 					If((validStateProp $Setting FRDownloads_Part State ) -and ($Setting.FRDownloads_Part.State -ne "NotConfigured"))
 					{
@@ -22939,8 +29654,8 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.FRDownloads_Part.Value)
 						{
-							"RedirectUncPath"			{$tmp = "Redirect to the following UNC path"; Break}
-							Default {$tmp = "AppData(Roaming) path cannot be determined: $($Setting.FRDownloads_Part.Value)"; Break}
+							"RedirectUncPath"	{$tmp = "Redirect to the following UNC path"; Break}
+							Default 			{$tmp = "Redirection settings for Downloads cannot be determined: $($Setting.FRDownloads_Part.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -22965,7 +29680,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting FRFavoritesPath_Part State ) -and ($Setting.FRFavoritesPath_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Folder Redirection\Favorites\Favorites path"
-						If($Setting.FRFavoritesPath_Part.State -eq "Enabled")
+						If($Setting.FRFavoritesPath_Part.State -eq "Enabled" -and $Setting.FRFavoritesPath_Part.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -22985,26 +29720,6 @@ Function ProcessCitrixPolicies
 								OutputPolicySetting $txt $Setting.FRFavoritesPath_Part.Value 
 							}
 						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.FRFavoritesPath_Part.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.FRFavoritesPath_Part.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.FRFavoritesPath_Part.State
-							}
-						}
 					}
 					If((validStateProp $Setting FRFavorites_Part State ) -and ($Setting.FRFavorites_Part.State -ne "NotConfigured"))
 					{
@@ -23012,8 +29727,8 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.FRFavorites_Part.Value)
 						{
-							"RedirectUncPath"			{$tmp = "Redirect to the following UNC path"; Break}
-							Default {$tmp = "AppData(Roaming) path cannot be determined: $($Setting.FRFavorites_Part.Value)"; Break}
+							"RedirectUncPath"	{$tmp = "Redirect to the following UNC path"; Break}
+							Default 			{$tmp = "Redirection settings for Favorites cannot be determined: $($Setting.FRFavorites_Part.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -23038,7 +29753,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting FRLinksPath_Part State ) -and ($Setting.FRLinksPath_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Folder Redirection\Links\Links path"
-						If($Setting.FRLinksPath_Part.State -eq "Enabled")
+						If($Setting.FRLinksPath_Part.State -eq "Enabled" -and $Setting.FRLinksPath_Part.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -23058,26 +29793,6 @@ Function ProcessCitrixPolicies
 								OutputPolicySetting $txt $Setting.FRLinksPath_Part.Value 
 							}
 						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.FRLinksPath_Part.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.FRLinksPath_Part.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.FRLinksPath_Part.State
-							}
-						}
 					}
 					If((validStateProp $Setting FRLinks_Part State ) -and ($Setting.FRLinks_Part.State -ne "NotConfigured"))
 					{
@@ -23085,8 +29800,8 @@ Function ProcessCitrixPolicies
 						$tmp = ""
 						Switch ($Setting.FRLinks_Part.Value)
 						{
-							"RedirectUncPath"			{$tmp = "Redirect to the following UNC path"; Break}
-							Default {$tmp = "AppData(Roaming) path cannot be determined: $($Setting.FRLinks_Part.Value)"; Break}
+							"RedirectUncPath"	{$tmp = "Redirect to the following UNC path"; Break}
+							Default 			{$tmp = "Redirection settings for Links cannot be determined: $($Setting.FRLinks_Part.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -23111,7 +29826,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting FRMusicPath_Part State ) -and ($Setting.FRMusicPath_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Folder Redirection\Music\Music path"
-						If($Setting.FRMusicPath_Part.State -eq "Enabled")
+						If($Setting.FRMusicPath_Part.State -eq "Enabled" -and $Setting.FRMusicPath_Part.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -23131,26 +29866,6 @@ Function ProcessCitrixPolicies
 								OutputPolicySetting $txt $Setting.FRMusicPath_Part.Value 
 							}
 						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.FRMusicPath_Part.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.FRMusicPath_Part.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.FRMusicPath_Part.State
-							}
-						}
 					}
 					If((validStateProp $Setting FRMusic_Part State ) -and ($Setting.FRMusic_Part.State -ne "NotConfigured"))
 					{
@@ -23160,7 +29875,7 @@ Function ProcessCitrixPolicies
 						{
 							"RedirectUncPath"			{$tmp = "Redirect to the following UNC path"; Break}
 							"RedirectRelativeDocuments" {$tmp = "Redirect relative to Documents folder"; Break}
-							Default {$tmp = "AppData(Roaming) path cannot be determined: $($Setting.FRMusic_Part.Value)"; Break}
+							Default 					{$tmp = "Redirection settings for Music cannot be determined: $($Setting.FRMusic_Part.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -23185,7 +29900,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting FRPicturesPath_Part State ) -and ($Setting.FRPicturesPath_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Folder Redirection\Pictures\Pictures path"
-						If($Setting.FRPicturesPath_Part.State -eq "Enabled")
+						If($Setting.FRPicturesPath_Part.State -eq "Enabled" -and $Setting.FRPicturesPath_Part.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -23205,26 +29940,6 @@ Function ProcessCitrixPolicies
 								OutputPolicySetting $txt $Setting.FRPicturesPath_Part.Value 
 							}
 						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.FRPicturesPath_Part.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.FRPicturesPath_Part.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.FRPicturesPath_Part.State
-							}
-						}
 					}
 					If((validStateProp $Setting FRPictures_Part State ) -and ($Setting.FRPictures_Part.State -ne "NotConfigured"))
 					{
@@ -23234,7 +29949,7 @@ Function ProcessCitrixPolicies
 						{
 							"RedirectUncPath"			{$tmp = "Redirect to the following UNC path"; Break}
 							"RedirectRelativeDocuments" {$tmp = "Redirect relative to Documents folder"; Break}
-							Default {$tmp = "AppData(Roaming) path cannot be determined: $($Setting.FRPictures_Part.Value)"; Break}
+							Default 					{$tmp = "Redirection settings for Pictures cannot be determined: $($Setting.FRPictures_Part.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -23263,7 +29978,7 @@ Function ProcessCitrixPolicies
 						Switch ($Setting.FRSavedGames_Part.Value)
 						{
 							"RedirectUncPath"	{$tmp = "Redirect to the following UNC path"; Break}
-							Default {$tmp = "AppData(Roaming) path cannot be determined: $($Setting.FRSavedGames_Part.Value)"; Break}
+							Default 			{$tmp = "Redirection settings for Saved Games cannot be determined: $($Setting.FRSavedGames_Part.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -23286,7 +30001,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting FRSavedGamesPath_Part State ) -and ($Setting.FRSavedGamesPath_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Folder Redirection\Saved Games\Saved Games path"
-						If($Setting.FRSavedGamesPath_Part.State -eq "Enabled")
+						If($Setting.FRSavedGamesPath_Part.State -eq "Enabled" -and $Setting.FRSavedGamesPath_Part.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -23306,26 +30041,6 @@ Function ProcessCitrixPolicies
 								OutputPolicySetting $txt $Setting.FRSavedGamesPath_Part.Value 
 							}
 						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.FRSavedGamesPath_Part.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.FRSavedGamesPath_Part.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.FRSavedGamesPath_Part.State
-							}
-						}
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\Folder Redirection\Searches"
@@ -23336,7 +30051,7 @@ Function ProcessCitrixPolicies
 						Switch ($Setting.FRSearches_Part.Value)
 						{
 							"RedirectUncPath"	{$tmp = "Redirect to the following UNC path"; Break}
-							Default {$tmp = "AppData(Roaming) path cannot be determined: $($Setting.FRSearches_Part.Value)"; Break}
+							Default 			{$tmp = "Redirection settings for Searches cannot be determined: $($Setting.FRSearches_Part.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -23359,7 +30074,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting FRSearchesPath_Part State ) -and ($Setting.FRSearchesPath_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Folder Redirection\Searches\Searches path"
-						If($Setting.FRSearchesPath_Part.State -eq "Enabled")
+						If($Setting.FRSearchesPath_Part.State -eq "Enabled" -and $Setting.FRSearchesPath_Part.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -23379,26 +30114,6 @@ Function ProcessCitrixPolicies
 								OutputPolicySetting $txt $Setting.FRSearchesPath_Part.Value 
 							}
 						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.FRSearchesPath_Part.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.FRSearchesPath_Part.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.FRSearchesPath_Part.State
-							}
-						}
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\Folder Redirection\Start Menu"
@@ -23409,7 +30124,7 @@ Function ProcessCitrixPolicies
 						Switch ($Setting.FRStartMenu_Part.Value)
 						{
 							"RedirectUncPath"	{$tmp = "Redirect to the following UNC path"; Break}
-							Default 			{$tmp = "AppData(Roaming) path cannot be determined: $($Setting.FRStartMenu_Part.Value)"; Break}
+							Default 			{$tmp = "Redirection settings for Start Menu cannot be determined: $($Setting.FRStartMenu_Part.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -23432,7 +30147,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting FRStartMenuPath_Part State ) -and ($Setting.FRStartMenuPath_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Folder Redirection\Start Menu\Start Menu path"
-						If($Setting.FRStartMenuPath_Part.State -eq "Enabled")
+						If($Setting.FRStartMenuPath_Part.State -eq "Enabled" -and $Setting.FRStartMenuPath_Part.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -23452,26 +30187,6 @@ Function ProcessCitrixPolicies
 								OutputPolicySetting $txt $Setting.FRStartMenuPath_Part.Value 
 							}
 						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.FRStartMenuPath_Part.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.FRStartMenuPath_Part.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.FRStartMenuPath_Part.State
-							}
-						}
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\Folder Redirection\Videos"
@@ -23483,7 +30198,7 @@ Function ProcessCitrixPolicies
 						{
 							"RedirectUncPath"			{$tmp = "Redirect to the following UNC path"; Break}
 							"RedirectRelativeDocuments" {$tmp = "Redirect relative to Documents folder"; Break}
-							Default 					{$tmp = "AppData(Roaming) path cannot be determined: $($Setting.FRVideos_Part.Value)"; Break}
+							Default 					{$tmp = "Redirection settings for Videos cannot be determined: $($Setting.FRVideos_Part.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -23506,7 +30221,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting FRVideosPath_Part State ) -and ($Setting.FRVideosPath_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Folder Redirection\Videos\Videos path"
-						If($Setting.FRVideosPath_Part.State -eq "Enabled")
+						If($Setting.FRVideosPath_Part.State -eq "Enabled" -and $Setting.FRVideosPath_Part.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -23524,26 +30259,6 @@ Function ProcessCitrixPolicies
 							If($Text)
 							{
 								OutputPolicySetting $txt $Setting.FRVideosPath_Part.Value 
-							}
-						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.FRVideosPath_Part.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.FRVideosPath_Part.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.FRVideosPath_Part.State
 							}
 						}
 					}
@@ -23741,7 +30456,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting DebugFilePath_Part State ) -and ($Setting.DebugFilePath_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Log settings\Path to log file"
-						If($Setting.DebugFilePath_Part.State -eq "Enabled")
+						If($Setting.DebugFilePath_Part.State -eq "Enabled" -and $Setting.DebugFilePath_Part.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -23759,26 +30494,6 @@ Function ProcessCitrixPolicies
 							If($Text)
 							{
 								OutputPolicySetting $txt $Setting.DebugFilePath_Part.Value 
-							}
-						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.DebugFilePath_Part.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.DebugFilePath_Part.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.DebugFilePath_Part.State
 							}
 						}
 					}
@@ -23864,6 +30579,602 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.LogLevel_RegistryDifference.State
+						}
+					}
+
+					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\Profile container settings"
+					If((validStateProp $Setting DisableConcurrentAccessToOneDriveContainer State ) -and ($Setting.DisableConcurrentAccessToOneDriveContainer.State -ne "NotConfigured"))
+					{
+						#added in 2311
+						$txt = "Profile Management\Profile container settings\Enable exclusive access to VHD containers - OneDrive container"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.DisableConcurrentAccessToOneDriveContainer.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.DisableConcurrentAccessToOneDriveContainer.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.DisableConcurrentAccessToOneDriveContainer.State
+						}
+					}
+					If((validStateProp $Setting DisableConcurrentAccessToProfileContainer State ) -and ($Setting.DisableConcurrentAccessToProfileContainer.State -ne "NotConfigured"))
+					{
+						#added in 2311
+						$txt = "Profile Management\Profile container settings\Enable exclusive access to VHD containers - Profile container"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.DisableConcurrentAccessToProfileContainer.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.DisableConcurrentAccessToProfileContainer.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.DisableConcurrentAccessToProfileContainer.State
+						}
+					}
+					If((validStateProp $Setting ProfileContainerLocalCache State ) -and ($Setting.ProfileContainerLocalCache.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Profile container settings\Enable local caching for profile containers"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.ProfileContainerLocalCache.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.ProfileContainerLocalCache.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.ProfileContainerLocalCache.State
+						}
+					}
+					If((validStateProp $Setting EnableVHDAutoExtend State ) -and ($Setting.EnableVHDAutoExtend.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "Profile Management\Profile container settings\Enable VHD auto-expansion for profile container"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableVHDAutoExtend.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableVHDAutoExtend.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableVHDAutoExtend.State
+						}
+					}
+					If((validStateProp $Setting EnableVHDDiskCompaction State ) -and ($Setting.EnableVHDDiskCompaction.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Profile container settings\Enable VHD disk compaction"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableVHDDiskCompaction.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableVHDDiskCompaction.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableVHDDiskCompaction.State
+						}
+					}
+					If((validStateProp $Setting ProfileContainerExclusionListDir_Part State ) -and ($Setting.ProfileContainerExclusionListDir_Part.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Profile container settings\Folders to exclude in profile container"
+						If($Setting.ProfileContainerExclusionListDir_Part.State -eq "Enabled")
+						{
+							If(validStateProp $Setting ProfileContainerExclusionListDir_Part Values )
+							{
+								$tmpArray = $Setting.ProfileContainerExclusionListDir_Part.Values
+								$tmp = ""
+								$cnt = 0
+								ForEach($Thing in $tmpArray)
+								{
+									$cnt++
+									$tmp = "$($Thing)"
+									If($cnt -eq 1)
+									{
+										If($MSWord -or $PDF)
+										{
+											$WordTableRowHash = @{
+											Text = $txt;
+											Value = $tmp;
+											}
+											$SettingsWordTable += $WordTableRowHash;
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											$txt,$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting $txt $tmp
+										}
+									}
+									Else
+									{
+										If($MSWord -or $PDF)
+										{
+											$WordTableRowHash = @{
+											Text = "";
+											Value = $tmp;
+											}
+											$SettingsWordTable += $WordTableRowHash;
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											"",$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting "`t`t`t`t`t`t`t`t`t`t     " $tmp
+										}
+									}
+								}
+								$tmpArray = $Null
+								$tmp = $Null
+							}
+							Else
+							{
+								$tmp = "No Exclusion list was found"
+								If($MSWord -or $PDF)
+								{
+									$WordTableRowHash = @{
+									Text = $txt;
+									Value = $tmp;
+									}
+									$SettingsWordTable += $WordTableRowHash;
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+									$txt,$htmlbold,
+									$tmp,$htmlwhite))
+								}
+								If($Text)
+								{
+									OutputPolicySetting $txt $tmp
+								}
+							}
+						}
+						Else
+						{
+							If($MSWord -or $PDF)
+							{
+								$WordTableRowHash = @{
+								Text = $txt;
+								Value = $Setting.ProfileContainerExclusionListDir_Part.State;
+								}
+								$SettingsWordTable += $WordTableRowHash;
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.ProfileContainerExclusionListDir_Part.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.ProfileContainerExclusionListDir_Part.State
+							}
+						}
+					}
+					If((validStateProp $Setting ProfileContainerInclusionListDir_Part State ) -and ($Setting.ProfileContainerInclusionListDir_Part.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Profile container settings\Folders to include in profile container"
+						If($Setting.ProfileContainerInclusionListDir_Part.State -eq "Enabled")
+						{
+							If(validStateProp $Setting ProfileContainerInclusionListDir_Part Values )
+							{
+								$tmpArray = $Setting.ProfileContainerInclusionListDir_Part.Values
+								$tmp = ""
+								$cnt = 0
+								ForEach($Thing in $tmpArray)
+								{
+									$cnt++
+									$tmp = "$($Thing)"
+									If($cnt -eq 1)
+									{
+										If($MSWord -or $PDF)
+										{
+											$WordTableRowHash = @{
+											Text = $txt;
+											Value = $tmp;
+											}
+											$SettingsWordTable += $WordTableRowHash;
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											$txt,$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting $txt $tmp
+										}
+									}
+									Else
+									{
+										If($MSWord -or $PDF)
+										{
+											$WordTableRowHash = @{
+											Text = "";
+											Value = $tmp;
+											}
+											$SettingsWordTable += $WordTableRowHash;
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											"",$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting "`t`t`t`t`t`t`t`t`t`t     " $tmp
+										}
+									}
+								}
+								$tmpArray = $Null
+								$tmp = $Null
+							}
+							Else
+							{
+								$tmp = "No Exclusion list was found"
+								If($MSWord -or $PDF)
+								{
+									$WordTableRowHash = @{
+									Text = $txt;
+									Value = $tmp;
+									}
+									$SettingsWordTable += $WordTableRowHash;
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+									$txt,$htmlbold,
+									$tmp,$htmlwhite))
+								}
+								If($Text)
+								{
+									OutputPolicySetting $txt $tmp
+								}
+							}
+						}
+						Else
+						{
+							If($MSWord -or $PDF)
+							{
+								$WordTableRowHash = @{
+								Text = $txt;
+								Value = $Setting.ProfileContainerInclusionListDir_Part.State;
+								}
+								$SettingsWordTable += $WordTableRowHash;
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.ProfileContainerInclusionListDir_Part.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.ProfileContainerInclusionListDir_Part.State
+							}
+						}
+					}
+					If((validStateProp $Setting PreventLoginWhenMountFailed_Part State ) -and ($Setting.PreventLoginWhenMountFailed_Part.State -ne "NotConfigured"))
+					{
+						#added in 2311
+						$txt = "Profile Management\Profile container settings\Log off users when profile container is not available during logon"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.PreventLoginWhenMountFailed_Part.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.PreventLoginWhenMountFailed_Part.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.PreventLoginWhenMountFailed_Part.State
+						}
+					}
+					If((validStateProp $Setting DisableConcurrentAccessToOneDriveContainer State ) -and ($Setting.DisableConcurrentAccessToOneDriveContainer.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "Profile Management\Profile container settings\OneDrive container"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.DisableConcurrentAccessToOneDriveContainer.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.DisableConcurrentAccessToOneDriveContainer.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.DisableConcurrentAccessToOneDriveContainer.State
+						}
+					}
+					If((validStateProp $Setting ProfileContainer_Part State ) -and ($Setting.ProfileContainer_Part.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "Profile Management\Profile container settings\OneDrive container - List of OneDrive folders"
+						If($Setting.ProfileContainer_Part.State -eq "Enabled")
+						{
+							If(validStateProp $Setting ProfileContainer_Part Values )
+							{
+								$tmpArray = $Setting.ProfileContainer_Part.Values
+								$tmp = ""
+								$cnt = 0
+								ForEach($Thing in $tmpArray)
+								{
+									$cnt++
+									$tmp = "$($Thing)"
+									If($cnt -eq 1)
+									{
+										If($MSWord -or $PDF)
+										{
+											$WordTableRowHash = @{
+											Text = $txt;
+											Value = $tmp;
+											}
+											$SettingsWordTable += $WordTableRowHash;
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											$txt,$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting $txt $tmp
+										}
+									}
+									Else
+									{
+										If($MSWord -or $PDF)
+										{
+											$WordTableRowHash = @{
+											Text = "";
+											Value = $tmp;
+											}
+											$SettingsWordTable += $WordTableRowHash;
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											"",$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting "`t`t`t`t`t  " $tmp
+										}
+									}
+								}
+								$tmpArray = $Null
+								$tmp = $Null
+							}
+							Else
+							{
+								$tmp = "No Exclusion list was found"
+								If($MSWord -or $PDF)
+								{
+									$WordTableRowHash = @{
+									Text = $txt;
+									Value = $tmp;
+									}
+									$SettingsWordTable += $WordTableRowHash;
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+									$txt,$htmlbold,
+									$tmp,$htmlwhite))
+								}
+								If($Text)
+								{
+									OutputPolicySetting $txt $tmp
+								}
+							}
+						}
+						Else
+						{
+							If($MSWord -or $PDF)
+							{
+								$WordTableRowHash = @{
+								Text = $txt;
+								Value = $Setting.ExclusionList_Part.State;
+								}
+								$SettingsWordTable += $WordTableRowHash;
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.ExclusionList_Part.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.ExclusionList_Part.State
+							}
+						}
+					}
+					If((validStateProp $Setting DisableConcurrentAccessToProfileContainer State ) -and ($Setting.DisableConcurrentAccessToProfileContainer.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Profile container settings\Profile container"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.DisableConcurrentAccessToProfileContainer.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.DisableConcurrentAccessToProfileContainer.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.DisableConcurrentAccessToProfileContainer.State
+						}
+					}
+					If((validStateProp $Setting GroupsToAccessProfileContainer_Part State ) -and ($Setting.GroupsToAccessProfileContainer_Part.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Profile container settings\Users and groups to access profile container"
+						If($Setting.GroupsToAccessProfileContainer_Part.State -eq "Enabled")
+						{
+							If(validStateProp $Setting GroupsToAccessProfileContainer_Part Values )
+							{
+								$tmpArray = $Setting.GroupsToAccessProfileContainer_Part.Values
+								$tmp = ""
+								$cnt = 0
+								ForEach($Thing in $tmpArray)
+								{
+									$cnt++
+									$tmp = "$($Thing)"
+									If($cnt -eq 1)
+									{
+										If($MSWord -or $PDF)
+										{
+											$WordTableRowHash = @{
+											Text = $txt;
+											Value = $tmp;
+											}
+											$SettingsWordTable += $WordTableRowHash;
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											$txt,$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting $txt $tmp
+										}
+									}
+									Else
+									{
+										If($MSWord -or $PDF)
+										{
+											$WordTableRowHash = @{
+											Text = "";
+											Value = $tmp;
+											}
+											$SettingsWordTable += $WordTableRowHash;
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											"",$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting "`t`t`t`t`t`t`t`t`t`t     " $tmp
+										}
+									}
+								}
+								$tmpArray = $Null
+								$tmp = $Null
+							}
+							Else
+							{
+								$tmp = "No Users and groups list was found"
+								If($MSWord -or $PDF)
+								{
+									$WordTableRowHash = @{
+									Text = $txt;
+									Value = $tmp;
+									}
+									$SettingsWordTable += $WordTableRowHash;
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+									$txt,$htmlbold,
+									$tmp,$htmlwhite))
+								}
+								If($Text)
+								{
+									OutputPolicySetting $txt $tmp
+								}
+							}
+						}
+						Else
+						{
+							If($MSWord -or $PDF)
+							{
+								$WordTableRowHash = @{
+								Text = $txt;
+								Value = $Setting.GroupsToAccessProfileContainer_Part.State;
+								}
+								$SettingsWordTable += $WordTableRowHash;
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.GroupsToAccessProfileContainer_Part.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.GroupsToAccessProfileContainer_Part.State
+							}
 						}
 					}
 
@@ -23993,7 +31304,27 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting TemplateProfilePath State ) -and ($Setting.TemplateProfilePath.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Profile handling\Path to the template profile"
-						If($Setting.TemplateProfilePath.State -eq "Enabled")
+						If($Setting.TemplateProfilePath.State -eq "Enabled" -and $Setting.TemplateProfilePath.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -24011,26 +31342,6 @@ Function ProcessCitrixPolicies
 							If($Text)
 							{
 								OutputPolicySetting $txt $Setting.TemplateProfilePath.Value 
-							}
-						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.TemplateProfilePath.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.TemplateProfilePath.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.TemplateProfilePath.State
 							}
 						}
 					}
@@ -24152,7 +31463,7 @@ Function ProcessCitrixPolicies
 										}
 										If($Text)
 										{
-											OutputPolicySetting "" $tmp
+											OutputPolicySetting "`t`t`t`t`t  " $tmp
 										}
 									}
 								}
@@ -24161,7 +31472,7 @@ Function ProcessCitrixPolicies
 							}
 							Else
 							{
-								$tmp = "No Exclusion list were found"
+								$tmp = "No Exclusion list was found"
 								If($MSWord -or $PDF)
 								{
 									$WordTableRowHash = @{
@@ -24257,7 +31568,7 @@ Function ProcessCitrixPolicies
 										}
 										If($Text)
 										{
-											OutputPolicySetting "" $tmp
+											OutputPolicySetting "`t`t`t`t`t  " $tmp
 										}
 									}
 								}
@@ -24671,7 +31982,7 @@ Function ProcessCitrixPolicies
 										}
 										If($Text)
 										{
-											OutputPolicySetting "" $tmp
+											OutputPolicySetting "`t`t`t`t`t`t`t`t      " $tmp
 										}
 									}
 								}
@@ -24745,6 +32056,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.PSPendingLockTimeout.Value 
 						}
 					}
+
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\Citrix Virtual Apps Optimization settings"
 					If((validStateProp $Setting XenAppOptimizationEnable State ) -and ($Setting.XenAppOptimizationEnable.State -ne "NotConfigured"))
 					{
@@ -24771,7 +32083,28 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting XenAppOptimizationDefinitionPathData State ) -and ($Setting.XenAppOptimizationDefinitionPathData.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Citrix Virtual Apps Optimization settings\Path to Citrix Virtual Apps optimization definitions:"
-						If($Setting.XenAppOptimizationDefinitionPathData.State -eq "Enabled")
+						If($Setting.XenAppOptimizationDefinitionPathData.State -eq "Enabled" -and $Setting.XenAppOptimizationDefinitionPathData.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$WordTableRowHash = @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+								$SettingsWordTable += $WordTableRowHash;
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled" 
+							}
+						}
+						Else
 						{
 							If($MSWord -or $PDF)
 							{
@@ -24790,27 +32123,6 @@ Function ProcessCitrixPolicies
 							If($Text)
 							{
 								OutputPolicySetting $txt $Setting.XenAppOptimizationDefinitionPathData.Value 
-							}
-						}
-						Else
-						{
-							If($MSWord -or $PDF)
-							{
-								$WordTableRowHash = @{
-								Text = $txt;
-								Value = $Setting.XenAppOptimizationDefinitionPathData.State;
-								}
-								$SettingsWordTable += $WordTableRowHash;
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.XenAppOptimizationDefinitionPathData.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.XenAppOptimizationDefinitionPathData.State 
 							}
 						}
 					}
@@ -24923,7 +32235,7 @@ Function ProcessCitrixPolicies
 									}
 									If($Text)
 									{
-										OutputPolicySetting "" $tmp
+										OutputPolicySetting "`t`t`t`t`t`t" $tmp
 									}
 								}
 								$xxx = $Null
@@ -24955,12 +32267,226 @@ Function ProcessCitrixPolicies
 							}
 							If($Text)
 							{
-								OutputPolicySetting "" $tmp
+								OutputPolicySetting "`t`t`t`t`t`t" $tmp
 							}
 						}
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tUser Personalization Layer"
+					If((validStateProp $Setting UplCustomizedUserLayerSizeInGb State ) -and ($Setting.UplCustomizedUserLayerSizeInGb.State -ne "NotConfigured"))
+					{
+						$txt = "User Personalization Layer\Customized User Layer Sizer in GB"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.UplCustomizedUserLayerSizeInGb.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.UplCustomizedUserLayerSizeInGb.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.UplCustomizedUserLayerSizeInGb.Value
+						}
+					}
+					If((validStateProp $Setting UserLayerCompactionEnabled State ) -and ($Setting.UserLayerCompactionEnabled.State -ne "NotConfigured"))
+					{
+						$txt = "User Personalization Layer\Enable user layer compaction"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.UserLayerCompactionEnabled.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.UserLayerCompactionEnabled.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.UserLayerCompactionEnabled.State
+						}
+					}
+					If((validStateProp $Setting UplGroupsUsingCustomizedUserLayerSizeState ) -and ($Setting.UplUserExclusions.State -ne "NotConfigured"))
+					{
+						$txt = "User Personalization Layer\Groups using customized user layer size"
+						If((validStateProp $Setting UplGroupsUsingCustomizedUserLayerSizeState ) -and ($Setting.UplUserExclusions.State -ne "NotConfigured"))
+						{
+							$tmpArray = $Setting.UplUserExclusions.Values
+							$array = $Null
+							$tmp = ""
+							$cnt = 0
+							ForEach($Thing in $TmpArray)
+							{
+								If($Null -eq $Thing)
+								{
+									$Thing = ''
+								}
+								$cnt++
+								$tmp = "$($Thing) "
+								If($cnt -eq 1)
+								{
+									If($MSWord -or $PDF)
+									{
+										$WordTableRowHash = @{
+										Text = $txt;
+										Value = $tmp;
+										}
+										$SettingsWordTable += $WordTableRowHash;
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										$txt,$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting $txt $tmp
+									}
+								}
+								Else
+								{
+									If($MSWord -or $PDF)
+									{
+										$WordTableRowHash = @{
+										Text = "";
+										Value = $tmp;
+										}
+										$SettingsWordTable += $WordTableRowHash;
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t`t`t    " $tmp
+									}
+								}
+							}
+							$TmpArray = $Null
+							$tmp = $Null
+						}
+						Else
+						{
+							$tmp = "No User Layer Exclusions were found"
+							If($MSWord -or $PDF)
+							{
+								$WordTableRowHash = @{
+								Text = $txt;
+								Value = $tmp;
+								}
+								$SettingsWordTable += $WordTableRowHash;
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp
+							}
+						}
+					}
+					If((validStateProp $Setting UplUserExclusions State ) -and ($Setting.UplUserExclusions.State -ne "NotConfigured"))
+					{
+						$txt = "User Personalization Layer\User Layer Exclusions"
+						If((validStateProp $Setting UplUserExclusions State ) -and ($Setting.UplUserExclusions.State -ne "NotConfigured"))
+						{
+							$tmpArray = $Setting.UplUserExclusions.Values
+							$array = $Null
+							$tmp = ""
+							$cnt = 0
+							ForEach($Thing in $TmpArray)
+							{
+								If($Null -eq $Thing)
+								{
+									$Thing = ''
+								}
+								$cnt++
+								$tmp = "$($Thing) "
+								If($cnt -eq 1)
+								{
+									If($MSWord -or $PDF)
+									{
+										$WordTableRowHash = @{
+										Text = $txt;
+										Value = $tmp;
+										}
+										$SettingsWordTable += $WordTableRowHash;
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										$txt,$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting $txt $tmp
+									}
+								}
+								Else
+								{
+									If($MSWord -or $PDF)
+									{
+										$WordTableRowHash = @{
+										Text = "";
+										Value = $tmp;
+										}
+										$SettingsWordTable += $WordTableRowHash;
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t`t`t    " $tmp
+									}
+								}
+							}
+							$TmpArray = $Null
+							$tmp = $Null
+						}
+						Else
+						{
+							$tmp = "No User Layer Exclusions were found"
+							If($MSWord -or $PDF)
+							{
+								$WordTableRowHash = @{
+								Text = $txt;
+								Value = $tmp;
+								}
+								$SettingsWordTable += $WordTableRowHash;
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp
+							}
+						}
+					}
 					If((validStateProp $Setting UplRepositoryPath State ) -and ($Setting.UplRepositoryPath.State -ne "NotConfigured"))
 					{
 						$txt = "User Personalization Layer\User Layer Repository Path"
@@ -25014,6 +32540,80 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $UPLSize 
 						}
 					}
+
+					Write-Verbose "$(Get-Date -Format G): `t`t`tVDA Data Collection"
+					If((validStateProp $Setting VdcPolicyEnable State ) -and ($Setting.VdcPolicyEnable.State -ne "NotConfigured"))
+					{
+						$txt = "VDA Data Collection\VDA data collection for Analytics"
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.VdcPolicyEnable.State;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.VdcPolicyEnable.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.VdcPolicyEnable.State
+						}
+					}
+
+					Write-Verbose "$(Get-Date -Format G): `t`t`tVDA Data Collection\Performance"
+					If((validStateProp $Setting EnableVdaDiagnosticsCollection State ) -and ($Setting.EnableVdaDiagnosticsCollection.State -ne "NotConfigured"))
+					{
+						$txt = "VDA Data Collection\Performance\Diagnostic data collection for performance monitoring"
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.EnableVdaDiagnosticsCollection.State;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableVdaDiagnosticsCollection.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableVdaDiagnosticsCollection.State
+						}
+					}
+
+					#added in 1.26
+					Write-Verbose "$(Get-Date -Format G): `t`t`tVDA Data Collection\Security"
+					If((validStateProp $Setting EnableClipboardMetadataCollection State ) -and ($Setting.EnableClipboardMetadataCollection.State -ne "NotConfigured"))
+					{
+						$txt = "VDA Data Collection\Security\Clipboard place metadata collection for Security monitoring"
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.EnableClipboardMetadataCollection.State;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableClipboardMetadataCollection.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableClipboardMetadataCollection.State
+						}
+					}
+					#end added in 1.26
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tVirtual Delivery Agent Settings"
 					If((validStateProp $Setting ControllerRegistrationIPv6Netmask State ) -and ($Setting.ControllerRegistrationIPv6Netmask.State -ne "NotConfigured"))
@@ -25234,9 +32834,9 @@ Function ProcessCitrixPolicies
 						$txt = "Virtual Delivery Agent Settings\Monitoring\List of applications excluded from failure monitoring"
 						If($Setting.StreamingExclusionList_Part.State -eq "Enabled")
 						{
-							If(validStateProp $Setting AppFailureExclusionList Values )
+							If(validStateProp $Setting AppFailureExclusionList Value )
 							{
-								$tmpArray = $Setting.AppFailureExclusionList.Values.Split(",")
+								$tmpArray = $Setting.AppFailureExclusionList.Value.Split(",")
 								$tmp = ""
 								$cnt = 0
 								ForEach($Thing in $tmpArray)
@@ -25282,7 +32882,7 @@ Function ProcessCitrixPolicies
 										}
 										If($Text)
 										{
-											OutputPolicySetting "" $tmp
+											OutputPolicySetting "`t`t`t`t`t`t`t`t`t`t`t`t" $tmp
 										}
 									}
 								}
@@ -25460,7 +33060,7 @@ Function ProcessCitrixPolicies
 									}
 									If($Text)
 									{
-										OutputPolicySetting "" $tmp
+										OutputPolicySetting "`t`t`t`t`t`t    " $tmp
 									}
 								}
 							}
@@ -25491,15 +33091,122 @@ Function ProcessCitrixPolicies
 						}
 					}
 				}
+
+				Write-Verbose "$(Get-Date -Format G): `t`t`tWorkspace Environment Management"
+				If((validStateProp $Setting WemCloudConnectorList State ) -and ($Setting.WemCloudConnectorList.State -ne "NotConfigured"))
+				{
+					$txt = "Workspace Environment Management\Citrix Cloud Connectors" #added in 2103
+					If($Setting.WemCloudConnectorList.State -eq "Enabled")
+					{
+						If(validStateProp $Setting WemCloudConnectorList Values )
+						{
+							$tmpArray = $Setting.WemCloudConnectorList.Values.Split(",")
+							$tmp = ""
+							$cnt = 0
+							ForEach($Thing in $tmpArray)
+							{
+								$cnt++
+								$tmp = "$($Thing)"
+								If($cnt -eq 1)
+								{
+									If($MSWord -or $PDF)
+									{
+										$WordTableRowHash = @{
+										Text = $txt;
+										Value = $tmp;
+										}
+										$SettingsWordTable += $WordTableRowHash;
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										$txt,$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting $txt $tmp
+									}
+								}
+								Else
+								{
+									If($MSWord -or $PDF)
+									{
+										$WordTableRowHash = @{
+										Text = "";
+										Value = $tmp;
+										}
+										$SettingsWordTable += $WordTableRowHash;
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t`t`t`t" $tmp
+									}
+								}
+							}
+							$tmpArray = $Null
+							$tmp = $Null
+						}
+						Else
+						{
+							$tmp = "No Citrix Cloud Connectors were found"
+							If($MSWord -or $PDF)
+							{
+								$WordTableRowHash = @{
+								Text = $txt;
+								Value = $tmp;
+								}
+								$SettingsWordTable += $WordTableRowHash;
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp
+							}
+						}
+					}
+					Else
+					{
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.WemCloudConnectorList.State;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.WemCloudConnectorList.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.WemCloudConnectorList.State 
+						}
+					}
+				}
+
 				If($MSWord -or $PDF)
 				{
 					If($SettingsWordTable.Count -gt 0) #don't process if array is empty
 					{
 						$Table = AddWordTable -Hashtable $SettingsWordTable `
 						-Columns  Text,Value `
-						-Headers  "Setting Key","Value"`
-						-Format $wdTableLightListAccent3 `
-						-NoInternalGridLines `
+						-Headers  "Setting Key","Value" `
+						-Format $wdTableGrid `
 						-AutoFit $wdAutoFitFixed;
 
 						SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
@@ -25530,8 +33237,8 @@ Function ProcessCitrixPolicies
 						'Value',($global:htmlsb))
 
 						$msg = ""
-						$columnWidths = @("400","300")
-						FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+						$columnWidths = @("500","400")
+						FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "900"
 					}
 				}
 			}
@@ -25567,8 +33274,12 @@ Function ProcessCitrixPolicies
 	}
 	
 	$CtxPolicies = $Null
-	Write-Verbose "$(Get-Date -Format G): `tRemoving $($xDriveName) PSDrive"
-	Remove-PSDrive -Name $xDriveName -EA 0 4>$Null
+	
+	If($xDriveName -ne "LocalSiteGPO")
+	{
+		Write-Verbose "$(Get-Date -Format G): `tRemoving $($xDriveName) PSDrive"
+		Remove-PSDrive -Name $xDriveName -EA 0 4>$Null
+	}
 	Write-Verbose "$(Get-Date -Format G): "
 }
 
@@ -25634,9 +33345,9 @@ Function Get-PrinterModifiedSettings
 				$tmp1 = $xelement.SubString($index + 1)
 				Switch ($tmp1)
 				{
-					1 {$tmp2 = "Monochrome"; Break}
-					2 {$tmp2 = "Color"; Break}
-					Default {$tmp2 = "Color could not be determined: $($xelement) "; Break}
+					1		{$tmp2 = "Monochrome"; Break}
+					2		{$tmp2 = "Color"; Break}
+					Default	{$tmp2 = "Color could not be determined: $($xelement) "; Break}
 				}
 				$ReturnStr = "$txt $tmp2"
 			}
@@ -25650,10 +33361,10 @@ Function Get-PrinterModifiedSettings
 				$tmp1 = $xelement.SubString($index + 1)
 				Switch ($tmp1)
 				{
-					-1 {$tmp2 = "150 dpi"; Break}
-					-2 {$tmp2 = "300 dpi"; Break}
-					-3 {$tmp2 = "600 dpi"; Break}
-					-4 {$tmp2 = "1200 dpi"; Break}
+					-1		{$tmp2 = "150 dpi"; Break}
+					-2		{$tmp2 = "300 dpi"; Break}
+					-3		{$tmp2 = "600 dpi"; Break}
+					-4		{$tmp2 = "1200 dpi"; Break}
 					Default {$tmp2 = "Custom...X resolution: $tmp1"; Break}
 				}
 				$ReturnStr = "$txt $tmp2"
@@ -25680,7 +33391,7 @@ Function Get-PrinterModifiedSettings
 				{
 					"portrait"  {$tmp2 = "Portrait"; Break}
 					"landscape" {$tmp2 = "Landscape"; Break}
-					Default {$tmp2 = "Orientation could not be determined: $($xelement) ; Break"}
+					Default		{$tmp2 = "Orientation could not be determined: $($xelement) ; Break"}
 				}
 				$ReturnStr = "$txt $tmp2"
 			}
@@ -25694,10 +33405,10 @@ Function Get-PrinterModifiedSettings
 				$tmp1 = $xelement.SubString($index + 1)
 				Switch ($tmp1)
 				{
-					1 {$tmp2 = "Simplex"; Break}
-					2 {$tmp2 = "Vertical"; Break}
-					3 {$tmp2 = "Horizontal"; Break}
-					Default {$tmp2 = "Duplex could not be determined: $($xelement) "; Break}
+					1		{$tmp2 = "Simplex"; Break}
+					2		{$tmp2 = "Vertical"; Break}
+					3		{$tmp2 = "Horizontal"; Break}
+					Default	{$tmp2 = "Duplex could not be determined: $($xelement) "; Break}
 				}
 				$ReturnStr = "$txt $tmp2"
 			}
@@ -25827,8 +33538,8 @@ Function Get-PrinterModifiedSettings
 					114 {$tmp2 = "PRC Envelope #6 Rotated"; Break}
 					115 {$tmp2 = "PRC Envelope #7 Rotated"; Break}
 					116 {$tmp2 = "PRC Envelope #8 Rotated"; Break}
-					117 {$tmp2 = "PRC Envelope #9 Rotated"; Break}
-					Default {$tmp2 = "Paper Size could not be determined: $($xelement) "; Break}
+					117	{$tmp2 = "PRC Envelope #9 Rotated"; Break}
+					Default	{$tmp2 = "Paper Size could not be determined: $($xelement) "; Break}
 				}
 				$ReturnStr = "$txt $tmp2"
 			}
@@ -25855,11 +33566,11 @@ Function Get-PrinterModifiedSettings
 				$tmp1 = $xelement.SubString($index + 1)
 				Switch ($tmp1)
 				{
-					1 {$tmp2 = "Bitmap"; Break}
-					2 {$tmp2 = "Download"; Break}
-					3 {$tmp2 = "Substitute"; Break}
-					4 {$tmp2 = "Outline"; Break}
-					Default {$tmp2 = "TrueType could not be determined: $($xelement) "; Break}
+					1		{$tmp2 = "Bitmap"; Break}
+					2		{$tmp2 = "Download"; Break}
+					3		{$tmp2 = "Substitute"; Break}
+					4		{$tmp2 = "Outline"; Break}
+					Default	{$tmp2 = "TrueType could not be determined: $($xelement) "; Break}
 				}
 			}
 			$ReturnStr = "$txt $tmp2"
@@ -25958,7 +33669,7 @@ Function ProcessConfigLogging
 	{
 		Write-Verbose "$(Get-Date -Format G): Processing Configuration Logging"
 		$txt1 = "Logging"
-		If($MSword -or $PDF)
+		If($MSWord -or $PDF)
 		{
 			$Selection.InsertNewPage()
 			WriteWordLine 1 0 $txt1
@@ -26015,9 +33726,8 @@ Function OutputConfigLog
 	
 	Write-Verbose "$(Get-Date -Format G): `t`tOutput Configuration Logging Details"
 	$txt2 = " For date range $($StartDate) through $($EndDate)"
-	If($MSword -or $PDF)
+	If($MSWord -or $PDF)
 	{
-		$Selection.InsertNewPage()
 		WriteWordLine 0 0 $txt2
 	}
 	If($Text)
@@ -26054,11 +33764,11 @@ Function OutputConfigLog
 		If($MSWord -or $PDF)
 		{
 			$ItemsWordTable += @{ 
-			Administrator = $Item.User;
-			MainTask = $Item.Text;
-			Start = $Item.StartTime;
-			End = $Item.EndTime;
-			Status = $tmp;
+				Administrator = $Item.User;
+				MainTask = $Item.Text;
+				Start = $Item.StartTime;
+				End = $Item.EndTime;
+				Status = $tmp;
 			}
 		}
 		If($Text)
@@ -26073,17 +33783,28 @@ Function OutputConfigLog
 		If($HTML)
 		{
 			$rowdata += @(,(
-			$Item.User,$htmlwhite,
-			$Item.Text,$htmlwhite,
-			$Item.StartTime,$htmlwhite,
-			$Item.EndTime,$htmlwhite,
-			$Tmp,$htmlwhite
-			))
+				$Item.User,$htmlwhite,
+				$Item.Text,$htmlwhite,
+				$Item.StartTime,$htmlwhite,
+				$Item.EndTime,$htmlwhite,
+				$Tmp,$htmlwhite)
+			)
 		}
 	}
 
 	If($MSWord -or $PDF)
 	{
+		If($ItemsWordTable.Count -eq 0)
+		{
+			$ItemsWordTable += @{ 
+				Administrator = "None found";
+				MainTask = "";
+				Start = "";
+				End = "";
+				Status = "";
+			}
+		}
+		
 		$Table = AddWordTable -Hashtable $ItemsWordTable `
 		-Columns Administrator, MainTask, Start, End, Status `
 		-Headers  "Administrator", "Main task", "Start", "End", "Status" `
@@ -26107,11 +33828,12 @@ Function OutputConfigLog
 	If($HTML)
 	{
 		$columnHeaders = @(
-		'Administrator',($global:htmlsb),
-		'Main task',($global:htmlsb),
-		'Start',($global:htmlsb),
-		'End',($global:htmlsb),
-		'Status',($global:htmlsb))
+			'Administrator',($global:htmlsb),
+			'Main task',($global:htmlsb),
+			'Start',($global:htmlsb),
+			'End',($global:htmlsb),
+			'Status',($global:htmlsb)
+		)
 
 		$msg = ""
 		$columnWidths = @("125","275","125","125","50")
@@ -26148,9 +33870,41 @@ Function OutputSiteSettings
 		"L7_9"	{$xVDAVersion = "7.9 (or newer)"; Break}
 		"L7_20"	{$xVDAVersion = "1811 (or newer)"; Break}
 		"L7_25"	{$xVDAVersion = "2003 (or newer)"; Break}
+		"L7_30"	{$xVDAVersion = "2106 (or newer)"; Break}
+		"L7_34"	{$xVDAVersion = "2206 (or newer)"; Break}
 		Default {$xVDAVersion = "Unable to determine VDA version: $($Script:CCSite1.DefaultMinimumFunctionalLevel)"; Break}
 	}
 
+	$Scaling = ""
+	If($Script:CCSite1.UseVerticalScalingForRdsLaunches)
+	{
+		$Scaling = "Vertical load balancing"
+	}
+	Else
+	{
+		$Scaling = "Horizontal load balancing"
+	}
+	
+	#$Results = Get-BrokerServiceConfigurationData -SettingName "Core.AllowMultipleRemotePCAssignments" -EA 0
+	
+	If($Script:DDCConfigData.SettingName -Contains "Core.AllowMultipleRemotePCAssignments")
+	{
+		$AllowMultipleRemotePCAssignments = "True"
+	}
+	Else
+	{
+		$AllowMultipleRemotePCAssignments = "False"
+	}
+
+	If([String]::IsNullOrEmpty($Script:CCSite1.BaseOU))
+	{
+		$BaseOU = "-"
+	}
+	Else
+	{
+		$BaseOU = $Script:CCSite1.BaseOU
+	}
+	
 	Write-Verbose "$(Get-Date -Format G): `tOutput Site Settings"
 	If($MSWord -or $PDF)
 	{
@@ -26159,14 +33913,26 @@ Function OutputSiteSettings
 		WriteWordLine 2 0 "Site Settings"
 		$ScriptInformation = New-Object System.Collections.ArrayList
 		$ScriptInformation.Add(@{Data = "Site name"; Value = $CCSiteName; }) > $Null
-		$ScriptInformation.Add(@{Data = "Base OU"; Value = $Script:CCSite1.BaseOU; }) > $Null
+		$ScriptInformation.Add(@{Data = "Base OU"; Value = $BaseOU; }) > $Null
+		$ScriptInformation.Add(@{Data = "Bypass Authentication for Cached Resources"; Value = $Script:CCSite1.BypassAuthForCachedResources.ToString(); }) > $Null #new in 1.15
+		$ScriptInformation.Add(@{Data = "Cloud Site License"; Value = $Script:CCSite1.CloudSiteLicense; }) > $Null #new in 1.15
+		$ScriptInformation.Add(@{Data = "Cloud Valid Licenses"; Value = $Script:CCSite1.CloudValidLicenses; }) > $Null #new in 1.15
 		$ScriptInformation.Add(@{Data = "Color Depth"; Value = $xColorDepth; }) > $Null
+		$ScriptInformation.Add(@{Data = "Credential Forwarding to Cloud Allowed"; Value = $Script:CCSite1.CredentialForwardingToCloudAllowed.ToString(); }) > $Null #new in 1.15
 		$ScriptInformation.Add(@{Data = "Default Minimum Functional Level"; Value = $xVDAVersion; }) > $Null
+		$ScriptInformation.Add(@{Data = "Default Reuse Machines Without Shutdown In Outage"; Value = $Script:CCSite1.DefaultReuseMachinesWithoutShutdownInOutage.ToString(); }) > $Null #new in 1.15
+		$ScriptInformation.Add(@{Data = "Delete Resource Leases on Logoff"; Value = $Script:CCSite1.DeleteResourceLeasesOnLogOff.ToString(); }) > $Null #new in 1.15
 		$ScriptInformation.Add(@{Data = "DNS Resolution Enabled"; Value = $Script:CCSite1.DnsResolutionEnabled.ToString(); }) > $Null
-		$ScriptInformation.Add(@{Data = "Is Secondary Broker"; Value = $Script:CCSite1.IsSecondaryBroker.ToString(); }) > $Null
+		$ScriptInformation.Add(@{Data = "Enable automatic assignment of multiple users for Remote PC Access"; Value = $AllowMultipleRemotePCAssignments; }) > $Null #new in 1.15
+		$ScriptInformation.Add(@{Data = "Load Balance Multi-Session Catalogs"; Value = $Scaling; }) > $Null #new in 1.15
 		$ScriptInformation.Add(@{Data = "Local Host Cache Enabled"; Value = $Script:CCSite1.LocalHostCacheEnabled.ToString(); }) > $Null
+		$ScriptInformation.Add(@{Data = "Resource Lease Validity Period in Days"; Value = $Script:CCSite1.ResourceLeaseValidityPeriodInDays.ToString(); }) > $Null #new in 1.15
+		$ScriptInformation.Add(@{Data = "Resource Leasing Enabled"; Value = $Script:CCSite1.ResourceLeasingEnabled.ToString(); }) > $Null #new in 1.15
 		$ScriptInformation.Add(@{Data = "Reuse Machines Without Shutdown in Outage Allowed"; Value = $Script:CCSite1.ReuseMachinesWithoutShutdownInOutageAllowed.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = "Secure ICA Required"; Value = $Script:CCSite1.SecureIcaRequired.ToString(); }) > $Null
+		$ScriptInformation.Add(@{Data = "Telemetry Headless Launch Enabled"; Value = $Script:CCSite1.TelemetryHeadlessLaunchEnabled.ToString(); }) > $Null #new in 1.15
+		$ScriptInformation.Add(@{Data = "Telemetry Launch Minimum Time Interval in Minutes"; Value = $Script:CCSite1.TelemetryLaunchMinTimeIntervalMins.ToString(); }) > $Null #new in 1.15
+		$ScriptInformation.Add(@{Data = "Telemetry Launch Shadow Delay in Minutes"; Value = $Script:CCSite1.TelemetryLaunchShadowDelayMins.ToString(); }) > $Null #new in 1.15
 		$ScriptInformation.Add(@{Data = "Trust Managed Anonymous XML Service Requests"; Value = $Script:CCSite1.TrustManagedAnonymousXmlServiceRequests.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = "Trust Requests Sent to the XML Service Port"; Value = $Script:CCSite1.TrustRequestsSentToTheXmlServicePort.ToString(); }) > $Null
 		$Table = AddWordTable -Hashtable $ScriptInformation `
@@ -26189,17 +33955,29 @@ Function OutputSiteSettings
 		Line 0 ""
 		Line 0 "Site Settings"
 		Line 0 ""
-		Line 1 "Site name`t`t`t`t`t`t: " $CCSiteName
-		Line 1 "Base OU`t`t`t`t`t`t`t: " $Script:CCSite1.BaseOU
-		Line 1 "Color Depth`t`t`t`t`t`t: " $xColorDepth
-		Line 1 "Default Minimum Functional Level`t`t`t: " $xVDAVersion
-		Line 1 "DNS Resolution Enabled`t`t`t`t`t: " $Script:CCSite1.DnsResolutionEnabled.ToString()
-		Line 1 "Is Secondary Broker`t`t`t`t`t: " $Script:CCSite1.IsSecondaryBroker.ToString()
-		Line 1 "Local Host Cache Enabled`t`t`t`t: " $Script:CCSite1.LocalHostCacheEnabled.ToString()
-		Line 1 "Reuse Machines Without Shutdown in Outage Allowed`t: " $Script:CCSite1.ReuseMachinesWithoutShutdownInOutageAllowed.ToString()
-		Line 1 "Secure ICA Required`t`t`t`t`t: " $Script:CCSite1.SecureIcaRequired.ToString()
-		Line 1 "Trust Managed Anonymous XML Service Requests`t`t: " $Script:CCSite1.TrustManagedAnonymousXmlServiceRequests.ToString()
-		Line 1 "Trust Requests Sent to the XML Service Port`t`t: " $Script:CCSite1.TrustRequestsSentToTheXmlServicePort.ToString()
+		Line 1 "Site name`t`t`t`t`t`t`t`t: " $CCSiteName
+		Line 1 "Base OU`t`t`t`t`t`t`t`t`t: " $BaseOU
+		Line 1 "Bypass Authentication for Cached Resources`t`t`t`t: " $Script:CCSite1.BypassAuthForCachedResources.ToString() #new in 1.15
+		Line 1 "Cloud Site License`t`t`t`t`t`t`t: " $Script:CCSite1.CloudSiteLicense #new in 1.15
+		Line 1 "Cloud Valid Licenses`t`t`t`t`t`t`t: " $Script:CCSite1.CloudValidLicenses #new in 1.15
+		Line 1 "Color Depth`t`t`t`t`t`t`t`t: " $xColorDepth
+		Line 1 "Credential Forwarding to Cloud Allowed`t`t`t`t`t: " $Script:CCSite1.CredentialForwardingToCloudAllowed.ToString() #new in 1.15
+		Line 1 "Default Minimum Functional Level`t`t`t`t`t: " $xVDAVersion
+		Line 1 "Default Reuse Machines Without Shutdown In Outage`t`t`t: " $Script:CCSite1.DefaultReuseMachinesWithoutShutdownInOutage.ToString() #new in 1.15
+		Line 1 "Delete Resource Leases on Logoff`t`t`t`t`t: " $Script:CCSite1.DeleteResourceLeasesOnLogOff.ToString() #new in 1.15
+		Line 1 "DNS Resolution Enabled`t`t`t`t`t`t`t: " $Script:CCSite1.DnsResolutionEnabled.ToString()
+		Line 1 "Enable automatic assignment of multiple users for Remote PC Access`t: " $AllowMultipleRemotePCAssignments #new in 1.15
+		Line 1 "Load Balance Multi-Session Catalogs`t`t`t`t`t: " $Scaling #new in 1.15
+		Line 1 "Local Host Cache Enabled`t`t`t`t`t`t: " $Script:CCSite1.LocalHostCacheEnabled.ToString()
+		Line 1 "Resource Lease Validity Period in Days`t`t`t`t`t: " $Script:CCSite1.ResourceLeaseValidityPeriodInDays.ToString() #new in 1.15
+		Line 1 "Resource Leasing Enabled`t`t`t`t`t`t: "  $Script:CCSite1.ResourceLeasingEnabled.ToString() #new in 1.15
+		Line 1 "Reuse Machines Without Shutdown in Outage Allowed`t`t`t: " $Script:CCSite1.ReuseMachinesWithoutShutdownInOutageAllowed.ToString()
+		Line 1 "Secure ICA Required`t`t`t`t`t`t`t: " $Script:CCSite1.SecureIcaRequired.ToString()
+		Line 1 "Telemetry Headless Launch Enabled`t`t`t`t`t: " $Script:CCSite1.TelemetryHeadlessLaunchEnabled.ToString() #new in 1.15
+		Line 1 "Telemetry Launch Minimum Time Interval in Minutes`t`t`t: " $Script:CCSite1.TelemetryLaunchMinTimeIntervalMins.ToString() #new in 1.15
+		Line 1 "Telemetry Launch Shadow Delay in Minutes`t`t`t`t: " $Script:CCSite1.TelemetryLaunchShadowDelayMins.ToString() #new in 1.15
+		Line 1 "Trust Managed Anonymous XML Service Requests`t`t`t`t: " $Script:CCSite1.TrustManagedAnonymousXmlServiceRequests.ToString()
+		Line 1 "Trust Requests Sent to the XML Service Port`t`t`t`t: " $Script:CCSite1.TrustRequestsSentToTheXmlServicePort.ToString()
 		Line 0 ""
 	}
 	If($HTML)
@@ -26208,14 +33986,26 @@ Function OutputSiteSettings
 		WriteHTMLLine 2 0 "Site Settings"
 		$rowdata = @()
 		$columnHeaders = @("Site name",($global:htmlsb),$CCSiteName,$htmlwhite)
-		$rowdata += @(,("Base OU",($global:htmlsb),$Script:CCSite1.BaseOU,$htmlwhite))
+		$rowdata += @(,("Base OU",($global:htmlsb),$BaseOU,$htmlwhite))
+		$rowdata += @(,("Bypass Authentication for Cached Resources",($global:htmlsb),$Script:CCSite1.BypassAuthForCachedResources.ToString(),$htmlwhite)) #new in 1.15
+		$rowdata += @(,("Cloud Site License",($global:htmlsb),$Script:CCSite1.CloudSiteLicense,$htmlwhite)) #new in 1.15
+		$rowdata += @(,("Cloud Valid Licenses",($global:htmlsb),$Script:CCSite1.CloudValidLicenses,$htmlwhite)) #new in 1.15
 		$rowdata += @(,("Color Depth",($global:htmlsb),$xColorDepth,$htmlwhite))
+		$rowdata += @(,("Credential Forwarding to Cloud Allowed",($global:htmlsb),$Script:CCSite1.CredentialForwardingToCloudAllowed.ToString(),$htmlwhite)) #new in 1.15
 		$rowdata += @(,("Default Minimum Functional Level",($global:htmlsb),$xVDAVersion,$htmlwhite))
+		$rowdata += @(,("Default Reuse Machines Without Shutdown In Outage",($global:htmlsb),$Script:CCSite1.DefaultReuseMachinesWithoutShutdownInOutage.ToString(),$htmlwhite)) #new in 1.15
+		$rowdata += @(,("Delete Resource Leases on Logoff",($global:htmlsb),$Script:CCSite1.DeleteResourceLeasesOnLogOff.ToString(),$htmlwhite)) #new in 1.15
 		$rowdata += @(,("DNS Resolution Enabled",($global:htmlsb),$Script:CCSite1.DnsResolutionEnabled.ToString(),$htmlwhite))
-		$rowdata += @(,("Is Secondary Broker",($global:htmlsb),$Script:CCSite1.IsSecondaryBroker.ToString(),$htmlwhite))
+		$rowdata += @(,("Enable automatic assignment of multiple users for Remote PC Access",($global:htmlsb),$AllowMultipleRemotePCAssignments,$htmlwhite)) #new in 1.15
+		$rowdata += @(,("Load Balance Multi-Session Catalogs",($global:htmlsb),$Scaling,$htmlwhite)) #new in 1.15
 		$rowdata += @(,("Local Host Cache Enabled",($global:htmlsb),$Script:CCSite1.LocalHostCacheEnabled.ToString(),$htmlwhite))
+		$rowdata += @(,("Resource Lease Validity Period in Days",($global:htmlsb),$Script:CCSite1.ResourceLeaseValidityPeriodInDays.ToString(),$htmlwhite)) #new in 1.15
+		$rowdata += @(,("Resource Leasing Enabled",($global:htmlsb),$Script:CCSite1.ResourceLeasingEnabled.ToString(),$htmlwhite)) #new in 1.15
 		$rowdata += @(,("Reuse Machines Without Shutdown in Outage Allowed",($global:htmlsb),$Script:CCSite1.ReuseMachinesWithoutShutdownInOutageAllowed.ToString(),$htmlwhite))
 		$rowdata += @(,("Secure ICA Required",($global:htmlsb),$Script:CCSite1.SecureIcaRequired.ToString(),$htmlwhite))
+		$rowdata += @(,("Telemetry Headless Launch Enabled",($global:htmlsb),$Script:CCSite1.TelemetryHeadlessLaunchEnabled.ToString(),$htmlwhite)) #new in 1.15
+		$rowdata += @(,("Telemetry Launch Minimum Time Interval in Minutes",($global:htmlsb),$Script:CCSite1.TelemetryLaunchMinTimeIntervalMins.ToString(),$htmlwhite)) #new in 1.15
+		$rowdata += @(,("Telemetry Launch Shadow Delay in Minutes",($global:htmlsb),$Script:CCSite1.TelemetryLaunchShadowDelayMins.ToString(),$htmlwhite)) #new in 1.15
 		$rowdata += @(,("Trust Managed Anonymous XML Service Requests",($global:htmlsb),$Script:CCSite1.TrustManagedAnonymousXmlServiceRequests.ToString(),$htmlwhite))
 		$rowdata += @(,("Trust Requests Sent to the XML Service Port",($global:htmlsb),$Script:CCSite1.TrustRequestsSentToTheXmlServicePort.ToString(),$htmlwhite))
 		
@@ -26231,7 +34021,8 @@ Function ProcessAdministrators
 	Write-Verbose "$(Get-Date -Format G): `tRetrieving Administrator data"
 	
 	$Admins = Get-AdminAdministrator @CCParams2 | `
-	Where-Object {$_.UserIdentityType -ne "Sid" -and (-not [String]::IsNullOrEmpty($_.Name))}
+	Where-Object {$_.UserIdentityType -ne "Sid" -and (-not [String]::IsNullOrEmpty($_.Name))} | `
+	Sort-Object Name
 
 	If($? -and ($Null -ne $Admins))
 	{
@@ -26354,19 +34145,20 @@ Function OutputAdministrators
 			If($MSWord -or $PDF)
 			{
 				$AdminsWordTable += @{
-				Name = $Admin.Name; 
-				Scope = $xScopeName; 
-				Role = $xRoleName; 
-				Status = $Tmp;
+					Name = $Admin.Name; 
+					Scope = $xScopeName; 
+					Role = $xRoleName; 
+					Status = $Tmp;
 				}
 			}
 			If($HTML)
 			{
 				$rowdata += @(,(
-				$Admin.Name,$htmlwhite,
-				$xScopeName,$htmlwhite,
-				$xRoleName,$htmlwhite,
-				$Tmp,$htmlwhite))
+					$Admin.Name,$htmlwhite,
+					$xScopeName,$htmlwhite,
+					$xRoleName,$htmlwhite,
+					$Tmp,$htmlwhite)
+				)
 			}
 		}
 		
@@ -26375,10 +34167,10 @@ Function OutputAdministrators
 			If($AdminsWordTable.Count -eq 0)
 			{
 				$AdminsWordTable += @{ 
-				Name = "No admins found";
-				Scope = "N/A"
-				Role = "N/A";
-				Status = "N/A";
+					Name = "No admins found";
+					Scope = "N/A"
+					Role = "N/A";
+					Status = "N/A";
 				}
 			}
 
@@ -26388,20 +34180,23 @@ Function OutputAdministrators
 			-Format $wdTableGrid `
 			-AutoFit $wdAutoFitContent;
 
+			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
 			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
 			FindWordDocumentEnd
 			$Table = $Null
+			WriteWordLine 0 0 ""
 		}
 		If($HTML)
 		{
 			$columnHeaders = @(
-			'Name',($global:htmlsb),
-			'Scope',($global:htmlsb),
-			'Role',($global:htmlsb),
-			'Status',($global:htmlsb))
+				'Name',($global:htmlsb),
+				'Scope',($global:htmlsb),
+				'Role',($global:htmlsb),
+				'Status',($global:htmlsb)
+			)
 
 			$msg = ""
 			FormatHTMLTable $msg "auto" -rowArray $rowdata -columnArray $columnHeaders
@@ -26512,41 +34307,61 @@ Function OutputScopes
 	}
 	ForEach($Scope in $Scopes)
 	{
+		If([String]::IsNullOrEmpty($Scope.Description))
+		{
+			$ScopeDescription = "-"
+		}
+		Else
+		{
+			$ScopeDescription = $Scope.Description
+		}
+		
 		If($MSWord -or $PDF)
 		{
 			$ScopesWordTable += @{ 
-			Name = $Scope.Name; 
-			Description = $Scope.Description;
+				Name = $Scope.Name; 
+				Description = $ScopeDescription;
 			}
 		}
 		If($Text)
 		{
 			Line 1 "Name`t`t: " $Scope.Name
-			Line 1 "Description`t: " $Scope.Description
+			Line 1 "Description`t: " $ScopeDescription
 			Line 0 ""
 		}
 		If($HTML)
 		{
 			$rowdata += @(,(
-			$Scope.Name,$htmlwhite,
-			$Scope.Description,$htmlwhite))
+				$Scope.Name,$htmlwhite,
+				$ScopeDescription,$htmlwhite)
+			)
 		}
 	}
 
 	If($MSWord -or $PDF)
 	{
+		If($ScopesWordTable.Count -eq 0)
+		{
+			$ScopesWordTable += @{ 
+				Name = "None found"; 
+				Description = "";
+			}
+		}
+		
 		$Table = AddWordTable -Hashtable $ScopesWordTable `
 		-Columns Name, Description `
 		-Headers "Name", "Description" `
 		-Format $wdTableGrid `
 		-AutoFit $wdAutoFitContent;
 
+		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
 		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
 		FindWordDocumentEnd
 		$Table = $Null
+		WriteWordLine 0 0 ""
 	}
 	If($Text)
 	{
@@ -26555,8 +34370,9 @@ Function OutputScopes
 	If($HTML)
 	{
 		$columnHeaders = @(
-		'Name',($global:htmlsb),
-		'Description',($global:htmlsb))
+			'Name',($global:htmlsb),
+			'Description',($global:htmlsb)
+		)
 
 		$msg = ""
 		FormatHTMLTable $msg "auto" -rowArray $rowdata -columnArray $columnHeaders
@@ -26610,29 +34426,47 @@ Function OutputScopeObjects
 			
 			ForEach($Result in $Results)
 			{
+				If([String]::IsNullOrEmpty($Result.Description))
+				{
+					$ResultDescription = "-"
+				}
+				Else
+				{
+					$ResultDescription = $Result.Description
+				}
+				
 				If($MSWord -or $PDF)
 				{
 					$WordTable += @{ 
-					GroupName = $Result.Name; 
-					GroupDesc = $Result.Description; 
+						GroupName = $Result.Name; 
+						GroupDesc = $ResultDescription; 
 					}
 				}
 				If($Text)
 				{
 					Line 1 "Name: " $Result.Name
-					Line 1 "Description: " $Result.Description
+					Line 1 "Description: " $ResultDescription
 					Line 0 ""
 				}
 				If($HTML)
 				{
 					$rowdata += @(,(
-					$Result.Name,$htmlwhite,
-					$Result.Description,$htmlwhite))
+						$Result.Name,$htmlwhite,
+						$ResultDescription,$htmlwhite)
+					)
 				}
 			}
 
 			If($MSWord -or $PDF)
 			{
+				If($WordTable.Count -eq 0)
+				{
+					$WordTable += @{ 
+						GroupName = "None found"; 
+						GroupDesc = ""; 
+					}
+				}
+				
 				$Table = AddWordTable -Hashtable $WordTable `
 				-Columns GroupName, GroupDesc `
 				-Headers "Name", "Description" `
@@ -26648,6 +34482,7 @@ Function OutputScopeObjects
 
 				FindWordDocumentEnd
 				$Table = $Null
+				WriteWordLine 0 0 ""
 			}
 			If($Text)
 			{
@@ -26683,29 +34518,47 @@ Function OutputScopeObjects
 
 			ForEach($Result in $Results)
 			{
+				If([String]::IsNullOrEmpty($Result.Description))
+				{
+					$ResultDescription = "-"
+				}
+				Else
+				{
+					$ResultDescription = $Result.Description
+				}
+				
 				If($MSWord -or $PDF)
 				{
 					$WordTable += @{ 
-					CatalogName = $Result.Name; 
-					CatalogDesc = $Result.Description; 
+						CatalogName = $Result.Name; 
+						CatalogDesc = $ResultDescription; 
 					}
 				}
 				If($Text)
 				{
 					Line 1 "Name: " $Result.Name
-					Line 1 "Description: " $Result.Description
+					Line 1 "Description: " $ResultDescription
 					Line 0 ""
 				}
 				If($HTML)
 				{
 					$rowdata += @(,(
-					$Result.Name,$htmlwhite,
-					$Result.Description,$htmlwhite))
+						$Result.Name,$htmlwhite,
+						$ResultDescription,$htmlwhite)
+					)
 				}
 			}
 			
 			If($MSWord -or $PDF)
 			{
+				If($WordTable.Count -eq 0)
+				{
+					$WordTable += @{ 
+						CatalogName = "None found"; 
+						CatalogDesc = ""; 
+					}
+				}
+				
 				$Table = AddWordTable -Hashtable $WordTable `
 				-Columns CatalogName, CatalogDesc `
 				-Headers "Name", "Description" `
@@ -26721,6 +34574,7 @@ Function OutputScopeObjects
 
 				FindWordDocumentEnd
 				$Table = $Null
+				WriteWordLine 0 0 ""
 			}
 			If($Text)
 			{
@@ -26756,29 +34610,47 @@ Function OutputScopeObjects
 
 			ForEach($Result in $Results)
 			{
+				If([String]::IsNullOrEmpty($Result.Description))
+				{
+					$ResultDescription = "-"
+				}
+				Else
+				{
+					$ResultDescription = $Result.Description
+				}
+				
 				If($MSWord -or $PDF)
 				{
 					$WordTable += @{ 
-					HypName = $Result.Name; 
-					HypDesc = $Result.Description; 
+						HypName = $Result.Name; 
+						HypDesc = $ResultDescription; 
 					}
 				}
 				If($Text)
 				{
 					Line 1 "Name: " $Result.Name
-					Line 1 "Description: " $Result.Description
+					Line 1 "Description: " $ResultDescription
 					Line 0 ""
 				}
 				If($HTML)
 				{
 					$rowdata += @(,(
-					$Result.Name,$htmlwhite,
-					$Result.Description,$htmlwhite))
+						$Result.Name,$htmlwhite,
+						$ResultDescription,$htmlwhite)
+					)
 				}
 			}
 			
 			If($MSWord -or $PDF)
 			{
+				If($WordTable.Count -eq 0)
+				{
+					$WordTable += @{ 
+						HypName = "None found"; 
+						HypDesc = ""; 
+					}
+				}
+				
 				$Table = AddWordTable -Hashtable $WordTable `
 				-Columns HypName, HypDesc `
 				-Headers "Name", "Description" `
@@ -26843,11 +34715,20 @@ Function GetScopeDG
 	{
 		ForEach($Result in $Results)
 		{
+			If([String]::IsNullOrEmpty($Result.Description))
+			{
+				$ResultDescription = "-"
+			}
+			Else
+			{
+				$ResultDescription = $Result.Description
+			}
+			
 			$obj = [PSCustomObject] @{
 				Name        = $Result.Name			
-				Description = $Result.Description			
+				Description = $ResultDescription			
 			}
-			$null = $DG.Add($obj)
+			$Null = $DG.Add($obj)
 		}
 	}
 
@@ -26879,11 +34760,20 @@ Function GetScopeMC
 	{
 		ForEach($Result in $Results)
 		{
+			If([String]::IsNullOrEmpty($Result.Description))
+			{
+				$ResultDescription = "-"
+			}
+			Else
+			{
+				$ResultDescription = $Result.Description
+			}
+			
 			$obj = [PSCustomObject] @{
 				Name        = $Result.Name			
-				Description = $Result.Description			
+				Description = $ResultDescription			
 			}
-			$null = $MC.Add($obj)
+			$Null = $MC.Add($obj)
 		}
 	}
 
@@ -26915,11 +34805,20 @@ Function GetScopeHyp
 	{
 		ForEach($Result in $Results)
 		{
+			If([String]::IsNullOrEmpty($Result.Description))
+			{
+				$ResultDescription = "-"
+			}
+			Else
+			{
+				$ResultDescription = $Result.Description
+			}
+			
 			$obj = [PSCustomObject] @{
 				Name        = $Result.ObjectName			
-				Description = $Result.Description			
+				Description = $ResultDescription			
 			}
-			$null = $Hyp.Add($obj)
+			$Null = $Hyp.Add($obj)
 		}
 	}
 
@@ -26938,7 +34837,7 @@ Function OutputScopeAdministrators
 	
 	ForEach($Scope in $Scopes)
 	{
-		If($MSword -or $PDF)
+		If($MSWord -or $PDF)
 		{
 			[System.Collections.Hashtable[]] $WordTable = @()
 			WriteWordLine 3 0 "Administrators for Scope: $($Scope.Name)"
@@ -26953,7 +34852,7 @@ Function OutputScopeAdministrators
 			WriteHTMLLine 3 0 "Administrators for Scope: $($Scope.Name)"
 		}
 	
-		$Admins = Get-AdminAdministrator -EA 0 | `
+		$Admins = Get-AdminAdministrator @CCParams2 | `
 		Where-Object {$_.UserIdentityType -ne "Sid" -and (-not [String]::IsNullOrEmpty($_.Name))} | `
 		Where-Object {$_.Rights.ScopeName -Contains $Scope.Name}
 		
@@ -26979,9 +34878,9 @@ Function OutputScopeAdministrators
 				If($MSWord -or $PDF)
 				{
 					$WordTable += @{ 
-					AdminName = $Admin.Name; 
-					Role = $xRoleName; 
-					Type = $xEnabled;
+						AdminName = $Admin.Name; 
+						Role = $xRoleName; 
+						Type = $xEnabled;
 					}
 				}
 				If($Text)
@@ -26994,25 +34893,36 @@ Function OutputScopeAdministrators
 				If($HTML)
 				{
 					$rowdata += @(,(
-					$Admin.Name,$htmlwhite,
-					$xRoleName,$htmlwhite,
-					$xEnabled,$htmlwhite))
+						$Admin.Name,$htmlwhite,
+						$xRoleName,$htmlwhite,
+						$xEnabled,$htmlwhite)
+					)
 				}
 			}
 			
 			If($MSWord -or $PDF)
 			{
+				If($WordTable.Count -eq 0)
+				{
+					$WordTable += @{ 
+						AdminName = "None found"; 
+						Role = ""; 
+						Type = "";
+					}
+				}
+				
 				$Table = AddWordTable -Hashtable $WordTable `
 				-Columns AdminName, Role, Type `
 				-Headers "Administrator Name", "Role", "Status" `
 				-Format $wdTableGrid `
 				-AutoFit $wdAutoFitFixed;
 
+				SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 				SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-				$Table.Columns.Item(1).Width = 275;
-				$Table.Columns.Item(2).Width = 225;
-				$Table.Columns.Item(3).Width = 55;
+				$Table.Columns.Item(1).Width = 220;
+				$Table.Columns.Item(2).Width = 220;
+				$Table.Columns.Item(3).Width = 60;
 
 				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -27027,9 +34937,10 @@ Function OutputScopeAdministrators
 			If($HTML)
 			{
 				$columnHeaders = @(
-				'Administrator Name',($global:htmlsb),
-				'Role',($global:htmlsb),
-				'Status',($global:htmlsb))
+					'Administrator Name',($global:htmlsb),
+					'Role',($global:htmlsb),
+					'Status',($global:htmlsb)
+				)
 
 				$msg = ""
 				$columnWidths = @("275","225","55")
@@ -27141,9 +35052,9 @@ Function OutputRoles
 		If($MSWord -or $PDF)
 		{
 			$RolesWordTable += @{ 
-			Role = $Role.Name; 
-			Description = $Role.Description; 
-			Type = $Tmp;
+				Role = $Role.Name; 
+				Description = $Role.Description; 
+				Type = $Tmp;
 			}
 		}
 		If($Text)
@@ -27156,20 +35067,31 @@ Function OutputRoles
 		If($HTML)
 		{
 			$rowdata += @(,(
-			$Role.Name,$htmlwhite,
-			$Role.Description,$htmlwhite,
-			$tmp,$htmlwhite))
+				$Role.Name,$htmlwhite,
+				$Role.Description,$htmlwhite,
+				$tmp,$htmlwhite)
+			)
 		}
 	}
 	
 	If($MSWord -or $PDF)
 	{
+		If($RolesWordTable.Count -eq 0)
+		{
+			$RolesWordTable += @{ 
+				Role = "None found"; 
+				Description = ""; 
+				Type = "";
+			}
+		}
+		
 		$Table = AddWordTable -Hashtable $RolesWordTable `
 		-Columns Role, Description, Type `
 		-Headers "Role", "Description", "Type" `
 		-Format $wdTableGrid `
 		-AutoFit $wdAutoFitFixed;
 
+		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
 		$Table.Columns.Item(1).Width = 150;
@@ -27188,9 +35110,10 @@ Function OutputRoles
 	If($HTML)
 	{
 		$columnHeaders = @(
-		'Role',($global:htmlsb),
-		'Description',($global:htmlsb),
-		'Type',($global:htmlsb))
+			'Role',($global:htmlsb),
+			'Description',($global:htmlsb),
+			'Type',($global:htmlsb)
+		)
 
 		$msg = ""
 		$columnWidths = @("200","450","50")
@@ -27217,7 +35140,7 @@ Function OutputRoleDefinitions
 			WriteWordLine 0 0 "Details - " $Role.Name
 			WriteWordLine 0 0 $Role.Description
 
-			$comp = ""
+			$wcomp = ""
 			$w = 0
 		}
 		If($Text)
@@ -27234,12 +35157,14 @@ Function OutputRoleDefinitions
 			WriteHTMLLine 0 0 "Details - " $Role.Name
 			WriteHTMLLine 0 0 $Role.Description
 
-			$comp = ""
+			$wcomp = ""
 			$h = 0
 		}
 
 		$Permissions = $Role.Permissions
 		$Results = GetRolePermissions $Permissions
+		
+		$Results = $Results | Sort-Object Value, Name #1.15 change sort order
 
 		ForEach($Result in $Results)
 		{
@@ -27247,29 +35172,29 @@ Function OutputRoleDefinitions
 			{
 				If($w -eq 0)
 				{
-					$comp = $Result.Value
+					$wcomp = $Result.Value	#1.15 change from $comp to $wcomp
 
 					$WordTable += @{ 
-					FolderName = $Result.Value; 
-					Permission = $Result.Name; 
+						FolderName = $Result.Value; 
+						Permission = $Result.Name; 
 					}
 				}
 				Else
 				{
-					If($comp -eq $Result.value)
+					If($wcomp -eq $Result.value)
 					{
 						$WordTable += @{ 
-						FolderName = ""; 
-						Permission = $Result.Name; 
+							FolderName = ""; 
+							Permission = $Result.Name; 
 						}
 					}
 					Else
 					{
-						$comp = $Result.Value
+						$wcomp = $Result.Value
 
 						$WordTable += @{ 
-						FolderName = $Result.Value; 
-						Permission = $Result.Name; 
+							FolderName = $Result.Value; 
+							Permission = $Result.Name; 
 						}
 					}
 				}
@@ -27285,25 +35210,30 @@ Function OutputRoleDefinitions
 			{
 				If($h -eq 0)
 				{
-					$comp = $Result.Value
+					$hcomp = $Result.Value	#1.15 change from $comp to $hcomp
+					
 					$rowdata += @(,(
-					$Result.Value,$htmlwhite,
-					$Result.Name,$htmlwhite))
+						$Result.Value,$htmlwhite,
+						$Result.Name,$htmlwhite)
+					)
 				}
 				Else
 				{
-					If($comp -eq $Result.value)
+					If($hcomp -eq $Result.value)
 					{
 						$rowdata += @(,(
-						"",$htmlwhite,
-						$Result.Name,$htmlwhite))
+							"",$htmlwhite,
+							$Result.Name,$htmlwhite)
+						)
 					}
 					Else
 					{
-						$comp = $Result.Value
+						$hcomp = $Result.Value
+						
 						$rowdata += @(,(
-						$Result.Value,$htmlwhite,
-						$Result.Name,$htmlwhite))
+							$Result.Value,$htmlwhite,
+							$Result.Name,$htmlwhite)
+						)
 					}
 				}
 				$h++
@@ -27312,16 +35242,25 @@ Function OutputRoleDefinitions
 
 		If($MSWord -or $PDF)
 		{
+			If($WordTable.Count -eq 0)
+			{
+				$WordTable += @{ 
+					FolderName = "None found"; 
+					Permission = ""; 
+				}
+			}
+			
 			$Table = AddWordTable -Hashtable $WordTable `
 			-Columns FolderName, Permission `
 			-Headers "Folder Name", "Permissions" `
 			-Format $wdTableGrid `
 			-AutoFit $wdAutoFitFixed;
 
+			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-			$Table.Columns.Item(1).Width = 100;
-			$Table.Columns.Item(2).Width = 400;
+			$Table.Columns.Item(1).Width = 150;
+			$Table.Columns.Item(2).Width = 350;
 
 			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -27336,8 +35275,9 @@ Function OutputRoleDefinitions
 		If($HTML)
 		{
 			$columnHeaders = @(
-			'Folder Name',($global:htmlsb),
-			'Permissions',($global:htmlsb))
+				'Folder Name',($global:htmlsb),
+				'Permissions',($global:htmlsb)
+			)
 
 			$msg = ""
 			$ColumnWidths = @("100","500")
@@ -27357,12 +35297,15 @@ Function GetRolePermissions
 		Switch ($Permission)
 		{
 			"Admin_FullControl"											{$Results.Add("Manage Administrators", "Administrators")}
+			"Admin_NameControl"											{$Results.Add("Force Admin Name Update", "Administrators")} #added in 1.28.002
 			"Admin_Read"												{$Results.Add("View Administrators", "Administrators")}
 			"Admin_RoleControl"											{$Results.Add("Manage Administrator Custom Roles", "Administrators")}
 			"Admin_ScopeControl"										{$Results.Add("Manage Administrator Scopes", "Administrators")}
+			"Admin_Sync"												{$Results.Add("Allow Admin Sync", "Administrators")} #added in 1.28.002
 			"Manage_ServiceConfigurationData"							{$Results.Add("Manage ServiceSettings", "Administrators")}
 			
 			"AppGroupApplications_ChangeTags"							{$Results.Add("Edit Application tags (Application Group)", "Application Groups")}
+			"AppGroupApplications_ChangeUserAssignment"					{$Results.Add("Change users assigned to an application (Application Group)", "Application Groups")}
 			"AppGroupApplications_Create"								{$Results.Add("Create Application (Application Group)", "Application Groups")}
 			"AppGroupApplications_CreateFolder"							{$Results.Add("Create Application Folder (Application Group)", "Application Groups")}
 			"AppGroupApplications_Delete"								{$Results.Add("Delete Application (Application Group)", "Application Groups")}
@@ -27371,36 +35314,55 @@ Function GetRolePermissions
 			"AppGroupApplications_MoveFolder"							{$Results.Add("Move Application Folder (Application Group)", "Application Groups")}
 			"AppGroupApplications_Read"									{$Results.Add("View Applications (Application Group)", "Application Groups")}
 			"AppGroupApplications_RemoveFolder"							{$Results.Add("Remove Application Folder (Application Group)", "Application Groups")}
-			"AppGroupApplications_ChangeUserAssignment"					{$Results.Add("Change users assigned to an application (Application Group)", "Application Groups")}
 			"ApplicationGroup_AddApplication"							{$Results.Add("Add Application to Application Group", "Application Groups")}
 			"ApplicationGroup_AddScope"									{$Results.Add("Add Application Group to Scope", "Application Groups")}
 			"ApplicationGroup_AddToDesktopGroup"						{$Results.Add("Add Delivery Group to Application Group", "Application Groups")}
 			"ApplicationGroup_ChangeTags"								{$Results.Add("Change Tags on Application Group", "Application Groups")}
 			"ApplicationGroup_ChangeUserAssignment"						{$Results.Add("Edit User Assignment on Application Group", "Application Groups")}
 			"ApplicationGroup_Create"									{$Results.Add("Create Application Group", "Application Groups")}
+			"ApplicationGroup_CreateFolder"								{$Results.Add("Create Application Group Folder", "Application Groups")}
 			"ApplicationGroup_Delete"									{$Results.Add("Delete Application Group", "Application Groups")}
+			"ApplicationGroup_EditFolder"								{$Results.Add("Edit Application Group Folder", "Application Groups")}
 			"ApplicationGroup_EditProperties"							{$Results.Add("Edit Application Group Properties", "Application Groups")}
+			"ApplicationGroup_MoveFolder"								{$Results.Add("Move Application Group Folder", "Application Groups")}
 			"ApplicationGroup_Read"										{$Results.Add("View Application Groups", "Application Groups")}
 			"ApplicationGroup_RemoveApplication"						{$Results.Add("Remove Application from Application Group", "Application Groups")}
+			"ApplicationGroup_RemoveFolder"								{$Results.Add("Remove Application Group Folder", "Application Groups")}
 			"ApplicationGroup_RemoveFromDesktopGroup"					{$Results.Add("Remove Delivery Group from Application Group", "Application Groups")}
 			"ApplicationGroup_RemoveScope"								{$Results.Add("Remove Application Group from Scope", "Application Groups")}
 			
-			"AppLib_AddApplication"										{$Results.Add("Add App-V applications", "App-V")}
-			"AppLib_AddPackage"											{$Results.Add("Add App-V Application Libraries and Packages", "App-V")}
-			"AppLib_IsolationGroup_Create"								{$Results.Add("Create App-V Isolation Group", "App-V")}
-			"AppLib_IsolationGroup_Remove"								{$Results.Add("Remove App-V Isolation Groups", "App-V")}
-			"AppLib_Read"												{$Results.Add("Read App-V Application Libraries and Packages", "App-V")}
-			"AppLib_RemoveApplication"									{$Results.Add("Remove App-V applications", "App-V")}
-			"AppLib_RemovePackage"										{$Results.Add("Remove App-V Application Libraries and Packages", "App-V")}
-			"AppV_AddServer"											{$Results.Add("Add App-V publishing server", "App-V")}
-			"AppV_DeleteServer"											{$Results.Add("Delete App-V publishing server", "App-V")}
-			"AppV_Read"													{$Results.Add("Read App-V servers", "App-V")}
+			"AppLib_AddApplication"										{$Results.Add("Add App-V applications", "Application Packages")}
+			"AppLib_AddPackage"											{$Results.Add("Add App-V Application Libraries and Packages", "Application Packages")}
+			"AppLib_IsolationGroup_Create"								{$Results.Add("Create App-V Isolation Group", "Application Packages")}
+			"AppLib_IsolationGroup_Remove"								{$Results.Add("Remove App-V Isolation Groups", "Application Packages")}
+			"AppLib_PackageDiscovery_Create"							{$Results.Add("PackageDiscovery_Create", "Application Packages")}
+			"AppLib_PackageDiscoveryProfile_Create"						{$Results.Add("PackageDiscoveryProfile_Create", "Application Packages")}
+			"AppLib_PackageDiscoveryProfile_Remove"						{$Results.Add("PackageDiscoveryProfile_Remove", "Application Packages")}
+			"AppLib_Read"												{$Results.Add("Read App-V Application Libraries and Packages", "Application Packages")}
+			"AppLib_RemoveApplication"									{$Results.Add("Remove App-V applications", "Application Packages")}
+			"AppLib_RemoveAppVServer"									{$Results.Add("Remove App-V Server and associated packages", "Application Packages")}
+			"AppLib_RemovePackage"										{$Results.Add("Remove App-V Application Libraries and Packages", "Application Packages")}
+			"AppV_AddServer"											{$Results.Add("Add App-V publishing server", "Application Packages")}
+			"AppV_DeleteServer"											{$Results.Add("Delete App-V publishing server", "Application Packages")}
+			"AppV_Read"													{$Results.Add("Read App-V servers", "Application Packages")}
 			
+			"EA_Acct"													{$Results.Add("Catalog Service Identity operations", "Citrix Catalog Service")}
+			"EA_Broker"													{$Results.Add("Catalog Service Broker operations", "Citrix Catalog Service")}
+			"EA_Hyp"													{$Results.Add("Catalog Service Hypervisor operations", "Citrix Catalog Service")}
+			"EA_Prov"													{$Results.Add("Remove Desktop from Delivery Group (1)", "Citrix Catalog Service")}
+
+			"C365_EA_Acct"												{$Results.Add("Windows 365 Identity operations", "Citrix Windows 365 Service Catalog")}
+			"C365_EA_Broker"											{$Results.Add("Windows 365 Broker operations", "Citrix Windows 365 Service Catalog")}
+			"C365_EA_Hyp"												{$Results.Add("Windows 365 Hypervisor operations", "Citrix Windows 365 Service Catalog")}
+			"C365_EA_Prov"												{$Results.Add("Windows 365 MCS operations", "Citrix Windows 365 Service Catalog")}
+
 			"Cloud_Storefront_Read"										{$Results.Add("Read Storefront Configuration", "Cloud")}
 			"Cloud_Storefront_Write"									{$Results.Add("Update Storefront Configuration", "Cloud")}
 
 			"Controller_EditProperties"									{$Results.Add("Edit Controller", "Controllers")}
 			"Controllers_Remove"										{$Results.Add("Remove Delivery Controller", "Controllers")}
+
+			"Cost_Read"													{$Results.Add("Read Cost", "Cost Management")}	#added in 1.27
 
 			"Applications_AttachClientHostedApplicationToDesktopGroup"	{$Results.Add("Attach Local Access Application to Delivery Group", "Delivery Groups")}
 			"Applications_ChangeMaintenanceMode"						{$Results.Add("Enable/disable maintenance mode of an Application", "Delivery Groups")}
@@ -27425,15 +35387,19 @@ Function GetRolePermissions
 			"DesktopGroup_ChangeTags"									{$Results.Add("Edit Delivery Group tags", "Delivery Groups")}
 			"DesktopGroup_ChangeUserAssignment"							{$Results.Add("Change users assigned to a desktop", "Delivery Groups")}
 			"DesktopGroup_Create"										{$Results.Add("Create Delivery Group", "Delivery Groups")}
+			"DesktopGroup_CreateFolder"									{$Results.Add("Create Delivery Group Folder", "Delivery Groups")} #new in 2212
 			"DesktopGroup_Delete"										{$Results.Add("Delete Delivery Group", "Delivery Groups")}
+			"DesktopGroup_EditFolder"									{$Results.Add("Edit Delivery Group Folder", "Delivery Groups")} #new in 2212
 			"DesktopGroup_EditProperties"								{$Results.Add("Edit Delivery Group Properties", "Delivery Groups")}
 			"DesktopGroup_Machine_ChangeTags"							{$Results.Add("Edit Delivery Group machine tags", "Delivery Groups")}
+			"DesktopGroup_MoveFolder"									{$Results.Add("Move Delivery Group Folder", "Delivery Groups")} #new in 2212
 			"DesktopGroup_PowerOperations_RDS"							{$Results.Add("Perform power operations on Windows Server machines via Delivery Group membership", "Delivery Groups")}
 			"DesktopGroup_PowerOperations_VDI"							{$Results.Add("Perform power operations on Windows Desktop machines via Delivery Group membership", "Delivery Groups")}
 			"DesktopGroup_Read"											{$Results.Add("View Delivery Groups", "Delivery Groups")}
 			"DesktopGroup_RemoveApplication"							{$Results.Add("Remove Application from Delivery Group", "Delivery Groups")}
 			"DesktopGroup_RemoveApplicationGroup"						{$Results.Add("Remove Application Group from Delivery Group", "Delivery Groups")}
 			"DesktopGroup_RemoveDesktop"								{$Results.Add("Remove Desktop from Delivery Group", "Delivery Groups")}
+			"DesktopGroup_RemoveFolder"									{$Results.Add("Remove Delivery Group Folder", "Delivery Groups")} #new in 2212
 			"DesktopGroup_RemoveScope"									{$Results.Add("Remove Delivery Group from Scope", "Delivery Groups")}
 			"DesktopGroup_SessionManagement"							{$Results.Add("Perform session management on machines via Delivery Group membership", "Delivery Groups")}
 			"Machine_ChangeTagsBase"									{$Results.Add("Edit machine tags", "Delivery Groups")}
@@ -27441,16 +35407,21 @@ Function GetRolePermissions
 			"Director_AlertPolicy_Edit"									{$Results.Add("Create\Edit\Delete Alert Policies", "Director")}
 			"Director_AlertPolicy_Read"									{$Results.Add("View Alert Policies", "Director")}
 			"Director_Alerts_Read"										{$Results.Add("View Alerts", "Director")}
+			"Director_AlertWebhookProfile_Edit"							{$Results.Add("Create\Edit\Remove\View Webhook Profile Configurations", "Director")} #added in 1.27, updated in 1.28.002
+			"Director_Analytics"										{$Results.Add("View Analytics page", "Director")} #added in 1.28.002
 			"Director_ApplicationDashboard"								{$Results.Add("View Applications page", "Director")}
+			"Director_BulkActions_Edit"									{$Results.Add("Perform bulk actions for machine and session management", "Director")} #added in 1.28.002
 			"Director_ClientDetails_Read"								{$Results.Add("View Client Details page", "Director")}
 			"Director_ClientHelpDesk_Read"								{$Results.Add("View Client Activity Manager page", "Director")}
 			"Director_CloudAnalyticsConfiguration"						{$Results.Add("Create\Edit\Remove Cloud Analytics Configurations", "Director")}
 			"Director_Configuration"									{$Results.Add("View Configurations page", "Director")}
+			"Director_CostSavings"										{$Results.Add("View Cost Optimization page", "Director")} #added in 1.28.002
 			"Director_Dashboard_Read"									{$Results.Add("View Dashboard page", "Director")}
 			"Director_DesktopHardwareInformation_Edit"					{$Results.Add("Edit Machine Hardware related Broker machine command properties", "Director")}
 			"Director_DiskMetrics_Edit"									{$Results.Add("Edit Disk metrics related Broker machine command properties", "Director")}
 			"Director_DismissAlerts"									{$Results.Add("Dismiss Alerts", "Director")}
 			"Director_EmailserverConfiguration_Edit"					{$Results.Add("Create\Edit\Remove Alert Email Server Configuration", "Director")}
+			"Director_EndpointMetrics_Edit"								{$Results.Add("Edit Endpoint Metrics related Broker machine command properties", "Director")} #added in 1.27
 			"Director_Filters_ApplicationInstances"						{$Results.Add("View Filters page Application Instances only", "Director")}
 			"Director_Filters_Connections"								{$Results.Add("View Filters page Connections only", "Director")}
 			"Director_Filters_Machines"									{$Results.Add("View Filters page Machines only", "Director")}
@@ -27460,6 +35431,9 @@ Function GetRolePermissions
 			"Director_HDXInformation_Edit"								{$Results.Add("Edit HDX related Broker machine command properties", "Director")}
 			"Director_HDXProtocol_Edit"									{$Results.Add("Edit HDX Protocol related Broker machine command properties", "Director")}
 			"Director_HelpDesk_Read"									{$Results.Add("View Activity Manager page", "Director")}
+			"Director_InfrastructureMonitor"							{$Results.Add("View Infrastructure Monitor page", "Director")} #added in 1.27
+			"Director_InfrastructureMonitor_Edit"						{$Results.Add("Create/Edit/Manage Connections to Citrix components (Infra Monitoring)", "Director")} #added in 1.28.002
+			"Director_IntegrationsAndDataExport"						{$Results.Add("View Integrations and Data exports page", "Director")} #added in 1.27
 			"Director_KillApplication"									{$Results.Add("Perform Kill Application running on a machine", "Director")}
 			"Director_KillApplication_Edit"								{$Results.Add("Edit Kill Application related Broker machine command properties", "Director")}
 			"Director_KillProcess"										{$Results.Add("Perform Kill Process running on a machine", "Director")}
@@ -27467,16 +35441,24 @@ Function GetRolePermissions
 			"Director_LatencyInformation_Edit"							{$Results.Add("Edit Latency related Broker machine command properties", "Director")}
 			"Director_MachineDetails_Read"								{$Results.Add("View Machine Details page", "Director")}
 			"Director_MachineMetricValues_Edit"							{$Results.Add("Edit Machine metric related Broker machine command properties", "Director")}
+			"Director_MTOPInformation_Edit"								{$Results.Add("Edit MTOP related Broker machine command properties", "Director")} #added in 1.28.001
 			"Director_PersonalizationInformation_Edit"					{$Results.Add("Edit Personalization related Broker machine command properties", "Director")}
 			"Director_PoliciesInformation_Edit"							{$Results.Add("Edit Policies related Broker machine command properties", "Director")}
 			"Director_ProbeConfigurationActions"						{$Results.Add("Create\Edit\Remove Probe Configurations", "Director")}
+			"Director_ProbeSummaryView"									{$Results.Add("View Probe Summary page", "Director")} #added in 1.28.002
 			"Director_ProfileLoadData_Edit"								{$Results.Add("Edit Profile Load Data related Broker machine command properties", "Director")}
 			"Director_ResetVDisk"										{$Results.Add("Perform Reset VDisk operation", "Director")}
 			"Director_ResetVDisk_Edit"									{$Results.Add("Edit Reset VDisk related Broker machine command properties", "Director")}
 			"Director_RoundTripInformation_Edit"						{$Results.Add("Edit Roundtrip Time related Broker machine command properties", "Director")}
 			"Director_SCOM_Read"										{$Results.Add("View SCOM Notifications", "Director")}
+			"Director_Search_Cond_Auth_Transaction"						{$Results.Add("View Conditional Authentication Transaction Data", "Director")} #added in 1.28.002
+			"Director_Search_Transaction"								{$Results.Add("View Transaction Data", "Director")}
+			"Director_SecurePrivateAccess"								{$Results.Add("View Secure Private Access page", "Director")} #added in 1.28.002
+			"Director_Settings"											{$Results.Add("View Settings page", "Director")} #added in 1.28.002
 			"Director_ShadowSession"									{$Results.Add("Perform Remote Assistance on a machine", "Director")}
 			"Director_ShadowSession_Edit"								{$Results.Add("Edit Remote Assistance related Broker machine command properties", "Director")}
+			"Director_ShadowSessionViaHDXSS"							{$Results.Add("Perform Remote Assistance on a machine via HDX Screen Sharing", "Director")} #added in 1.28.002
+			"Director_ShadowSessionViaHDXSS_Edit"						{$Results.Add("Edit HDX Screen Sharing related machine command properties", "Director")} #added in 1.28.002
 			"Director_SliceAndDice_Read"								{$Results.Add("View Filters page", "Director")}
 			"Director_StartupMetrics_Edit"								{$Results.Add("Edit Startup related Broker machine command properties", "Director")}
 			"Director_TaskManagerInformation_Edit"						{$Results.Add("Edit Task Manager related Broker machine command properties", "Director")}
@@ -27488,6 +35470,9 @@ Function GetRolePermissions
 			
 			"Director_ProbeAgentConfigurationActions"					{$Results.Add("Access to Probe Agent APIs", "DirectorProbeAgent")}
 
+			"EntitlementPolicyRule_ChangeTags"							{$Results.Add("Edit Entitlement Policy Rule tags", "Entitlement Policy Rules")} #added in 1.28.002
+			"EntitlementPolicyRule_Machine_ChangeTags"					{$Results.Add("Edit Entitlement Policy Rule machine tags", "Entitlement Policy Rules")} #added in 1.28.002
+
 			"Hosts_AddScope"											{$Results.Add("Add Host Connection to Scope", "Hosts")}
 			"Hosts_AddStorage"											{$Results.Add("Add storage to Resources", "Hosts")}
 			"Hosts_ChangeMaintenanceMode"								{$Results.Add("Enable/disable maintenance mode of a Host Connection", "Hosts")}
@@ -27495,10 +35480,16 @@ Function GetRolePermissions
 			"Hosts_CreateHost"											{$Results.Add("Add Host Connection or Resources", "Hosts")}
 			"Hosts_DeleteConnection"									{$Results.Add("Delete Host Connection", "Hosts")}
 			"Hosts_DeleteHost"											{$Results.Add("Delete Resources", "Hosts")}
+			"Hosts_DetectOrphanedResources"								{$Results.Add("Use Host Connection to Detect Orphaned Resources in Hypervisor", "Hosts")} #added in 1.28.002
 			"Hosts_EditConnectionProperties"							{$Results.Add("Edit Host Connection properties", "Hosts")}
 			"Hosts_EditHostProperties"									{$Results.Add("Edit Resources", "Hosts")}
 			"Hosts_Read"												{$Results.Add("View Host Connections and Resources", "Hosts")}
 			"Hosts_RemoveScope"											{$Results.Add("Remove Host Connection from Scope", "Hosts")}
+
+			"Image_Create"												{$Results.Add("Create Images", "Images")} #new in 2303
+			"Image_Delete"												{$Results.Add("Delete Images", "Images")} #new in 2303
+			"Image_EditProperties"										{$Results.Add("Edit Images", "Images")} #new in 2303
+			"Image_Read"												{$Results.Add("Read Images", "Images")} #new in 2303
 
 			"Licensing_ChangeLicenseServer"								{$Results.Add("Change licensing server", "Licensing")}
 			"Licensing_EditLicensingProperties"							{$Results.Add("Edit product edition", "Licensing")}
@@ -27517,37 +35508,76 @@ Function GetRolePermissions
 			"Catalog_ChangeUserAssignment"								{$Results.Add("Change users assigned to a machine", "Machine Catalogs")}
 			"Catalog_ConsumeMachines"									{$Results.Add("Allow machines to be consumed by a Delivery Group", "Machine Catalogs")}
 			"Catalog_Create"											{$Results.Add("Create Machine Catalog", "Machine Catalogs")}
+			"Catalog_CreateFolder"										{$Results.Add("Create Machine Catalog Folder", "Machine Catalogs")}
 			"Catalog_Delete"											{$Results.Add("Delete Machine Catalog", "Machine Catalogs")}
+			"Catalog_EditFolder"										{$Results.Add("Edit Machine Catalog Folder", "Machine Catalogs")}
 			"Catalog_EditProperties"									{$Results.Add("Edit Machine Catalog Properties", "Machine Catalogs")}
-			"Catalog_Manage_ChangeTags"									{$Results.Add("Edit Catalog machine tags", "Machine Catalogs")}
+			"Catalog_Machine_ChangeTags"								{$Results.Add("Edit Catalog machine tags", "Machine Catalogs")}
 			"Catalog_ManageAccounts"									{$Results.Add("Manage Active Directory Accounts", "Machine Catalogs")}
+			"Catalog_ManageWemSet"										{$Results.Add("Manage Catalog Configuration Set", "Machine Catalogs")} #added in 1.27
+			"Catalog_MoveFolder"										{$Results.Add("Move Machine Catalog Folder", "Machine Catalogs")}
 			"Catalog_PowerOperations_RDS"								{$Results.Add("Perform power operations on Windows Server machines via Machine Catalog membership", "Machine Catalogs")}
 			"Catalog_PowerOperations_VDI"								{$Results.Add("Perform power operations on Windows Desktop machines via Machine Catalog membership", "Machine Catalogs")}
 			"Catalog_Read"												{$Results.Add("View Machine Catalogs", "Machine Catalogs")}
+			"Catalog_RemoveFolder"										{$Results.Add("Remove Machine Catalog Folder", "Machine Catalogs")}
 			"Catalog_RemoveMachine"										{$Results.Add("Remove Machines from Machine Catalog", "Machine Catalogs")}
 			"Catalog_RemoveScope"										{$Results.Add("Remove Machine Catalog from Scope", "Machine Catalogs")}
 			"Catalog_SessionManagement"									{$Results.Add("Perform session management on machines via Machine Catalog membership", "Machine Catalogs")}
 			"Catalog_UpdateMasterImage"									{$Results.Add("Perform Machine update", "Machine Catalogs")}
 
+			"AutoTagRule_Create"										{$Results.Add("Create AutoTagRule", "Other permissions")}
+			"AutoTagRule_Delete"										{$Results.Add("Delete AutoTagRule", "Other permissions")}
+			"AutoTagRule_Edit"											{$Results.Add("Edit AutoTagRule", "Other permissions")}
+			"AutoTagRule_Read"											{$Results.Add("Read AutoTagRule", "Other permissions")}
 			"Configuration_Read"										{$Results.Add("Read Site Configuration (Configuration_Read)", "Other permissions")}
+			"Configuration_Restricted_ServiceRead"						{$Results.Add("", "Other permissions")} #added in 1.28.002
+			"Configuration_Restricted_ServiceWrite"						{$Results.Add(" (1) ", "Other permissions")} #added in 1.28.002
 			"Configuration_Restricted_Write"							{$Results.Add("Customer Update Site Configuration", "Other permissions")}
 			"Configuration_Unrestricted_Write"							{$Results.Add("Update Site Configuration", "Other permissions")}
-			#"Configuration_Write"										{$Results.Add("Update Site Configuration (Configuration_Write)", "Other permissions")}
 			"Database_Read"												{$Results.Add("Read database status information", "Other permissions")}
+			"Director_Admin"											{$Results.Add("Director admin permission", "Other permissions")} #added in 1.28.002
+			"DirectorAgent_Registration"								{$Results.Add("Create/Edit/Manage Connections to Citrix components (Infra Monitoring)", "Other permissions")} #added in 1.27, updated in 1.28.002
+			"EdgeService_Admin"											{$Results.Add("EdgeService LHC permission", "Other permissions")} #added in 1.28.002
 			"EnvTest"													{$Results.Add("Run environment tests", "Other permissions")}
 			"Export_BrokerConfiguration"								{$Results.Add("Export Broker Configuration", "Other permissions")}
 			"Global_Read"												{$Results.Add("Read Site Configuration (Global_Read)", "Other permissions")}
 			"Global_Write"												{$Results.Add("Update Site Configuration (Global_Write)", "Other permissions")}
 			"Orchestration_RestApi"										{$Results.Add("Manage Orchestration Service REST API", "Other permissions")}
+			"Paladin_Admin"												{$Results.Add("Paladin service permission", "Other permissions")} #added in 1.28.002
 			"PerformUpgrade"											{$Results.Add("Perform upgrade", "Other permissions")}
+			"PVS_Admin"													{$Results.Add("PVS console admin permission", "Other permissions")} #added in 1.28.002
+			"SkylightBroker"											{$Results.Add(" (4) ", "Other permissions")} #added in 1.28.002
 			"Tag_Create"												{$Results.Add("Create tags", "Other permissions")}
 			"Tag_Delete"												{$Results.Add("Delete tags", "Other permissions")}
 			"Tag_Edit"													{$Results.Add("Edit tags", "Other permissions")}
 			"Tag_Read"													{$Results.Add("Read tags", "Other permissions")}
+			"Trust_MultiTenantAccessList"								{$Results.Add(" (3) ", "Other permissions")} #added in 1.28.002
 			"Trust_ServiceKeys"											{$Results.Add("Manage Trust Service Keys", "Other permissions")}
+			"Trust_VdaEnrollment"										{$Results.Add(" (2) ", "Other permissions")}
+			"VdaUpgrade_CatalogManage"									{$Results.Add("Manage VDA Upgrade Catalog Schedules", "Other permissions")}
+			"VdaUpgrade_MachineManage"									{$Results.Add("Manage VDA Upgrade Machine Schedules", "Other permissions")}
 
 			"Policies_Manage"											{$Results.Add("Manage Policies", "Policies")}
 			"Policies_Read"												{$Results.Add("View Policies", "Policies")}
+
+			"PolicySets_AddScope"										{$Results.Add("Add Policy Set to Scope", "Policies")} #new in 2212
+			"PolicySets_Read"											{$Results.Add("View Policy Sets", "Policy Sets")} #new in 2212
+			"PolicySets_RemoveScope"									{$Results.Add("Remove Policy Set from Scope", "Policy Sets")} #new in 2212
+
+			"SecureBrowser_NewConfiguration"							{$Results.Add("Add SecureBrowser Broker Machine Configuration", "SecureBrowser")} #new in 2303
+			"SecureBrowser_Read"										{$Results.Add("Read SecureBrowser Broker Machine Configuration", "SecureBrowser")} #new in 2303
+			"SecureBrowser_RemoveConfiguration"							{$Results.Add("Delete SecureBrowser Broker Machine Configuration", "SecureBrowser")} #new in 2303
+			"SecureBrowser_SetConfiguration"							{$Results.Add("Set SecureBrowser Broker Machine Configuration", "SecureBrowser")} #new in 2303
+
+			"ServiceAccount_AddScope"									{$Results.Add("Add Service Account to Scope", "Service Accounts")} #added in 1.27
+			"ServiceAccount_Create"										{$Results.Add("Create Service Account", "Service Accounts")} #added in 1.27
+			"ServiceAccount_Delete"										{$Results.Add("Delete Service Account", "Service Accounts")} #added in 1.27
+			"ServiceAccount_EditProperties"								{$Results.Add("Edit Service Account", "Service Accounts")} #added in 1.27
+			"ServiceAccount_Read"										{$Results.Add("Read Service Account", "Service Accounts")} #added in 1.27
+			"ServiceAccount_RemoveScope"								{$Results.Add("Remove Service Account from Scope", "Service Accounts")} #added in 1.27
+
+			"Setting_Edit"												{$Results.Add("Edit Settings", "Settings")} #new in 2212
+			"Setting_Read"												{$Results.Add("View Settings", "Settings")} #new in 2212
 
 			"Storefront_Create"											{$Results.Add("Create a new StoreFront definition", "StoreFronts")}
 			"Storefront_Delete"											{$Results.Add("Delete a StoreFront definition", "StoreFronts")}
@@ -27598,7 +35628,7 @@ Function OutputRoleAdministrators
 			WriteHTMLLine 3 0 "Administrators for Role: $($Role.Name)"
 		}
 		
-		$Admins = Get-AdminAdministrator -EA 0 | `
+		$Admins = Get-AdminAdministrator @CCParams2 | `
 		Where-Object {$_.UserIdentityType -ne "Sid" -and (-not [String]::IsNullOrEmpty($_.Name))} | `
 		Where-Object {$_.Rights.RoleName -Contains $Role.Name}
 		
@@ -27624,9 +35654,9 @@ Function OutputRoleAdministrators
 				If($MSWord -or $PDF)
 				{
 					$WordTable += @{ 
-					AdminName = $Admin.Name; 
-					Scope = $xScopeName; 
-					Type = $xEnabled;
+						AdminName = $Admin.Name; 
+						Scope = $xScopeName; 
+						Type = $xEnabled;
 					}
 				}
 				If($Text)
@@ -27639,24 +35669,35 @@ Function OutputRoleAdministrators
 				If($HTML)
 				{
 					$rowdata += @(,(
-					$Admin.Name,$htmlwhite,
-					$xScopeName,$htmlwhite,
-					$xEnabled,$htmlwhite))
+						$Admin.Name,$htmlwhite,
+						$xScopeName,$htmlwhite,
+						$xEnabled,$htmlwhite)
+					)
 				}
 			}
 			If($MSWord -or $PDF)
 			{
+				If($WordTable.Count -eq 0)
+				{
+					$WordTable += @{ 
+						AdminName = "None found"; 
+						Scope = ""; 
+						Type = "";
+					}
+				}
+				
 				$Table = AddWordTable -Hashtable $WordTable `
 				-Columns AdminName, Scope, Type `
 				-Headers "Administrator Name", "Scope", "Status" `
 				-Format $wdTableGrid `
 				-AutoFit $wdAutoFitFixed;
 
+				SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 				SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-				$Table.Columns.Item(1).Width = 275;
-				$Table.Columns.Item(2).Width = 225;
-				$Table.Columns.Item(3).Width = 55;
+				$Table.Columns.Item(1).Width = 220;
+				$Table.Columns.Item(2).Width = 220;
+				$Table.Columns.Item(3).Width = 60;
 
 				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -27671,9 +35712,10 @@ Function OutputRoleAdministrators
 			If($HTML)
 			{
 				$columnHeaders = @(
-				'Administrator Name',($global:htmlsb),
-				'Scope',($global:htmlsb),
-				'Status',($global:htmlsb))
+					'Administrator Name',($global:htmlsb),
+					'Scope',($global:htmlsb),
+					'Status',($global:htmlsb)
+				)
 
 				$msg = ""
 				$columnWidths = @("275","225","55")
@@ -27714,6 +35756,114 @@ Function OutputRoleAdministrators
 				WriteHTMLLine 0 0 "Unable to retrieve administrators"
 			}
 		}
+	}
+}
+#endregion
+
+#region Controllers functions
+Function ProcessControllerServiceConfig
+{
+	Write-Verbose "$(Get-Date -Format G): Processing Controller Service Configuration"
+	Write-Verbose "$(Get-Date -Format G): `tRetrieving Controller Service Configuration data"
+	
+	#$DDCConfigData = Get-BrokerServiceConfigurationData @CCParams2 -SortBy SettingName
+
+	If($Null -ne $Script:DDCConfigData)
+	{
+		OutputControllerServiceConfig $Script:DDCConfigData
+	}
+	ElseIf($Null -eq $Script:DDCConfigData)
+	{
+		$txt = "There is no Controller Service Configuration Data"
+		OutputWarning $txt
+	}
+	Write-Verbose "$(Get-Date -Format G): "
+}
+
+Function OutputControllerServiceConfig
+{
+	Param([object]$DDCConfigData)
+	
+	Write-Verbose "$(Get-Date -Format G): `tOutput Controller Service Configuration data"
+	
+	If($MSWord -or $PDF)
+	{
+		$Selection.InsertNewPage()
+		WriteWordLine 1 0 "Controller Service Configuration data"
+		[System.Collections.Hashtable[]] $DDCWordTable = @();
+	}
+	If($Text)
+	{
+		Line 0 "Controller Service Configuration data"
+		Line 0 ""
+	}
+	If($HTML)
+	{
+		WriteHTMLLine 1 0 "Controller Service Configuration data"
+		$rowdata = @()
+	}
+
+	ForEach($DDCData in $DDCConfigData)
+	{
+		If($MSWord -or $PDF)
+		{
+			$DDCWordTable += @{ 
+				SettingName = $DDCData.SettingName;
+				SettingValue = $DDCData.SettingValue;
+			}
+		}
+		If($Text)
+		{
+			Line 1 "Setting Name`t: " $DDCData.SettingName
+			Line 1 "Setting Value`t: " $DDCData.SettingValue
+			Line 0 ""
+		}
+		If($HTML)
+		{
+			$rowdata += @(,(
+				$DDCData.SettingName,$htmlwhite,
+				$DDCData.SettingValue,$htmlwhite)
+			)
+		}
+	}
+
+	If($MSWord -or $PDF)
+	{
+		If($DDCWordTable.Count -eq 0)
+		{
+			$DDCWordTable += @{ 
+				SettingName = "None found";
+				SettingValue = "";
+			}
+		}
+		
+		$Table = AddWordTable -Hashtable $DDCWordTable `
+		-Columns SettingName, SettingValue `
+		-Headers "Setting Name", "Setting Value" `
+		-Format $wdTableGrid `
+		-AutoFit $wdAutoFitFixed;
+
+		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+		$Table.Columns.Item(1).Width = 250;
+		$Table.Columns.Item(2).Width = 150;
+
+		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+		FindWordDocumentEnd
+		$Table = $Null
+		WriteWordLine 0 0 ""
+	}
+	If($HTML)
+	{
+		$columnHeaders = @(
+			'Setting Name',($global:htmlsb),
+			'Setting Value',($global:htmlsb)
+		)
+
+		$msg = ""
+		$columnWidths = @("250","150")
+		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "400"
 	}
 }
 #endregion
@@ -27771,7 +35921,7 @@ Function ProcessHosting
 				hypName = $item.RootPath			
 				IC      = $item.UseLocalStorageCaching			
 			}
-			$null = $IntelliCache.Add($obj1)
+			$Null = $IntelliCache.Add($obj1)
 		}
 	}
 	ElseIf($? -and $Null -eq $HostingUnits)
@@ -27996,39 +36146,40 @@ Function OutputHosting
 		$HypICName += $ICState
 	}
 	
-	#to get all the Connection Types and PluginIDs, use Get-HypHypervisorPlugin
+	#to get all the Connection Types and PluginIDs, use Get-HypHypervisorPlugin | ft
 	#Thanks to fellow CTPs Neil Spellings, Kees Baggerman, and Trond Eirik Haavarstein for getting this info for me
-	#For Citrix Cloud, the values are:
+	#For CVAD 2012, the values are:
 	<#
-		ConnectionType DisplayName                                      PluginFactoryName           UsesCloudInfrastructure
-		-------------- -----------                                      -----------------           -----------------------
-				   AWS Amazon EC2                                       AWSMachineManagerFactory                       True
-				 SCVMM Microsoft® System Center Virtual Machine Manager MicrosoftPSFactory                            False
-			   VCenter VMware vSphere®                                  VmwareFactory                                 False
-			 XenServer Citrix Hypervisor®                               XenFactory                                    False
-				Custom Google Cloud Platform                            GcpPluginFactory                              False
-				Custom Microsoft® Azure™                                AzureRmFactory                                False
-				Custom Nutanix AHV                                      AcropolisFactory                              False
-				Custom Remote PC Wake on LAN                            VdaWOLMachineManagerFactory                   False
+		CitrixVerified ConnectionType DisplayName                                      PluginFactoryName                 UsesCloudInfrastructure
+		-------------- -------------- -----------                                      -----------------                 -----------------------
+								  AWS Amazon EC2                                       AWSMachineManagerFactory                             True
+								SCVMM Microsoft® System Center Virtual Machine Manager MicrosoftPSFactory                                  False
+							  VCenter VMware vSphere®                                  VmwareFactory                                       False
+							WakeOnLAN Microsoft® Configuration Manager Wake on LAN     ConfigMgrWOLMachineManagerFactory                   False
+							XenServer Citrix Hypervisor®                               XenFactory                                          False
+							   Custom Google Cloud Platform                            GcpPluginFactory                                    False
+							   Custom Microsoft® Azure™                                AzureRmFactory                                      False
+							   Custom Remote PC Wake on LAN                            VdaWOLMachineManagerFactory                         False	
 	#>
 	$xxConnectionType = ""
 	Switch ($xConnectionType)
 	{
-		"AWS"   		{$xxConnectionType = "Amazon EC2"; Break}
-		"SCVMM"     	{$xxConnectionType = "Microsoft System Center Virtual Machine Manager"; Break}
-		"vCenter"   	{$xxConnectionType = "VMware vSphere"; Break}
-		"XenServer" 	{$xxConnectionType = "Citrix Hypervisor"; Break}
-		"Custom"    	{
-							Switch ($xConnectionPluginID)
-							{
-								"AcropolisFactory"				{$xxConnectionType = "Nutanix AHV"; Break}
-								"AzureRmFactory" 				{$xxConnectionType = "Microsoft Azure"; Break}
-								"GcpPluginFactory" 				{$xxConnectionType = "Google Cloud Platform"; Break}
-								"VdaWOLMachineManagerFactory"	{$xxConnectionType = "Remote PC Wake on LAN"; Break}
-								Default     					{$xxConnectionType = "Custom Hypervisor Type PluginID could not be determined: $($xConnectionPluginID)"; Break}
-							}
-							Break
+		"AWS"		{$xxConnectionType = "Amazon EC2"; Break}
+		"SCVMM"     {$xxConnectionType = "Microsoft System Center Virtual Machine Manager"; Break}
+		"vCenter"   {$xxConnectionType = "VMware vSphere"; Break}
+		"WakeOnLAN"	{$xxConnectionType = "Microsoft Configuration Manager Wake on LAN"; Break}
+		"XenServer" {$xxConnectionType = "Citrix Hypervisor"; Break}
+		"Custom"    {
+						Switch ($xConnectionPluginID)
+						{
+							"AcropolisFactory"				{$xxConnectionType = "Nutanix AHV"; Break}
+							"GcpPluginFactory"				{$xxConnectionType = "Google Cloud Platform"; Break}
+							"AzureRmFactory"				{$xxConnectionType = "Microsoft Azure"; Break}
+							"VdaWOLMachineManagerFactory"	{$xxConnectionType = "Remote PC Wake on LAN"; Break}
+							Default     					{$xxConnectionType = "Custom Hypervisor Type PluginID could not be determined: $($xConnectionPluginID)"; Break}
 						}
+						Break
+					}
 		Default     {$xxConnectionType = "Hypervisor Type could not be determined: $($xConnectionType)"; Break}
 	}
 
@@ -28050,6 +36201,31 @@ Function OutputHosting
 	Else
 	{
 		$xxMaintMode = "Off"
+	}
+
+	If([String]::IsNullOrEmpty($xAddress))
+	{
+		$xAddress = "-"
+	}
+	
+	If([String]::IsNullOrEmpty($xUserName))
+	{
+		$xUserName = "-"
+	}
+	
+	If([String]::IsNullOrEmpty($xScopes))
+	{
+		$xScopes = "-"
+	}
+	
+	If([String]::IsNullOrEmpty($xZoneName))
+	{
+		$xZoneName = "-"
+	}
+	
+	If([String]::IsNullOrEmpty($xStorageName))
+	{
+		$xStorageName = "-"
 	}
 	
 	Write-Verbose "$(Get-Date -Format G): `t`t`tOutput $($Hypervisor.Name)"
@@ -28128,6 +36304,7 @@ Function OutputHosting
 
 		FindWordDocumentEnd
 		$Table = $Null
+		WriteWordLine 0 0 ""
 		
 		WriteWordLine 4 0 "Advanced"
 		$ScriptInformation = New-Object System.Collections.ArrayList
@@ -28182,6 +36359,7 @@ Function OutputHosting
 
 		FindWordDocumentEnd
 		$Table = $Null
+		WriteWordLine 0 0 ""
 	}
 	If($Text)
 	{
@@ -28414,7 +36592,7 @@ Function OutputHosting
 		Write-Verbose "$(Get-Date -Format G): `tProcessing Single-session OS Data"
 		$DesktopOSMachines = @(Get-BrokerMachine @CCParams2 -hypervisorconnectionname $Hypervisor.Name -sessionsupport "SingleSession")
 
-		If($? -and ($Null -ne $DesktopOSMachines))
+		If($? -and ($Null -ne $DesktopOSMachines -and $DesktopOSMachines.Count -gt 0))
 		{
 			[int]$cnt = $DesktopOSMachines.Count
 			
@@ -28438,7 +36616,7 @@ Function OutputHosting
 				OutputDesktopOSMachine $Desktop
 			}
 		}
-		ElseIf($? -and ($Null -eq $DesktopOSMachines))
+		ElseIf($? -and ($Null -eq $DesktopOSMachines -or $DesktopOSMachines.Count -eq 0))
 		{
 			$txt = "There are no Single-session OS Machines"
 			OutputNotice $txt
@@ -28452,7 +36630,7 @@ Function OutputHosting
 		Write-Verbose "$(Get-Date -Format G): `tProcessing Multi-session OS Data"
 		$ServerOSMachines = @(Get-BrokerMachine @CCParams2 -hypervisorconnectionname $Hypervisor.Name -sessionsupport "MultiSession")
 		
-		If($? -and ($Null -ne $ServerOSMachines))
+		If($? -and ($Null -ne $ServerOSMachines -and $ServerOSMachines.Count -gt 0))
 		{
 			[int]$cnt = $ServerOSMachines.Count
 
@@ -28477,7 +36655,7 @@ Function OutputHosting
 				OutputServerOSMachine $Server
 			}
 		}
-		ElseIf($? -and ($Null -eq $ServerOSMachines))
+		ElseIf($? -and ($Null -eq $ServerOSMachines -or $ServerOSMachines.Count -eq 0))
 		{
 			$txt = "There are no Multi-session OS Machines"
 			OutputNotice $txt
@@ -28492,7 +36670,7 @@ Function OutputHosting
 		{
 			Write-Verbose "$(Get-Date -Format G): `tProcessing Sessions Data"
 			$Sessions = @(Get-BrokerSession @CCParams2 -hypervisorconnectionname $Hypervisor.Name -SortBy UserName)
-			If($? -and ($Null -ne $Sessions))
+			If($? -and ($Null -ne $Sessions -and $Sessions.Count -gt 0))
 			{
 				[int]$cnt = $Sessions.Count
 
@@ -28514,7 +36692,7 @@ Function OutputHosting
 				
 				OutputHostingSessions $Sessions
 			}
-			ElseIf($? -and ($Null -eq $Sessions))
+			ElseIf($? -and ($Null -eq $Sessions -or $Sessions.Count -eq 0))
 			{
 				$txt = "There are no Sessions"
 				OutputNotice $txt
@@ -28524,6 +36702,12 @@ Function OutputHosting
 				$txt = "Unable to retrieve Sessions"
 				OutputWarning $txt
 			}
+
+			If($MSWord -or $PDF)
+			{
+				#added in 1.24, add a page break after sessions
+				$Selection.InsertNewPage()
+			}
 		}
 	}
 }
@@ -28532,7 +36716,29 @@ Function OutputDesktopOSMachine
 {
 	Param([object]$Desktop)
 
-	Write-Verbose "$(Get-Date -Format G): `t`t`tOutput desktop $($Desktop.DNSName)"
+	#updated in V1.24
+	If($Desktop.DNSName)	# is there anything in the DNSName property
+	{
+		$tmp = $Desktop.DNSName.Split(".")
+		$xDesktopName = $tmp[0]
+		$tmp = $Null
+	}
+	ElseIf($Desktop.MachineName)	# is there anything in the MachineName property
+	{
+		$tmp = $Desktop.MachineName.Split("\")
+		$xDesktopName = $tmp[1]
+		$tmp = $Null
+	}
+	ElseIf($Desktop.HostedMachineName)	# is there anything in the HostedMachineName property
+	{
+		$xDesktopName = $Desktop.HostedMachineName
+	}
+	Else	# error, there is no name for the Desktop
+	{
+		$xDesktopName = "error, there was no name found for the Server"
+	}
+
+	Write-Verbose "$(Get-Date -Format G): `t`t`tOutput desktop $xDesktopName"
 
 	$xMaintMode = ""
 	$xUserChanges = ""
@@ -28564,13 +36770,13 @@ Function OutputDesktopOSMachine
 		"Unavailable"	{$xPowerState = "Unavailable"; Break}
 		"Unknown"		{$xPowerState = "Unknown"; Break}
 		"Unmanaged"		{$xPowerState = "Unmanaged"; Break}
-		Default			{$xPowerState = "Unabled to determine desktop Power State: $($Desktop.PowerState)"; Break}
+		Default			{$xPowerState = "Unable to determine desktop Power State: $($Desktop.PowerState)"; Break}
 	}
 	
 	If($MSWord -or $PDF)
 	{
 		$ScriptInformation = New-Object System.Collections.ArrayList
-		$ScriptInformation.Add(@{Data = "Name"; Value = $Desktop.DNSName; }) > $Null
+		$ScriptInformation.Add(@{Data = "Name"; Value = $xDesktopName; }) > $Null
 		$ScriptInformation.Add(@{Data = "Machine Catalog"; Value = $Desktop.CatalogName; }) > $Null
 		$ScriptInformation.Add(@{Data = "Delivery Group"; Value = $Desktop.DesktopGroupName; }) > $Null
 		If(![String]::IsNullOrEmpty($Desktop.AssociatedUserNames))
@@ -28611,7 +36817,7 @@ Function OutputDesktopOSMachine
 	}
 	If($Text)
 	{
-		Line 1 "Name`t`t`t: " $Desktop.DNSName
+		Line 1 "Name`t`t`t: " $xDesktopName
 		Line 1 "Machine Catalog`t`t: " $Desktop.CatalogName
 		If(![String]::IsNullOrEmpty($Desktop.DesktopGroupName))
 		{
@@ -28643,7 +36849,7 @@ Function OutputDesktopOSMachine
 	If($HTML)
 	{
 		$rowdata = @()
-		$columnHeaders = @("Name",($global:htmlsb),$Desktop.DNSName,$htmlwhite)
+		$columnHeaders = @("Name",($global:htmlsb),$xDesktopName,$htmlwhite)
 		$rowdata += @(,('Machine Catalog',($global:htmlsb),$Desktop.CatalogName,$htmlwhite))
 		If(![String]::IsNullOrEmpty($Desktop.DesktopGroupName))
 		{
@@ -28681,7 +36887,29 @@ Function OutputServerOSMachine
 {
 	Param([object]$Server)
 	
-	Write-Verbose "$(Get-Date -Format G): `t`t`tOutput server $($Server.DNSName)"
+	#updated in V1.24
+	If($Server.DNSName)	# is there anything in the DNSName property
+	{
+		$tmp = $Server.DNSName.Split(".")
+		$xServerName = $tmp[0]
+		$tmp = $Null
+	}
+	ElseIf($Server.MachineName)	# is there anything in the MachineName property
+	{
+		$tmp = $Server.MachineName.Split("\")
+		$xServerName = $tmp[1]
+		$tmp = $Null
+	}
+	ElseIf($Server.HostedMachineName)	# is there anything in the HostedMachineName property
+	{
+		$xServerName = $Server.HostedMachineName
+	}
+	Else	# error, there is no name for the Server
+	{
+		$xServerName = "error, there was no name found for the Server"
+	}
+
+	Write-Verbose "$(Get-Date -Format G): `t`t`tOutput server $xServerName"
 	$xMaintMode = ""
 	$xUserChanges = ""
 
@@ -28713,13 +36941,13 @@ Function OutputServerOSMachine
 		"Unavailable"	{$xPowerState = "Unavailable"; Break}
 		"Unknown"		{$xPowerState = "Unknown"; Break}
 		"Unmanaged"		{$xPowerState = "Unmanaged"; Break}
-		Default			{$xPowerState = "Unabled to determine desktop Power State: $($Server.PowerState)"; Break}
+		Default			{$xPowerState = "Unable to determine desktop Power State: $($Server.PowerState)"; Break}
 	}
 	
 	If($MSWord -or $PDF)
 	{
 		$ScriptInformation = New-Object System.Collections.ArrayList
-		$ScriptInformation.Add(@{Data = "Name"; Value = $Server.DNSName; }) > $Null
+		$ScriptInformation.Add(@{Data = "Name"; Value = $xServerName; }) > $Null
 		$ScriptInformation.Add(@{Data = "Machine Catalog"; Value = $Server.CatalogName; }) > $Null
 		$ScriptInformation.Add(@{Data = "Delivery Group"; Value = $Server.DesktopGroupName; }) > $Null
 		If(![String]::IsNullOrEmpty($Server.AssociatedUserNames))
@@ -28760,7 +36988,7 @@ Function OutputServerOSMachine
 	}
 	If($Text)
 	{
-		Line 1 "Name`t`t`t: " $Server.DNSName
+		Line 1 "Name`t`t`t: " $xServerName
 		Line 1 "Machine Catalog`t`t: " $Server.CatalogName
 		If(![String]::IsNullOrEmpty($Server.DesktopGroupName))
 		{
@@ -28792,7 +37020,7 @@ Function OutputServerOSMachine
 	If($HTML)
 	{
 		$rowdata = @()
-		$columnHeaders = @("Name",($global:htmlsb),$Server.DNSName,$htmlwhite)
+		$columnHeaders = @("Name",($global:htmlsb),$xServerName,$htmlwhite)
 		$rowdata += @(,('Machine Catalog',($global:htmlsb),$Server.CatalogName,$htmlwhite))
 		If(![String]::IsNullOrEmpty($Server.DesktopGroupName))
 		{
@@ -28843,22 +37071,26 @@ Function OutputHostingSessions
 			$xSessionType = "Multi"
 		}
 		
-		#$RecordingStatus = "Not supported"
-		#$result = Get-BrokerSessionRecordingStatus -Session $Session.Uid -EA 0
+		$RecordingStatus = "Not supported"
+		$result = Get-BrokerSessionRecordingStatus -Session $Session.Uid -EA 0
 		
-		#If($?)
-		#{
-		#	Switch ($result)
-		#	{
-		#		"SessionBeingRecorded"	{$RecordingStatus = "Session is being recorded"}
-		#		"SessionNotRecorded"	{$RecordingStatus = "Session is not being recorded"}
-		#		Default					{$RecordingStatus = "Unable to determine session recording status: $($result)"}
-		#	}
-		#}
-		#Else
-		#{
-		#	$RecordingStatus = "Unknown"
-		#}
+		If($? -and $Null -ne $result)
+		{
+			Switch ($result)
+			{
+				"SessionBeingRecorded"	{$RecordingStatus = "Session is being recorded"}
+				"SessionNotRecorded"	{$RecordingStatus = "Session is not being recorded"}
+				Default					{$RecordingStatus = "Unable to determine session recording status: $($result)"}
+			}
+		}
+		ElseIf($? -and $Null -eq $result)
+		{
+			$RecordingStatus = "No recording status found"
+		}
+		Else
+		{
+			$RecordingStatus = "Unable to determine session recording status: $($result)"
+		}
 
 		If([String]::IsNullOrEmpty($Session.ClientName))
 		{
@@ -28889,7 +37121,7 @@ Function OutputHostingSessions
 			$ScriptInformation.Add(@{Data = "Session State"; Value = $Session.SessionState; }) > $Null
 			$ScriptInformation.Add(@{Data = "Application State"; Value = $Session.AppState; }) > $Null
 			$ScriptInformation.Add(@{Data = "Session Support"; Value = $xSessionType; }) > $Null
-			#$ScriptInformation.Add(@{Data = "Recording Status"; Value = $RecordingStatus; }) > $Null
+			$ScriptInformation.Add(@{Data = "Recording Status"; Value = $RecordingStatus; }) > $Null
 			$Table = AddWordTable -Hashtable $ScriptInformation `
 			-Columns Data,Value `
 			-List `
@@ -28917,7 +37149,7 @@ Function OutputHostingSessions
 			Line 1 "Session State`t`t: " $Session.SessionState
 			Line 1 "Application State`t: " $Session.AppState
 			Line 1 "Session Support`t`t: " $xSessionType
-			#Line 1 "Recording Status`t`t: " $RecordingStatus
+			Line 1 "Recording Status`t`t: " $RecordingStatus
 			Line 0 ""
 		}
 		If($HTML)
@@ -28931,7 +37163,7 @@ Function OutputHostingSessions
 			$rowdata += @(,('Session State',($global:htmlsb),$Session.SessionState,$htmlwhite))
 			$rowdata += @(,('Application State',($global:htmlsb),$Session.AppState,$htmlwhite))
 			$rowdata += @(,('Session Support',($global:htmlsb),$xSessionType,$htmlwhite))
-			#$rowdata += @(,('Recording Status',($global:htmlsb),$RecordingStatus,$htmlwhite))
+			$rowdata += @(,('Recording Status',($global:htmlsb),$RecordingStatus,$htmlwhite))
 
 			$msg = ""
 			$columnWidths = @("150","200")
@@ -28963,46 +37195,41 @@ Function OutputLicensingOverview
 
 	Switch ($Script:CCSite2.ProductCode)
 	{
-		"CVADS"	{$LicensedProduct = "Citrix virtual apps and desktops service"; Break}
-		"XDT"	{$LicensedProduct = "XenDesktop"; Break}
-		"VADS"	{$LicensedProduct = "Virtual apps and desktops service"; Break}
-		"VAS"	{$LicensedProduct = "Virtual apps service"; Break}
-		"VAD"	{$LicensedProduct = "Virtual desktops service"; Break}
+		<#
+			PS C:\webster> Get-ConfigProduct
+
+			Code  Name
+			----  ----
+			CVADS Citrix virtual apps and desktops service
+			VADS  Virtual apps and desktops service
+			VAS   Virtual apps service
+			VDS   Virtual desktops service
+
+		#>
+		"CVADS"	{$LicensedProduct = "Citrix DaaS"; Break}
+		"VADS"	{$LicensedProduct = "Citrix DaaS"; Break}
+		"VAS"	{$LicensedProduct = "Citrix DaaS"; Break}
+		"VDS"	{$LicensedProduct = "Citrix DaaS"; Break}
 		Default	{$LicensedProduct = "Unable to determine licensed product: $Script:CCSite2.ProductCode"; Break}
 	}
 	
-	If($Script:CCSite2.ProductCode -eq "XDT")
+	If($Script:CCSite2.ProductCode -eq "CVADS")
 	{
-		Switch ($Script:CCSite2.ProductEdition)
-		{
-			"ADV" 	{$LicenseEditionType = "Advanced Edition"; Break}
-			"APP" 	{$LicenseEditionType = "App Edition"; Break}
-			"BAS" 	{$LicenseEditionType = "Basic Edition"; Break}
-			"ENT" 	{$LicenseEditionType = "Enterprise Edition"; Break}
-			"PLT" 	{$LicenseEditionType = "Platinum Edition"; Break}
-			"STD" 	{$LicenseEditionType = "VDI Edition"; Break}
-			Default {$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
-		}
-	}
-	ElseIf($Script:CCSite2.ProductCode -eq "VADS" -or $Script:CCSite2.ProductCode -eq "VAS")
-	{
-		Switch ($Script:CCSite2.ProductEdition)
-		{
-			"Advanced" 	{$LicenseEditionType = "Advanced Edition"; Break}
-			"Premium" 	{$LicenseEditionType = "Premium Edition"; Break}
-			Default {$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
-		}
-	}
-	ElseIf($Script:CCSite2.ProductCode -eq "VDS")
-	{
-		Switch ($Script:CCSite2.ProductEdition)
-		{
-			"Premium" 	{$LicenseEditionType = "Premium Edition"; Break}
-			Default {$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
-		}
-	}
-	ElseIf($Script:CCSite2.ProductCode -eq "CVADS")
-	{
+		<#
+			PS C:\webster> Get-ConfigProductEdition
+
+			cmdlet Get-ConfigProductEdition at command pipeline position 1
+			Supply values for the following parameters:
+			ProductCode: CVADS
+			AzureVdi
+			DaaS
+			ExpressAdmin
+			Full
+			FullTrial
+			MultitenantCustomer
+			XAOnly
+			XDOnly
+					#>
 		Switch ($Script:CCSite2.ProductEdition)
 		{
 			"AzureVdi"				{$LicenseEditionType = "Azure VDI"; Break}
@@ -29016,6 +37243,68 @@ Function OutputLicensingOverview
 			Default					{$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
 		}
 	}
+	ElseIf($Script:CCSite2.ProductCode -eq "VADS")
+	{
+		<#
+			PS C:\webster> Get-ConfigProductEdition
+
+			cmdlet Get-ConfigProductEdition at command pipeline position 1
+			Supply values for the following parameters:
+			ProductCode: VADS
+			Advanced
+			Premium
+			StandardForAzure
+			PremiumForGCP
+			StandardForGCP
+			StandardForAws
+		#>
+		Switch ($Script:CCSite2.ProductEdition)
+		{
+			"Advanced"		 	{$LicenseEditionType = "Citrix DaaS Advanced Plus"; Break}
+			"Premium"		 	{$LicenseEditionType = "Citrix DaaS Premium and Citrix DaaS Premium Plus"; Break}
+			"StandardForAzure" 	{$LicenseEditionType = "Citrix DaaS Standard for Azure"; Break}
+			"PremiumForGCP" 	{$LicenseEditionType = "Citrix DaaS Premium for Google Cloud"; Break}
+			"StandardForGCP" 	{$LicenseEditionType = "Citrix DaaS Standard for Google Cloud"; Break}
+			"StandardForAws" 	{$LicenseEditionType = "Citrix DaaS Standard for AWS"; Break}
+			Default		{$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
+		}
+	}
+	ElseIf($Script:CCSite2.ProductCode -eq "VAS")
+	{
+		<#
+			PS C:\webster> Get-ConfigProductEdition
+
+			cmdlet Get-ConfigProductEdition at command pipeline position 1
+			Supply values for the following parameters:
+			ProductCode: VAS
+			Advanced
+			Premium
+		#>
+		Switch ($Script:CCSite2.ProductEdition)
+		{
+			"Advanced" 	{$LicenseEditionType = "Citrix DaaS Advanced"; Break}
+			"Premium" 	{$LicenseEditionType = "Citrix DaaS Premium"; Break}
+			Default		{$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
+		}
+	}
+	ElseIf($Script:CCSite2.ProductCode -eq "VDS")
+	{
+		<#
+			PS C:\webster> Get-ConfigProductEdition
+
+			cmdlet Get-ConfigProductEdition at command pipeline position 1
+			Supply values for the following parameters:
+			ProductCode: VDS
+			Premium
+			Essentials
+		#>
+		Switch ($Script:CCSite2.ProductEdition)
+		{
+			"Premium" 		{$LicenseEditionType = "Premium Edition"; Break}
+			"Essentials"	{$LicenseEditionType = "Essentials Edition"; Break}
+			Default			{$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
+		}
+	}
 
 	If($Script:CCSite1.LicenseModel -eq "UserDevice")
 	{
@@ -29026,6 +37315,98 @@ Function OutputLicensingOverview
 		$LicenseModelType = $Script:CCSite1.LicenseModel.ToString()
 	}
 	$tmpdate = '{0:yyyy\.MMdd}' -f $Script:CCSite1.LicensingBurnInDate
+
+	#added in 1.27
+	If($null -eq $Script:CCSite1.LicensingGracePeriodActive)
+	{
+		$LicensingGracePeriodActive = ""
+	}
+	Else
+	{
+		$LicensingGracePeriodActive = $Script:CCSite1.LicensingGracePeriodActive.ToString()
+	}
+	If($null -eq $Script:CCSite1.LicensingOutOfBoxGracePeriodActive)
+	{
+		$LicensingOutOfBoxGracePeriodActive = ""
+	}
+	Else
+	{
+		$LicensingOutOfBoxGracePeriodActive = $Script:CCSite1.LicensingOutOfBoxGracePeriodActive.ToString()
+	}
+	If($null -eq $Script:CCSite1.LicensingGraceHoursLeft)
+	{
+		$LicensingGraceHoursLeft = ""
+	}
+	Else
+	{
+		$LicensingGraceHoursLeft = $Script:CCSite1.LicensingGraceHoursLeft.ToString()
+	}
+	If($null -eq $Script:CCSite1.LicenseGraceSessionsRemaining)
+	{
+		$LicenseGraceSessionsRemaining = ""
+	}
+	Else
+	{
+		$LicenseGraceSessionsRemaining = $Script:CCSite1.LicenseGraceSessionsRemaining.ToString()
+	}
+	
+	#in 1.27 fixed the following to handle null values
+	If($null -eq $Script:CCSite1.LicensingGracePeriodActive)
+	{
+		$LicensingGracePeriodActive = ""
+	}
+	Else
+	{
+		$LicensingGracePeriodActive = $Script:CVADSite1.LicensingGracePeriodActive.ToString()
+	}
+	If($null -eq $Script:CCSite1.LicensingOutOfBoxGracePeriodActive)
+	{
+		$LicensingOutOfBoxGracePeriodActive = ""
+	}
+	Else
+	{
+		$LicensingOutOfBoxGracePeriodActive = $Script:CVADSite1.LicensingOutOfBoxGracePeriodActive.ToString()
+	}
+	If($null -eq $Script:CCSite1.LicensedSessionsActive)
+	{
+		$LicensedSessionsActive = ""
+	}
+	Else
+	{
+		$LicensedSessionsActive = $Script:CCSite1.LicensedSessionsActive.ToString()
+	}
+	If($null -eq $Script:CCSite1.PeakConcurrentLicenseUsers)
+	{
+		$PeakConcurrentLicenseUsers = ""
+	}
+	Else
+	{
+		$PeakConcurrentLicenseUsers = $Script:CCSite1.PeakConcurrentLicenseUsers.ToString()
+	}
+	If($null -eq $Script:CCSite1.PeakConcurrentLicensedDevices)
+	{
+		$PeakConcurrentLicensedDevices = ""
+	}
+	Else
+	{
+		$PeakConcurrentLicensedDevices = $Script:CCSite1.PeakConcurrentLicensedDevices.ToString()
+	}
+	If($null -eq $Script:CCSite1.TotalUniqueLicenseUsers)
+	{
+		$TotalUniqueLicenseUsers = ""
+	}
+	Else
+	{
+		$TotalUniqueLicenseUsers = $Script:CCSite1.TotalUniqueLicenseUsers.ToString()
+	}
+	If($null -eq $Script:CCSite1.LicensedSessionsActive)
+	{
+		$LicensedSessionsActive = ""
+	}
+	Else
+	{
+		$LicensedSessionsActive = $Script:CCSite1.LicensedSessionsActive.ToString()
+	}
 	
 	If($MSWord -or $PDF)
 	{
@@ -29038,10 +37419,15 @@ Function OutputLicensingOverview
 		$ScriptInformation.Add(@{Data = "Edition"; Value = $LicenseEditionType; }) > $Null
 		$ScriptInformation.Add(@{Data = "License model"; Value = $LicenseModelType; }) > $Null
 		$ScriptInformation.Add(@{Data = "Required SA date"; Value = $tmpdate; }) > $Null
-		$ScriptInformation.Add(@{Data = "Licensed sessions active"; Value = $Script:CCSite1.LicensedSessionsActive.ToString(); }) > $Null
-		$ScriptInformation.Add(@{Data = "Peak Licensed CCU"; Value = $Script:CCSite1.PeakConcurrentLicenseUsers.ToString(); }) > $Null
-		$ScriptInformation.Add(@{Data = "Peak Licensed CCD"; Value = $Script:CCSite1.PeakConcurrentLicensedDevices.ToString(); }) > $Null
-		$ScriptInformation.Add(@{Data = "Total unique licensed users"; Value = $Script:CCSite1.TotalUniqueLicenseUsers.ToString(); }) > $Null
+		$ScriptInformation.Add(@{Data = "Licensed sessions active"; Value = $LicensedSessionsActive; }) > $Null
+		$ScriptInformation.Add(@{Data = "Peak Licensed CCU"; Value = $PeakConcurrentLicenseUsers; }) > $Null
+		$ScriptInformation.Add(@{Data = "Peak Licensed CCD"; Value = $PeakConcurrentLicensedDevices; }) > $Null
+		$ScriptInformation.Add(@{Data = "Total unique licensed users"; Value = $TotalUniqueLicenseUsers; }) > $Null
+		$ScriptInformation.Add(@{Data = ""; Value = ""; }) > $Null
+		$ScriptInformation.Add(@{Data = "Licensing Grace Period Active"; Value = $LicensingGracePeriodActive; }) > $Null
+		$ScriptInformation.Add(@{Data = "Licensing out of Box Grace Period Active"; Value = $LicensingOutOfBoxGracePeriodActive; }) > $Null
+		$ScriptInformation.Add(@{Data = "Licensing Grace Hours Left"; Value = $LicensingGraceHoursLeft; }) > $Null
+		$ScriptInformation.Add(@{Data = "License Grace Sessions Remaining"; Value = $LicenseGraceSessionsRemaining; }) > $Null
 		
 		$Table = AddWordTable -Hashtable $ScriptInformation `
 		-Columns Data,Value `
@@ -29068,10 +37454,15 @@ Function OutputLicensingOverview
 		Line 0 "Edition`t`t`t`t: " $LicenseEditionType
 		Line 0 "License model`t`t`t: " $LicenseModelType
 		Line 0 "Required SA date`t`t: " $tmpdate
-		Line 0 "Licensed sessons active`t`t: " $Script:CCSite1.LicensedSessionsActive.ToString()
-		Line 0 "Peak Licensed CCU`t`t: " $Script:CCSite1.PeakConcurrentLicenseUsers.ToString()
-		Line 0 "Peak Licensed CCD`t`t: " $Script:CCSite1.PeakConcurrentLicensedDevices.ToString()
-		Line 0 "Total unique licensed users`t: " $Script:CCSite1.TotalUniqueLicenseUsers.ToString()
+		Line 0 "Licensed sessons active`t`t: " $LicensedSessionsActive
+		Line 0 "Peak Licensed CCU`t`t: " $PeakConcurrentLicenseUsers
+		Line 0 "Peak Licensed CCD`t`t: " $PeakConcurrentLicensedDevices
+		Line 0 "Total unique licensed users`t: " $TotalUniqueLicenseUsers
+		Line 0 ""
+		Line 0 "Licensing Grace Period Active`t`t: " $LicensingGracePeriodActive
+		Line 0 "Licensing out of Box Grace Period Active: " $LicensingOutOfBoxGracePeriodActive
+		Line 0 "Licensing Grace Hours Left`t`t: " $LicensingGraceHoursLeft
+		Line 0 "License Grace Sessions Remaining`t: " $LicenseGraceSessionsRemaining
 		Line 0 ""
 	}
 	If($HTML)
@@ -29083,10 +37474,15 @@ Function OutputLicensingOverview
 		$rowdata += @(,('Edition',($global:htmlsb),$LicenseEditionType,$htmlwhite))
 		$rowdata += @(,('License model',($global:htmlsb),$LicenseModelType,$htmlwhite))
 		$rowdata += @(,('Required SA date',($global:htmlsb),$tmpdate,$htmlwhite))
-		$rowdata += @(,('Licensed sessons active',($global:htmlsb),$Script:CCSite1.LicensedSessionsActive.ToString(),$htmlwhite))
-		$rowdata += @(,("Peak Licensed CCU",($global:htmlsb),$Script:CCSite1.PeakConcurrentLicenseUsers.ToString(),$htmlwhite))
-		$rowdata += @(,("Peak Licensed CCD",($global:htmlsb),$Script:CCSite1.PeakConcurrentLicensedDevices.ToString(),$htmlwhite))
-		$rowdata += @(,("Total unique licensed users",($global:htmlsb),$Script:CCSite1.TotalUniqueLicenseUsers.ToString(),$htmlwhite))
+		$rowdata += @(,('Licensed sessons active',($global:htmlsb),$LicensedSessionsActive,$htmlwhite))
+		$rowdata += @(,("Peak Licensed CCU",($global:htmlsb),$PeakConcurrentLicenseUsers,$htmlwhite))
+		$rowdata += @(,("Peak Licensed CCD",($global:htmlsb),$PeakConcurrentLicensedDevices,$htmlwhite))
+		$rowdata += @(,("Total unique licensed users",($global:htmlsb),$TotalUniqueLicenseUsers,$htmlwhite))
+		$rowdata += @(,('',($global:htmlsb),"",$htmlwhite))
+		$rowdata += @(,('Licensing Grace Period Active',($global:htmlsb),$LicensingGracePeriodActive,$htmlwhite))
+		$rowdata += @(,('Licensing out of Box Grace Period Active',($global:htmlsb),$LicensingOutOfBoxGracePeriodActive,$htmlwhite))
+		$rowdata += @(,('Licensing Grace Hours Left',($global:htmlsb),$LicensingGraceHoursLeft,$htmlwhite))
+		$rowdata += @(,('License Grace Sessions Remaining',($global:htmlsb),$LicenseGraceSessionsRemaining,$htmlwhite))
 
 		$msg = ""
 		$columnWidths = @("150","200")
@@ -29115,7 +37511,7 @@ Function ProcessStoreFront
 	}
 	
 	Write-Verbose "$(Get-Date -Format G): `tRetrieving StoreFront information"
-	$SFInfos = Get-BrokerMachineConfiguration -EA 0 -Name rs* -SortBy LeafName
+	$SFInfos = Get-BrokerMachineConfiguration -Name rs* -SortBy LeafName @CCParams2
 	If($? -and ($Null -ne $SFInfos))
 	{
 		$First = $True
@@ -29132,7 +37528,7 @@ Function ProcessStoreFront
             }
             Catch
             {
-                $SFServer = $null
+                $SFServer = $Null
             }
 			If($? -and ($Null -ne $SFServer))
 			{
@@ -29260,7 +37656,7 @@ Function OutputStoreFrontDeliveryGroups
 	$DeliveryGroups = @()
 	ForEach($DGUid in $SFInfo.DesktopGroupUids)
 	{
-		$Results = Get-BrokerDesktopGroup -EA 0 -Uid $DGUid
+		$Results = Get-BrokerDesktopGroup -Uid $DGUid -EA 0
 		If($? -and $Null -ne $Results)
 		{
 			$DeliveryGroups += $Results.Name
@@ -29312,6 +37708,11 @@ Function OutputStoreFrontDeliveryGroups
 
 	If($MSWord -or $PDF)
 	{
+		If($DGWordTable.Count -eq 0)
+		{
+			$DGWordTable += @{DGName = "None found";}
+		}
+		
 		$Table = AddWordTable -Hashtable $DGWordTable `
 		-Columns DGName `
 		-Headers "Delivery Group" `
@@ -29340,144 +37741,6 @@ Function OutputStoreFrontDeliveryGroups
 }
 #endregion
 
-#region AppV functions
-Function ProcessAppV
-{
-	Write-Verbose "$(Get-Date -Format G): Processing App-V"
-	
-	If($MSWord -or $PDF)
-	{
-		$Selection.InsertNewPage()
-		WriteWordLine 1 0 "App-V Publishing"
-	}
-	If($Text)
-	{
-		Line 0 "App-V Publishing"
-	}
-	If($HTML)
-	{
-		WriteHTMLLine 1 0 "App-V Publishing"
-	}
-	
-	Write-Verbose "$(Get-Date -Format G): `tRetrieving App-V configuration"
-	$AppVConfigs = Get-BrokerMachineConfiguration -EA 0 -Name appv* 4>$Null
-	
-	If($? -and $Null -ne $AppVConfigs)
-	{
-		Write-Verbose "$(Get-Date -Format G): `t`tRetrieving App-V server information"
-		
-		$AppVs = New-Object System.Collections.ArrayList
-		ForEach($AppVConfig in $AppVConfigs)
-		{
-			$AppV = Get-CtxAppVServer -ByteArray $AppVConfig.Policy -EA 0 4>$Null
-			If($? -and ($Null -ne $AppV))
-			{
-				$obj = [PSCustomObject] @{
-					MgmtServer = $AppV.ManagementServer				
-					PubServer  = $AppV.PublishingServer				
-				}
-				$null = $AppVs.Add($obj)
-			}
-			ElseIf($? -and ($Null -eq $AppV))
-			{
-				$txt = "There was no App-V server information found for $($AppVConfig.Policy)"
-				OutputWarning $txt
-			}
-			Else
-			{
-				$txt = "Unable to retrieve App-V information for $($AppVConfig.Policy)"
-				OutputWarning $txt
-			}
-		}
-		
-		$AppVs = $AppVs | Sort-Object MgmtServer
-		
-		OutputAppV $AppVs
-	}
-	ElseIf($? -and $Null -eq $AppVConfigs)
-	{
-		$txt = "App-V is not configured for this Site"
-		OutputNotice $txt
-	}
-	Else
-	{
-		$txt = "Unable to retrieve App-V configuration"
-		OutputWarning $txt
-	}
-	Write-Verbose "$(Get-Date -Format G): "
-}
-
-Function OutputAppV
-{
-	Param([object]$AppVs)
-	
-	Write-Verbose "$(Get-Date -Format G): `t`t`tOutput App-V server information"
-	If($MSWord -or $PDF)
-	{
-		$AppVWordTable = @()
-	}
-	If($HTML)
-	{
-		$rowdata = @()
-	}
-	
-	ForEach($AppV in $AppVs)
-	{
-		Write-Verbose "$(Get-Date -Format G): `t`t`tAdding AppV Server $($AppV.MgmtServer)"
-
-		If($MSWord -or $PDF)
-		{
-			$AppVWordTable += @{
-			MgmtServer = $AppV.MgmtServer; 
-			PubServer = $AppV.PubServer; 
-			}
-		}
-		If($Text)
-		{
-			Line 1 "App-V management server`t: " $AppV.MgmtServer
-			Line 1 "App-V publishing server`t: " $AppV.PubServer
-			Line 0 ""
-		}
-		If($HTML)
-		{
-			$rowdata += @(,(
-			$AppV.MgmtServer,$htmlwhite,
-			$AppV.PubServer,$htmlwhite))
-		}
-	}
-
-	If($MSWord -or $PDF)
-	{
-		$Table = AddWordTable -Hashtable $AppVWordTable `
-		-Columns  MgmtServer,PubServer `
-		-Headers  "App-V management server","App-V publishing server" `
-		-Format $wdTableGrid `
-		-AutoFit $wdAutoFitFixed;
-
-		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
-
-		$Table.Columns.Item(1).Width = 250;
-		$Table.Columns.Item(2).Width = 250;
-
-		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
-
-		FindWordDocumentEnd
-		$Table = $Null
-		WriteWordLine 0 0 ""
-	}
-	If($HTML)
-	{
-		$columnHeaders = @(
-		'App-V management server',($global:htmlsb),
-		'App-V publishing server',($global:htmlsb))
-
-		$msg = ""
-		$columnWidths = @("250","250")
-		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
-	}
-}
-#endregion
-
 #region zones
 Function ProcessZones
 {
@@ -29499,7 +37762,7 @@ Function ProcessZones
 	
 	#get all zone names
 	Write-Verbose "$(Get-Date -Format G): `tRetrieving All Zones"
-	$Zones = Get-ConfigZone -EA 0 -Filter {Name -ne "Initial Zone" -and Name -ne "00000000-0000-0000-0000-000000000000"} -SortBy Name
+	$Zones = Get-ConfigZone -Filter {Name -ne "Initial Zone" -and Name -ne "00000000-0000-0000-0000-000000000000"} -SortBy Name @CCParams2
 	$ZoneMembers = New-Object System.Collections.ArrayList
 	
 	ForEach($Zone in $Zones)
@@ -29510,12 +37773,15 @@ Function ProcessZones
 		ForEach($ZoneCatalog in $ZoneCatalogs)
 		{
 			$obj = [PSCustomObject] @{
-				MemName = $ZoneCatalog.Name			
-				MemDesc = $ZoneCatalog.Description			
-				MemType = "Machine Catalog"			
-				MemZone = $Zone.Name			
+				MemName        = $ZoneCatalog.Name			
+				MemDesc        = $ZoneCatalog.Description			
+				MemType        = "Machine Catalog"			
+				MemZone        = $Zone.Name
+				MemZoneEdge    = $Zone.HasValidEdgeServers.ToString()
+				MemZoneHealthy = $Zone.IsHealthy.ToString()
+				MemZonePrimary = $Zone.IsPrimary.ToString()
 			}
-			$null = $ZoneMembers.Add($obj)
+			$Null = $ZoneMembers.Add($obj)
 		}
 		
 		Write-Verbose "$(Get-Date -Format G): `t`tRetrieving Host Connections for Zone $($Zone.Name)"
@@ -29523,25 +37789,31 @@ Function ProcessZones
 		ForEach($ZoneHost in $ZoneHosts)
 		{
 			$obj = [PSCustomObject] @{
-				MemName = $ZoneHost.HypervisorConnectionName			
-				MemDesc = ""			
-				MemType = "Host Connection"		
-				MemZone = $Zone.Name			
+				MemName        = $ZoneHost.HypervisorConnectionName			
+				MemDesc        = ""			
+				MemType        = "Host Connection"		
+				MemZone        = $Zone.Name			
+				MemZoneEdge    = $Zone.HasValidEdgeServers.ToString()
+				MemZoneHealthy = $Zone.IsHealthy.ToString()
+				MemZonePrimary = $Zone.IsPrimary.ToString()
 			}
-			$null = $ZoneMembers.Add($obj)
+			$Null = $ZoneMembers.Add($obj)
 		}
 
 		Write-Verbose "$(Get-Date -Format G): `t`tRetrieving Cloud Connectors for Zone $($Zone.Name)"
-		$ZoneCCs = Get-ConfigEdgeServer -ZoneUid $Zone.Uid
+		$ZoneCCs = Get-ConfigEdgeServer -ZoneUid $Zone.Uid @CCParams2
 		ForEach($ZoneCC in $ZoneCCs)
 		{
 			$obj = [PSCustomObject] @{
-				MemName = $ZoneCC.MachineAddress
-				MemDesc = ""		
-				MemType = "Citrix Cloud Connector"		
-				MemZone = $Zone.Name			
+				MemName        = $ZoneCC.MachineAddress
+				MemDesc        = ""		
+				MemType        = "Citrix Cloud Connector"		
+				MemZone        = $Zone.Name			
+				MemZoneEdge    = $Zone.HasValidEdgeServers.ToString()
+				MemZoneHealthy = $Zone.IsHealthy.ToString()
+				MemZonePrimary = $Zone.IsPrimary.ToString()
 			}
-			$null = $ZoneMembers.Add($obj)
+			$Null = $ZoneMembers.Add($obj)
 		}
 	}
 	
@@ -29564,31 +37836,61 @@ Function OutputZoneSiteView
 
 		ForEach($ZoneMember in $ZoneMembers)
 		{
+			If([String]::IsNullOrEmpty($ZoneMember.MemDesc))
+			{
+				$ZoneMemberMemDesc = "-"
+			}
+			Else
+			{
+				$ZoneMemberMemDesc = $ZoneMember.MemDesc
+			}
+
 			$ZoneWordTable += @{ 
-			xName = $ZoneMember.MemName;
-			xDesc = $ZoneMember.MemDesc;
-			xType = $ZoneMember.MemType;
-			xZone = $ZoneMember.MemZone;
+				xName    = $ZoneMember.MemName;
+				xDesc    = $ZoneMemberMemDesc;
+				xType    = $ZoneMember.MemType;
+				xZone    = $ZoneMember.MemZone;
+				xEdge    = $ZoneMember.MemZoneEdge;
+				xHealthy = $ZoneMember.MemZoneHealthy;
+				xPrimary = $ZoneMember.MemZonePrimary
 			}
 		}
 
+		If($ZoneWordTable.Count -eq 0)
+		{
+			$ZoneWordTable += @{ 
+				xName    = "None found";
+				xDesc    = "";
+				xType    = "";
+				xZone    = "";
+				xEdge    = ""; 
+				xHealthy = ""; 
+				xPrimary = ""; 
+			}
+		}
+		
 		$Table = AddWordTable -Hashtable $ZoneWordTable `
-		-Columns xName, xDesc, xType, xZone `
-		-Headers "Name", "Description", "Type", "Zone" `
+		-Columns xName, xDesc, xType, xZone, xEdge, xHealthy, xPrimary `
+		-Headers "Name", "Description", "Type", "Zone", "Valid Edge Servers?", "Healthy?", "Primary?" `
 		-Format $wdTableGrid `
 		-AutoFit $wdAutoFitFixed;
 
+		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-		$Table.Columns.Item(1).Width = 175;
-		$Table.Columns.Item(2).Width = 100;
-		$Table.Columns.Item(3).Width = 125;
-		$Table.Columns.Item(4).Width = 100;
+		$Table.Columns.Item(1).Width = 100;
+		$Table.Columns.Item(2).Width = 90;
+		$Table.Columns.Item(3).Width = 80;
+		$Table.Columns.Item(4).Width = 90;
+		$Table.Columns.Item(5).Width = 50;
+		$Table.Columns.Item(6).Width = 45;
+		$Table.Columns.Item(7).Width = 45;
 		
 		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
 		FindWordDocumentEnd
 		$Table = $Null
+		WriteWordLine 0 0 ""
 	}
 	If($Text)
 	{
@@ -29596,10 +37898,22 @@ Function OutputZoneSiteView
 		Line 0 ""
 		ForEach($ZoneMember in $ZoneMembers)
 		{
-			Line 1 "Name`t`t: " $ZoneMember.MemName
-			Line 1 "Description`t: " $ZoneMember.MemDesc
-			Line 1 "Type`t`t: " $ZoneMember.MemType
-			Line 1 "Zone`t`t: " $ZoneMember.MemZone
+			If([String]::IsNullOrEmpty($ZoneMember.MemDesc))
+			{
+				$ZoneMemberMemDesc = "-"
+			}
+			Else
+			{
+				$ZoneMemberMemDesc = $ZoneMember.MemDesc
+			}
+
+			Line 1 "Name`t`t`t: " $ZoneMember.MemName
+			Line 1 "Description`t`t: " $ZoneMemberMemDesc
+			Line 1 "Type`t`t`t: " $ZoneMember.MemType
+			Line 1 "Zone`t`t`t: " $ZoneMember.MemZone
+			Line 1 "Valid Edge Servers?`t: " $ZoneMember.MemZoneEdge
+			Line 1 "Healthy?`t`t: " $ZoneMember.MemZoneHealthy
+			Line 1 "Primary?`t`t: " $ZoneMember.MemZonePrimary
 			Line 0 ""
 		}
 	}
@@ -29609,22 +37923,39 @@ Function OutputZoneSiteView
 		$rowdata = @()
 		ForEach($ZoneMember in $ZoneMembers)
 		{
+			If([String]::IsNullOrEmpty($ZoneMember.MemDesc))
+			{
+				$ZoneMemberMemDesc = "-"
+			}
+			Else
+			{
+				$ZoneMemberMemDesc = $ZoneMember.MemDesc
+			}
+
 			$rowdata += @(,(
-			$ZoneMember.MemName,$htmlwhite,
-			$ZoneMember.MemDesc,$htmlwhite,
-			$ZoneMember.MemType,$htmlwhite,
-			$ZoneMember.MemZone,$htmlwhite))
+				$ZoneMember.MemName,$htmlwhite,
+				$ZoneMemberMemDesc,$htmlwhite,
+				$ZoneMember.MemType,$htmlwhite,
+				$ZoneMember.MemZone,$htmlwhite,
+				$ZoneMember.MemZoneEdge,$htmlwhite,
+				$ZoneMember.MemZoneHealthy,$htmlwhite,
+				$ZoneMember.MemZonePrimary,$htmlwhite)
+			)
 		}
 		
 		$columnHeaders = @(
-		'Name',($global:htmlsb),
-		'Description',($global:htmlsb),
-		'Type',($global:htmlsb),
-		'Zone',($global:htmlsb))
+			'Name',($global:htmlsb),
+			'Description',($global:htmlsb),
+			'Type',($global:htmlsb),
+			'Zone',($global:htmlsb),
+			'Valid Edge Servers?',($global:htmlsb),
+			'Healthy?',($global:htmlsb),
+			'Primary?',($global:htmlsb)
+		)
 
 		$msg = ""
-		$columnWidths = @("150","200","150","150")
-		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "650"
+		$columnWidths = @("100","100","200","200", "100","90","90")
+		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "880"
 	}
 }
 
@@ -29652,13 +37983,31 @@ Function OutputPerZoneView
 
 				ForEach($ZoneMember in $TmpZoneMembers)
 				{
+					If([String]::IsNullOrEmpty($ZoneMember.MemDesc))
+					{
+						$ZoneMemberMemDesc = "-"
+					}
+					Else
+					{
+						$ZoneMemberMemDesc = $ZoneMember.MemDesc
+					}
+
 					$ZoneWordTable += @{ 
-					xName = $ZoneMember.MemName;
-					xDesc = $ZoneMember.MemDesc;
-					xType = $ZoneMember.MemType;
+						xName = $ZoneMember.MemName;
+						xDesc = $ZoneMemberMemDesc;
+						xType = $ZoneMember.MemType;
 					}
 				}
 
+				If($ZoneWordTable.Count -eq 0)
+				{
+					$ZoneWordTable += @{ 
+						xName = "None found";
+						xDesc = "";
+						xType = "";
+					}
+				}
+				
 				$Table = AddWordTable -Hashtable $ZoneWordTable `
 				-Columns xName, xDesc, xType `
 				-Headers "Name", "Description", "Type" `
@@ -29692,8 +38041,17 @@ Function OutputPerZoneView
 			{
 				ForEach($ZoneMember in $TmpZoneMembers)
 				{
+					If([String]::IsNullOrEmpty($ZoneMember.MemDesc))
+					{
+						$ZoneMemberMemDesc = "-"
+					}
+					Else
+					{
+						$ZoneMemberMemDesc = $ZoneMember.MemDesc
+					}
+
 					Line 1 "Name`t`t: " $ZoneMember.MemName
-					Line 1 "Description`t: " $ZoneMember.MemDesc
+					Line 1 "Description`t: " $ZoneMemberMemDesc
 					Line 1 "Type`t`t: " $ZoneMember.MemType
 					Line 0 ""
 				}
@@ -29711,16 +38069,27 @@ Function OutputPerZoneView
 				$rowdata = @()
 				ForEach($ZoneMember in $TmpZoneMembers)
 				{
+					If([String]::IsNullOrEmpty($ZoneMember.MemDesc))
+					{
+						$ZoneMemberMemDesc = "-"
+					}
+					Else
+					{
+						$ZoneMemberMemDesc = $ZoneMember.MemDesc
+					}
+
 					$rowdata += @(,(
-					$ZoneMember.MemName,$htmlwhite,
-					$ZoneMember.MemDesc,$htmlwhite,
-					$ZoneMember.MemType,$htmlwhite))
+						$ZoneMember.MemName,$htmlwhite,
+						$ZoneMemberMemDesc,$htmlwhite,
+						$ZoneMember.MemType,$htmlwhite)
+					)
 				}
 				
 				$columnHeaders = @(
-				'Name',($global:htmlsb),
-				'Description',($global:htmlsb),
-				'Type',($global:htmlsb))
+					'Name',($global:htmlsb),
+					'Description',($global:htmlsb),
+					'Type',($global:htmlsb)
+				)
 
 				$msg = ""
 				$columnWidths = @("150","200","150")
@@ -29756,7 +38125,7 @@ Function OutputSummaryPage
 	If($MSWord -or $PDF)
 	{
 		$ScriptInformation = New-Object System.Collections.ArrayList
-		WriteWordLine 4 0 "Machine Catalogs"
+		WriteWordLine 2 0 "Machine Catalogs"
 		$ScriptInformation.Add(@{Data = "Total Multi-session OS Catalogs"; Value = $Script:TotalServerOSCatalogs.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Single-session OS Catalogs'; Value = $Script:TotalDesktopOSCatalogs.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total RemotePC Catalogs'; Value = $Script:TotalRemotePCCatalogs.ToString(); }) > $Null
@@ -29780,7 +38149,7 @@ Function OutputSummaryPage
 		WriteWordLine 0 0 ""
 		
 		$ScriptInformation = New-Object System.Collections.ArrayList
-		WriteWordLine 4 0 "Delivery Groups"
+		WriteWordLine 2 0 "Delivery Groups"
 		$ScriptInformation.Add(@{Data = "Total Application Groups"; Value = $Script:TotalApplicationGroups.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Desktop Groups'; Value = $Script:TotalDesktopGroups.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Apps & Desktop Groups'; Value = $Script:TotalAppsAndDesktopGroups.ToString(); }) > $Null
@@ -29804,7 +38173,7 @@ Function OutputSummaryPage
 		WriteWordLine 0 0 ""
 
 		$ScriptInformation = New-Object System.Collections.ArrayList
-		WriteWordLine 4 0 "Applications"
+		WriteWordLine 2 0 "Applications"
 		$ScriptInformation.Add(@{Data = "Total Published Applications"; Value = $Script:TotalPublishedApplications.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total App-V Applications'; Value = $Script:TotalAppvApplications.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = '     Total Applications'; Value = ($Script:TotalPublishedApplications + $Script:TotalAppvApplications).ToString(); }) > $Null
@@ -29829,7 +38198,7 @@ Function OutputSummaryPage
 		If($Policies -eq $True)
 		{
 			$ScriptInformation = New-Object System.Collections.ArrayList
-			WriteWordLine 4 0 "Policies"
+			WriteWordLine 2 0 "Policies"
 			$ScriptInformation.Add(@{Data = "Total Computer Policies"; Value = $Script:TotalComputerPolicies.ToString(); }) > $Null
 			$ScriptInformation.Add(@{Data = 'Total User Policies'; Value = $Script:TotalUserPolicies.ToString(); }) > $Null
 			$ScriptInformation.Add(@{Data = '     Total Policies'; Value = $Script:TotalPolicies.ToString(); }) > $Null
@@ -29837,7 +38206,7 @@ Function OutputSummaryPage
 			$ScriptInformation.Add(@{Data = 'Site Policies'; Value = $Script:TotalSitePolicies.ToString(); }) > $Null
 			If($NoADPolicies -eq $False)
 			{
-				$ScriptInformation.Add(@{Data = "Citrix AD Policies Processed "; Value = "$($Script:TotalADPolicies) *"; }) > $Null
+				$ScriptInformation.Add(@{Data = "Citrix AD Policies Processed"; Value = "$($Script:TotalADPolicies) *"; }) > $Null
 				$ScriptInformation.Add(@{Data = 'Citrix AD Policies not Processed'; Value = $Script:TotalADPoliciesNotProcessed.ToString(); }) > $Null
 			}
 
@@ -29861,7 +38230,7 @@ Function OutputSummaryPage
 		}
 		
 		$ScriptInformation = New-Object System.Collections.ArrayList
-		WriteWordLine 4 0 "Administrators"
+		WriteWordLine 2 0 "Administrators"
 		$ScriptInformation.Add(@{Data = "Total Cloud Admins"; Value = $Script:TotalCloudAdmins.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = "Total Delivery Group Admins"; Value = $Script:TotalDeliveryGroupAdmins.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Full Admins'; Value = $Script:TotalFullAdmins.ToString(); }) > $Null
@@ -29905,7 +38274,7 @@ Function OutputSummaryPage
 		WriteWordLine 0 0 ""
 
 		$ScriptInformation = New-Object System.Collections.ArrayList
-		WriteWordLine 4 0 "Hosting Connections"
+		WriteWordLine 2 0 "Hosting Connections"
 		$ScriptInformation.Add(@{Data = "     Total Hosting Connections"; Value = $Script:TotalHostingConnections.ToString(); }) > $Null
 
 		$Table = AddWordTable -Hashtable $ScriptInformation `
@@ -29926,7 +38295,7 @@ Function OutputSummaryPage
 		WriteWordLine 0 0 ""
 
 		$ScriptInformation = New-Object System.Collections.ArrayList
-		WriteWordLine 4 0 "StoreFront"
+		WriteWordLine 2 0 "StoreFront"
 		$ScriptInformation.Add(@{Data = "     Total StoreFront Servers"; Value = $Script:TotalStoreFrontServers.ToString(); }) > $Null
 
 		$Table = AddWordTable -Hashtable $ScriptInformation `
@@ -29947,7 +38316,7 @@ Function OutputSummaryPage
 		WriteWordLine 0 0 ""
 
 		$ScriptInformation = New-Object System.Collections.ArrayList
-		WriteWordLine 4 0 "Zones"
+		WriteWordLine 2 0 "Zones"
 		$ScriptInformation.Add(@{Data = "     Total Zones"; Value = $Script:TotalZones.ToString(); }) > $Null
 
 		$Table = AddWordTable -Hashtable $ScriptInformation `
@@ -30081,7 +38450,7 @@ Function OutputSummaryPage
 			$rowdata += @(,('Site Policies',($global:htmlsb),$Script:TotalSitePolicies.ToString(),$htmlwhite))
 			If($NoADPolicies -eq $False)
 			{
-				$rowdata += @(,("Citrix AD Policies Processed ",($global:htmlsb),"$($Script:TotalADPolicies) *",$htmlwhite))
+				$rowdata += @(,("Citrix AD Policies Processed",($global:htmlsb),"$($Script:TotalADPolicies) *",$htmlwhite))
 				$rowdata += @(,('Citrix AD Policies not Processed',($global:htmlsb),$Script:TotalADPoliciesNotProcessed.ToString(),$htmlwhite))
 			}
 
@@ -30148,58 +38517,29 @@ Function ProcessScriptSetup
 
 	#borrowed from Martic Zugec
 	Write-Verbose "$(Get-Date -Format G): Testing required PowerShell modules for Citrix Cloud"
-	If ($(Get-Module Citrix.PoshSdkProxy.Commands -ListAvailable) -isnot [System.Management.Automation.PSModuleInfo]) 
+	If($(Get-Module Citrix.PoshSdkProxy.Commands -ListAvailable) -isnot [System.Management.Automation.PSModuleInfo]) 
 	{
 		Write-Host "Citrix Virtual Apps and Desktops Remote PowerShell SDK is required for Citrix Cloud connection." -ForegroundColor Red
 		Write-Host "Script will abort. You can try again after installing the required SDK from https://download.apps.cloud.com/CitrixPoshSdk.exe" -ForegroundColor Red
 
 		Write-Error "
-		`n`r
-		CVADS Remote Powershell SDK is not available
-		`n`n
-		If you are running XA/XD 7.0 through 7.7, please use: 
-		https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
-		`n`n
-		If you are running XA/XD 7.8 through CVAD 2006, please use: 
-		https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
-		`n`n
-		If you are running CVAD 2006 and later, please use:
-		https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
-		`n`n
+	`n`r
+	CVADS Remote Powershell SDK is not available.
+	`n`n
+	If you are running XA/XD 7.0 through 7.7, please use: 
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+	`n`n
+	If you are running XA/XD 7.8 through CVAD 2006, please use: 
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+	`n`n
+	If you are running CVAD 2006 and later, please use:
+	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+	`n`n
 	Script will now close.
 	`n
 		"
-		Exit
+		AbortScript
 	} 
-
-	Write-Verbose "$(Get-Date -Format G): Loading Citrix.Common.GroupPolicy PSSnapin"
-	If(!(Check-NeededPSSnapins "Citrix.Common.GroupPolicy"))
-	{
-		#We're missing Citrix Snapins that we need
-		$ErrorActionPreference = $SaveEAPreference
-		Write-Error "
-		`n`n
-		Missing Citrix PowerShell Snap-ins Detected. 
-		`n`n
-		Install the Citrix Group Policy Management Console from the CVAD 2006 or later installation media. 
-		Note: This is required by the StoreFront and Citrix Policy cmdlets and functions.
-		x:\x64\Citrix Policy\CitrixGroupPolicyManagement_x64.msi
-		Installing this console installs the required Citrix.Common.GroupPolicy PowerShell snapin.
-		`n`n
-		If you are running XA/XD 7.0 through 7.7, please use: 
-		https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
-		`n`n
-		If you are running XA/XD 7.8 through CVAD 2006, please use: 
-		https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
-		`n`n
-		If you are running CVAD 2006 and later, please use:
-		https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
-		`n`n
-	Script will now close.
-	`n
-		"
-		Exit
-	}
 
 	Write-Verbose "$(Get-Date -Format G): Importing required Citrix PowerShell modules"
 	Write-Verbose "$(Get-Date -Format G): `tCitrix.ADIdentity.Commands"
@@ -30207,7 +38547,7 @@ Function ProcessScriptSetup
 	If(!$?)
 	{
 		Write-Error "Unable to import the Citrix.ADIdentity.Commands module. Script cannot continue."
-		Exit
+		AbortScript
 	}
 	
 	Write-Verbose "$(Get-Date -Format G): `tCitrix.Analytics.Commands"
@@ -30215,7 +38555,7 @@ Function ProcessScriptSetup
 	If(!$?)
 	{
 		Write-Error "Unable to import the Citrix.Analytics.Commands module. Script cannot continue."
-		Exit
+		AbortScript
 	}
 	
 	Write-Verbose "$(Get-Date -Format G): `tCitrix.AppLibrary.Commands"
@@ -30223,7 +38563,7 @@ Function ProcessScriptSetup
 	If(!$?)
 	{
 		Write-Error "Unable to import the Citrix.AppLibrary.Commands module. Script cannot continue."
-		Exit
+		AbortScript
 	}
 	
 	Write-Verbose "$(Get-Date -Format G): `tCitrix.Broker.Commands"
@@ -30231,7 +38571,7 @@ Function ProcessScriptSetup
 	If(!$?)
 	{
 		Write-Error "Unable to import the Citrix.Broker.Commands module. Script cannot continue."
-		Exit
+		AbortScript
 	}
 	
 	Write-Verbose "$(Get-Date -Format G): `tCitrix.Common.Commands"
@@ -30239,7 +38579,7 @@ Function ProcessScriptSetup
 	If(!$?)
 	{
 		Write-Error "Unable to import the Citrix.Common.Commands module. Script cannot continue."
-		Exit
+		AbortScript
 	}
 	
 	Write-Verbose "$(Get-Date -Format G): `tCitrix.Configuration.Commands"
@@ -30247,7 +38587,7 @@ Function ProcessScriptSetup
 	If(!$?)
 	{
 		Write-Error "Unable to import the Citrix.Configuration.Commands module. Script cannot continue."
-		Exit
+		AbortScript
 	}
 	
 	Write-Verbose "$(Get-Date -Format G): `tCitrix.ConfigurationLogging.Commands"
@@ -30255,7 +38595,7 @@ Function ProcessScriptSetup
 	If(!$?)
 	{
 		Write-Error "Unable to import the Citrix.ConfigurationLogging.Commands module. Script cannot continue."
-		Exit
+		AbortScript
 	}
 	
 	Write-Verbose "$(Get-Date -Format G): `tCitrix.DelegatedAdmin.Commands"
@@ -30263,15 +38603,39 @@ Function ProcessScriptSetup
 	If(!$?)
 	{
 		Write-Error "Unable to import the Citrix.DelegatedAdmin.Commands module. Script cannot continue."
-		Exit
+		AbortScript
 	}
 	
+	Write-Verbose "$(Get-Date -Format G): Loading Citrix.GroupPolicy.Commands module"
+	Import-Module Citrix.GroupPolicy.Commands
+ 	If(!$?)
+	{
+		Write-Error "Unable to add the Citrix.GroupPolicy.Commands module. Script cannot continue."
+		AbortScript
+	}
+
 	Write-Verbose "$(Get-Date -Format G): `tCitrix.Host.Commands"
 	Import-Module "Citrix.Host.Commands" 4>$Null
 	If(!$?)
 	{
 		Write-Error "Unable to import the Citrix.Host.Commands module. Script cannot continue."
-		Exit
+		AbortScript
+	}
+	If(Test-Path XDHyp: 4>$Null)
+	{
+		Write-Verbose "$(Get-Date -Format G): `t`t`tXDHyp PSDrive is ready for use"
+	}
+	Else
+	{
+		$ErrorActionPreference = $SaveEAPreference
+		Write-Error "
+	`n`n
+XDHyp PSDrive does not exist. Try immediately rerunning the script.
+	`n`n
+Script cannot continue
+	`n`n
+		"
+		AbortScript
 	}
 	
 	Write-Verbose "$(Get-Date -Format G): `tCitrix.MachineCreation.Commands"
@@ -30279,7 +38643,7 @@ Function ProcessScriptSetup
 	If(!$?)
 	{
 		Write-Error "Unable to import the  Citrix.MachineCreation.Commandsmodule. Script cannot continue."
-		Exit
+		AbortScript
 	}
 	
 	Write-Verbose "$(Get-Date -Format G): `tCitrix.Monitor.Commands"
@@ -30287,7 +38651,7 @@ Function ProcessScriptSetup
 	If(!$?)
 	{
 		Write-Error "Unable to import the Citrix.Monitor.Commands module. Script cannot continue."
-		Exit
+		AbortScript
 	}
 	
 	Write-Verbose "$(Get-Date -Format G): `tCitrix.Storefront.Commands"
@@ -30295,76 +38659,160 @@ Function ProcessScriptSetup
 	If(!$?)
 	{
 		Write-Error "Unable to import the Citrix.Storefront.Commands module. Script cannot continue."
-		Exit
+		AbortScript
 	}
 	
-	$Script:DoPolicies = $False
-	If($NoPolicies)
+	Write-Verbose "$(Get-Date -Format G): `tCitrix.VdaUpdateService.Commands"
+	Import-Module "Citrix.VdaUpdateService.Commands" -EA 0 4>$Null
+	If(!$?)
 	{
-		Write-Verbose "$(Get-Date -Format G): NoPolicies was specified so do not search for Citrix.GroupPolicy.Commands.psm1"
-		$Script:DoPolicies = $False
+		Write-Host "" -ForegroundColor White
+		Write-Host "Unable to import the Citrix.VdaUpdateService.Commands module. Citrix hasn't updated your DaaS instance yet." -ForegroundColor White
+		Write-Host "" -ForegroundColor White
+		$Script:VDAUpdateService = $False
 	}
+	Else
+	{
+		$Script:VDAUpdateService = $True
+	}
+
+	$Script:DoPolicies = $False
 
 	If($Policies -eq $True)
 	{
-		If(Test-Path "$([Environment]::GetFolderPath( [Environment+SpecialFolder]::System))\WindowsPowerShell\v1.0\Modules\Citrix.GroupPolicy.Commands\Citrix.GroupPolicy.Commands.psm1")
-		{
-			Write-Verbose "Importing module: $([Environment]::GetFolderPath( [Environment+SpecialFolder]::System))\WindowsPowerShell\v1.0\Modules\Citrix.GroupPolicy.Commands\Citrix.GroupPolicy.Commands.psm1"
+		$Script:DoPolicies = $True
+		$cnt = 0
 
-			Import-Module "$([Environment]::GetFolderPath( [Environment+SpecialFolder]::System))\WindowsPowerShell\v1.0\Modules\Citrix.GroupPolicy.Commands\Citrix.GroupPolicy.Commands.psm1" 4>$Null
-			If(!$?)
+		Do
+		{
+			$cnt++
+			$UserNodeExists = $False
+			$ComputerNodeExists = $False
+			#Create the LocalSiteGPO PSDrive only once
+			Write-Verbose "$(Get-Date -Format G): `tDoes LocalSiteGPO PSDrive already exist?"
+			If(Test-Path LocalSiteGPO: 4>$Null)
 			{
-				Write-Warning "
-		`n
-		Citrix Group Policy module not loaded:
-		$([Environment]::GetFolderPath( [Environment+SpecialFolder]::System))\WindowsPowerShell\v1.0\Modules\Citrix.GroupPolicy.Commands\Citrix.GroupPolicy.Commands.psm1 could not be loaded 
-		`n
-		Please see the Prerequisites section in the ReadMe file: https://carlwebster.sharefile.com/d-sb4e144f9ecc48e7b.
-		`n
-		Because the Policies parameter was used, Policies will not be processed.
-		"
-				Write-Verbose "$(Get-Date -Format G): "
+				Write-Verbose "$(Get-Date -Format G): `t`tRemoving the current LocalSiteGPO PSDrive"
+				Remove-PSDrive -Name LocalSiteGPO -EA 0 4>$Null
+			}
+			
+			Write-Verbose "$(Get-Date -Format G): `t`tCreating LocalSiteGPO PSDrive for Studio-based policies"
+			$ThisError = $Null
+			New-PSDrive -ErrorVariable ThisError `
+			-Name LocalSiteGPO `
+			-psprovider citrixgrouppolicy `
+			-root \ `
+			-controller localhost `
+			-Scope Global *>$Null
+			
+			If(!$? -and $Null -eq $ThisError) #added in 1.16
+			{
+				#WE SHOULD NOT BE HERE
+				#for some odd reason, we cannot create the LocalSiteGPO PSDrive and no error was returned in $ThisError, turn policies off
+				$Policies = $False
 				$Script:DoPolicies = $False
+
+				Write-Host "" -ForegroundColor White
+				Write-Host "*******************************************************************************************" -ForegroundColor Red
+				Write-Host "LocalSiteGPO PSDrive was not created, which should not have happened. Turning Policies off." -ForegroundColor Red
+				Write-Host "                                                                                           " -ForegroundColor Red
+				Write-Host "Are the two Visual C++ Runtimes installed?                                                 " -ForegroundColor Red
+				Write-Host "                                                                                           " -ForegroundColor Red
+				Write-Host "Verify that the Visual C++ Runtimes are installed.                                         " -ForegroundColor Red
+				Write-Host "                                                                                           " -ForegroundColor Red
+				Write-Host "Install from the Microsoft download page                                                   " -ForegroundColor Red
+				Write-Host "	https://aka.ms/vs/17/release/vc_redist.x86.exe (install first)                         " -ForegroundColor Red
+				Write-Host "	https://aka.ms/vs/17/release/vc_redist.x64.exe                                         " -ForegroundColor Red
+				Write-Host "                                                                                           " -ForegroundColor Red
+				Write-Host "Please see the ReadMe file:                                                                " -ForegroundColor Red
+				Write-Host "	https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799                  " -ForegroundColor Red
+				Write-Host "*******************************************************************************************" -ForegroundColor Red
+				Write-Host "" -ForegroundColor White
+				Break
+			}
+			
+			If($ThisError.Count -eq 0)
+			{
+
+				#using Citrix policy stuff and new-psdrive breaks transcript logging so restart transcript logging
+				TranscriptLogging
+
+				If(Test-Path LocalSiteGPO: 4>$Null)
+				{
+					Write-Verbose "$(Get-Date -Format G): `t`t`tLocalSiteGPO PSDrive is ready for use."
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`tVerifying the User node exists."
+					
+					$pols = @(Get-ChildItem "LocalSiteGPO:\User" | Where-Object { FilterString $_.Name "*" })
+					
+					If($Pols.Count -eq 0)
+					{
+						Write-Verbose "$(Get-Date -Format G): `t`t`tThe User node doesn't exist. Let's try this again (#$cnt)."
+						Start-Sleep -Seconds 5
+						Continue
+					}
+					Else
+					{
+						Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tThe User node exists."
+						$UserNodeExists = $True
+					}
+
+					Write-Verbose "$(Get-Date -Format G): `t`t`t`tVerifying the Computer node exists."
+					
+					$pols = @(Get-ChildItem "LocalSiteGPO:\Computer" | Where-Object { FilterString $_.Name "*" })
+					
+					If($Pols.Count -eq 0)
+					{
+						Write-Verbose "$(Get-Date -Format G): `t`t`tThe Computer node doesn't exist. Let's try this again (#$cnt)."
+						Start-Sleep -Seconds 5
+						Continue
+					}
+					Else
+					{
+						Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tThe Computer node exists."
+						$ComputerNodeExists = $True
+					}
+				}
+
+				If($UserNodeExists -eq $True -and $ComputerNodeExists -eq $True)
+				{
+					#we succeeded, let's get out of the loop
+					Break
+				}
 			}
 			Else
 			{
-				$Script:DoPolicies = $True
-			}
-		}
-		Else
-		{
-			Write-Warning "
-		`n
-		Citrix Group Policy module was not found:
-		$([Environment]::GetFolderPath( [Environment+SpecialFolder]::System))\WindowsPowerShell\v1.0\Modules\Citrix.GroupPolicy.Commands.psm1
-		`n
-		Please see the Prerequisites section in the ReadMe file: https://carlwebster.sharefile.com/d-sb4e144f9ecc48e7b.
-		`n
-		Because the Policies parameter was used, Policies will not be processed.
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`tLocalSiteGPO PSDrive was not created. Let's try again (#$cnt)."
+				If($cnt -ge 5)
+				{
+					$ErrorActionPreference = $SaveEAPreference
+					Write-Error "
+`n`n
+The script is unable to create the LocalSiteGPO PSDrive with both the User and Computer nodes.
+`n`n
+Script cannot continue
+`n`n
 		"
-			Write-Verbose "$(Get-Date -Format G): "
-			$Script:DoPolicies = $False
-		}
+					AbortScript
+				}
+			}
+		} While ($True)
 	}
-	
+
 	If($Policies -eq $False -and $NoPolicies -eq $False -and $NoADPolicies -eq $False)
 	{
-		#script defaults, so don't process policies
+		#script defaults, so don't Process policies
 		$Script:DoPolicies = $False
 	}
 
 	If($NoPolicies -eq $True)
 	{
-		#don't process policies
+		#don't Process policies
 		$Script:DoPolicies = $False
 	}
 	
-	#set value for MaxRecordCount
-	$Script:MaxRecordCount = [int]::MaxValue 
-
 	$Script:CCParams2 = @{
-	EA = 0;
-	MaxRecordCount = $Script:MaxRecordCount;
+	EA             = 0;
+	MaxRecordCount = 999; # change required by Citrix [int]::MaxValue "Update your PowerShell scripts to limit the data returned per query to less than 1,000 results by December 1, 2021."
 	}
 
 	# Get Site information
@@ -30372,7 +38820,7 @@ Function ProcessScriptSetup
 
 	$Script:CCSite1 = Get-BrokerSite -EA 0
 
-#Do not indent the following write-error lines. Doing so will mess up the console formatting of the error message.
+	#Do not indent the following write-error lines. Doing so will mess up the console formatting of the error message.
 	If( !($?) -or $Null -eq $Script:CCSite1)
 	{
 		$ErrorActionPreference = $SaveEAPreference
@@ -30401,15 +38849,12 @@ cmdlet failed $($error[ 0 ].ToString())
 		AbortScript
 	}
 
-	$Script:CCSiteVersion = $Script:CCSite2.ProductVersion
-	$tmp = $Script:CCSiteVersion.Split(".")
-	[int]$MajorVersion = $tmp[0]
-	[int]$MinorVersion = $tmp[1]
+	[version]$Script:CCSiteVersion = $Script:CCSite2.ProductVersion
 
-	If($MajorVersion -eq 7)
+	If($Script:CCSiteVersion.Major -eq 7)
 	{
 		#this is a CVAD 7.x Site, now test to see if it is less than 7.26 (CVAD 2006)
-		If($MinorVersion -lt 26)
+		If($Script:CCSiteVersion.Minor -lt 26)
 		{
 			Write-Warning "You are running version $Script:CCSiteVersion"
 			Write-Warning "Are the PowerShell Snapins/Modules or Studio installed?"
@@ -30423,7 +38868,7 @@ Script cannot continue
 			AbortScript
 		}
 	}
-	ElseIf($MajorVersion -eq 0 -and $MinorVersion -eq 0)
+	ElseIf($Script:CCSiteVersion.Major -eq 0 -and $Script:CCSiteVersion.Minor -eq 0)
 	{
 		#something is wrong, we shouldn't be here
 		Write-Error "
@@ -30453,18 +38898,36 @@ Script cannot continue
 	$tmp = $Script:CCSiteVersion
 	Switch ($tmp)
 	{
-		"7.27"	{$Script:CCSiteVersion = "2009"; Break}
-		"7.26"	{$Script:CCSiteVersion = "2006"; Break}
-		"7.25"	{$Script:CCSiteVersion = "2003"; Break}
-		"7.24"	{$Script:CCSiteVersion = "1912"; Break}
-		"7.23"	{$Script:CCSiteVersion = "1909"; Break}
-		"7.22"	{$Script:CCSiteVersion = "1906"; Break}
-		"7.21"	{$Script:CCSiteVersion = "1903"; Break}
-		"7.20"	{$Script:CCSiteVersion = "1811"; Break}
-		"7.19"	{$Script:CCSiteVersion = "1808"; Break}
-		Default	{$Script:CCSiteVersion = $tmp; Break}
+		"7.45"	{$Script:CCSiteVersionReal = "2507"; Break}
+		"7.44"	{$Script:CCSiteVersionReal = "2503"; Break}
+		"7.43"	{$Script:CCSiteVersionReal = "2411"; Break}
+		"7.42"	{$Script:CCSiteVersionReal = "2407"; Break}
+		"7.41"	{$Script:CCSiteVersionReal = "2402"; Break}
+		"7.40"	{$Script:CCSiteVersionReal = "2311"; Break}
+		"7.39"	{$Script:CCSiteVersionReal = "2308"; Break}
+		"7.38"	{$Script:CCSiteVersionReal = "2305"; Break}
+		"7.37"	{$Script:CCSiteVersionReal = "2303"; Break}
+		"7.36"	{$Script:CCSiteVersionReal = "2212"; Break}
+		"7.35"	{$Script:CCSiteVersionReal = "2209"; Break}
+		"7.34"	{$Script:CCSiteVersionReal = "2206"; Break}
+		"7.33"	{$Script:CCSiteVersionReal = "2203"; Break}
+		"7.32"	{$Script:CCSiteVersionReal = "2112"; Break}
+		"7.31"	{$Script:CCSiteVersionReal = "2109"; Break}
+		"7.30"	{$Script:CCSiteVersionReal = "2106"; Break}
+		"7.29"	{$Script:CCSiteVersionReal = "2103"; Break}
+		"7.28"	{$Script:CCSiteVersionReal = "2012"; Break}
+		"7.27"	{$Script:CCSiteVersionReal = "2009"; Break}
+		"7.26"	{$Script:CCSiteVersionReal = "2006"; Break}
+		"7.25"	{$Script:CCSiteVersionReal = "2003"; Break}
+		"7.24"	{$Script:CCSiteVersionReal = "1912"; Break}
+		"7.23"	{$Script:CCSiteVersionReal = "1909"; Break}
+		"7.22"	{$Script:CCSiteVersionReal = "1906"; Break}
+		"7.21"	{$Script:CCSiteVersionReal = "1903"; Break}
+		"7.20"	{$Script:CCSiteVersionReal = "1811"; Break}
+		"7.19"	{$Script:CCSiteVersionReal = "1808"; Break}
+		Default	{$Script:CCSiteVersionReal = $tmp; Break}
 	}
-	Write-Verbose "$(Get-Date -Format G): You are running version $Script:CCSiteVersion"
+	Write-Verbose "$(Get-Date -Format G): You are running version $Script:CCSiteVersionReal"
 
 	If($SiteName -ne "")
 	{
@@ -30475,21 +38938,52 @@ Script cannot continue
 		[string]$Script:CCSiteName = $Script:CCSite2.SiteName
 	}
 
-	Switch ($Section)
+	#1.21 update to support multiple section items
+	If($Section.Count -eq 1 -and $Section -eq "All")
 	{
-		"Admins"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Administrators Only)"; Break}
-		"Apps"			{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Applications Only)"; Break}
-		"AppV"			{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (App-V Only"; Break}
-		"Catalogs"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Machine Catalogs Only)"; Break}
-		"Config"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Configuration Only)"; Break}
-		"Groups" 		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Delivery Groups Only)"; Break}
-		"Hosting"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Hosting Only)"; Break}
-		"Licensing"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Licensing Only)"; Break}
-		"Policies"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Policies Only)"; Break}
-		"StoreFront"	{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (StoreFront Only)"; Break}
-		"Zones"			{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Zones Only)"; Break}
-		"All"			{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site"; Break}
+		[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site"
 	}
+	ElseIf($Section.Count -eq 1)
+	{
+		Switch ($Section)
+		{
+			"Admins"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Administrators Only)"; Break}
+			"Apps"			{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Applications Only)"; Break}
+			"Catalogs"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Machine Catalogs Only)"; Break}
+			"Config"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Configuration Only)"; Break}
+			"Groups" 		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Delivery Groups Only)"; Break}
+			"Hosting"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Hosting Only)"; Break}
+			"Licensing"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Licensing Only)"; Break}
+			"Logging"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Logging Only)"; Break}
+			"Policies"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Policies Only)"; Break}
+			"StoreFront"	{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (StoreFront Only)"; Break}
+			"Zones"			{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Zones Only)"; Break}
+			Default			{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Missing a section title for $Section"; Break}
+		}
+	}
+	ElseIf($Section.Count -gt 1)
+	{
+		[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site ("
+		Switch ($Section)
+		{
+			"Admins"		{[string]$Script:Title += "Administrators "}
+			"Apps"			{[string]$Script:Title += "Applications "}
+			"Catalogs"		{[string]$Script:Title += "Machine Catalogs "}
+			"Config"		{[string]$Script:Title += "Configuration "}
+			"Groups" 		{[string]$Script:Title += "Delivery Groups "}
+			"Hosting"		{[string]$Script:Title += "Hosting "}
+			"Licensing"		{[string]$Script:Title += "Licensing "}
+			"Logging"		{[string]$Script:Title += "Configuration Logging "}
+			"Policies"		{[string]$Script:Title += "Policies "}
+			"StoreFront"	{[string]$Script:Title += "StoreFront "}
+			"Zones"			{[string]$Script:Title += "Zones "}
+			Default			{[string]$Script:Title += "Missing a section title for $Section"}
+		}
+		[string]$Script:Title = $Script:Title.Substring(0,$Script:Title.LastIndexOf(" ")-1)+")"
+	}
+
+	$Script:DDCConfigData = Get-BrokerServiceConfigurationData @CCParams2 -SortBy SettingName
+	
 	Write-Verbose "$(Get-Date -Format G): Initial Site data has been gathered"
 }
 #endregion
@@ -30501,7 +38995,7 @@ Function ProcessScriptEnd
 	Write-Verbose "$(Get-Date -Format G): "
 
 	Write-Verbose "$(Get-Date -Format G): Script started: $($Script:StartTime)"
-	Write-Verbose "$(Get-Date -Format G): Script ended: $(Get-Date)"
+	Write-Verbose "$(Get-Date -Format G): Script ended  : $(Get-Date)"
 	$runtime = $(Get-Date) - $Script:StartTime
 	$Str = [string]::format("{0} days, {1} hours, {2} minutes, {3}.{4} seconds",
 		$runtime.Days,
@@ -30509,7 +39003,7 @@ Function ProcessScriptEnd
 		$runtime.Minutes,
 		$runtime.Seconds,
 		$runtime.Milliseconds)
-	Write-Verbose "$(Get-Date -Format G): Elapsed time: $($Str)"
+	Write-Verbose "$(Get-Date -Format G): Elapsed time  : $($Str)"
 
 	If($Dev)
 	{
@@ -30530,7 +39024,8 @@ Function ProcessScriptEnd
 		Out-File -FilePath $SIFile -Append -InputObject "Add DateTime       : $($AddDateTime)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Administrators     : $($Administrators)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Applications       : $($Applications)" 4>$Null
-		If($MSWORD -or $PDF)
+		Out-File -FilePath $SIFile -Append -InputObject "Auth Profile Name  : $($Script:AuthProfileName)" 4>$Null		
+		If($MSWord -or $PDF)
 		{
 			Out-File -FilePath $SIFile -Append -InputObject "Company Name       : $($Script:CoName)" 4>$Null		
 			Out-File -FilePath $SIFile -Append -InputObject "Company Address    : $($CompanyAddress)" 4>$Null		
@@ -30579,10 +39074,11 @@ Function ProcessScriptEnd
 		Out-File -FilePath $SIFile -Append -InputObject "NoADPolicies       : $($NoADPolicies)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "NoPolicies         : $($NoPolicies)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Policies           : $($Policies)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Report Footer      : $ReportFooter" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Save As HTML       : $($HTML)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Save As PDF        : $($PDF)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Save As TEXT       : $($TEXT)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Save As WORD       : $($MSWORD)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Save As WORD       : $($MSWord)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Script Info        : $($ScriptInfo)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Section            : $($Section)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Site Name          : $($CCSiteName)" 4>$Null
@@ -30591,18 +39087,20 @@ Function ProcessScriptEnd
 		Out-File -FilePath $SIFile -Append -InputObject "Title              : $($Script:Title)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "To                 : $($To)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Use SSL            : $($UseSSL)" 4>$Null
-		If($MSWORD -or $PDF)
+		If($MSWord -or $PDF)
 		{
-			Out-File -FilePath $SIFile -Append -InputObject "User Name          : $($UserName)" 4>$Null
+			Out-File -FilePath $SIFile -Append -InputObject "Username           : $($UserName)" 4>$Null
 		}
 		Out-File -FilePath $SIFile -Append -InputObject "VDA Registry Keys  : $($VDARegistryKeys)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "CC Version         : $($Script:CCSiteVersion)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Ctx Cloud Version1 : $($Script:CCSiteVersion)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Ctx Cloud Version2 : $($Script:CCSiteVersionReal)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "OS Detected        : $($Script:RunningOS)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "PoSH version       : $($Host.Version)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "PSCulture          : $($PSCulture)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "PSUICulture        : $($PSUICulture)" 4>$Null
-		If($MSWORD -or $PDF)
+		If($MSWord -or $PDF)
 		{
 			Out-File -FilePath $SIFile -Append -InputObject "Word language      : $($Script:WordLanguageValue)" 4>$Null
 			Out-File -FilePath $SIFile -Append -InputObject "Word version       : $($Script:WordProduct)" 4>$Null
@@ -30615,7 +39113,7 @@ Function ProcessScriptEnd
 	#stop transcript logging
 	If($Log -eq $True) 
 	{
-		If($Script:StartLog -eq $true) 
+		If($Script:StartLog -eq $True) 
 		{
 			try 
 			{
@@ -30636,177 +39134,228 @@ Function ProcessScriptEnd
 Function OutputAppendixA
 {
 	Write-Verbose "$(Get-Date -Format G): Create Appendix A VDA Registry Items"
-
+	
 	If($CSV)
 	{
 		$CSVDone = $False
 		$File = "$($Script:pwdpath)\$($CCSiteName)_Documentation_AppendixA_VDARegistryItems.csv"
 		If($MSWord -or $PDF)
 		{
-			$Script:WordALLVDARegistryItems | Export-CSV -Force -Encoding ASCII -NoTypeInformation -Path $File *> $Null
-			$CSVDone = $True
+			If($Script:WordALLVDARegistryItems.Count -gt 0)
+			{
+				$Script:WordALLVDARegistryItems | Export-CSV -Force -Encoding ASCII -NoTypeInformation -Path $File *> $Null
+				$CSVDone = $True
+			}
 		}
 		If($Text -and $CSVDone -eq $False)
 		{
-			$Script:TextALLVDARegistryItems | Export-CSV -Force -Encoding ASCII -NoTypeInformation -Path $File *> $Null
-			$CSVDone = $True
+			If($Script:TextALLVDARegistryItems.Count -gt 0)
+			{
+				$Script:TextALLVDARegistryItems | Export-CSV -Force -Encoding ASCII -NoTypeInformation -Path $File *> $Null
+				$CSVDone = $True
+			}
 		}
 		If($HTML -and $CSVDone -eq $False)
 		{
-			$Script:HTMLALLVDARegistryItems | Export-CSV -Force -Encoding ASCII -NoTypeInformation -Path $File *> $Null
-			$CSVDone = $True
+			If($Script:HTMLALLVDARegistryItems.Count -gt 0)
+			{
+				$Script:HTMLALLVDARegistryItems | Export-CSV -Force -Encoding ASCII -NoTypeInformation -Path $File *> $Null
+				$CSVDone = $True
+			}
 		}
 	}
 	
 	If($MSWord -or $PDF)
 	{
-		#sort the array by regkey, regvalue and servername
-		$Script:WordALLVDARegistryItems = $Script:WordALLVDARegistryItems | Sort-Object RegKey, RegValue, VDAType, ComputerName
-		$selection.InsertNewPage()
-		WriteWordLine 1 0 "Appendix A - VDA Registry Items"
-		WriteWordLine 0 0 "Miscellaneous Registry Items That May or May Not Exist on VDAs"
-		WriteWordLine 0 0 "Linux VDAs are excluded"
-		WriteWordLine 0 0 "These items may or may not be needed"
-		WriteWordLine 0 0 "This Appendix is for VDA comparison only"
-		WriteWordLine 0 0 ""
-		
-		$Save = ""
-		$First = $True
-		If($Script:WordAllVDARegistryItems)
+		If($Script:WordALLVDARegistryItems.Count -gt 0)
 		{
-			$AppendixWordTable = @()
-			ForEach($Item in $Script:WordALLVDARegistryItems)
+			#sort the array by regkey, regvalue and servername
+			$Script:WordALLVDARegistryItems = $Script:WordALLVDARegistryItems | Sort-Object RegKey, RegValue, VDAType, ComputerName
+			$selection.InsertNewPage()
+			WriteWordLine 1 0 "Appendix A - VDA Registry Items"
+			WriteWordLine 0 0 "Miscellaneous Registry Items That May or May Not Exist on VDAs"
+			WriteWordLine 0 0 "Linux VDAs are excluded"
+			WriteWordLine 0 0 "These items may or may not be needed"
+			WriteWordLine 0 0 "This Appendix is for VDA comparison only"
+			WriteWordLine 0 0 ""
+			
+			$Save = ""
+			$First = $True
+			If($Script:WordAllVDARegistryItems)
 			{
-				If(!$First -and $Save -ne "$($Item.RegKey.ToString())$($Item.RegValue.ToString())$($Item.VDAType)")
+				$AppendixWordTable = @()
+				ForEach($Item in $Script:WordALLVDARegistryItems)
 				{
+					If(!$First -and $Save -ne "$($Item.RegKey.ToString())$($Item.RegValue.ToString())$($Item.VDAType)")
+					{
+						$AppendixWordTable += @{ 
+							RegKey       = "";
+							RegValue     = "";
+							RegData      = "";
+							VDAType      = "";
+							ComputerName = "";
+						}
+					}
+
 					$AppendixWordTable += @{ 
-					RegKey = "";
-					RegValue = "";
-					RegData = "";
-					VDAType = "";
-					ComputerName = "";
+						RegKey       = $Item.RegKey;
+						RegValue     = $Item.RegValue;
+						RegData      = $Item.Value;
+						VDAType      = $Item.VDAType.Substring(0,1);
+						ComputerName = $Item.ComputerName;
+					}
+					$Save = "$($Item.RegKey.ToString())$($Item.RegValue.ToString())$($Item.VDAType)"
+					If($First)
+					{
+						$First = $False
 					}
 				}
-
-				$AppendixWordTable += @{ 
-				RegKey = $Item.RegKey;
-				RegValue = $Item.RegValue;
-				RegData = $Item.Value;
-				VDAType = $Item.VDAType.Substring(0,1);
-				ComputerName = $Item.ComputerName;
-				}
-				$Save = "$($Item.RegKey.ToString())$($Item.RegValue.ToString())$($Item.VDAType)"
-				If($First)
+				
+				If($AppendixWordTable.Count -eq 0)
 				{
-					$First = $False
+					$AppendixWordTable += @{ 
+						RegKey       = "None found";
+						RegValue     = "";
+						RegData      = "";
+						VDAType      = "";
+						ComputerName = "";
+					}
 				}
+				
+				$Table = AddWordTable -Hashtable $AppendixWordTable `
+				-Columns RegKey, RegValue, RegData, VDAType, ComputerName `
+				-Headers "Registry Key", "Registry Value", "Data", "VDA", "Computer Name" `
+				-Format $wdTableGrid `
+				-AutoFit $wdAutoFitContent;
+
+				SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
+				SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+				FindWordDocumentEnd
+				$Table = $Null
 			}
-			$Table = AddWordTable -Hashtable $AppendixWordTable `
-			-Columns RegKey, RegValue, RegData, VDAType, ComputerName `
-			-Headers "Registry Key", "Registry Value", "Data", "VDA", "Computer Name" `
-			-Format $wdTableGrid `
-			-AutoFit $wdAutoFitContent;
-
-			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
-			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
-
-			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
-
-			FindWordDocumentEnd
-			$Table = $Null
+		}
+		Else
+		{
+			$selection.InsertNewPage()
+			WriteWordLine 1 0 "Appendix A - VDA Registry Items"
+			WriteWordLine 0 0 "There are no VDA Registry Items"
+			WriteWordLine 0 0 ""
 		}
 	}
 	If($Text)
 	{
-		#sort the array by regkey, regvalue and servername
-		$Script:TextALLVDARegistryItems = $Script:TextALLVDARegistryItems | Sort-Object RegKey, RegValue, VDAType, ComputerName
-		Line 0 "Appendix A - VDA Registry Items"
-		Line 0 "Miscellaneous Registry Items That May or May Not Exist on VDAs"
-		Line 0 "Linux VDAs are excluded"
-		Line 0 "These items may or may not be needed"
-		Line 0 "This Appendix is for VDA comparison only"
-		Line 0 ""
-		Line 1 "Registry Key                                                                                    Registry Value                                     Data                                                                                       VDA Type Computer Name                 " 
-		Line 1 "====================================================================================================================================================================================================================================================================================="
-		#       12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345S12345678901234567890123456789012345678901234567890S123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890S12345678S123456789012345678901234567890
-		
-		$Save = ""
-		$First = $True
-		If($Script:TextAllVDARegistryItems)
+		If($Script:TextALLVDARegistryItems.Count -gt 0)
 		{
-			ForEach($Item in $Script:TextALLVDARegistryItems)
+			#sort the array by regkey, regvalue and servername
+			$Script:TextALLVDARegistryItems = $Script:TextALLVDARegistryItems | Sort-Object RegKey, RegValue, VDAType, ComputerName
+			Line 0 "Appendix A - VDA Registry Items"
+			Line 0 "Miscellaneous Registry Items That May or May Not Exist on VDAs"
+			Line 0 "Linux VDAs are excluded"
+			Line 0 "These items may or may not be needed"
+			Line 0 "This Appendix is for VDA comparison only"
+			Line 0 ""
+			Line 1 "Registry Key                                                                                    Registry Value                                     Data                                                                                       VDA Type Computer Name                 " 
+			Line 1 "====================================================================================================================================================================================================================================================================================="
+			#       12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345S12345678901234567890123456789012345678901234567890S123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890S12345678S123456789012345678901234567890
+			
+			$Save = ""
+			$First = $True
+			If($Script:TextAllVDARegistryItems)
 			{
-				If(!$First -and $Save -ne "$($Item.RegKey.ToString())$($Item.RegValue.ToString())$($Item.VDAType)")
+				ForEach($Item in $Script:TextALLVDARegistryItems)
 				{
-					Line 0 ""
-				}
+					If(!$First -and $Save -ne "$($Item.RegKey.ToString())$($Item.RegValue.ToString())$($Item.VDAType)")
+					{
+						Line 0 ""
+					}
 
-				Line 1 ( "{0,-95} {1,-50} {2,-90} {3,-8} {4,-30}" -f `
-				$Item.RegKey, $Item.RegValue, $Item.Value, $Item.VDAType, $Item.ComputerName )
-				
-				$Save = "$($Item.RegKey.ToString())$($Item.RegValue.ToString())$($Item.VDAType)"
-				If($First)
-				{
-					$First = $False
+					Line 1 ( "{0,-95} {1,-50} {2,-90} {3,-8} {4,-30}" -f `
+					$Item.RegKey, $Item.RegValue, $Item.Value, $Item.VDAType, $Item.ComputerName )
+					
+					$Save = "$($Item.RegKey.ToString())$($Item.RegValue.ToString())$($Item.VDAType)"
+					If($First)
+					{
+						$First = $False
+					}
 				}
 			}
+			Else
+			{
+				Line 1 "<None found>"
+			}
+			Line 0 ""
 		}
 		Else
 		{
-			Line 1 "<None found>"
+			Line 0 "Appendix A - VDA Registry Items"
+			Line 0 "There are no VDA Registry Items"
+			Line 0 ""
 		}
-		Line 0 ""
 	}
 	If($HTML)
 	{
-		#sort the array by regkey, regvalue and servername
-		$Script:HTMLALLVDARegistryItems = $Script:HTMLALLVDARegistryItems | Sort-Object RegKey, RegValue, VDAType, ComputerName
-		WriteHTMLLine 1 0 "Appendix A - VDA Registry Items"
-		WriteHTMLLine 0 0 "Miscellaneous Registry Items That May or May Not Exist on VDAs"
-		WriteHTMLLine 0 0 "Linux VDAs are excluded"
-		WriteHTMLLine 0 0 "These items may or may not be needed"
-		WriteHTMLLine 0 0 "This Appendix is for VDA comparison only"
-		
-		$Save = ""
-		$First = $True
-		If($Script:HTMLAllVDARegistryItems)
+		If($Script:HTMLALLVDARegistryItems.Count -gt 0)
 		{
-			$rowdata = @()
-			ForEach($Item in $Script:HTMLAllVDARegistryItems)
+			#sort the array by regkey, regvalue and servername
+			$Script:HTMLALLVDARegistryItems = $Script:HTMLALLVDARegistryItems | Sort-Object RegKey, RegValue, VDAType, ComputerName
+			WriteHTMLLine 1 0 "Appendix A - VDA Registry Items"
+			WriteHTMLLine 0 0 "Miscellaneous Registry Items That May or May Not Exist on VDAs"
+			WriteHTMLLine 0 0 "Linux VDAs are excluded"
+			WriteHTMLLine 0 0 "These items may or may not be needed"
+			WriteHTMLLine 0 0 "This Appendix is for VDA comparison only"
+			
+			$Save = ""
+			$First = $True
+			If($Script:HTMLAllVDARegistryItems)
 			{
-				If(!$First -and $Save -ne "$($Item.RegKey.ToString())$($Item.RegValue.ToString())$($Item.VDAType)")
+				$rowdata = @()
+				ForEach($Item in $Script:HTMLAllVDARegistryItems)
 				{
+					If(!$First -and $Save -ne "$($Item.RegKey.ToString())$($Item.RegValue.ToString())$($Item.VDAType)")
+					{
+						$rowdata += @(,(
+						"",$htmlwhite))
+					}
+
 					$rowdata += @(,(
-					"",$htmlwhite))
+						$Item.RegKey,$htmlwhite,
+						$Item.RegValue,$htmlwhite,
+						$Item.Value,$htmlwhite,
+						$Item.VDAType,$htmlwhite,
+						$Item.ComputerName,$htmlwhite)
+					)
+					$Save = "$($Item.RegKey.ToString())$($Item.RegValue.ToString())$($Item.VDAType)"
+					If($First)
+					{
+						$First = $False
+					}
 				}
+				$columnHeaders = @(
+					'Registry Key',($global:htmlsb),
+					'Registry Key',($global:htmlsb),
+					'Data',($global:htmlsb),
+					'VDA Type',($global:htmlsb),
+					'Computer Name',($global:htmlsb)
+				)
 
-				$rowdata += @(,(
-				$Item.RegKey,$htmlwhite,
-				$Item.RegValue,$htmlwhite,
-				$Item.Value,$htmlwhite,
-				$Item.VDAType,$htmlwhite,
-				$Item.ComputerName,$htmlwhite))
-				$Save = "$($Item.RegKey.ToString())$($Item.RegValue.ToString())$($Item.VDAType)"
-				If($First)
-				{
-					$First = $False
-				}
+				$msg = ""
+				FormatHTMLTable $msg "auto" -rowArray $rowdata -columnArray $columnHeaders
 			}
-			$columnHeaders = @(
-			'Registry Key',($global:htmlsb),
-			'Registry Key',($global:htmlsb),
-			'Data',($global:htmlsb),
-			'VDA Type',($global:htmlsb),
-			'Computer Name',($global:htmlsb))
-
-			$msg = ""
-			FormatHTMLTable $msg "auto" -rowArray $rowdata -columnArray $columnHeaders
+			Else
+			{
+				WriteHTMLLine 0 1 "None found"
+			}
+			WriteHTMLLine 0 0 ""
 		}
 		Else
 		{
-			WriteHTMLLine 0 1 "None found"
+			WriteHTMLLine 1 0 "Appendix A - VDA Registry Items"
+			WriteHTMLLine 0 0 "There are no VDA Registry Items"
+			WriteHTMLLine 0 0 ""
 		}
-		WriteHTMLLine 0 0 ""
 	}
 
 	Write-Verbose "$(Get-Date -Format G): Finished Creating Appendix A VDA Registry Items"
@@ -30841,7 +39390,7 @@ If($Section -eq "All" -or $Section -eq "Policies")
 {
 	If($NoPolicies -or $Script:DoPolicies -eq $False)
 	{
-		#don't process policies
+		#don't Process policies
 	}
 	Else
 	{
@@ -30866,9 +39415,26 @@ If($Section -eq "All" -or $Section -eq "Admins")
 	ProcessRoles
 }
 
+If($Section -eq "All")
+{
+	ProcessControllerServiceConfig
+}
+
 If($Section -eq "All" -or $Section -eq "Hosting")
 {
-	ProcessHosting
+	#V1.15 add test for the XDHyp: PSDrive
+	If(Test-Path XDHyp: 4>$Null)
+	{
+		ProcessHosting
+	}
+	Else
+	{
+		Write-Error "
+	`n`n
+XDHyp PSDrive does not exist. Unable to process the Hosting report section.
+	`n`n
+		"
+	}
 }
 
 If($Section -eq "All" -or $Section -eq "Licensing")
@@ -30879,11 +39445,6 @@ If($Section -eq "All" -or $Section -eq "Licensing")
 If($Section -eq "All" -or $Section -eq "StoreFront")
 {
 	ProcessStoreFront
-}
-
-If($Section -eq "All" -or $Section -eq "AppV")
-{
-	ProcessAppV
 }
 
 If($Section -eq "All" -or $Section -eq "Zones")
@@ -30904,11 +39465,16 @@ If($VDARegistryKeys)
 
 #region finish script
 Write-Verbose "$(Get-Date -Format G): Finishing up document"
-#end of document processing
+#end of document Processing
 
 $AbstractTitle = "Citrix Cloud $($Script:CCSiteVersion) Inventory"
 $SubjectTitle = "Citrix Cloud $($Script:CCSiteVersion) Site Inventory"
 UpdateDocumentProperties $AbstractTitle $SubjectTitle
+
+If($ReportFooter)
+{
+	OutputReportFooter
+}
 
 ProcessDocumentOutput
 
