@@ -87,7 +87,7 @@
 	will create the file(s) IPM-SF.<extension> in directory C:\Output without using the GUI.
 	
 .EXAMPLE
-    > .\Docu-StoreFront.ps1 -Dir c:\temp -File StoreFront -Title "My SF Doc" -Author "Sam Jacobs"  -Text -Word:$False
+    > .\SFDoc4.1.ps1 -Dir c:\temp -File StoreFront -Title "My SF Doc" -Author "Sam Jacobs"  -Text -Word:$False
 
     Will use the GUI and populate it with the base file name of "StoreFront", the title of "My SF Doc"
     the author "Sam Jacobs", and will add Text output to the default list, and remove MS Word output
@@ -100,10 +100,10 @@
 	This script creates one or more files in the following formats: MS Word, HTML, and text.
 
 .NOTES
-	NAME:	  Docu-StoreFront.ps1
-	VERSION:  4.0
-	AUTHOR:  Sam Jacobs
-	LASTEDIT: October 23, 2019
+	NAME:	  SFDoc4.1.ps1
+	VERSION:  4.1
+	AUTHOR:   Sam Jacobs
+	LASTEDIT: April 5, 2021
 #>
 
 Param(
@@ -155,7 +155,7 @@ Param(
 
 	)
 
-$SFDocVersion = "v4.0"
+$SFDocVersion = "v4.1"
 
 Write-Host ""
 Write-Host "$(Get-Date): StoreFront Documentation Script $($SFDocVersion)"
@@ -179,7 +179,14 @@ Function iif($paramToCheck, $valueIfTrue, $valueIfFalse) {
     else { return $valueIfFalse }
 }
 
-$paramDirectory =  setParamDefault $paramDirectory (Split-Path $script:MyInvocation.MyCommand.Path)
+$defPath = $script:MyInvocation.MyCommand.Path
+if ($defPath -eq $null) { 
+    $defPath = $pwd 
+} else {
+    $defPath = Split-Path $script:MyInvocation.MyCommand.Path
+}
+
+$paramDirectory =  setParamDefault $paramDirectory $defPath
 $paramFileName = setParamDefault $paramFileName "$($env:computername) StoreFront Documentation"
 $paramTitle = setParamDefault $paramTitle "StoreFront Documentation - `r`n$($env:computername)"
 $paramAuthor = setParamDefault $paramAuthor $env:username
@@ -373,7 +380,7 @@ if ($paramGUI -eq $True) {
 	$chkSoftware.Name = "chkSoftware"
 	$chkSoftware.Size = New-Object System.Drawing.Size(217, 17)
 	$chkSoftware.TabIndex = 3
-	$chkSoftware.Text = "Query registry for installed software"
+	$chkSoftware.Text = "List installed Citrix software and event log errors/warnings"
 	$chkSoftware.UseVisualStyleBackColor = $True
 	$chkSoftware.Checked = ($Software -eq $True)
 	## 
@@ -4930,6 +4937,7 @@ Function GetComputerWMIInfo ($computername)
 	# original work by Kees Baggerman, 
 	# k.baggerman@myvirtualvision.com
 	# 
+    # modified 2021-02-19 Sam Jacobs added OS, Power Plan, and RSSEnabled
     # modified 2018-05-25 Sam Jacobs to use PScribo
 
 	#Get Computer info
@@ -4940,44 +4948,36 @@ Function GetComputerWMIInfo ($computername)
 	
 	[bool]$GotComputerItems = $True
 	
-	Try
-	{
-		$Results = Get-WmiObject -computername $computername win32_computersystem
-	}
-	
-	Catch
-	{
-		$Results = $Null
-	}
+    Try { 
+        [string]$ComputerOS = (Get-WmiObject -class Win32_OperatingSystem -computername $computername -EA 0).Caption }
+    Catch { [string]$ComputerOS = '' }
+
+    Try 
+    {
+        $PowerPlan = (Get-WmiObject -ComputerName $computername -Class Win32_PowerPlan -Namespace "root\cimv2\power" -EA 0 |
+                        Where-Object {$_.IsActive -eq $true} |
+                        Select-Object @{Name = "PowerPlan"; Expression = {$_.ElementName}}).PowerPlan } 
+    Catch { $PowerPlan = $_.Exception }  
+
+    Try
+	{ $Results = Get-WmiObject -computername $computername win32_computersystem }
+	Catch { $Results = $Null }
 	
 	If($? -and $Null -ne $Results)
 	{
-		$ComputerItems = $Results | Select Manufacturer, Model, Domain, `
+		$ComputerItems = $Results | Select Manufacturer, Model, 
+        @{N="ComputerOS"; E={$computerOS}}, `
+        @{N="PowerPlan"; E={$PowerPlan}}, `
+        Domain, `
 		@{N="TotalPhysicalRam"; E={[math]::round(($_.TotalPhysicalMemory / 1GB),0)}}, `
 		NumberOfProcessors, NumberOfLogicalProcessors
 		$Results = $Null
+	} 
 
-		ForEach($Item in $ComputerItems)
-		{
-			OutputComputerItem $Item
-		}
-	}
-	ElseIf(!$?)
+	ForEach($Item in $ComputerItems)
 	{
-		Write-Verbose "$(Get-Date): Get-WmiObject win32_computersystem failed for $($computername)"
-		Write-Warning "$(Get-Date): Get-WmiObject win32_computersystem failed for $($computername)"
-
-			Output-Line 0 "Get-WmiObject win32_computersystem failed for $($computername)" "" $Null 0 $False $True
-			Output-Line 0 "On $($computername) you may need to run winmgmt /verifyrepository" "" $Null 0 $False $True
-			Output-Line 0 "and winmgmt /salvagerepository.  If this is a trusted Forest, you may" "" $Null 0 $False $True
-			Output-Line 0 "need to rerun the script with Domain Admin credentials from the trusted Forest." "" $Null 0 $False $True
+		OutputComputerItem $Item
 	}
-	Else
-	{
-		Write-Verbose "$(Get-Date): No results Returned for Computer information"
-			Output-Line 0 "No results Returned for Computer information" "" $Null 0 $False $True
-	}
-
 	#Get Disk info
 	Write-Verbose "$(Get-Date): `t`t`tDrive information"
 
@@ -5169,6 +5169,8 @@ Function OutputComputerItem
 		$rowdata = @()
         $rowdata += @(,("Manufacturer",$Item.Manufacturer))
 		$rowdata += @(,('Model',$Item.model))
+		$rowdata += @(,('Computer OS',$Item.ComputerOS))
+		$rowdata += @(,('Power Plan',$Item.PowerPlan))
 		$rowdata += @(,('Domain',$Item.domain))
         $physRAM = $Item.totalphysicalram
 		$rowdata += @(,('Total Ram',"$($physRAM) GB"))
@@ -5177,7 +5179,6 @@ Function OutputComputerItem
 
 		Output-Table "Computer Information" $rowdata "list" "Heading2"
 		Output-Line 0 ""
-	
 }
 
 Function OutputDriveItem
@@ -5301,6 +5302,13 @@ Function OutputProcessorItem
 Function OutputNicItem
 {
 	Param([object]$Nic, [object]$ThisNic)
+
+    $RSS = ''
+    Try {
+        $RSSEnabled = (Get-WmiObject -ComputerName $ComputerName MSFT_NetAdapterRssSettingData -Namespace "root\StandardCimV2" -ea 0 | 
+                        Where {$_.INSTANCEID -eq $ThisNic.GUID}).Enabled
+        if ($RSSEnabled) { $RSS = 'Enabled' } else { $RSS = 'Disabled' }
+    } catch { $RSS = 'N/A' }
 	
 	$powerMgmt = Get-WmiObject MSPower_DeviceEnable -Namespace root\wmi | where {$_.InstanceName -match [regex]::Escape($ThisNic.PNPDeviceID)}
 
@@ -5420,6 +5428,7 @@ Function OutputNicItem
 		$rowdata += @(,('Allow turn off to save power',$PowerSaving))
 		$rowdata += @(,('Physical Address',$Nic.macaddress))
 		$rowdata += @(,('IP Address',$xIPAddress[0]))
+		$rowdata += @(,('Receive Side Scaling',$RSS))
 		Write-Verbose "$(Get-Date): NIC: $($ThisNic.Name)"
 		Write-Verbose "$(Get-Date): Description: $($Nic.description)"
 		Write-Verbose "$(Get-Date): ConnectionID: $($ThisNic.NetConnectionID)"
@@ -5427,7 +5436,8 @@ Function OutputNicItem
 		Write-Verbose "$(Get-Date): Powersaving: $($PowerSaving)"
 		Write-Verbose "$(Get-Date): Mac address: $($Nic.macaddress)"
 		Write-Verbose "$(Get-Date): IP Address: $($xIPAddress[0])"
-		
+		Write-Verbose "$(Get-Date): Receive Side Scaling: $($RSS)"
+
 		$cnt = -1
 		ForEach($tmp in $xIPAddress)
 		{
@@ -5713,6 +5723,71 @@ Function CitrixServices ($computername)
 		}
 
 }
+
+Function EventLogEntries ($computername)
+{				
+    if ($computername -eq $Null) { $computername = $env:ComputerName }
+	$stime = ((Get-Date -displayhint date).AddDays(-2)) # last 48 hours
+		Write-Verbose "$(Get-Date): `t`tProcessing error/warning Event Log Entries for server $($computername) since $($stime)."
+		$SFEventLogEntries = New-Object System.Collections.ArrayList
+
+        $Results = Get-WinEvent -ComputerName $computername `
+        -FilterHashTable @{LogName=@("Citrix Delivery Services"); `
+        StartTime=$stime; Level=2,3} -EA 0 | `
+        Select-Object MachineName,ProviderName,ID,Message,TimeCreated
+
+        If($? -and $Null -ne $Results)
+        {
+            ForEach($Result in $Results)
+            {
+                $obj1 = [PSCustomObject] @{
+                    MachineName  = $Result.MachineName
+                    ProviderName = $Result.ProviderName
+                    EventID      = $Result.ID
+                    Message      = $Result.Message
+                    TimeCreated  = $Result.TimeCreated
+                }
+                $Null = $SFEventLogEntries.Add($obj1)
+            }
+        }
+        Else
+        {
+            #No event log warnings or errors were found in the specified date range
+        }
+
+        $SFEventLogEntries = $SFEventLogEntries | Sort-Object TimeCreated 
+
+		If($? -and $SFEventLogEntries.Count -gt 0)
+		{
+			[int]$NumEntries = $SFEventLogEntries.count
+
+			Write-Verbose "$(Get-Date): `t`t $($NumEntries) errors/warnings found"
+
+            Section -Style Heading2 "Event Log Errors/Warnings" {
+			    ForEach($Item in $SFEventLogEntries) {
+                    $logEntries = @()
+                    $logEntries += @(,("SF Server Name", $Item.MachineName))
+                    $logEntries += @(,("Time Created  ", $Item.TimeCreated))
+                    $logEntries += @(,("Provider Name ", $Item.ProviderName))
+                    $logEntries += @(,("Event ID      ", $Item.EventID))
+                    $logEntries += @(,("Event Message ", $Item.Message))
+
+		            Output-Table "$($computername) - $($Item.TimeCreated)" $logEntries "list" "Heading3"
+		            Output-Line 0 ""
+			    }
+            }
+
+		}
+		ElseIf(!$?)
+		{
+			Write-Verbose "$(Get-Date): No errors/warnings in specified time range."
+		}
+		Else
+		{
+			Write-Verbose "$(Get-Date): No errors/warnings in specified time range."
+		}
+
+}
 #~~~~~~~~~~~~~~~~< End of hardware and software functions >~~~~~~~~~~~~~~~~
 
 #endregion Hardware and Software routines
@@ -5924,6 +5999,37 @@ Function Translate-YesNo ([boolean] $condition) {
     }
 }
 
+# break a long line - usually a path (for readability) by adding a space after a slash or underscore)  
+Function Break-String {
+    Param( 
+        [Parameter(Mandatory=$true)][String]$line,
+        [Parameter(Mandatory=$false)][int]$maxLength = 75,
+        [Parameter(Mandatory=$false)][string]$breakChar = ' '
+    )
+
+    if ($line.Length -le $maxLength) { return $line }
+
+    $newLine = ''
+    $remaining = $line
+    while ($remaining.Length -gt 0) {
+        if ($remaining.Length -le $maxlength) { 
+            $newLine += $remaining
+            $remaining = ''
+            break 
+        }
+        for ($idx=$maxLength-1;$idx -ge 0; $idx--) {
+            $testChar = $remaining.Substring($idx-1,1)
+            if($testChar -eq '\' -or $testChar -eq '_') {
+                $newLine += $remaining.Substring(0,$idx) + $breakChar
+                $remaining = $remaining.Substring($idx)
+                break
+            }
+        }
+    }
+    return $newLine
+}
+
+
 # ~~~~~~ mainline of script begins here! ~~~~~~~~
 
 Try {
@@ -6030,6 +6136,19 @@ $document = Document $Script:OutputFile {
 			}
 			Output-Table "Server details" $servers "table" "Heading2"
 		}
+		
+		# AppProtection ?
+            		$AppProtect = 'Not Configured'
+            		Try { $APFeature = (Get-STFFeatureState -Name "Citrix.StoreFront.AppProtectionPolicy.Control").IsEnabled }
+            		Catch { $AppProtect = 'Not Configured' }
+            		If ($APFeature -eq $True) { $AppProtect = 'Enabled' }
+            		If ($APFeature -eq $False) { $AppProtect = 'Disabled' }
+		if ($memberCount -gt 1) {
+			$AppProtect += "`r`n(This setting is not propagated, and must be set on each StoreFront server)"
+		}
+		$appP = @()
+		$appP += @(,("App Protection:", "$($AppProtect)"))
+		Output-Table "App Protection" $appP "list" "Heading2"
 	}	
 
 	PageBreak
@@ -6403,8 +6522,8 @@ $document = Document $Script:OutputFile {
 				$ciDetails += (,("Classic experience:", $classic ))
 				if ($site.WebReceiver.ClassicReceiverExperience -eq $False)
 				{
-					$logonLogo = $style.HeaderLogoPath
-					$appLogo = $style.HeaderLogoPath
+					$logonLogo = Break-String $style.HeaderLogoPath
+					$appLogo = Break-String $style.HeaderLogoPath
 					$linkColor = $style.LinkColor
 					$headerFG = $style.HeaderForegroundColor
 					$headerBG = $style.HeaderBackgroundColor
@@ -6721,6 +6840,7 @@ $document = Document $Script:OutputFile {
             Section -Style Heading1 "$($member) - Software" {
                 InstalledSoftware $member
 	            CitrixServices $member
+	            EventLogEntries $member
             }
         }
     }
@@ -6733,162 +6853,80 @@ if ($Script:OutputWord -eq $True) { $outputFormats += "Word" }
 if ($Script:OutputHTML -eq $True) { $outputFormats += "HTML" }
 if ($Script:OutputText -eq $True) { $outputFormats += "Text" }
 $document | Export-Document -Path $Script:OutputDir -Format $outputFormats ;
+Write-Host "$(Get-Date): Output directory: $Script:OutputDir"
 Write-Host "$(Get-Date): Done!"
 #endregion SFDoc
 #
 
-
 # SIG # Begin signature block
-# MIIcaAYJKoZIhvcNAQcCoIIcWTCCHFUCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
+# MIINHAYJKoZIhvcNAQcCoIINDTCCDQkCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUVUBbWjlr7oc9Q/mWo5iXIxMz
-# T1+ggheXMIIFIDCCBAigAwIBAgIQB1tuZV4A7CBDAwTuuFjowzANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUmVSCu+yPkXoPaQjChCov+6eG
+# r6SgggpeMIIFJjCCBA6gAwIBAgIQDy5jCr0i+M0DQdOs9pZ40zANBgkqhkiG9w0B
 # AQsFADByMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFz
-# c3VyZWQgSUQgQ29kZSBTaWduaW5nIENBMB4XDTE5MTAwODAwMDAwMFoXDTIwMTAx
-# NTEyMDAwMFowXTELMAkGA1UEBhMCVVMxETAPBgNVBAgTCE5ldyBZb3JrMREwDwYD
-# VQQHEwhCcm9va2x5bjETMBEGA1UEChMKU2FtIEphY29iczETMBEGA1UEAxMKU2Ft
-# IEphY29iczCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMnDYUmYWwbP
-# T7mW7CAerbErENc2DwfYP8FPEYcyEmR9uEd7Dedd7wM+m2Ikkluadyz/Ui8N5Dob
-# tkTJjQjCLdF7sZnPsQKsS9krm8Ml5y00nnNOX/E7aE04tHr0cojAMQlWCQiN8Wcz
-# QW+m/6s4kfVwGfYZCZAqPs5flKFVjx8DWvBO5FJ8V1cXMQY8WNPW/oeWONJtOKLN
-# hSzMoP7y0EFBaE+iGEnVVKHEzhEWIREjak4vdRGpQHvrQx8yciC3Sf9BJ1MEsaGt
-# 9wcwo1j5R5gS9Q7xC+lqHXJ06mauJqEUvpK+a+fO17pZ9jnhWK9PDGnDX01eRgG7
-# fsY53TiAZVkCAwEAAaOCAcUwggHBMB8GA1UdIwQYMBaAFFrEuXsqCqOl6nEDwGD5
-# LfZldQ5YMB0GA1UdDgQWBBSJZ2ZtFAqJVxC2QvxoS9veoDry3TAOBgNVHQ8BAf8E
-# BAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwdwYDVR0fBHAwbjA1oDOgMYYvaHR0
-# cDovL2NybDMuZGlnaWNlcnQuY29tL3NoYTItYXNzdXJlZC1jcy1nMS5jcmwwNaAz
-# oDGGL2h0dHA6Ly9jcmw0LmRpZ2ljZXJ0LmNvbS9zaGEyLWFzc3VyZWQtY3MtZzEu
-# Y3JsMEwGA1UdIARFMEMwNwYJYIZIAYb9bAMBMCowKAYIKwYBBQUHAgEWHGh0dHBz
-# Oi8vd3d3LmRpZ2ljZXJ0LmNvbS9DUFMwCAYGZ4EMAQQBMIGEBggrBgEFBQcBAQR4
-# MHYwJAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBOBggrBgEF
-# BQcwAoZCaHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0U0hBMkFz
-# c3VyZWRJRENvZGVTaWduaW5nQ0EuY3J0MAwGA1UdEwEB/wQCMAAwDQYJKoZIhvcN
-# AQELBQADggEBAKka7JsKvYTkQoBVbP4P6Mpw00ujba8oF0xtxv2qaug9+GbrIX4c
-# 1cRLm3AD9fozDbUGXJ3M1WqVWU2tM3x6jaWtV0GxcueSBWLeP4trIGItzvdQggWa
-# NdfCvon1JoshzLB1t/ao8UTvHd/3zRXx2TmpnCqN69CfgiWeGPo7p0m4cwDTVqSR
-# sxcD4V/IcDSfq6B1Ob5s087g9qpBrGeAs3vDidi8DsM4aj0Cgnxu9P7KK71aSTr/
-# Rw4UdEH845+rGxmgVJ3eIFR3fYMDo40y0rrWckrWA+I37p5NZEdh4mRqZRGAGM0Q
-# TCi9wgr1gWZNq9rr7J2rfhwzRd3gboaDkaEwggUwMIIEGKADAgECAhAECRgbX9W7
-# ZnVTQ7VvlVAIMA0GCSqGSIb3DQEBCwUAMGUxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
-# EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xJDAiBgNV
-# BAMTG0RpZ2lDZXJ0IEFzc3VyZWQgSUQgUm9vdCBDQTAeFw0xMzEwMjIxMjAwMDBa
-# Fw0yODEwMjIxMjAwMDBaMHIxCzAJBgNVBAYTAlVTMRUwEwYDVQQKEwxEaWdpQ2Vy
-# dCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xMTAvBgNVBAMTKERpZ2lD
-# ZXJ0IFNIQTIgQXNzdXJlZCBJRCBDb2RlIFNpZ25pbmcgQ0EwggEiMA0GCSqGSIb3
-# DQEBAQUAA4IBDwAwggEKAoIBAQD407Mcfw4Rr2d3B9MLMUkZz9D7RZmxOttE9X/l
-# qJ3bMtdx6nadBS63j/qSQ8Cl+YnUNxnXtqrwnIal2CWsDnkoOn7p0WfTxvspJ8fT
-# eyOU5JEjlpB3gvmhhCNmElQzUHSxKCa7JGnCwlLyFGeKiUXULaGj6YgsIJWuHEqH
-# CN8M9eJNYBi+qsSyrnAxZjNxPqxwoqvOf+l8y5Kh5TsxHM/q8grkV7tKtel05iv+
-# bMt+dDk2DZDv5LVOpKnqagqrhPOsZ061xPeM0SAlI+sIZD5SlsHyDxL0xY4PwaLo
-# LFH3c7y9hbFig3NBggfkOItqcyDQD2RzPJ6fpjOp/RnfJZPRAgMBAAGjggHNMIIB
-# yTASBgNVHRMBAf8ECDAGAQH/AgEAMA4GA1UdDwEB/wQEAwIBhjATBgNVHSUEDDAK
-# BggrBgEFBQcDAzB5BggrBgEFBQcBAQRtMGswJAYIKwYBBQUHMAGGGGh0dHA6Ly9v
-# Y3NwLmRpZ2ljZXJ0LmNvbTBDBggrBgEFBQcwAoY3aHR0cDovL2NhY2VydHMuZGln
-# aWNlcnQuY29tL0RpZ2lDZXJ0QXNzdXJlZElEUm9vdENBLmNydDCBgQYDVR0fBHow
-# eDA6oDigNoY0aHR0cDovL2NybDQuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0QXNzdXJl
-# ZElEUm9vdENBLmNybDA6oDigNoY0aHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0Rp
-# Z2lDZXJ0QXNzdXJlZElEUm9vdENBLmNybDBPBgNVHSAESDBGMDgGCmCGSAGG/WwA
-# AgQwKjAoBggrBgEFBQcCARYcaHR0cHM6Ly93d3cuZGlnaWNlcnQuY29tL0NQUzAK
-# BghghkgBhv1sAzAdBgNVHQ4EFgQUWsS5eyoKo6XqcQPAYPkt9mV1DlgwHwYDVR0j
-# BBgwFoAUReuir/SSy4IxLVGLp6chnfNtyA8wDQYJKoZIhvcNAQELBQADggEBAD7s
-# DVoks/Mi0RXILHwlKXaoHV0cLToaxO8wYdd+C2D9wz0PxK+L/e8q3yBVN7Dh9tGS
-# dQ9RtG6ljlriXiSBThCk7j9xjmMOE0ut119EefM2FAaK95xGTlz/kLEbBw6RFfu6
-# r7VRwo0kriTGxycqoSkoGjpxKAI8LpGjwCUR4pwUR6F6aGivm6dcIFzZcbEMj7uo
-# +MUSaJ/PQMtARKUT8OZkDCUIQjKyNookAv4vcn4c10lFluhZHen6dGRrsutmQ9qz
-# sIzV6Q3d9gEgzpkxYz0IGhizgZtPxpMQBvwHgfqL2vmCSfdibqFT+hKUGIUukpHq
-# aGxEMrJmoecYpJpkUe8wggZqMIIFUqADAgECAhADAZoCOv9YsWvW1ermF/BmMA0G
-# CSqGSIb3DQEBBQUAMGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQKEwxEaWdpQ2VydCBJ
-# bmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNVBAMTGERpZ2lDZXJ0
-# IEFzc3VyZWQgSUQgQ0EtMTAeFw0xNDEwMjIwMDAwMDBaFw0yNDEwMjIwMDAwMDBa
-# MEcxCzAJBgNVBAYTAlVTMREwDwYDVQQKEwhEaWdpQ2VydDElMCMGA1UEAxMcRGln
-# aUNlcnQgVGltZXN0YW1wIFJlc3BvbmRlcjCCASIwDQYJKoZIhvcNAQEBBQADggEP
-# ADCCAQoCggEBAKNkXfx8s+CCNeDg9sYq5kl1O8xu4FOpnx9kWeZ8a39rjJ1V+JLj
-# ntVaY1sCSVDZg85vZu7dy4XpX6X51Id0iEQ7Gcnl9ZGfxhQ5rCTqqEsskYnMXij0
-# ZLZQt/USs3OWCmejvmGfrvP9Enh1DqZbFP1FI46GRFV9GIYFjFWHeUhG98oOjafe
-# Tl/iqLYtWQJhiGFyGGi5uHzu5uc0LzF3gTAfuzYBje8n4/ea8EwxZI3j6/oZh6h+
-# z+yMDDZbesF6uHjHyQYuRhDIjegEYNu8c3T6Ttj+qkDxss5wRoPp2kChWTrZFQlX
-# mVYwk/PJYczQCMxr7GJCkawCwO+k8IkRj3cCAwEAAaOCAzUwggMxMA4GA1UdDwEB
-# /wQEAwIHgDAMBgNVHRMBAf8EAjAAMBYGA1UdJQEB/wQMMAoGCCsGAQUFBwMIMIIB
-# vwYDVR0gBIIBtjCCAbIwggGhBglghkgBhv1sBwEwggGSMCgGCCsGAQUFBwIBFhxo
-# dHRwczovL3d3dy5kaWdpY2VydC5jb20vQ1BTMIIBZAYIKwYBBQUHAgIwggFWHoIB
-# UgBBAG4AeQAgAHUAcwBlACAAbwBmACAAdABoAGkAcwAgAEMAZQByAHQAaQBmAGkA
-# YwBhAHQAZQAgAGMAbwBuAHMAdABpAHQAdQB0AGUAcwAgAGEAYwBjAGUAcAB0AGEA
-# bgBjAGUAIABvAGYAIAB0AGgAZQAgAEQAaQBnAGkAQwBlAHIAdAAgAEMAUAAvAEMA
-# UABTACAAYQBuAGQAIAB0AGgAZQAgAFIAZQBsAHkAaQBuAGcAIABQAGEAcgB0AHkA
-# IABBAGcAcgBlAGUAbQBlAG4AdAAgAHcAaABpAGMAaAAgAGwAaQBtAGkAdAAgAGwA
-# aQBhAGIAaQBsAGkAdAB5ACAAYQBuAGQAIABhAHIAZQAgAGkAbgBjAG8AcgBwAG8A
-# cgBhAHQAZQBkACAAaABlAHIAZQBpAG4AIABiAHkAIAByAGUAZgBlAHIAZQBuAGMA
-# ZQAuMAsGCWCGSAGG/WwDFTAfBgNVHSMEGDAWgBQVABIrE5iymQftHt+ivlcNK2cC
-# zTAdBgNVHQ4EFgQUYVpNJLZJMp1KKnkag0v0HonByn0wfQYDVR0fBHYwdDA4oDag
-# NIYyaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0QXNzdXJlZElEQ0Et
-# MS5jcmwwOKA2oDSGMmh0dHA6Ly9jcmw0LmRpZ2ljZXJ0LmNvbS9EaWdpQ2VydEFz
-# c3VyZWRJRENBLTEuY3JsMHcGCCsGAQUFBwEBBGswaTAkBggrBgEFBQcwAYYYaHR0
-# cDovL29jc3AuZGlnaWNlcnQuY29tMEEGCCsGAQUFBzAChjVodHRwOi8vY2FjZXJ0
-# cy5kaWdpY2VydC5jb20vRGlnaUNlcnRBc3N1cmVkSURDQS0xLmNydDANBgkqhkiG
-# 9w0BAQUFAAOCAQEAnSV+GzNNsiaBXJuGziMgD4CH5Yj//7HUaiwx7ToXGXEXzakb
-# vFoWOQCd42yE5FpA+94GAYw3+puxnSR+/iCkV61bt5qwYCbqaVchXTQvH3Gwg5QZ
-# BWs1kBCge5fH9j/n4hFBpr1i2fAnPTgdKG86Ugnw7HBi02JLsOBzppLA044x2C/j
-# bRcTBu7kA7YUq/OPQ6dxnSHdFMoVXZJB2vkPgdGZdA0mxA5/G7X1oPHGdwYoFenY
-# k+VVFvC7Cqsc21xIJ2bIo4sKHOWV2q7ELlmgYd3a822iYemKC23sEhi991VUQAOS
-# K2vCUcIKSK+w1G7g9BQKOhvjjz3Kr2qNe9zYRDCCBs0wggW1oAMCAQICEAb9+QOW
-# A63qAArrPye7uhswDQYJKoZIhvcNAQEFBQAwZTELMAkGA1UEBhMCVVMxFTATBgNV
-# BAoTDERpZ2lDZXJ0IEluYzEZMBcGA1UECxMQd3d3LmRpZ2ljZXJ0LmNvbTEkMCIG
-# A1UEAxMbRGlnaUNlcnQgQXNzdXJlZCBJRCBSb290IENBMB4XDTA2MTExMDAwMDAw
-# MFoXDTIxMTExMDAwMDAwMFowYjELMAkGA1UEBhMCVVMxFTATBgNVBAoTDERpZ2lD
-# ZXJ0IEluYzEZMBcGA1UECxMQd3d3LmRpZ2ljZXJ0LmNvbTEhMB8GA1UEAxMYRGln
-# aUNlcnQgQXNzdXJlZCBJRCBDQS0xMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIB
-# CgKCAQEA6IItmfnKwkKVpYBzQHDSnlZUXKnE0kEGj8kz/E1FkVyBn+0snPgWWd+e
-# tSQVwpi5tHdJ3InECtqvy15r7a2wcTHrzzpADEZNk+yLejYIA6sMNP4YSYL+x8cx
-# SIB8HqIPkg5QycaH6zY/2DDD/6b3+6LNb3Mj/qxWBZDwMiEWicZwiPkFl32jx0Pd
-# Aug7Pe2xQaPtP77blUjE7h6z8rwMK5nQxl0SQoHhg26Ccz8mSxSQrllmCsSNvtLO
-# Bq6thG9IhJtPQLnxTPKvmPv2zkBdXPao8S+v7Iki8msYZbHBc63X8djPHgp0XEK4
-# aH631XcKJ1Z8D2KkPzIUYJX9BwSiCQIDAQABo4IDejCCA3YwDgYDVR0PAQH/BAQD
-# AgGGMDsGA1UdJQQ0MDIGCCsGAQUFBwMBBggrBgEFBQcDAgYIKwYBBQUHAwMGCCsG
-# AQUFBwMEBggrBgEFBQcDCDCCAdIGA1UdIASCAckwggHFMIIBtAYKYIZIAYb9bAAB
-# BDCCAaQwOgYIKwYBBQUHAgEWLmh0dHA6Ly93d3cuZGlnaWNlcnQuY29tL3NzbC1j
-# cHMtcmVwb3NpdG9yeS5odG0wggFkBggrBgEFBQcCAjCCAVYeggFSAEEAbgB5ACAA
-# dQBzAGUAIABvAGYAIAB0AGgAaQBzACAAQwBlAHIAdABpAGYAaQBjAGEAdABlACAA
-# YwBvAG4AcwB0AGkAdAB1AHQAZQBzACAAYQBjAGMAZQBwAHQAYQBuAGMAZQAgAG8A
-# ZgAgAHQAaABlACAARABpAGcAaQBDAGUAcgB0ACAAQwBQAC8AQwBQAFMAIABhAG4A
-# ZAAgAHQAaABlACAAUgBlAGwAeQBpAG4AZwAgAFAAYQByAHQAeQAgAEEAZwByAGUA
-# ZQBtAGUAbgB0ACAAdwBoAGkAYwBoACAAbABpAG0AaQB0ACAAbABpAGEAYgBpAGwA
-# aQB0AHkAIABhAG4AZAAgAGEAcgBlACAAaQBuAGMAbwByAHAAbwByAGEAdABlAGQA
-# IABoAGUAcgBlAGkAbgAgAGIAeQAgAHIAZQBmAGUAcgBlAG4AYwBlAC4wCwYJYIZI
-# AYb9bAMVMBIGA1UdEwEB/wQIMAYBAf8CAQAweQYIKwYBBQUHAQEEbTBrMCQGCCsG
-# AQUFBzABhhhodHRwOi8vb2NzcC5kaWdpY2VydC5jb20wQwYIKwYBBQUHMAKGN2h0
-# dHA6Ly9jYWNlcnRzLmRpZ2ljZXJ0LmNvbS9EaWdpQ2VydEFzc3VyZWRJRFJvb3RD
-# QS5jcnQwgYEGA1UdHwR6MHgwOqA4oDaGNGh0dHA6Ly9jcmwzLmRpZ2ljZXJ0LmNv
-# bS9EaWdpQ2VydEFzc3VyZWRJRFJvb3RDQS5jcmwwOqA4oDaGNGh0dHA6Ly9jcmw0
-# LmRpZ2ljZXJ0LmNvbS9EaWdpQ2VydEFzc3VyZWRJRFJvb3RDQS5jcmwwHQYDVR0O
-# BBYEFBUAEisTmLKZB+0e36K+Vw0rZwLNMB8GA1UdIwQYMBaAFEXroq/0ksuCMS1R
-# i6enIZ3zbcgPMA0GCSqGSIb3DQEBBQUAA4IBAQBGUD7Jtygkpzgdtlspr1LPUukx
-# R6tWXHvVDQtBs+/sdR90OPKyXGGinJXDUOSCuSPRujqGcq04eKx1XRcXNHJHhZRW
-# 0eu7NoR3zCSl8wQZVann4+erYs37iy2QwsDStZS9Xk+xBdIOPRqpFFumhjFiqKgz
-# 5Js5p8T1zh14dpQlc+Qqq8+cdkvtX8JLFuRLcEwAiR78xXm8TBJX/l/hHrwCXaj+
-# +wc4Tw3GXZG5D2dFzdaD7eeSDY2xaYxP+1ngIw/Sqq4AfO6cQg7PkdcntxbuD8O9
-# fAqg7iwIVYUiuOsYGk38KiGtSTGDR5V3cdyxG0tLHBCcdxTBnU8vWpUIKRAmMYIE
-# OzCCBDcCAQEwgYYwcjELMAkGA1UEBhMCVVMxFTATBgNVBAoTDERpZ2lDZXJ0IElu
-# YzEZMBcGA1UECxMQd3d3LmRpZ2ljZXJ0LmNvbTExMC8GA1UEAxMoRGlnaUNlcnQg
-# U0hBMiBBc3N1cmVkIElEIENvZGUgU2lnbmluZyBDQQIQB1tuZV4A7CBDAwTuuFjo
-# wzAJBgUrDgMCGgUAoHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkqhkiG
-# 9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIB
-# FTAjBgkqhkiG9w0BCQQxFgQU66utw3ytUuSb4ZD4K03J9w0XSigwDQYJKoZIhvcN
-# AQEBBQAEggEAQPeSIuVLp5YesjX/NI9wO5MBTG1hxCDEwQinNorDYd0NI9FN1hi2
-# dlgyjRbdmIe5EU1D1mzYrMpOR+pJjioGORei5jl3Dv9snDYV7hH9mznO7/ntB9Eu
-# y3vYO+Ie3b5YEgjtfz+DzQlxcdWrT84RmbrdeVvBhvtzBPFlMmQtElttdpWd6ttd
-# Cilx4NWMlOTFc20etcKH12w2VDyzpSovW+y8ixeQTaczbXp5+nrhrmEHKIxTS0BA
-# z/Pa1KgpKFw8eNiSEUMco3sDzSXuAej3IQFkefxE5UC3QgEr/NulLzHNdx4gsNPX
-# bDzq1Zn8whCLYffx8oWrURT1ZgLTVsylYaGCAg8wggILBgkqhkiG9w0BCQYxggH8
-# MIIB+AIBATB2MGIxCzAJBgNVBAYTAlVTMRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMx
-# GTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xITAfBgNVBAMTGERpZ2lDZXJ0IEFz
-# c3VyZWQgSUQgQ0EtMQIQAwGaAjr/WLFr1tXq5hfwZjAJBgUrDgMCGgUAoF0wGAYJ
-# KoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTkxMDIzMTg0
-# MTE0WjAjBgkqhkiG9w0BCQQxFgQUn0NH5hIAobTTCjAvhV2UWPBA2e4wDQYJKoZI
-# hvcNAQEBBQAEggEAMaFLrG9K4z/q7rKoNnOm97wMJ/EMsN6K4c18j2OoCzkBHYPJ
-# JTYEZmuS8kLYw2576SF+PSIqZY54WCLOX8KoFPq0oBnQ1bVcVJJsn3lLOl5RILTQ
-# E/Nh9O4PIxOwKz9/7vqdS+7iWPs6d7OZ3XBm9hnIXhTF7hHh0ZmeP+lzfox7wguU
-# wLkOeechXyjKpV+ECtEk+2sRXQAwtIiBIcsaSK2ZRAyPGJwrNoHJ8mYco5Hm1Y7a
-# CI0EIOnl2w40mKJEjnuLmJ0iGqXvmoTupLs71wFk+/liLrXFQCgZYsSMpGHWUWxw
-# Wf6jFVCjZN3jZLYSOQjFqDyOVlstWZde6VWQag==
+# c3VyZWQgSUQgQ29kZSBTaWduaW5nIENBMB4XDTIwMTIyOTAwMDAwMFoXDTI0MDEw
+# MTIzNTk1OVowYzELMAkGA1UEBhMCVVMxETAPBgNVBAgTCE5ldyBZb3JrMREwDwYD
+# VQQHEwhCcm9va2x5bjEWMBQGA1UEChMNU2FtdWVsIEphY29iczEWMBQGA1UEAxMN
+# U2FtdWVsIEphY29iczCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMet
+# W8XYNfKQ8AU+purOSt52bmto42CvzuDmSUBhdjhEZbPWuiZnmkTpXBOd6EvvWMFq
+# Ws7THg/YwBhCEnt9gV+IWfAt4TnsTmyqb7OQPgr/v5nhXcjlhXS8KCdDNW9cwNSl
+# a9Lx/ENIN4SkBsj0DxW3gKFw+eBneMgwvEPJH6ITwdbwLd5iA2noMoEKknbGMU28
+# JIRwTBM1hLIkfE9wD55MVpnVwgKoIbxrfbjM0xb3iwFQIrboHTxNSKh28vzzIM2r
+# eODYbhLjLcBrNMAcPLDYXH3FWl98rdTZJu8bVslB8iHGynJXbDDiTEfNudy/WH0T
+# rXN6tr8hbgER9i15kcUCAwEAAaOCAcUwggHBMB8GA1UdIwQYMBaAFFrEuXsqCqOl
+# 6nEDwGD5LfZldQ5YMB0GA1UdDgQWBBRDce8ftO8vp5QPTbRwlznZahM4aTAOBgNV
+# HQ8BAf8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwdwYDVR0fBHAwbjA1oDOg
+# MYYvaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL3NoYTItYXNzdXJlZC1jcy1nMS5j
+# cmwwNaAzoDGGL2h0dHA6Ly9jcmw0LmRpZ2ljZXJ0LmNvbS9zaGEyLWFzc3VyZWQt
+# Y3MtZzEuY3JsMEwGA1UdIARFMEMwNwYJYIZIAYb9bAMBMCowKAYIKwYBBQUHAgEW
+# HGh0dHBzOi8vd3d3LmRpZ2ljZXJ0LmNvbS9DUFMwCAYGZ4EMAQQBMIGEBggrBgEF
+# BQcBAQR4MHYwJAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBO
+# BggrBgEFBQcwAoZCaHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0
+# U0hBMkFzc3VyZWRJRENvZGVTaWduaW5nQ0EuY3J0MAwGA1UdEwEB/wQCMAAwDQYJ
+# KoZIhvcNAQELBQADggEBAFVXkRIMQNNFTDK9H1/6N4tfk6c3Wong7ss6orAT+TSn
+# uronxOEnU1EZGLOFXTaS/ixiv10N5X0z5yheUt4WIImaCZ7A4bhjO2PWLHjzwH1u
+# zHacQ9vE70APYS8IsHfEZlUMEffpPWoRafLfNT7O5s9jmnKFCIWMQ4ERYGARDc56
+# 4n1SOFddhXFfoXipx2E/j8fyNRzHwM6QhV1fUEU9upHQm7N0o7+GoOEC+JYOomL8
+# r/FjRv99PR1nbp7cQ9jjsTTraU+LELZev7vYzT1gxcOpz7mSUYW6EpgxMfSDEfXx
+# O90wtrjzLP8dmqgsCm4yEHUIMVLWV07EDxVIarQbBRQwggUwMIIEGKADAgECAhAE
+# CRgbX9W7ZnVTQ7VvlVAIMA0GCSqGSIb3DQEBCwUAMGUxCzAJBgNVBAYTAlVTMRUw
+# EwYDVQQKEwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20x
+# JDAiBgNVBAMTG0RpZ2lDZXJ0IEFzc3VyZWQgSUQgUm9vdCBDQTAeFw0xMzEwMjIx
+# MjAwMDBaFw0yODEwMjIxMjAwMDBaMHIxCzAJBgNVBAYTAlVTMRUwEwYDVQQKEwxE
+# aWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xMTAvBgNVBAMT
+# KERpZ2lDZXJ0IFNIQTIgQXNzdXJlZCBJRCBDb2RlIFNpZ25pbmcgQ0EwggEiMA0G
+# CSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQD407Mcfw4Rr2d3B9MLMUkZz9D7RZmx
+# OttE9X/lqJ3bMtdx6nadBS63j/qSQ8Cl+YnUNxnXtqrwnIal2CWsDnkoOn7p0WfT
+# xvspJ8fTeyOU5JEjlpB3gvmhhCNmElQzUHSxKCa7JGnCwlLyFGeKiUXULaGj6Ygs
+# IJWuHEqHCN8M9eJNYBi+qsSyrnAxZjNxPqxwoqvOf+l8y5Kh5TsxHM/q8grkV7tK
+# tel05iv+bMt+dDk2DZDv5LVOpKnqagqrhPOsZ061xPeM0SAlI+sIZD5SlsHyDxL0
+# xY4PwaLoLFH3c7y9hbFig3NBggfkOItqcyDQD2RzPJ6fpjOp/RnfJZPRAgMBAAGj
+# ggHNMIIByTASBgNVHRMBAf8ECDAGAQH/AgEAMA4GA1UdDwEB/wQEAwIBhjATBgNV
+# HSUEDDAKBggrBgEFBQcDAzB5BggrBgEFBQcBAQRtMGswJAYIKwYBBQUHMAGGGGh0
+# dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBDBggrBgEFBQcwAoY3aHR0cDovL2NhY2Vy
+# dHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0QXNzdXJlZElEUm9vdENBLmNydDCBgQYD
+# VR0fBHoweDA6oDigNoY0aHR0cDovL2NybDQuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0
+# QXNzdXJlZElEUm9vdENBLmNybDA6oDigNoY0aHR0cDovL2NybDMuZGlnaWNlcnQu
+# Y29tL0RpZ2lDZXJ0QXNzdXJlZElEUm9vdENBLmNybDBPBgNVHSAESDBGMDgGCmCG
+# SAGG/WwAAgQwKjAoBggrBgEFBQcCARYcaHR0cHM6Ly93d3cuZGlnaWNlcnQuY29t
+# L0NQUzAKBghghkgBhv1sAzAdBgNVHQ4EFgQUWsS5eyoKo6XqcQPAYPkt9mV1Dlgw
+# HwYDVR0jBBgwFoAUReuir/SSy4IxLVGLp6chnfNtyA8wDQYJKoZIhvcNAQELBQAD
+# ggEBAD7sDVoks/Mi0RXILHwlKXaoHV0cLToaxO8wYdd+C2D9wz0PxK+L/e8q3yBV
+# N7Dh9tGSdQ9RtG6ljlriXiSBThCk7j9xjmMOE0ut119EefM2FAaK95xGTlz/kLEb
+# Bw6RFfu6r7VRwo0kriTGxycqoSkoGjpxKAI8LpGjwCUR4pwUR6F6aGivm6dcIFzZ
+# cbEMj7uo+MUSaJ/PQMtARKUT8OZkDCUIQjKyNookAv4vcn4c10lFluhZHen6dGRr
+# sutmQ9qzsIzV6Q3d9gEgzpkxYz0IGhizgZtPxpMQBvwHgfqL2vmCSfdibqFT+hKU
+# GIUukpHqaGxEMrJmoecYpJpkUe8xggIoMIICJAIBATCBhjByMQswCQYDVQQGEwJV
+# UzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3d3cuZGlnaWNlcnQu
+# Y29tMTEwLwYDVQQDEyhEaWdpQ2VydCBTSEEyIEFzc3VyZWQgSUQgQ29kZSBTaWdu
+# aW5nIENBAhAPLmMKvSL4zQNB06z2lnjTMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3
+# AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisG
+# AQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBS3uCx/8yEM
+# OuKXJmqR1ndJI6ByqTANBgkqhkiG9w0BAQEFAASCAQAo+FEwbFB6c+X6PbMtH5Pk
+# i56bgH3bXXVFKCKyyUJrYIAjUU89oVSCoTarjJY3WnBCfSGmnjOuo3rSAne1ALgG
+# Xr4wCNauZc86frP5jjV9uE4wPpBpKCEm8hUQo50u4hyd+KvhPBIrwJvCg3sqb0V/
+# 4nQgucynBSKBknstjoKatzsg1JwuepD6WPwwP2RvJ2suQmtCo8X8E4JDnP0B62IC
+# oA/C+t2xkALIaWyb5xjFyDS2vo62CXJY97OB7n6C/N15XfbwSA5rGKz79EOkzSyw
+# b3usc9fsVYWcZic/2OKA2IqdLLVrncOd92QwFl5DeOlrZ6ScNd1uDWpKyofFUNm3
 # SIG # End signature block
